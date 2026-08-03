@@ -1,0 +1,16 @@
+SAP-C02 Tutorials Dojo - split by main chapter/section
+Source: SAP-C02-Tutorials-Dojo-Study-Guide-and-Cheat-Sheets-AWS-Certified-Solutions-Architect-Professional-2026-05-28-crluje.pdf
+The original source PDF was not modified.
+
+00-Front-Matter.pdf | source PDF pages 1-5 | 5 page(s)
+01-Introduction.pdf | source PDF pages 6-6 | 1 page(s)
+02-AWS-Certified-Solutions-Architect-Professional-Exam-Overview.pdf | source PDF pages 7-17 | 11 page(s)
+03-Study-Guide-and-Tips.pdf | source PDF pages 18-40 | 23 page(s)
+04-Domain-1---Design-Solutions-for-Organizational-Complexity.pdf | source PDF pages 41-59 | 19 page(s)
+05-Domain-2---Design-for-New-Solutions.pdf | source PDF pages 60-79 | 20 page(s)
+06-Domain-3---Continuous-Improvement-for-Existing-Solutions.pdf | source PDF pages 80-118 | 39 page(s)
+07-Domain-4---Accelerate-Workload-Migration-and-Modernization.pdf | source PDF pages 119-128 | 10 page(s)
+08-AWS-Cheat-Sheets.pdf | source PDF pages 129-224 | 96 page(s)
+09-Comparison-of-AWS-Services-and-Features.pdf | source PDF pages 225-238 | 14 page(s)
+10-Final-Remarks-and-Tips.pdf | source PDF pages 239-239 | 1 page(s)
+11-About-the-Author.pdf | source PDF pages 240-240 | 1 page(s)
