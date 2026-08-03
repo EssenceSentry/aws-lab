@@ -1,13 +1,14 @@
-from aws_multi_account_lab.engine import (
+from aws_lab.engine import (
     evaluate_dns,
     evaluate_network,
     evaluate_organization,
     evaluate_provisioning,
     permission_decision,
 )
-from aws_multi_account_lab.models import (
+from aws_lab.models import (
     DnsDesign,
     DnsScenario,
+    Finding,
     NetworkDesign,
     NetworkScenario,
     OrganizationDesign,
@@ -19,7 +20,7 @@ from aws_multi_account_lab.models import (
 )
 
 
-def codes(findings):
+def codes(findings: list[Finding]) -> set[str]:
     return {finding.code for finding in findings}
 
 
@@ -92,9 +93,7 @@ def test_dx_gateway_is_not_itself_the_vpc_transit_layer() -> None:
         ),
     )
     finding = next(
-        item
-        for item in findings
-        if item.code == "network.dxgw_no_vpc_transit"
+        item for item in findings if item.code == "network.dxgw_no_vpc_transit"
     )
     assert finding.severity == Severity.INFO
 

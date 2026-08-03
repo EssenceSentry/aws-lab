@@ -1,5 +1,5 @@
-from aws_multi_account_lab.export import questions_to_anki_tsv
-from aws_multi_account_lab.practice import QUESTIONS
+from aws_lab.export import questions_to_anki_tsv
+from aws_lab.practice import QUESTIONS
 
 
 def test_question_bank_is_valid_and_unique() -> None:

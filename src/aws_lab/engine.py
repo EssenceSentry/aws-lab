@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from aws_multi_account_lab import knowledge
-from aws_multi_account_lab.models import (
+from aws_lab import knowledge
+from aws_lab.models import (
     DnsDesign,
     DnsScenario,
     Finding,
@@ -146,7 +146,10 @@ def evaluate_organization(
             _finding(
                 "org.account_count_inconsistent",
                 Severity.FAIL,
-                "The selected account layout exceeds the scenario account count",
+                (
+                    "The selected account layout exceeds the scenario "
+                    "account count"
+                ),
                 (
                     f"The chosen design contains at least {minimum_accounts} "
                     "accounts once the management, workload, and dedicated "
@@ -260,7 +263,8 @@ def evaluate_organization(
                     "Access is duplicated with local IAM users",
                     (
                         "The chapter recommends cross-account roles to avoid "
-                        "creating and managing dedicated users in every account."
+                        "creating and managing dedicated users in every "
+                        "account."
                     ),
                     knowledge.CROSS_ACCOUNT_ROLES,
                     (
@@ -276,31 +280,31 @@ def evaluate_organization(
                     Severity.PASS,
                     "Cross-account access avoids duplicated IAM users",
                     (
-                        "The selected identity strategy uses roles or federation "
+                        "The selected identity strategy uses roles or "
+                        "federation "
                         "instead of creating a user in each target account."
                     ),
                     knowledge.CROSS_ACCOUNT_ROLES,
                 )
             )
 
-    if scenario.external_identity_provider:
-        if design.identity_strategy not in {
-            "identity_center",
-            "saml_oidc_federation",
-        }:
-            findings.append(
-                _finding(
-                    "org.external_idp_not_integrated",
-                    Severity.FAIL,
-                    "External identity provider is not integrated",
-                    (
-                        "The chapter lists IAM Identity Center and IAM SAML/OIDC "
-                        "identity providers as federation options."
-                    ),
-                    knowledge.DIRECTORY_AND_FEDERATION,
-                    "Choose IAM Identity Center or SAML/OIDC federation.",
-                )
+    if scenario.external_identity_provider and design.identity_strategy not in {
+        "identity_center",
+        "saml_oidc_federation",
+    }:
+        findings.append(
+            _finding(
+                "org.external_idp_not_integrated",
+                Severity.FAIL,
+                "External identity provider is not integrated",
+                (
+                    "The chapter lists IAM Identity Center and IAM "
+                    "SAML/OIDC identity providers as federation options."
+                ),
+                knowledge.DIRECTORY_AND_FEDERATION,
+                "Choose IAM Identity Center or SAML/OIDC federation.",
             )
+        )
 
     if scenario.shared_managed_directory:
         if not design.directory_network_connected:
@@ -311,11 +315,13 @@ def evaluate_organization(
                     "The directory consumers have no network path",
                     (
                         "The chapter requires connectivity and corresponding "
-                        "routing/security configuration between participating VPCs."
+                        "routing/security configuration between "
+                        "participating VPCs."
                     ),
                     knowledge.DIRECTORY_AND_FEDERATION,
                     (
-                        "Connect the VPCs with an appropriate peering, transit, "
+                        "Connect the VPCs with an appropriate peering, "
+                        "transit, "
                         "VPN, or Direct Connect design."
                     ),
                 )
@@ -327,7 +333,8 @@ def evaluate_organization(
                     Severity.FAIL,
                     "Managed Microsoft AD sharing is modeled as same-Region",
                     (
-                        "The provided section limits directory sharing to other "
+                        "The provided section limits directory sharing to "
+                        "other "
                         "VPCs and accounts in the same Region."
                     ),
                     knowledge.DIRECTORY_AND_FEDERATION,
@@ -358,7 +365,10 @@ def evaluate_organization(
                     _finding(
                         "org.directory_org_prerequisites",
                         Severity.FAIL,
-                        "Organization directory-sharing prerequisites are unmet",
+                        (
+                            "Organization directory-sharing prerequisites "
+                            "are unmet"
+                        ),
                         (
                             "The chapter requires all features and places the "
                             "directory in the organization master/management "
@@ -381,7 +391,8 @@ def evaluate_organization(
                     Severity.FAIL,
                     "External directory share has no accepted handshake",
                     (
-                        "Sharing with an external account requires a request and "
+                        "Sharing with an external account requires a "
+                        "request and "
                         "recipient acceptance."
                     ),
                     knowledge.DIRECTORY_AND_FEDERATION,
@@ -401,7 +412,10 @@ def evaluate_organization(
                         "account object API access."
                     ),
                     knowledge.S3_CROSS_ACCOUNT,
-                    "Add a bucket policy for the partner principal and actions.",
+                    (
+                        "Add a bucket policy for the partner principal and "
+                        "actions."
+                    ),
                 )
             )
         if (
@@ -414,8 +428,9 @@ def evaluate_organization(
                     Severity.WARNING,
                     "The bucket owner still pays request costs",
                     (
-                        "Enable S3 Requester Pays when the requester should bear "
-                        "request and data-transfer charges described by the guide."
+                        "Enable S3 Requester Pays when the requester should "
+                        "bear request and data-transfer charges described by "
+                        "the guide."
                     ),
                     knowledge.S3_CROSS_ACCOUNT,
                     "Enable Requester Pays and require authenticated requests.",
@@ -428,7 +443,8 @@ def evaluate_organization(
                     Severity.INFO,
                     "Requester Pays changes the request contract",
                     (
-                        "Authenticated requesters must identify themselves as the "
+                        "Authenticated requesters must identify themselves "
+                        "as the "
                         "payer in the request."
                     ),
                     knowledge.S3_CROSS_ACCOUNT,
@@ -495,18 +511,15 @@ def evaluate_provisioning(
             )
         )
 
-    if (
-        scenario.target_multiple_regions
-        and uses_catalog
-        and not uses_stacksets
-    ):
+    if scenario.target_multiple_regions and uses_catalog and not uses_stacksets:
         findings.append(
             _finding(
                 "provisioning.catalog_regional",
                 Severity.WARNING,
                 "Service Catalog products are Regional",
                 (
-                    "A catalog-only design needs repeated regional deployment or "
+                    "A catalog-only design needs repeated regional "
+                    "deployment or "
                     "additional automation."
                 ),
                 knowledge.PROVISIONING_COMPARISON,
@@ -527,7 +540,8 @@ def evaluate_provisioning(
                             Severity.FAIL,
                             "Service-managed StackSets prerequisites are unmet",
                             (
-                                "For organization targets, the guide requires all "
+                                "For organization targets, the guide requires "
+                                "all "
                                 "features and trusted access."
                             ),
                             knowledge.STACKSETS,
@@ -539,7 +553,10 @@ def evaluate_provisioning(
                     _finding(
                         "provisioning.self_managed_inside_org",
                         Severity.INFO,
-                        "Self-managed permissions add manual role administration",
+                        (
+                            "Self-managed permissions add manual role "
+                            "administration"
+                        ),
                         (
                             "The organization path can instead let StackSets "
                             "create the required roles through trusted access."
@@ -554,11 +571,15 @@ def evaluate_provisioning(
                     Severity.FAIL,
                     "External targets need self-managed StackSet roles",
                     (
-                        "The guide requires explicit administrator/execution role "
+                        "The guide requires explicit administrator/execution "
+                        "role "
                         "trust when targets are outside the organization."
                     ),
                     knowledge.STACKSETS,
-                    "Use self-managed permissions and create the execution roles.",
+                    (
+                        "Use self-managed permissions and create the "
+                        "execution roles."
+                    ),
                 )
             )
         elif not design.external_execution_roles_created:
@@ -568,7 +589,8 @@ def evaluate_provisioning(
                     Severity.FAIL,
                     "External target execution roles are missing",
                     (
-                        "Each target account needs the StackSet execution role and "
+                        "Each target account needs the StackSet execution "
+                        "role and "
                         "trust relationship described in the guide."
                     ),
                     knowledge.STACKSETS,
@@ -597,7 +619,8 @@ def evaluate_provisioning(
                     Severity.WARNING,
                     "The design does not expose a user-facing product choice",
                     (
-                        "StackSets centrally push a template; Service Catalog is "
+                        "StackSets centrally push a template; Service Catalog "
+                        "is "
                         "the guide's self-service mechanism."
                     ),
                     knowledge.PROVISIONING_COMPARISON,
@@ -610,14 +633,19 @@ def evaluate_provisioning(
             _finding(
                 "provisioning.drift_not_fully_solved",
                 Severity.WARNING,
-                "The chapter does not establish an immutable post-launch design",
                 (
-                    "It explicitly warns that StackSet-created resources may be "
+                    "The chapter does not establish an immutable post-launch "
+                    "design"
+                ),
+                (
+                    "It explicitly warns that StackSet-created resources may "
+                    "be "
                     "modified after provisioning when users retain permission."
                 ),
                 knowledge.PROVISIONING_COMPARISON,
                 (
-                    "Add permission and compliance controls beyond the mechanisms "
+                    "Add permission and compliance controls beyond the "
+                    "mechanisms "
                     "modeled in this chapter."
                 ),
             )
@@ -630,7 +658,8 @@ def evaluate_provisioning(
                 Severity.PASS,
                 "The combined pattern covers distribution and self-service",
                 (
-                    "StackSets handles multi-account/multi-Region rollout while "
+                    "StackSets handles multi-account/multi-Region rollout "
+                    "while "
                     "Service Catalog exposes approved configurable products."
                 ),
                 knowledge.PROVISIONING_COMPARISON,
@@ -696,7 +725,8 @@ def evaluate_network(
                     "The peering mesh grows operationally awkward",
                     (
                         "The guide presents peering as the simplest two-VPC "
-                        "option and transit services for broader hub-and-spoke use."
+                        "option and transit services for broader "
+                        "hub-and-spoke use."
                     ),
                     knowledge.VPC_PEERING,
                     "Consider a transit hub for a larger VPC estate.",
@@ -738,12 +768,16 @@ def evaluate_network(
                     Severity.FAIL,
                     "The selected design needs unsupported SG references",
                     (
-                        "For the Transit Gateway design described in the chapter, "
-                        "rules must use IP addresses or ranges instead of another "
+                        "For the Transit Gateway design described in the "
+                        "chapter, rules must use IP addresses or ranges "
+                        "instead of another "
                         "VPC's security group."
                     ),
                     knowledge.TRANSIT_CONNECTIVITY,
-                    "Use IP-based rules or change the connectivity requirement.",
+                    (
+                        "Use IP-based rules or change the connectivity "
+                        "requirement."
+                    ),
                 )
             )
         if (
@@ -779,57 +813,63 @@ def evaluate_network(
         if design.hybrid_connectivity in {
             "site_to_site_vpn",
             "vgw_per_vpc",
-        }:
-            if (
-                scenario.dedicated_private_line_required
-                or scenario.high_bandwidth_low_latency_required
-            ):
-                findings.append(
-                    _finding(
-                        "network.vpn_dedicated_requirement",
-                        Severity.FAIL,
-                        "An Internet VPN does not meet the dedicated-line goal",
-                        (
-                            "The guide contrasts VPN with Direct Connect's private "
-                            "connection, lower latency, and higher bandwidth."
-                        ),
-                        knowledge.HYBRID_CONNECTIVITY,
-                        "Use an appropriate Direct Connect architecture.",
-                    )
+        } and (
+            scenario.dedicated_private_line_required
+            or scenario.high_bandwidth_low_latency_required
+        ):
+            findings.append(
+                _finding(
+                    "network.vpn_dedicated_requirement",
+                    Severity.FAIL,
+                    "An Internet VPN does not meet the dedicated-line goal",
+                    (
+                        "The guide contrasts VPN with Direct Connect's private "
+                        "connection, lower latency, and higher bandwidth."
+                    ),
+                    knowledge.HYBRID_CONNECTIVITY,
+                    "Use an appropriate Direct Connect architecture.",
                 )
+            )
 
-        if design.hybrid_connectivity == "vgw_per_vpc":
-            if scenario.vpc_count > 3:
-                findings.append(
-                    _finding(
-                        "network.vgw_scale",
-                        Severity.WARNING,
-                        "One VGW/VPN per VPC does not scale cleanly",
-                        (
-                            "The guide positions this as a one-to-one option for a "
-                            "small number of VPCs and recommends Transit Gateway "
-                            "as the environment grows."
-                        ),
-                        knowledge.HYBRID_CONNECTIVITY,
-                        "Attach the VPN to Transit Gateway instead.",
-                    )
+        if (
+            design.hybrid_connectivity == "vgw_per_vpc"
+            and scenario.vpc_count > 3
+        ):
+            findings.append(
+                _finding(
+                    "network.vgw_scale",
+                    Severity.WARNING,
+                    "One VGW/VPN per VPC does not scale cleanly",
+                    (
+                        "The guide positions this as a one-to-one option "
+                        "for a small number of VPCs and recommends Transit "
+                        "Gateway as the environment grows."
+                    ),
+                    knowledge.HYBRID_CONNECTIVITY,
+                    "Attach the VPN to Transit Gateway instead.",
                 )
+            )
 
-        if design.hybrid_connectivity == "dx_private_vif_to_vgw":
-            if scenario.region_count > 1 or scenario.vpc_count > 3:
-                findings.append(
-                    _finding(
-                        "network.dx_private_vif_scale",
-                        Severity.WARNING,
-                        "Private VIF-to-VGW is too narrow for this estate",
-                        (
-                            "The guide treats this as a Regional, per-VPC-oriented "
-                            "pattern rather than the broadest scalable design."
-                        ),
-                        knowledge.HYBRID_CONNECTIVITY,
-                        "Consider a Direct Connect gateway or transit VIF design.",
-                    )
+        if design.hybrid_connectivity == "dx_private_vif_to_vgw" and (
+            scenario.region_count > 1 or scenario.vpc_count > 3
+        ):
+            findings.append(
+                _finding(
+                    "network.dx_private_vif_scale",
+                    Severity.WARNING,
+                    "Private VIF-to-VGW is too narrow for this estate",
+                    (
+                        "The guide treats this as a Regional, per-VPC-"
+                        "oriented pattern rather than the broadest scalable "
+                        "design."
+                    ),
+                    knowledge.HYBRID_CONNECTIVITY,
+                    (
+                        "Consider a Direct Connect gateway or transit VIF "
+                        "design."
+                    ),
                 )
+            )
 
         if design.hybrid_connectivity == "dx_gateway_to_vgws":
             findings.append(
@@ -838,8 +878,9 @@ def evaluate_network(
                     Severity.INFO,
                     "Direct Connect gateway is not the VPC transit layer",
                     (
-                        "The chapter explicitly excludes VPC-to-VPC connectivity "
-                        "from this pattern; a separate VPC connectivity design is "
+                        "The chapter explicitly excludes VPC-to-VPC "
+                        "connectivity from this pattern; a separate VPC "
+                        "connectivity design is "
                         "still required when VPCs must communicate."
                     ),
                     knowledge.HYBRID_CONNECTIVITY,
@@ -852,17 +893,22 @@ def evaluate_network(
                         Severity.PASS,
                         "Direct Connect gateway reaches VGWs across Regions",
                         (
-                            "This pattern associates a private VIF with multiple "
+                            "This pattern associates a private VIF with "
+                            "multiple "
                             "VGWs attached to VPCs in different Regions."
                         ),
                         knowledge.HYBRID_CONNECTIVITY,
                     )
                 )
 
-        if design.hybrid_connectivity in {
-            "dx_transit_vif_to_tgw",
-            "vpn_to_tgw_over_dx_public_vif",
-        } and design.vpc_connectivity != "transit_gateway":
+        if (
+            design.hybrid_connectivity
+            in {
+                "dx_transit_vif_to_tgw",
+                "vpn_to_tgw_over_dx_public_vif",
+            }
+            and design.vpc_connectivity != "transit_gateway"
+        ):
             findings.append(
                 _finding(
                     "network.hybrid_tgw_missing",
@@ -870,7 +916,8 @@ def evaluate_network(
                     "The selected hybrid pattern requires Transit Gateway",
                     (
                         "The selected Direct Connect/VPN path terminates on or "
-                        "associates with Transit Gateway, but the VPC design does "
+                        "associates with Transit Gateway, but the VPC design "
+                        "does "
                         "not include one."
                     ),
                     knowledge.HYBRID_CONNECTIVITY,
@@ -878,42 +925,46 @@ def evaluate_network(
                 )
             )
 
-        if design.hybrid_connectivity == "dx_transit_vif_to_tgw":
-            if scenario.vpc_count > 1 or scenario.region_count > 1:
-                findings.append(
-                    _finding(
-                        "network.dx_transit_scalable",
-                        Severity.PASS,
-                        "Transit VIF plus Transit Gateway fits the broad estate",
-                        (
-                            "The guide calls this the most scalable and manageable "
-                            "option for multiple VPCs in multiple locations."
-                        ),
-                        knowledge.HYBRID_CONNECTIVITY,
-                    )
+        if design.hybrid_connectivity == "dx_transit_vif_to_tgw" and (
+            scenario.vpc_count > 1 or scenario.region_count > 1
+        ):
+            findings.append(
+                _finding(
+                    "network.dx_transit_scalable",
+                    Severity.PASS,
+                    ("Transit VIF plus Transit Gateway fits the broad estate"),
+                    (
+                        "The guide calls this the most scalable and "
+                        "manageable option for multiple VPCs in multiple "
+                        "locations."
+                    ),
+                    knowledge.HYBRID_CONNECTIVITY,
                 )
+            )
 
-        if scenario.public_aws_service_access_required:
-            if (
-                design.hybrid_connectivity
-                != "vpn_to_tgw_over_dx_public_vif"
-            ):
-                findings.append(
-                    _finding(
-                        "network.public_services_path",
-                        Severity.WARNING,
-                        "The chosen hybrid path does not model public AWS endpoints",
-                        (
-                            "The chapter's explicit public-endpoint pattern uses a "
-                            "public VIF and a VPN attachment to Transit Gateway."
-                        ),
-                        knowledge.HYBRID_CONNECTIVITY,
-                        (
-                            "Use the public-VIF VPN pattern or model a separate "
-                            "public-service access path."
-                        ),
-                    )
+        if (
+            scenario.public_aws_service_access_required
+            and design.hybrid_connectivity != "vpn_to_tgw_over_dx_public_vif"
+        ):
+            findings.append(
+                _finding(
+                    "network.public_services_path",
+                    Severity.WARNING,
+                    (
+                        "The chosen hybrid path does not model public AWS "
+                        "endpoints"
+                    ),
+                    (
+                        "The chapter's explicit public-endpoint pattern uses "
+                        "a public VIF and a VPN attachment to Transit Gateway."
+                    ),
+                    knowledge.HYBRID_CONNECTIVITY,
+                    (
+                        "Use the public-VIF VPN pattern or model a separate "
+                        "public-service access path."
+                    ),
                 )
+            )
 
     return findings
 
@@ -949,11 +1000,15 @@ def evaluate_dns(
                     Severity.FAIL,
                     "Active Directory DNS cannot resolve the VPC private names",
                     (
-                        "The chapter forwards those queries from AD to a Route 53 "
+                        "The chapter forwards those queries from AD to a "
+                        "Route 53 "
                         "Resolver inbound endpoint."
                     ),
                     knowledge.DNS,
-                    "Configure forwarding to a Route 53 Resolver inbound endpoint.",
+                    (
+                        "Configure forwarding to a Route 53 Resolver inbound "
+                        "endpoint."
+                    ),
                 )
             )
 
@@ -1000,9 +1055,15 @@ def evaluate_dns(
                     "dns.dhcp_mutation_attempt",
                     Severity.FAIL,
                     "The design tries to modify a DHCP options set in place",
-                    "The chapter states that existing DHCP options sets are immutable.",
+                    (
+                        "The chapter states that existing DHCP options sets "
+                        "are immutable."
+                    ),
                     knowledge.DNS,
-                    "Create a new DHCP options set and associate it with the VPC.",
+                    (
+                        "Create a new DHCP options set and associate it with "
+                        "the VPC."
+                    ),
                 )
             )
         else:

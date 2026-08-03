@@ -4,7 +4,7 @@ import csv
 import io
 from collections.abc import Iterable
 
-from aws_multi_account_lab.models import PracticeQuestion
+from aws_lab.models import PracticeQuestion
 
 
 def questions_to_anki_tsv(questions: Iterable[PracticeQuestion]) -> str:

@@ -1,4 +1,4 @@
-# AWS Multi-Account Architecture Lab
+# AWS Lab
 
 A local Streamlit application for studying the supplied Tutorials Dojo
 SAP-C02 chapter on **Design Solutions for Organizational Complexity**.
@@ -53,11 +53,13 @@ so no manual activation is needed.
 In VS Code, you can also run **Tasks: Run Task** from the Command Palette and
 select **Start Streamlit app**.
 
-## Run tests
+## Run checks
 
 ```bash
 uv run pytest
 uv run ruff check .
+uv run ruff format --check .
+uv run pyright
 ```
 
 ## Source scope and limitations
@@ -78,7 +80,7 @@ permissions-boundary edge cases.
 
 ## Extending the knowledge base
 
-The reusable engine lives under `src/aws_multi_account_lab`. Each finding has:
+The reusable engine lives under `src/aws_lab`. Each finding has:
 
 - a stable rule code;
 - a severity;

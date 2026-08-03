@@ -1,11 +1,11 @@
-from aws_multi_account_lab.engine import (
+from aws_lab.engine import (
     evaluate_dns,
     evaluate_network,
     evaluate_organization,
     evaluate_provisioning,
     permission_decision,
 )
-from aws_multi_account_lab.models import (
+from aws_lab.models import (
     DnsDesign,
     DnsScenario,
     Finding,

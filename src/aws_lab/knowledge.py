@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from aws_multi_account_lab.models import SourceRef
-
+from aws_lab.models import SourceRef
 
 LANDING_ZONE = SourceRef(
     "Landing-zone account separation",

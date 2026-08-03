@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from collections import Counter
+from typing import cast
 
 import streamlit as st
 
-from aws_multi_account_lab.engine import (
+from aws_lab.engine import (
     evaluate_dns,
     evaluate_network,
     evaluate_organization,
@@ -12,26 +13,33 @@ from aws_multi_account_lab.engine import (
     fit_label,
     permission_decision,
 )
-from aws_multi_account_lab.export import questions_to_anki_tsv
-from aws_multi_account_lab.models import (
+from aws_lab.export import questions_to_anki_tsv
+from aws_lab.models import (
+    DirectorySharingMode,
     DnsDesign,
     DnsScenario,
     Finding,
+    HybridConnectivity,
+    IdentityStrategy,
     NetworkDesign,
     NetworkScenario,
     OrganizationDesign,
     OrganizationScenario,
     PermissionInputs,
     ProvisioningDesign,
+    ProvisioningPattern,
     ProvisioningScenario,
+    ScpScope,
+    ScpStrategy,
     Severity,
+    StackSetPermissionMode,
+    VpcConnectivity,
 )
-from aws_multi_account_lab.practice import QUESTIONS
-from aws_multi_account_lab.visuals import network_dot, organization_dot
-
+from aws_lab.practice import QUESTIONS
+from aws_lab.visuals import network_dot, organization_dot
 
 st.set_page_config(
-    page_title="AWS Multi-Account Architecture Lab",
+    page_title="AWS Lab",
     page_icon="🏗️",
     layout="wide",
 )
@@ -95,11 +103,12 @@ def labeled_selectbox(
     )
 
 
-st.title("AWS Multi-Account Architecture Lab")
+st.title("AWS Lab")
 st.caption(
     "A deterministic, source-linked study sandbox for the supplied Tutorials "
     "Dojo chapter on organizational complexity. It is a decision-boundary "
-    "trainer, not an AWS emulator or an independent current-documentation audit."
+    "trainer, not an AWS emulator or an independent current-documentation "
+    "audit."
 )
 
 st.markdown(
@@ -225,46 +234,58 @@ with org_tab:
             value=True,
             key="org_design_admin",
         )
-        scp_strategy = labeled_selectbox(
-            "SCP strategy",
-            {
-                "none": "No SCPs",
-                "denylist": "Denylist / blacklist",
-                "allowlist": "Allowlist / whitelist",
-            },
-            "denylist",
-            "org_design_scp_strategy",
+        scp_strategy = cast(
+            ScpStrategy,
+            labeled_selectbox(
+                "SCP strategy",
+                {
+                    "none": "No SCPs",
+                    "denylist": "Denylist / blacklist",
+                    "allowlist": "Allowlist / whitelist",
+                },
+                "denylist",
+                "org_design_scp_strategy",
+            ),
         )
-        scp_scope = labeled_selectbox(
-            "SCP attachment scope",
-            {
-                "root": "Organization root",
-                "ou": "Organizational unit",
-                "account": "Individual account",
-            },
-            "ou",
-            "org_design_scp_scope",
+        scp_scope = cast(
+            ScpScope,
+            labeled_selectbox(
+                "SCP attachment scope",
+                {
+                    "root": "Organization root",
+                    "ou": "Organizational unit",
+                    "account": "Individual account",
+                },
+                "ou",
+                "org_design_scp_scope",
+            ),
         )
-        identity_strategy = labeled_selectbox(
-            "Human identity strategy",
-            {
-                "local_iam": "Local IAM users in each account",
-                "cross_account_roles": "Cross-account IAM roles",
-                "identity_center": "IAM Identity Center",
-                "saml_oidc_federation": "SAML/OIDC federation",
-            },
-            "identity_center",
-            "org_design_identity",
+        identity_strategy = cast(
+            IdentityStrategy,
+            labeled_selectbox(
+                "Human identity strategy",
+                {
+                    "local_iam": "Local IAM users in each account",
+                    "cross_account_roles": "Cross-account IAM roles",
+                    "identity_center": "IAM Identity Center",
+                    "saml_oidc_federation": "SAML/OIDC federation",
+                },
+                "identity_center",
+                "org_design_identity",
+            ),
         )
-        directory_mode = labeled_selectbox(
-            "Directory sharing mode",
-            {
-                "none": "No directory sharing",
-                "organization": "Share through AWS Organizations",
-                "external_account": "Share to an external account",
-            },
-            "none",
-            "org_design_directory_mode",
+        directory_mode = cast(
+            DirectorySharingMode,
+            labeled_selectbox(
+                "Directory sharing mode",
+                {
+                    "none": "No directory sharing",
+                    "organization": "Share through AWS Organizations",
+                    "external_account": "Share to an external account",
+                },
+                "none",
+                "org_design_directory_mode",
+            ),
         )
         directory_in_management = st.checkbox(
             "Directory is in the management/master account",
@@ -331,7 +352,7 @@ with org_tab:
     st.subheader("Architecture sketch")
     st.graphviz_chart(
         organization_dot(organization_scenario, organization_design),
-        use_container_width=True,
+        width="stretch",
     )
 
     st.subheader("Evaluation")
@@ -416,25 +437,31 @@ with provisioning_tab:
 
     with design_column:
         st.subheader("Design")
-        pattern = labeled_selectbox(
-            "Provisioning pattern",
-            {
-                "none": "None",
-                "stacksets": "CloudFormation StackSets",
-                "service_catalog": "AWS Service Catalog",
-                "both": "StackSets + Service Catalog",
-            },
-            "stacksets",
-            "prov_design_pattern",
+        pattern = cast(
+            ProvisioningPattern,
+            labeled_selectbox(
+                "Provisioning pattern",
+                {
+                    "none": "None",
+                    "stacksets": "CloudFormation StackSets",
+                    "service_catalog": "AWS Service Catalog",
+                    "both": "StackSets + Service Catalog",
+                },
+                "stacksets",
+                "prov_design_pattern",
+            ),
         )
-        permission_mode = labeled_selectbox(
-            "StackSet permission mode",
-            {
-                "service_managed": "Service-managed permissions",
-                "self_managed": "Self-managed permissions",
-            },
-            "service_managed",
-            "prov_design_permissions",
+        permission_mode = cast(
+            StackSetPermissionMode,
+            labeled_selectbox(
+                "StackSet permission mode",
+                {
+                    "service_managed": "Service-managed permissions",
+                    "self_managed": "Self-managed permissions",
+                },
+                "service_managed",
+                "prov_design_permissions",
+            ),
         )
         org_all_features = st.checkbox(
             "Organization has all features enabled",
@@ -494,7 +521,7 @@ with provisioning_tab:
             ],
         },
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
     )
 
 with network_tab:
@@ -563,34 +590,40 @@ with network_tab:
 
     with design_column:
         st.subheader("Design")
-        vpc_connectivity = labeled_selectbox(
-            "VPC connectivity",
-            {
-                "none": "None",
-                "vpc_peering": "VPC peering",
-                "transit_vpc": "Transit VPC",
-                "transit_gateway": "AWS Transit Gateway",
-            },
-            "transit_gateway",
-            "net_design_vpc",
+        vpc_connectivity = cast(
+            VpcConnectivity,
+            labeled_selectbox(
+                "VPC connectivity",
+                {
+                    "none": "None",
+                    "vpc_peering": "VPC peering",
+                    "transit_vpc": "Transit VPC",
+                    "transit_gateway": "AWS Transit Gateway",
+                },
+                "transit_gateway",
+                "net_design_vpc",
+            ),
         )
-        hybrid_connectivity = labeled_selectbox(
-            "Hybrid connectivity",
-            {
-                "none": "None",
-                "site_to_site_vpn": "Site-to-Site VPN",
-                "vgw_per_vpc": "One VPN/VGW per VPC",
-                "dx_private_vif_to_vgw": "DX private VIF to a VGW",
-                "dx_gateway_to_vgws": "DX gateway to VGWs",
-                "dx_transit_vif_to_tgw": (
-                    "Transit VIF → Direct Connect gateway → Transit Gateway"
-                ),
-                "vpn_to_tgw_over_dx_public_vif": (
-                    "VPN to Transit Gateway over a DX public VIF"
-                ),
-            },
-            "site_to_site_vpn",
-            "net_design_hybrid",
+        hybrid_connectivity = cast(
+            HybridConnectivity,
+            labeled_selectbox(
+                "Hybrid connectivity",
+                {
+                    "none": "None",
+                    "site_to_site_vpn": "Site-to-Site VPN",
+                    "vgw_per_vpc": "One VPN/VGW per VPC",
+                    "dx_private_vif_to_vgw": "DX private VIF to a VGW",
+                    "dx_gateway_to_vgws": "DX gateway to VGWs",
+                    "dx_transit_vif_to_tgw": (
+                        "Transit VIF → Direct Connect gateway → Transit Gateway"
+                    ),
+                    "vpn_to_tgw_over_dx_public_vif": (
+                        "VPN to Transit Gateway over a DX public VIF"
+                    ),
+                },
+                "site_to_site_vpn",
+                "net_design_hybrid",
+            ),
         )
 
     network_scenario = NetworkScenario(
@@ -613,7 +646,7 @@ with network_tab:
     st.subheader("Architecture sketch")
     st.graphviz_chart(
         network_dot(network_scenario, network_design),
-        use_container_width=True,
+        width="stretch",
     )
     st.subheader("Evaluation")
     render_findings(evaluate_network(network_scenario, network_design))
@@ -668,7 +701,8 @@ with dns_tab:
             key="dns_design_support",
         )
         ad_forwarding = st.checkbox(
-            "AD forwards VPC-name queries to a Route 53 Resolver inbound endpoint",
+            "AD forwards VPC-name queries to a Route 53 Resolver inbound "
+            "endpoint",
             value=True,
             key="dns_design_forwarding",
         )
@@ -699,12 +733,17 @@ with dns_tab:
 with practice_tab:
     st.header("Original practice scenarios and mistake-to-Anki export")
     st.caption(
-        "These are original questions derived from the chapter's decision rules; "
+        "These are original questions derived from the chapter's decision "
+        "rules; "
         "they do not reproduce Tutorials Dojo mock questions."
     )
 
     if "practice_answers" not in st.session_state:
         st.session_state.practice_answers = {}
+    practice_answers = cast(
+        dict[str, int],
+        st.session_state["practice_answers"],
+    )
 
     question_number = st.select_slider(
         "Question",
@@ -717,7 +756,7 @@ with practice_tab:
     answer = st.radio(
         "Choose one answer",
         options=list(range(len(question.options))),
-        format_func=lambda index: question.options[index],
+        format_func=lambda index: question.options[cast(int, index)],
         key=f"practice_choice_{question.id}",
     )
 
@@ -727,9 +766,9 @@ with practice_tab:
         key=f"practice_check_{question.id}",
         type="primary",
     ):
-        st.session_state.practice_answers[question.id] = answer
+        practice_answers[question.id] = answer
 
-    checked_answer = st.session_state.practice_answers.get(question.id)
+    checked_answer = practice_answers.get(question.id)
     if checked_answer is not None:
         if checked_answer == question.correct_index:
             st.success("Correct.")
@@ -744,7 +783,7 @@ with practice_tab:
 
     checked_questions = {
         question_id: selected
-        for question_id, selected in st.session_state.practice_answers.items()
+        for question_id, selected in practice_answers.items()
     }
     question_by_id = {item.id: item for item in QUESTIONS}
     mistakes = [
@@ -765,12 +804,13 @@ with practice_tab:
         st.download_button(
             "Download missed concepts as Anki TSV",
             data=tsv,
-            file_name="aws_multi_account_mistakes.tsv",
+            file_name="aws_lab_mistakes.tsv",
             mime="text/tab-separated-values",
         )
     else:
         st.caption(
-            "A downloadable Anki TSV appears after at least one checked mistake."
+            "A downloadable Anki TSV appears after at least one checked "
+            "mistake."
         )
 
     if action_columns[2].button("Reset practice history"):
@@ -780,7 +820,8 @@ with practice_tab:
 with source_tab:
     st.header("What this first version covers")
     st.markdown(
-        "The supplied chapter is broad enough for four linked laboratories, not "
+        "The supplied chapter is broad enough for four linked laboratories, "
+        "not "
         "just an Organizations screen. The app deliberately models only claims "
         "supported by that chapter."
     )
@@ -803,7 +844,8 @@ with source_tab:
                     "Catalog; when to combine both"
                 ),
                 (
-                    "VPC peering; Transit VPC; Transit Gateway; VPN; VGW; Direct "
+                    "VPC peering; Transit VPC; Transit Gateway; VPN; VGW; "
+                    "Direct "
                     "Connect VIF and gateway patterns"
                 ),
                 (
@@ -814,16 +856,18 @@ with source_tab:
             "Guide pages": ["42–48", "49–51", "52–55", "56–58"],
         },
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
     )
     st.warning(
-        "Mentioned but not substantively specified in the supplied pages—such as "
-        "AWS Control Tower, Security Hub, detailed consolidated billing, and RI "
+        "Mentioned but not substantively specified in the supplied pages—"
+        "such as AWS Control Tower, Security Hub, detailed consolidated "
+        "billing, and RI "
         "sharing—are intentionally not graded in this version."
     )
     st.markdown(
-        "**Rule-engine philosophy:** hard failures represent explicit prerequisite "
-        "or capability conflicts in the chapter. Warnings represent a stated "
-        "tradeoff or a pattern that only partially meets the selected requirements. "
-        "A blank area means the source did not give enough information to grade it."
+        "**Rule-engine philosophy:** hard failures represent explicit "
+        "prerequisite or capability conflicts in the chapter. Warnings "
+        "represent a stated tradeoff or a pattern that only partially meets "
+        "the selected requirements. A blank area means the source did not "
+        "give enough information to grade it."
     )

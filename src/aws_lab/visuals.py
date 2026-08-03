@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from aws_multi_account_lab.models import (
+from aws_lab.models import (
     NetworkDesign,
     NetworkScenario,
     OrganizationDesign,
@@ -21,7 +21,8 @@ def organization_dot(
 
     if not design.use_organizations:
         lines.append(
-            f'  standalone [label="{scenario.account_count} standalone accounts"];'
+            "  standalone "
+            f'[label="{scenario.account_count} standalone accounts"];'
         )
         lines.append("}")
         return "\n".join(lines)
@@ -115,7 +116,11 @@ def organization_dot(
         if design.scp_scope == "root":
             lines.append("  scp -> root [style=dotted];")
         elif design.scp_scope == "ou":
-            target = "nonprod" if design.separate_environment_accounts else "workloads"
+            target = (
+                "nonprod"
+                if design.separate_environment_accounts
+                else "workloads"
+            )
             lines.append(f"  scp -> {target} [style=dotted];")
         else:
             target = (
