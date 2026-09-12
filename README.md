@@ -1,5 +1,8 @@
 # AWS Lab
 
+**[Open Waypoint](https://essencesentry.github.io/aws-lab/)** to study on mobile
+or desktop. Use Settings in the app for installation and offline downloads.
+
 The repository also contains **[Waypoint](study_app/README.md)**, an installable
 mobile study app built from [the question bank](question_bank/questions.jsonl).
 It supports domain practice, mixed exams, optional timers, offline study,
