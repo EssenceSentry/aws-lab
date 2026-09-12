@@ -1,0 +1,45 @@
+:root {
+  color-scheme: light;
+  --bg: #f8f7f4; --sidebar: #fbfaf7; --surface: #ffffff; --text: #2c3548;
+  --muted: #626d80; --muted-heading: #788296;
+  --accent: #2b3f66; --accent-hover: #1e3156; --on-accent: #fbfcff;
+  --soft: #edf1f8; --nav-active: #e7edf8; --border: #e1e4eb; --border-strong: #b9c1d0;
+  --accent-border: #a3b3cf; --track: #e7eaf0; --focus: #b0c0e1;
+  --sage-bg: #eee9f5; --sage-fg: #71608a;
+  --blue-bg: #e9f0f8; --blue-fg: #526d90;
+  --purple-bg: #ebedf6; --purple-fg: #59658e;
+  --peach-bg: #f8ece3; --peach-fg: #886144;
+  --good: #426f99; --good-soft: #edf4fb; --good-border: #8eafd0;
+  --bad: #a25348; --bad-soft: #fbefeb; --bad-border: #d5a297;
+  --amber: #805f2c; --amber-soft: #faf3e5; --amber-border: #e4d4ad;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171e2c; --sidebar: #1a2232; --surface: #202b3d; --text: #e5e9f3;
+  --muted: #a6b0c4; --muted-heading: #a1aec6;
+  --accent: #c2cff0; --accent-hover: #d7e0f7; --on-accent: #263657;
+  --soft: #293650; --nav-active: #2c3b58; --border: #37455d; --border-strong: #657691;
+  --accent-border: #8399be; --track: #34425b; --focus: #d3def6;
+  --sage-bg: #3c3550; --sage-fg: #cbb8e3;
+  --blue-bg: #2d4059; --blue-fg: #adc6e5;
+  --purple-bg: #343c58; --purple-fg: #bdc7e8;
+  --peach-bg: #4c3e35; --peach-fg: #e0bfa6;
+  --good: #adcbed; --good-soft: #2b3e56; --good-border: #7295bd;
+  --bad: #e6aaa0; --bad-soft: #44352f; --bad-border: #a77468;
+  --amber: #dac394; --amber-soft: #3d3b29; --amber-border: #716841;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
+    --bg: #171e2c; --sidebar: #1a2232; --surface: #202b3d; --text: #e5e9f3;
+    --muted: #a6b0c4; --muted-heading: #a1aec6;
+    --accent: #c2cff0; --accent-hover: #d7e0f7; --on-accent: #263657;
+    --soft: #293650; --nav-active: #2c3b58; --border: #37455d; --border-strong: #657691;
+    --accent-border: #8399be; --track: #34425b; --focus: #d3def6;
+    --sage-bg: #3c3550; --sage-fg: #cbb8e3; --blue-bg: #2d4059; --blue-fg: #adc6e5;
+    --purple-bg: #343c58; --purple-fg: #bdc7e8; --peach-bg: #4c3e35; --peach-fg: #e0bfa6;
+    --good: #adcbed; --good-soft: #2b3e56; --good-border: #7295bd;
+    --bad: #e6aaa0; --bad-soft: #44352f; --bad-border: #a77468;
+    --amber: #dac394; --amber-soft: #3d3b29; --amber-border: #716841;
+  }
+}

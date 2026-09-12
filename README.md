@@ -1,5 +1,10 @@
 # AWS Lab
 
+The repository also contains **[Waypoint](study_app/README.md)**, an installable
+mobile study app built from [the question bank](question_bank/questions.jsonl).
+It supports domain practice, mixed exams, optional timers, offline study,
+and saved progress, with a GitHub Pages deployment workflow.
+
 A local Streamlit application for studying the supplied Tutorials Dojo
 SAP-C02 chapter on **Design Solutions for Organizational Complexity**.
 
