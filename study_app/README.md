@@ -64,7 +64,9 @@ and unused images have been removed. Some corrected questions are adapted
 scenarios, as identified in their explanations. Existing pre-revision progress
 is not imported into this baseline.
 
-Questions retain stable `id` and option `id` values. The app derives single or
+Question IDs are strings from `001` through `391`, assigned once in bank order.
+The guide, index, sharing, and progress use these same IDs; shuffling never
+renumbers a question. Options retain their own stable `id` values. The app derives single or
 multiple choice from `correct_option_ids.length`. Explanations remain plain
 text and use `<<4>>` to refer to option ID `4`. If the saved session order is
 `["2", "4", "1", "3"]`, `Option <<4>>` displays and shares as `Option B`.
@@ -96,7 +98,7 @@ the first visit. Diagrams cache as they are viewed; Settings offers a resumable
 download of the complete image pack. External references and videos need the internet.
 Browser storage can be evicted, so export progress regularly.
 
-Progress stays in this browser under waypoint.sap-c02.progress.v2. Backups
+Progress stays in this browser under waypoint.sap-c02.progress.v3. Backups
 include bookmarks, answer statistics, history, and an unfinished session.
 Restoration validates question IDs, options, and timer state before replacement.
 There is no automatic cross-device sync.

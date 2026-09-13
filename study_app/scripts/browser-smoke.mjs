@@ -10,7 +10,7 @@ import { createSession, freshProgress, DOMAINS } from "../src/core.ts";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const artifacts = resolve(root, "../output/playwright");
-const key = "waypoint.sap-c02.progress.v2";
+const key = "waypoint.sap-c02.progress.v3";
 const bank = (await readFile(join(root, "dist/data/questions.jsonl"), "utf8")).trim().split("\n").map(JSON.parse);
 const imageCount = JSON.parse(await readFile(join(root, "dist/data/image-manifest.json"), "utf8")).images.length;
 const guide = JSON.parse(await readFile(join(root, "dist/data/study-guide.json"), "utf8"));
@@ -149,7 +149,7 @@ try {
   assert.equal((await state()).history.length, 2);
   assert.equal((await state()).attempts[nextQuick.id].count, 1);
 
-  const markedQuestion = bank.find((q) => q.id === "9076");
+  const markedQuestion = bank.find((q) => q.id === "037");
   const markedProgress = freshProgress();
   markedProgress.active = createSession([markedQuestion], markedProgress, { title: "One quick question", domain: "all", pool: "all", count: 1, timed: false, minutes: 1, feedback: "immediate", quick: true }, Date.now(), () => 0);
   await seed(markedProgress);
@@ -157,7 +157,7 @@ try {
   await page.getByRole("button", { name: "Related guide", exact: true }).click();
   const beforeGuide = await state();
   const modal = page.getByRole("dialog", { name: "Explore the reasoning" });
-  assert.equal(await modal.locator(".guide-topic-links button").count(), guide.questions["9076"].sectionIds.length);
+  assert.equal(await modal.locator(".guide-topic-links button").count(), guide.questions["037"].sectionIds.length);
   await modal.locator(".guide-topic-links button").first().click();
   await modal.locator(".guide-reader").waitFor();
   await accessible("mobile-question-guide");
@@ -231,7 +231,7 @@ try {
   assert.equal(await page.locator(".guide-topic").count(), 0);
   await page.getByRole("searchbox").fill("");
   await page.getByRole("button", { name: "By question", exact: true }).click();
-  await page.getByRole("searchbox").fill("Q9200");
+  await page.getByRole("searchbox").fill("Q064");
   assert.equal(await page.locator(".guide-question").count(), 1);
   await accessible("mobile-guide-index");
   await shot("mobile-guide-index");

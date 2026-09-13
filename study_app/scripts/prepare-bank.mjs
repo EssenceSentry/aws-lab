@@ -30,6 +30,7 @@ for (const q of questions) {
   }
 }
 if (!questions.length) throw new Error("Question bank is empty.");
+if ([...ids].sort().some((id, index) => id !== String(index + 1).padStart(3, "0"))) throw new Error("Question IDs must run consecutively from 001.");
 const [guideSource, indexSource] = await Promise.all([
   readFile(resolve(source, "aws_service_decision_guide.md"), "utf8"),
   readFile(resolve(source, "aws_question_index.md"), "utf8"),

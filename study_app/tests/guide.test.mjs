@@ -9,19 +9,21 @@ const index = read("aws_question_index.md");
 
 test("all questions connect by stable ID to valid guide sections", () => {
   const guide = prepareGuide(source, index, [...bank].reverse());
+  assert.deepEqual(bank.map((q) => q.id), Array.from({ length: 391 }, (_, i) => String(i + 1).padStart(3, "0")));
   assert.equal(guide.sections.length, 17);
   assert.equal(Object.keys(guide.questions).length, 391);
-  assert.deepEqual(guide.questions["6170"].sectionIds, ["network", "edge"]);
-  assert.match(guide.questions["6170"].rule, /DNSSEC/);
+  assert.deepEqual(guide.questions["001"].sectionIds, ["network", "edge"]);
+  assert.match(guide.questions["001"].rule, /DNSSEC/);
   assert.equal(guide.sections.reduce((sum, section) => sum + section.questionIds.length, 0), 653);
   assert.match(guide.sections.find((s) => s.id === "identity").html, /href="#guide\/src-poweruser"/);
   assert.match(guide.sections.find((s) => s.id === "sources").html, /id="guide-src-poweruser"/);
   assert.doesNotMatch(guide.introductionHtml, /Contents/);
 });
 test("broken or incomplete indexes and guide links fail the build", () => {
-  assert.throws(() => prepareGuide(source, index.replace('| 1 | 6170 |', '| 1 | 999999 |'), bank), /Unknown/);
-  assert.throws(() => prepareGuide(source, index.replace(/\| 1 \| 6170 \|[^\n]+\n/, ""), bank), /Every bank/);
+  assert.throws(() => prepareGuide(source, index.replace('| 001 |', '| 999999 |'), bank), /Unknown/);
+  assert.throws(() => prepareGuide(source, index.replace(/\| 001 \|[^\n]+\n/, ""), bank), /Every bank/);
   assert.throws(() => prepareGuide(source, index.replace('#network)', '#missing)'), bank), /Invalid index sections/);
+  assert.throws(() => prepareGuide(source.replace("Q001", "Q999"), index, bank), /Unknown question reference/);
   assert.throws(() => prepareGuide(source + '\n[Broken](#missing)', index, bank), /Broken guide link/);
 });
 test("guide HTML is sanitized and only safe links survive", () => {

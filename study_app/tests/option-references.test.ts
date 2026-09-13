@@ -7,7 +7,7 @@ import { optionLabel, resolveOptionReferences, validateOptionReferences } from "
 
 const bank: Question[] = readFileSync(new URL("../../question_bank/questions.jsonl", import.meta.url), "utf8").trim().split("\n").map((line) => JSON.parse(line));
 test("option references follow the saved permutation, including after backup restoration", () => {
-  const q = bank.find((q) => q.id === "9076")!;
+  const q = bank.find((q) => q.id === "037")!;
   const progress = freshProgress();
   progress.active = createSession([q], progress, { title: "Test", count: 1, domain: "all", pool: "all", timed: false, minutes: 1, feedback: "immediate" }, 1000, () => 0);
   const restored = parseProgress(JSON.parse(JSON.stringify(progress)), bank);
@@ -31,7 +31,7 @@ test("the complete active bank has valid explicit option references and no bare 
     references += [...q.explanation.text.matchAll(/<<\d+>>/g)].length;
   }
   assert.ok(references > 300);
-  const nat = bank.find((q) => q.id === "9262")!.explanation.text;
+  const nat = bank.find((q) => q.id === "093")!.explanation.text;
   assert.match(nat, /30 minutes/);
   assert.match(nat, /\[1\]/);
 });

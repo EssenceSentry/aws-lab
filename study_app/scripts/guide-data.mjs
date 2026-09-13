@@ -50,16 +50,19 @@ export function prepareGuide(guideSource, indexSource, bank) {
     }).replace(/<table>/g, '<div class="guide-table" role="region" aria-label="Service comparison" tabindex="0"><table>').replace(/<\/table>/g, "</table></div>");
   }
   const lookup = new Map(bank.map((q) => [q.id, q]));
+  for (const match of guideSource.matchAll(/\bQ(\d+)\b/g)) {
+    if (!lookup.has(match[1])) throw new Error("Unknown question reference in guide: " + match[0]);
+  }
   const sectionLookup = new Map(sections.map((s) => [s.id, s]));
   const questions = {};
   for (const table of markdown.lexer(indexSource).filter((token) => token.type === "table")) {
-    if (table.header.map((cell) => cell.text).join("|") !== "No.|Q-ID|Review|Decisive distinction") throw new Error("Unexpected question-index columns");
+    if (table.header.map((cell) => cell.text).join("|") !== "Q-ID|Review|Decisive distinction") throw new Error("Unexpected question-index columns");
     for (const row of table.rows) {
-      const id = row[1].text.trim();
+      const id = row[0].text.trim();
       if (!lookup.has(id) || questions[id]) throw new Error("Unknown or duplicate index question: " + id);
-      const sectionIds = row[2].tokens.filter((t) => t.type === "link").map((t) => t.href.split("#")[1]);
+      const sectionIds = row[1].tokens.filter((t) => t.type === "link").map((t) => t.href.split("#")[1]);
       if (!sectionIds.length || new Set(sectionIds).size !== sectionIds.length || sectionIds.some((id) => !sectionLookup.has(id))) throw new Error("Invalid index sections for Q" + id);
-      const rule = plain(markdown.parseInline(row[3].text));
+      const rule = plain(markdown.parseInline(row[2].text));
       if (!rule) throw new Error("Empty distinction for Q" + id);
       questions[id] = { id, sectionIds, rule };
       sectionIds.forEach((sectionId) => sectionLookup.get(sectionId).questionIds.push(id));
