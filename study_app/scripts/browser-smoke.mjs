@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { chromium, devices } from "playwright";
 import { createSession, freshProgress, DOMAINS } from "../src/core.ts";
+import { mockDrive, driveBrowserChecks } from "./drive-browser-checks.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const artifacts = resolve(root, "../output/playwright");
@@ -30,6 +31,7 @@ const url = "http://127.0.0.1:" + server.address().port + "/aws-lab/";
 await mkdir(artifacts, { recursive: true });
 const profile = await mkdtemp(join(tmpdir(), "waypoint-browser-"));
 const context = await chromium.launchPersistentContext(profile, { ...devices["iPhone 13"], channel: process.env.BROWSER_CHANNEL || "chrome", headless: true, colorScheme: "light", reducedMotion: "reduce" });
+const sharedDrive = await mockDrive(context);
 const page = await context.newPage();
 page.setDefaultTimeout(12000);
 const errors = [];
@@ -301,6 +303,7 @@ try {
   assert((await page.locator(".offline-status").innerText()).includes(imageCount + " of " + imageCount));
   const cdp = await context.newCDPSession(page);
   const installability = await cdp.send("Page.getInstallabilityErrors");
+  await cdp.detach();
   assert.deepEqual(installability.installabilityErrors, [], "Chrome installation requirements");
   const manifest = await page.evaluate(async () => {
     const href = document.querySelector('link[rel="manifest"]').href;
@@ -310,6 +313,7 @@ try {
   assert.equal(manifest.data.start_url, "./");
   await context.setOffline(true);
   await page.reload();
+  assert.equal(await page.evaluate(() => navigator.onLine), false, "Browser reports offline after emulation");
   await page.getByRole("heading", { name: "Your study setup" }).waitFor();
   await page.getByText(imageCount + " of " + imageCount + " diagrams saved").waitFor();
   await navigate("Guide");
@@ -349,6 +353,7 @@ try {
   assert((await cells.nth(0).boundingBox()).width < (await cells.nth(1).boundingBox()).width / 2, "Short labels leave most table space for explanations");
   await accessible("desktop-guide");
   await shot("desktop-guide");
+  await driveBrowserChecks({ page, context, url, shared: sharedDrive, seed, accessible, shot, key });
   assert.deepEqual(errors, [], "Browser errors");
   await writeFile(join(artifacts, "accessibility.json"), JSON.stringify(issues, null, 2));
   assert.equal(issues.length, 0, "Accessibility violations; see output/playwright/accessibility.json");

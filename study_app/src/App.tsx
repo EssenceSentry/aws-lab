@@ -16,7 +16,9 @@ import { ShareQuestion } from "./ShareQuestion.tsx";
 import { GuidePage, QuestionGuide } from "./GuidePage.tsx";
 import type { StudyGuide } from "./guide.ts";
 import { optionLabel } from "./option-references.ts";
-import { saveProgress } from "./storage.ts";
+import { saveProgress, STORAGE_KEY } from "./storage.ts";
+import { DriveSync } from "./DriveSync.tsx";
+import { progressKey } from "./sync-core.ts";
 
 type Screen = "study" | "guide" | "progress" | "library" | "settings" | "session" | "results";
 const tabs = [
@@ -166,7 +168,7 @@ export function App({ bank, guide, initialProgress, initialError }: { bank: Ques
       <aside className="sidebar"><button className="brand" onClick={() => go("study")}><Compass size={28} /><span>waypoint<span className="brand-dot">.</span></span></button>
         <div className="sidebar-course"><span className="eyebrow">YOUR NEXT MILESTONE</span><strong>Solutions Architect<br />Professional</strong><span className="exam-badge">AWS · SAP-C02</span></div>
         <nav aria-label="Main navigation">{tabs.map(({ id, label, Icon }) => <button key={id} className={activeTab === id ? "nav-item active" : "nav-item"} aria-current={activeTab === id ? "page" : undefined} onClick={() => go(id)}><Icon size={21} />{label}<span className="nav-dot" /></button>)}</nav>
-        <div className="sidebar-bottom"><span className="little-sprout"><Compass size={23} /></span><p>Your pace.<br /><strong>Your path forward.</strong></p><span className="small-text muted">{online ? "Progress stays on this device" : "You’re studying offline"}</span></div>
+        <div className="sidebar-bottom"><span className="little-sprout"><Compass size={23} /></span><p>Your pace.<br /><strong>Your path forward.</strong></p><span className="small-text muted">{online ? "Progress saved on this device" : "You’re studying offline"}</span></div>
       </aside>
     </>}
     <main id="main-content" className={studying ? "session-main" : "main-content"}>
@@ -177,6 +179,13 @@ export function App({ bank, guide, initialProgress, initialError }: { bank: Ques
       {screen === "progress" && <ProgressPage {...pageProps} onResult={(s) => { setResultId(s.id); go("results"); }} />}
       {screen === "library" && <LibraryPage {...pageProps} onBookmark={bookmark} />}
       {screen === "settings" && <SettingsPage bank={bank} progress={progress} error={error}
+        driveSync={<DriveSync bank={bank} progress={progress} getProgress={() => progressRef.current} onApply={(value, expected, disk) => {
+          if (progressKey(progressRef.current) !== expected || localStorage.getItem(STORAGE_KEY) !== disk)
+            throw new Error("Progress changed while syncing. Tap Sync now again.");
+          const next = { ...value, theme: progressRef.current.theme };
+          saveProgress(next);
+          progressRef.current = next; setProgress(next); setReview(null); setResultId(next.history[0]?.id ?? null); setError("");
+        }} />}
         onTheme={(theme) => update((p) => ({ ...p, theme }))} onImport={setImported}
         prompt={installPrompt} onInstall={() => { void installPrompt?.prompt().then(() => setInstallPrompt(null)); }}
         updateReady={Boolean(updateRegistration?.waiting)} onUpdate={() => {

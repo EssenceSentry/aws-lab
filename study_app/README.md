@@ -2,7 +2,8 @@
 
 A mobile-first, installable study app for the local SAP-C02 question bank.
 React, TypeScript, and Vite produce a static site for GitHub Pages. No backend,
-account, analytics service, or runtime CDN is required.
+account or analytics service is required. Optional manual Google Drive sync
+uses Google Identity Services directly from the browser.
 
 ## Study modes
 
@@ -16,6 +17,7 @@ account, analytics service, or runtime CDN is required.
 - Related guide sections open over a question before or after answering; closing them restores your place.
 - Share a question, its answer, or both as text through the native share sheet, with clipboard fallback.
 - Persistent sessions, domain progress, history, and JSON backup/restore.
+- Manual Google Drive sync, conflict choices, and recoverable backup history.
 - Light, dark, and device appearance; keyboard and touch controls.
 
 One-question practice samples uniformly across the bank and avoids immediately
@@ -96,12 +98,69 @@ Chrome and Edge can also install the app.
 A versioned service worker caches the application, fonts, questions, and guide after
 the first visit. Diagrams cache as they are viewed; Settings offers a resumable
 download of the complete image pack. External references and videos need the internet.
-Browser storage can be evicted, so export progress regularly.
+Browser storage can be evicted, so sync or export progress regularly.
 
 Progress stays in this browser under waypoint.sap-c02.progress.v3. Backups
 include bookmarks, answer statistics, history, and an unfinished session.
 Restoration validates question IDs, options, and timer state before replacement.
 There is no automatic cross-device sync.
+
+## Manual Google Drive sync
+
+In Settings, choose **Connect Google Drive** and select your Google account.
+Tap **Sync now** before switching devices, then tap it on the other device.
+The last-synced time and pending local changes are shown in Settings. No
+background, scheduled, or unload-time sync runs. Sign-in can be requested
+again when the short-lived access token expires. File export/import remains
+available without an account or internet connection.
+
+An empty device loads the cloud copy. With a known common base, a change on
+one side is copied to the other. If both sides changed, the app shows both
+study records and asks which complete version to keep; it does not add up
+aggregate statistics, which would double-count shared answers. Unfinished
+sessions, shuffled choices, bookmarks, and timers travel with progress.
+Appearance stays local. A timed session retains its original deadline.
+
+Backups are immutable JSON revisions in Drive's hidden `appDataFolder`.
+Each names its parent revisions. Concurrent saves create separate heads,
+which the next sync resolves explicitly; no shared Drive file is overwritten.
+Previous backups shows the ten newest stored versions, with a review step
+before restoring one. All older versions remain in Drive. A local recovery
+copy is saved before applying a sync and can be exported from Settings.
+Bank compatibility and progress validation run before restoration. Local
+changes during requests, another browser tab's changes, and newer cloud
+writes invalidate a pending choice rather than silently replacing work.
+
+Only `drive.appdata`, `openid`, and `email` are requested. Tokens are kept in
+memory; there is no client secret or refresh token in the app. Account ID,
+email, per-account sync fingerprints and times are stored locally. Google
+requests are cross-origin and excluded by the service worker. The app still
+installs and works offline if Google cannot load. Disconnect clears the
+selected account and in-memory token on the device, retaining backups; revoke
+access through Google Account connections if desired. See `public/privacy.html`.
+
+### OAuth configuration
+
+The dedicated Google Cloud project is **Waypoint** (`valued-plane-508518-g6`),
+owned by `sellanes.jose@gmail.com`. Google Drive API must be enabled. Configure
+a Web application OAuth client with JavaScript origin
+`https://essencesentry.github.io` (no repository path). Local development can
+use `http://localhost:5173` and `http://127.0.0.1:5173`. The GIS token popup
+does not require a redirect URI. Set the public client ID in
+`public/google-drive.json`; this identifier is intentionally public. Never
+put a client secret, access token, or credentials file in the repository.
+
+For a new deployment, configure the consent screen and the same three scopes,
+add the account as a test user if using Testing status, or publish the OAuth
+app for production use. Homepage and privacy links are the deployed app URL
+and `privacy.html`. OAuth publication and GitHub Pages publication are separate.
+The static build precaches the client configuration; installed users must
+accept an app update when that configuration changes.
+
+Tests use fake Google sign-in and an in-memory Drive API. They never connect
+real accounts. Unit checks cover branching, stale choices, incompatible
+backups, expired access, and pagination; browser checks cover two isolated
+devices, conflict review, historical recovery, accessibility, and offline use.
 
 Timed sessions store an absolute deadline. Leaving the app does not pause the
 timer. On resume after expiry, the session finishes using saved answers.
@@ -134,8 +193,11 @@ this project does not add authentication.
 - src/option-references.ts: stable option references resolved to session labels.
 - src/ShareQuestion.tsx and src/share.ts: native sharing and plain-text payloads.
 - src/pwa.ts: installation and offline-download messaging.
+- src/DriveSync.tsx: manual Google connection, sync choices, and recovery UI.
+- src/sync-core.ts: snapshot validation, version ancestry, and sync decisions.
+- src/google-drive.ts: in-memory Google authorization and Drive app-data requests.
 - scripts/: bank validation and service-worker generation.
 - tests/core.test.ts: regression checks using the real question bank.
 
-Only user progress is stored in localStorage. The question bank and images
-use the service worker's cache.
+User progress, optional account/sync metadata, and a recovery copy are stored
+in localStorage. The question bank and images use the service worker's cache.

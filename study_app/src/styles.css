@@ -621,3 +621,26 @@ select { appearance: auto; border: 1px solid var(--border); background: var(--su
 }
 
 .quick-question-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 10px; letter-spacing: .07em; padding: 3px 0 19px; }
+
+/* Manual Drive sync */
+.drive-card { border-color: var(--accent-border); }
+.drive-card .settings-title { flex-wrap: wrap; }
+.sync-badge { font-size: .62rem; letter-spacing: .08em; font-weight: 700; color: var(--accent); background: var(--soft); padding: 5px 8px; border-radius: 6px; }
+.drive-account { display: flex; align-items: center; gap: 12px; background: var(--soft); padding: 16px; border-radius: 14px; margin: 20px 0; }
+.drive-account > svg { flex-shrink: 0; color: var(--accent); }
+.drive-account > div { min-width: 0; display: grid; gap: 4px; }
+.drive-account strong { font-size: .88rem; overflow-wrap: anywhere; }
+.drive-account span, .drive-version > span { color: var(--muted); font-size: .78rem; }
+.drive-account .sync-changes { color: var(--accent); font-weight: 600; }
+.drive-links { justify-content: space-between; margin-top: 10px; }
+.drive-links .text-button { min-height: 44px; }
+.sync-message { margin-bottom: 8px; }
+.drive-recovery { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; }
+.drive-recovery summary { cursor: pointer; color: var(--muted); font-size: .8rem; min-height: 32px; }
+.drive-choices, .drive-history { display: grid; gap: 12px; margin: 20px 0; }
+.drive-version { display: grid; gap: 8px; padding: 18px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); min-width: 0; }
+.drive-version h3, .drive-version p { margin: 0; }
+.drive-version .button { margin-top: 8px; }
+.sync-spinning { animation: sync-spin 1.5s linear infinite; }
+@keyframes sync-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .sync-spinning { animation: none; } }

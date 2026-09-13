@@ -132,9 +132,10 @@ export function LibraryPage({ bank, progress, onConfigure, onBookmark }: PagePro
   </>;
 }
 
-export function SettingsPage({ bank, progress, onTheme, onImport, prompt, onInstall, updateReady, onUpdate, error }: {
+export function SettingsPage({ bank, progress, onTheme, onImport, prompt, onInstall, updateReady, onUpdate, error, driveSync }: {
   bank: Question[]; progress: Progress; onTheme: (theme: Theme) => void; onImport: (p: Progress) => void;
   prompt: InstallPrompt | null; onInstall: () => void; updateReady: boolean; onUpdate: () => void; error: string;
+  driveSync: import("react").ReactNode;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<OfflineStatus | null>(null);
@@ -176,8 +177,9 @@ export function SettingsPage({ bank, progress, onTheme, onImport, prompt, onInst
       <div className="theme-options">{([{ value: "system", label: "Device", Icon: Monitor }, { value: "light", label: "Light", Icon: Sun }, { value: "dark", label: "Dark", Icon: Moon }] as const).map(({ value, label, Icon }) =>
         <button key={value} aria-pressed={progress.theme === value} className={progress.theme === value ? "selected" : ""} onClick={() => onTheme(value)}><Icon size={21} />{label}</button>)}</div>
     </section>
-    <section className="settings-card"><div className="settings-title"><Bookmark size={21} /><h2>Keep your progress with you</h2></div>
-      <p>Progress is saved in this browser. Export a backup to keep it safe or move it to another device; there’s no account or automatic syncing.</p>
+    {driveSync}
+    <section className="settings-card"><div className="settings-title"><Bookmark size={21} /><h2>Keep a backup file</h2></div>
+      <p>Progress is saved in this browser as you study. You can also export or import a JSON file whenever you like.</p>
       <div className="button-row"><button className="button secondary" onClick={() => downloadJSON(progress, "waypoint-backup-" + new Date().toISOString().slice(0, 10) + ".json")}><Download size={17} /> Export progress</button>
         <button className="button secondary" onClick={() => input.current?.click()}><Upload size={17} /> Import backup</button></div>
       <input ref={input} className="sr-only" type="file" accept=".json,application/json" aria-label="Import progress backup" onChange={(e) => void restore(e.target.files?.[0])} />
