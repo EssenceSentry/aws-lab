@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  AlertCircle, ArrowLeft, ArrowRight, BarChart3, BookOpen, Bookmark, Check, CheckCircle2,
+  AlertCircle, ArrowLeft, ArrowRight, BarChart3, BookOpen, BookMarked, Bookmark, Check, CheckCircle2,
   ChevronLeft, ChevronRight, Clock, Compass, Flag, Grid2X2, Library, RotateCcw,
   Settings, WifiOff, X,
 } from "lucide-react";
@@ -12,26 +12,33 @@ import { ConfigDialog, Dialog, DomainMark, QuestionImages, RichText, Ring, Saved
 import { LibraryPage, practiceConfig, ProgressPage, SettingsPage, StudyPage } from "./pages.tsx";
 import { registerPWA } from "./pwa.ts";
 import type { InstallPrompt } from "./pwa.ts";
+import { ShareQuestion } from "./ShareQuestion.tsx";
+import { GuidePage, QuestionGuide } from "./GuidePage.tsx";
+import type { StudyGuide } from "./guide.ts";
+import { optionLabel } from "./option-references.ts";
 import { saveProgress } from "./storage.ts";
 
-type Screen = "study" | "progress" | "library" | "settings" | "session" | "results";
+type Screen = "study" | "guide" | "progress" | "library" | "settings" | "session" | "results";
 const tabs = [
   { id: "study", label: "Study", Icon: BookOpen },
+  { id: "guide", label: "Guide", Icon: BookMarked },
   { id: "progress", label: "Progress", Icon: BarChart3 },
   { id: "library", label: "Library", Icon: Library },
   { id: "settings", label: "Settings", Icon: Settings },
 ] as const;
 function initialScreen(progress: Progress): Screen {
   const value = location.hash.slice(1);
+  if (value === "guide" || value.startsWith("guide/")) return "guide";
   if (value === "session" && progress.active) return "session";
   if (value === "results" && progress.history.length) return "results";
   return tabs.some((t) => t.id === value) ? value as Screen : "study";
 }
 
-export function App({ bank, initialProgress, initialError }: { bank: Question[]; initialProgress: Progress; initialError: string }) {
+export function App({ bank, guide, initialProgress, initialError }: { bank: Question[]; guide: StudyGuide; initialProgress: Progress; initialError: string }) {
   const [progress, setProgress] = useState(initialProgress);
   const progressRef = useRef(initialProgress);
   const [screen, setScreen] = useState<Screen>(() => initialScreen(initialProgress));
+  const [guideRoute, setGuideRoute] = useState(() => location.hash.replace(/^#guide\/?/, ""));
   const [config, setConfig] = useState<SessionConfig | null>(null);
   const [replaceConfig, setReplaceConfig] = useState<SessionConfig | null>(null);
   const [review, setReview] = useState<Session | null>(null);
@@ -59,6 +66,20 @@ export function App({ bank, initialProgress, initialError }: { bank: Question[];
   function go(next: Screen) {
     setScreen(next); location.hash = next;
     window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  function openGuide(anchor: string) {
+    setGuideRoute(anchor); setScreen("guide"); location.hash = "guide" + (anchor ? "/" + anchor : "");
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  function quickQuestion(another = false) {
+    const current = progressRef.current.active;
+    if (current?.quick && !another) { setReview(null); go("session"); return; }
+    const previousId = another ? current?.questionIds[0] : progressRef.current.history.find((s) => s.quick)?.questionIds[0];
+    launch({ ...practiceConfig("One quick question", "all", "all", 1), quick: true,
+      ids: bank.length > 1 ? bank.filter((q) => q.id !== previousId).map((q) => q.id) : undefined }, another);
+  }
+  function finishQuick() {
+    update((p) => finishSession(p, bank)); setReview(null); go("study");
   }
   function complete() {
     const current = progressRef.current.active;
@@ -94,7 +115,10 @@ export function App({ bank, initialProgress, initialError }: { bank: Question[];
   }
 
   useEffect(() => {
-    const change = () => setScreen(location.hash === "#session" && reviewRef.current ? "session" : initialScreen(progressRef.current));
+    const change = () => {
+      setScreen(location.hash === "#session" && reviewRef.current ? "session" : initialScreen(progressRef.current));
+      setGuideRoute(location.hash.replace(/^#guide\/?/, ""));
+    };
     const connected = () => setOnline(navigator.onLine);
     const install = (e: Event) => { e.preventDefault(); setInstallPrompt(e as InstallPrompt); };
     window.addEventListener("hashchange", change);
@@ -148,7 +172,8 @@ export function App({ bank, initialProgress, initialError }: { bank: Question[];
     <main id="main-content" className={studying ? "session-main" : "main-content"}>
       {!online && <div className="connection-notice"><WifiOff size={15} /> You’re offline. Saved questions are ready.</div>}
       {error && <div className="notice error-notice" role="alert"><AlertCircle size={18} /><span>{error}</span></div>}
-      {!studying && screen === "study" && <StudyPage {...pageProps} onResume={() => { setReview(null); go("session"); }} onProgress={() => go("progress")} />}
+      {!studying && screen === "study" && <StudyPage {...pageProps} onQuick={() => quickQuestion()} onResume={() => { setReview(null); go("session"); }} onProgress={() => go("progress")} />}
+      {screen === "guide" && <GuidePage guide={guide} bank={bank} route={guideRoute} onNavigate={openGuide} onConfigure={setConfig} />}
       {screen === "progress" && <ProgressPage {...pageProps} onResult={(s) => { setResultId(s.id); go("results"); }} />}
       {screen === "library" && <LibraryPage {...pageProps} onBookmark={bookmark} />}
       {screen === "settings" && <SettingsPage bank={bank} progress={progress} error={error}
@@ -158,7 +183,7 @@ export function App({ bank, initialProgress, initialError }: { bank: Question[];
           navigator.serviceWorker.addEventListener("controllerchange", () => location.reload(), { once: true });
           updateRegistration?.waiting?.postMessage({ type: "SKIP_WAITING" });
         }} />}
-      {studying && session && <SessionView bank={bank} session={session} progress={progress} reviewing={Boolean(review)} now={now} saveError={Boolean(error)}
+      {studying && session && <SessionView bank={bank} guide={guide} onAnother={() => quickQuestion(true)} onDone={finishQuick} session={session} progress={progress} reviewing={Boolean(review)} now={now} saveError={Boolean(error)}
         onChange={editSession} onCheck={checkAnswer} onFinish={() => review ? go("results") : setFinishOpen(true)}
         onExit={() => { if (review) { setReview(null); go("results"); } else if (session.deadline) setExitOpen(true); else go("study"); }}
         onBookmark={bookmark} onZoom={setZoom} />}
@@ -193,8 +218,8 @@ function formatTime(seconds: number) {
   return (hours ? hours + ":" : "") + minutes + ":" + (seconds % 60).toString().padStart(2, "0");
 }
 
-function SessionView({ bank, session, progress, reviewing, now, saveError, onChange, onCheck, onFinish, onExit, onBookmark, onZoom }: {
-  bank: Question[]; session: Session; progress: Progress; reviewing: boolean; now: number; saveError: boolean;
+function SessionView({ bank, guide, onAnother, onDone, session, progress, reviewing, now, saveError, onChange, onCheck, onFinish, onExit, onBookmark, onZoom }: {
+  bank: Question[]; guide: StudyGuide; onAnother: () => void; onDone: () => void; session: Session; progress: Progress; reviewing: boolean; now: number; saveError: boolean;
   onChange: (fn: (s: Session) => Session) => void; onCheck: () => void; onFinish: () => void; onExit: () => void;
   onBookmark: (id: string) => void; onZoom: (src: string) => void;
 }) {
@@ -206,6 +231,7 @@ function SessionView({ bank, session, progress, reviewing, now, saveError, onCha
   const correct = isCorrect(q, selected);
   const domain = domainFor(q.exam_domain);
   const remaining = remainingSeconds(session, now);
+  const quick = session.quick && !reviewing;
   const last = session.index === session.questionIds.length - 1;
   const questionHeading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -219,8 +245,8 @@ function SessionView({ bank, session, progress, reviewing, now, saveError, onCha
       {remaining !== null && !reviewing ? <span className={remaining < 300 ? "timer urgent" : "timer"} aria-label={"Time remaining " + formatTime(remaining)}><Clock size={16} />{formatTime(remaining)}</span> :
         <span className="untimed-label">{reviewing ? "REVIEW" : "UNTIMED"}</span>}
     </header>
-    <div className="session-progress"><div className="session-track"><span style={{ width: (session.index + 1) / session.questionIds.length * 100 + "%" }} /></div>
-      <button className="question-counter" onClick={() => setNavigatorOpen(true)} aria-label="Open question navigator"><Grid2X2 size={16} /><strong>{session.index + 1}</strong><span>/ {session.questionIds.length}</span></button></div>
+    {quick ? <div className="quick-question-meta"><span>ONE QUESTION AT A TIME</span><span>Q{q.id}</span></div> : <div className="session-progress"><div className="session-track"><span style={{ width: (session.index + 1) / session.questionIds.length * 100 + "%" }} /></div>
+      <button className="question-counter" onClick={() => setNavigatorOpen(true)} aria-label="Open question navigator"><Grid2X2 size={16} /><strong>{session.index + 1}</strong><span>/ {session.questionIds.length}</span></button></div>}
     <div className="question-toolbar"><span className={"domain-label " + domain.color}>D{domain.id} · {domain.short}</span>
       <div><button className={session.flagged.includes(q.id) ? "icon-button flagged" : "icon-button"} aria-pressed={session.flagged.includes(q.id)} aria-label={session.flagged.includes(q.id) ? "Remove review flag" : "Flag for review"} disabled={reviewing}
         onClick={() => onChange((s) => ({ ...s, flagged: s.flagged.includes(q.id) ? s.flagged.filter((id) => id !== q.id) : [...s.flagged, q.id] }))}><Flag size={20} fill={session.flagged.includes(q.id) ? "currentColor" : "none"} /></button>
@@ -228,8 +254,9 @@ function SessionView({ bank, session, progress, reviewing, now, saveError, onCha
     </div>
     <article className="question-body"><h1 className="sr-only" ref={questionHeading} tabIndex={-1}>Question {session.index + 1}</h1><RichText value={q.question} className="question-prompt" />
       <QuestionImages paths={q.question_images} onZoom={onZoom} />
+      <div className="question-tools"><QuestionGuide key={q.id + "-prompt"} guide={guide} questionId={q.id} compact /><ShareQuestion key={q.id + "-share"} question={q} optionOrder={session.optionOrders[q.id]} /></div>
       <fieldset className="answer-options"><legend>{multiple ? "Choose " + q.correct_option_ids.length + " answers" : "Choose one answer"}<span>{selected.length ? selected.length + " selected" : "Take a moment to consider each option"}</span></legend>
-        {session.optionOrders[q.id].map((oid, index) => {
+        {session.optionOrders[q.id].map((oid) => {
           const option = q.options.find((o) => o.id === oid)!;
           const checked = selected.includes(oid);
           const right = revealed && q.correct_option_ids.includes(oid);
@@ -237,23 +264,27 @@ function SessionView({ bank, session, progress, reviewing, now, saveError, onCha
           return <label key={oid} className={"answer-option" + (checked ? " chosen" : "") + (right ? " correct" : "") + (wrong ? " incorrect" : "") + (revealed ? " locked" : "")}>
             <input type={multiple ? "checkbox" : "radio"} name={"answer-" + q.id} value={oid} checked={checked} disabled={revealed}
               onChange={() => onChange((s) => ({ ...s, answers: { ...s.answers, [q.id]: multiple ? checked ? selected.filter((id) => id !== oid) : [...selected, oid] : [oid] } }))} />
-            <span className={multiple ? "option-letter square" : "option-letter"}>{right ? <Check size={17} /> : wrong ? <X size={17} /> : String.fromCharCode(65 + index)}</span>
+            <span className={multiple ? "option-letter square" : "option-letter"}>{optionLabel(oid, session.optionOrders[q.id])}</span>
             <span className="option-copy">{option.text}{revealed && (right || checked) && <span className="option-feedback">{right ? checked ? "Your answer · correct" : "Correct answer" : "Your answer"}</span>}</span>
           </label>;
         })}
       </fieldset>
       {revealed && <section className={correct ? "answer-explanation is-correct" : "answer-explanation is-incorrect"} aria-live="polite">
         <div className="feedback-heading">{correct ? <CheckCircle2 size={25} /> : <BookOpen size={25} />}<div><h2>{correct ? "You’ve got it." : selected.length ? "A chance to understand it better." : "One to come back to."}</h2><p>{correct ? "Here’s the reasoning behind the answer." : "The correct " + (multiple ? "answers are" : "answer is") + " highlighted above."}</p></div></div>
-        <h3 className="explanation-title">Let’s unpack it</h3><RichText value={q.explanation.text} /><QuestionImages paths={q.explanation.images} onZoom={onZoom} />
+        <QuestionGuide key={q.id} guide={guide} questionId={q.id} />
+        <h3 className="explanation-title">Let’s unpack it</h3><RichText value={q.explanation.text} optionOrder={session.optionOrders[q.id]} /><QuestionImages paths={q.explanation.images} onZoom={onZoom} />
       </section>}
       {!revealed && session.feedback === "end" && <p className="fine-print session-note">Your answers are saved as you go. Explanations unlock when you finish.</p>}
     </article>
     <footer className="session-footer"><div className="session-footer-inner"><div className="footer-save">{saveError ? <span className="small-text">Changes not saved</span> : <SavedLabel />}</div>
-      <div className="session-footer-buttons"><button className="button secondary previous-button" disabled={session.index === 0} aria-label="Previous question" onClick={() => onChange((s) => ({ ...s, index: s.index - 1 }))}><ChevronLeft size={21} /><span>Previous</span></button>
+      <div className="session-footer-buttons">{quick ? <>
+        {revealed ? <><button className="button secondary" onClick={onDone}>Done</button><button className="button primary next-button" onClick={onAnother}>Another question <ArrowRight size={19} /></button></> :
+          <><button className="text-button skip-button" onClick={onAnother}>Skip</button><button className="button primary next-button" disabled={selected.length !== q.correct_option_ids.length} onClick={onCheck}>Check answer <Check size={19} /></button></>}
+      </> : <><button className="button secondary previous-button" disabled={session.index === 0} aria-label="Previous question" onClick={() => onChange((s) => ({ ...s, index: s.index - 1 }))}><ChevronLeft size={21} /><span>Previous</span></button>
         {!revealed && session.feedback === "immediate" && <button className="text-button skip-button" onClick={next}>Skip</button>}
         {!revealed && session.feedback === "immediate" ? <button className="button primary next-button" disabled={selected.length !== q.correct_option_ids.length} onClick={onCheck}>Check answer <Check size={19} /></button> :
           <button className="button primary next-button" onClick={next}>{last ? reviewing ? "Back to results" : "Finish session" : "Next question"}<ChevronRight size={19} /></button>}
-      </div></div></footer>
+      </>}</div></div></footer>
     {navigatorOpen && <Dialog title="Your session at a glance" onClose={() => setNavigatorOpen(false)}>
       <p className="muted">Jump to any question. Flagged questions have a small dot.</p>
       <div className="question-grid">{session.questionIds.map((id, index) => {

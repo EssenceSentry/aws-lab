@@ -521,3 +521,103 @@ select { appearance: auto; border: 1px solid var(--border); background: var(--su
   .dialog-panel { padding-left: 18px; padding-right: 18px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+
+/* Guide content stays readable on a narrow screen; only comparisons scroll. */
+.guide-controls { display: flex; justify-content: space-between; gap: 14px; align-items: center; margin: 16px 0 24px; }
+.guide-topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.guide-topic { display: flex; flex-direction: column; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 23px; min-width: 0; }
+.guide-topic:hover { border-color: var(--accent-border); background: var(--soft); }
+.guide-topic-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; color: var(--muted); }
+.guide-topic-top .eyebrow { margin: 0; font-size: 9px; }
+.guide-topic h2 { font-size: 20px; line-height: 1.3; margin-bottom: 10px; }
+.guide-topic p { color: var(--muted); font-size: 13px; flex: 1; }
+.guide-topic-count { font-size: 11px; color: var(--accent); font-weight: 600; padding-top: 8px; }
+.guide-reader { min-width: 0; }
+.reader-title { font-size: clamp(27px, 3.7vw, 40px); line-height: 1.22; scroll-margin-top: 24px; }
+.reader-caption { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+.reader-caption span { display: block; }
+.guide-prose { font-size: 15px; line-height: 1.8; overflow-wrap: anywhere; }
+.guide-prose p { line-height: 1.85; }
+.guide-prose h2 { margin: 38px 0 18px; font-size: 22px; line-height: 1.35; }
+.guide-prose h3, .guide-prose h4 { margin-top: 28px; }
+.guide-prose ul, .guide-prose ol { padding-left: 24px; }
+.guide-prose li { padding-bottom: 9px; }
+.guide-prose code { font-size: .9em; background: var(--soft); padding: 2px 4px; border-radius: 4px; }
+.guide-prose pre { overflow-x: auto; padding: 15px; background: var(--soft); }
+.guide-table { max-width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); margin: 20px 0 25px; overscroll-behavior-x: contain; }
+.guide-table:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.guide-table table { border-collapse: collapse; width: 100%; min-width: 0; font-size: 13px; line-height: 1.75; }
+.guide-table th, .guide-table td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); min-width: 0; }
+.guide-table th:first-child, .guide-table td:first-child { width: 1%; min-width: 130px; }
+.guide-table th { background: var(--soft); font-weight: 650; }
+.guide-table tr:last-child td { border-bottom: 0; }
+.guide-prose [id] { scroll-margin-top: 24px; }
+.guide-index { display: grid; gap: 14px; }
+.guide-question { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 18px 22px 22px; }
+.guide-question-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.guide-question-heading h2 { font-size: 14px; color: var(--muted); margin: 0; letter-spacing: .02em; }
+.guide-question > p { margin: 8px 0 15px; font-size: 15px; }
+.guide-topic-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.guide-topic-links button { display: inline-flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left; min-height: 44px; font-size: 12px; font-weight: 550; line-height: 1.5; border: 1px solid var(--accent-border); background: var(--soft); color: var(--accent); border-radius: 9px; padding: 9px 12px; }
+.guide-topic-links button:hover { border-color: var(--accent); }
+.guide-about { border-top: 1px solid var(--border); margin-top: 32px; padding-top: 12px; color: var(--muted); }
+.guide-about summary { cursor: pointer; padding: 15px 0; font-size: 13px; }
+.guide-about .guide-prose { font-size: 13px; padding-top: 10px; }
+.guide-load { margin-top: 18px; }
+.guide-practice { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; padding: 24px; margin: 35px 0 20px; border-radius: 15px; background: var(--soft); border: 1px solid var(--accent-border); }
+.guide-practice > svg { color: var(--accent); }
+.guide-practice > div { flex: 1; min-width: 200px; }
+.guide-practice h2 { font-size: 18px; margin-bottom: 5px; }
+.guide-practice p { font-size: 13px; color: var(--muted); margin: 0; }
+.question-guide { background: var(--soft); border: 1px solid var(--accent-border); border-radius: 13px; padding: 19px; margin: 0 0 24px; }
+.question-guide-heading { display: flex; align-items: center; gap: 9px; color: var(--accent); margin-bottom: 8px; }
+.question-guide-heading h3 { margin: 0; font-size: 14px; }
+.question-guide > p { font-size: 14px; margin-bottom: 15px; }
+.dialog:has(.guide-reader) .dialog-heading { position: sticky; top: 0; background: var(--surface); z-index: 1; padding: 12px 0; }
+.dialog .guide-reader .reader-title { font-size: 26px; }
+.dialog .guide-reader .guide-prose h2 { font-size: 20px; }
+.dialog .guide-reader [id], .dialog .reader-title { scroll-margin-top: 85px; }
+@media (max-width: 700px) {
+  .guide-topics { grid-template-columns: 1fr; gap: 13px; }
+  .guide-topic { padding: 21px; }
+  .guide-topic-top { margin-bottom: 15px; }
+  .guide-topic h2 { font-size: 20px; }
+  .guide-controls { gap: 8px; }
+  .guide-controls .small-text { font-size: 11px; }
+  .guide-question { padding: 15px 18px 20px; }
+  .guide-topic-links { flex-direction: column; }
+  .guide-topic-links button { width: 100%; }
+  .guide-practice { padding: 20px; }
+  .guide-practice .button { width: 100%; }
+  .question-guide { padding: 17px; }
+  .guide-prose { font-size: 16px; }
+  .guide-table table { font-size: 14px; }
+  .dialog:has(.guide-reader) .dialog-heading { top: 0; }
+}
+.question-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 5px 0 16px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 3px 0; }
+.question-tools .text-button { font-size: 12px; }
+.share-choices { border: 0; padding: 0; margin: 20px 0; display: grid; gap: 10px; }
+.share-choice { display: flex; align-items: center; gap: 13px; border: 1px solid var(--border); border-radius: 12px; padding: 15px; cursor: pointer; }
+.share-choice.selected { background: var(--soft); border-color: var(--accent-border); }
+.share-choice input { accent-color: var(--accent); width: 18px; height: 18px; flex-shrink: 0; }
+.share-choice strong, .share-choice small { display: block; }
+.share-choice small { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.share-preview summary { font-size: 13px; color: var(--accent); padding: 12px 0; cursor: pointer; }
+.share-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 250px; overflow-y: auto; padding: 15px; background: var(--soft); border-radius: 10px; font: inherit; font-size: 13px; line-height: 1.7; user-select: text; }
+.guide-controls .filter-tabs { flex-shrink: 0; }
+.guide-controls .filter-tabs button { white-space: nowrap; }
+.reader-title:focus { outline: none; }
+@media (max-width: 700px) {
+  .guide-controls .filter-tabs button { font-size: 12px; padding: 10px 13px; }
+  .guide-table { border: 0; background: none; border-radius: 0; overflow: visible; }
+  .guide-table table { display: block; min-width: 0; }
+  .guide-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .guide-table tbody { display: grid; gap: 14px; }
+  .guide-table tr { display: grid; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .guide-table td { display: block; min-width: 0; padding: 14px 16px; border: 0; }
+  .guide-table td:first-child { width: auto; min-width: 0; background: var(--soft); font-weight: 650; }
+  .guide-table td:not(:first-child)::before { content: attr(data-label); display: block; font-size: 10px; font-weight: 650; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; }
+  .guide-table td:last-child { padding-bottom: 18px; }
+}
+
+.quick-question-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 10px; letter-spacing: .07em; padding: 3px 0 19px; }

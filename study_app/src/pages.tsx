@@ -17,7 +17,7 @@ export const practiceConfig = (title = "Quick practice", domain = "all", pool: S
 type PageProps = {
   bank: Question[]; progress: Progress; onConfigure: (config: SessionConfig) => void;
 };
-export function StudyPage({ bank, progress, onConfigure, onResume, onProgress }: PageProps & { onResume: () => void; onProgress: () => void }) {
+export function StudyPage({ bank, progress, onConfigure, onResume, onProgress, onQuick }: PageProps & { onResume: () => void; onProgress: () => void; onQuick: () => void }) {
   const studied = Object.keys(progress.attempts).length;
   const missed = Object.values(progress.attempts).filter((a) => !a.lastCorrect).length;
   const totalAttempts = Object.values(progress.attempts).reduce((sum, a) => sum + a.count, 0);
@@ -33,9 +33,9 @@ export function StudyPage({ bank, progress, onConfigure, onResume, onProgress }:
     </button>}
     <section className="practice-hero">
       <div className="hero-content"><span className="soft-label"><span className="status-dot" /> ONE GOOD STEP AT A TIME</span><h2>Find your rhythm.</h2>
-        <p>Ten questions. A little more confidence.<br />Learn something with every answer.</p>
-        <button className="button lime" onClick={() => onConfigure(practiceConfig())}>Start a quick practice <ArrowRight size={19} /></button>
-        <span className="hero-caption">All four domains · Untimed · Instant explanations</span>
+        <p>One question. One new insight.<br />Take a moment to learn something.</p>
+        <button className="button lime" onClick={onQuick}>One quick question <ArrowRight size={19} /></button>
+        <span className="hero-caption">Random question · Untimed · No setup</span>
       </div>
       <div className="hero-art" aria-hidden="true"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit orbit-three" />
         <div className="art-path" /><div className="art-tile tile-one"><BookOpen size={26} /><span>LEARN</span></div>

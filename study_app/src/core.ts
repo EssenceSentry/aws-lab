@@ -26,12 +26,14 @@ export type SessionConfig = {
   minutes: number;
   feedback: Feedback;
   ids?: string[];
+  quick?: boolean;
 };
 export type Session = {
   id: string;
   title: string;
   domain: string;
   feedback: Feedback;
+  quick?: boolean;
   questionIds: string[];
   optionOrders: Record<string, string[]>;
   answers: Record<string, string[]>;
@@ -101,14 +103,14 @@ export function createSession(bank: Question[], progress: Progress, config: Sess
   if (!Number.isInteger(config.count) || config.count < 1) throw new Error("Choose at least one question.");
   if (config.timed && (!Number.isFinite(config.minutes) || config.minutes < 1 || config.minutes > 1440)) throw new Error("Choose a timer between 1 and 1,440 minutes.");
   const pool = eligibleQuestions(bank, progress, config);
-  const questions = selectQuestions(pool, config.count, config.domain === "all", random);
+  const questions = selectQuestions(pool, config.quick ? 1 : config.count, !config.quick && config.domain === "all", random);
   if (!questions.length) throw new Error("There are no questions in this selection yet.");
   return {
     id: globalThis.crypto.randomUUID(), title: config.title, domain: config.domain,
-    feedback: config.feedback, questionIds: questions.map((q) => q.id),
+    feedback: config.quick ? "immediate" : config.feedback, quick: config.quick ?? false, questionIds: questions.map((q) => q.id),
     optionOrders: Object.fromEntries(questions.map((q) => [q.id, shuffle(q.options.map((o) => o.id), random)])),
     answers: {}, checked: [], flagged: [], index: 0, startedAt: now,
-    deadline: config.timed ? now + config.minutes * 60_000 : null, finishedAt: null,
+    deadline: config.timed && !config.quick ? now + config.minutes * 60_000 : null, finishedAt: null,
   };
 }
 
@@ -178,6 +180,8 @@ export function parseProgress(value: unknown, bank: Question[]): Progress {
     if (!object(s) || typeof s.id !== "string" || !s.id || sessionIds.has(s.id) ||
       typeof s.title !== "string" || s.title.length > 200 ||
       !["immediate", "end"].includes(s.feedback) ||
+      (s.quick !== undefined && typeof s.quick !== "boolean") ||
+      (s.quick && (s.questionIds?.length !== 1 || s.feedback !== "immediate" || s.deadline !== null)) ||
       !(s.domain === "all" || DOMAINS.some((d) => d.name === s.domain)) ||
       !ids(s.questionIds) || s.questionIds.length < 1 ||
       !ids(s.checked) || !ids(s.flagged) || !Number.isInteger(s.index) || s.index < 0 || s.index >= s.questionIds.length ||

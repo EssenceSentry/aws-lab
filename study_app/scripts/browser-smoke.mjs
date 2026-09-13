@@ -10,8 +10,10 @@ import { createSession, freshProgress, DOMAINS } from "../src/core.ts";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const artifacts = resolve(root, "../output/playwright");
-const key = "waypoint.sap-c02.progress.v1";
+const key = "waypoint.sap-c02.progress.v2";
 const bank = (await readFile(join(root, "dist/data/questions.jsonl"), "utf8")).trim().split("\n").map(JSON.parse);
+const imageCount = JSON.parse(await readFile(join(root, "dist/data/image-manifest.json"), "utf8")).images.length;
+const guide = JSON.parse(await readFile(join(root, "dist/data/study-guide.json"), "utf8"));
 const types = { ".html": "text/html", ".js": "application/javascript", ".css": "text/css", ".json": "application/json", ".jsonl": "text/plain", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2" };
 // Deliberately serve under a project subpath, as GitHub Pages will.
 const server = createServer(async (request, response) => {
@@ -50,7 +52,7 @@ async function shot(name) { await page.screenshot({ path: join(artifacts, name +
 async function navigate(name) { await page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("button", { name, exact: true }).click(); }
 try {
   await page.goto(url);
-  await page.getByRole("button", { name: "Start a quick practice" }).waitFor();
+  await page.getByRole("button", { name: "One quick question", exact: true }).waitFor();
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   for (const width of [320, 360, 390, 430]) {
@@ -60,7 +62,7 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await accessible("mobile-home");
   await shot("mobile-home");
-  await page.getByRole("button", { name: "Start a quick practice" }).click();
+  await page.getByRole("button", { name: "Custom session", exact: true }).click();
   await page.getByRole("button", { name: "5 questions", exact: true }).click();
   await accessible("mobile-setup");
   await shot("mobile-config");
@@ -122,6 +124,137 @@ try {
   assert.deepEqual(await state(), backup);
   console.log("PASS mobile navigation, scoring, resume, review, bookmarks, backup and theme");
 
+
+  await seed(freshProgress(), "study");
+  await page.getByRole("button", { name: "One quick question", exact: true }).click();
+  assert.equal(await page.locator("dialog[open]").count(), 0, "Quick practice needs no setup");
+  let quick = (await state()).active;
+  assert.equal(quick.quick, true);
+  assert.equal(quick.questionIds.length, 1);
+  assert.equal(quick.deadline, null);
+  const quickQuestion = bank.find((q) => q.id === quick.questionIds[0]);
+  for (const id of quickQuestion.correct_option_ids) await page.locator('input[value="' + id + '"]').check();
+  await page.getByRole("button", { name: "Check answer", exact: true }).click();
+  await page.getByRole("button", { name: "Another question", exact: true }).click();
+  assert.notEqual((await state()).active.questionIds[0], quickQuestion.id);
+  assert.equal((await state()).attempts[quickQuestion.id].count, 1);
+  quick = (await state()).active;
+  const nextQuick = bank.find((q) => q.id === quick.questionIds[0]);
+  for (const id of nextQuick.correct_option_ids) await page.locator('input[value="' + id + '"]').check();
+  await page.getByRole("button", { name: "Check answer", exact: true }).click();
+  await page.reload();
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  await page.getByRole("button", { name: "One quick question", exact: true }).waitFor();
+  assert.equal((await state()).active, null);
+  assert.equal((await state()).history.length, 2);
+  assert.equal((await state()).attempts[nextQuick.id].count, 1);
+
+  const markedQuestion = bank.find((q) => q.id === "9076");
+  const markedProgress = freshProgress();
+  markedProgress.active = createSession([markedQuestion], markedProgress, { title: "One quick question", domain: "all", pool: "all", count: 1, timed: false, minutes: 1, feedback: "immediate", quick: true }, Date.now(), () => 0);
+  await seed(markedProgress);
+  await page.locator('input[value="2"]').check();
+  await page.getByRole("button", { name: "Related guide", exact: true }).click();
+  const beforeGuide = await state();
+  const modal = page.getByRole("dialog", { name: "Explore the reasoning" });
+  assert.equal(await modal.locator(".guide-topic-links button").count(), guide.questions["9076"].sectionIds.length);
+  await modal.locator(".guide-topic-links button").first().click();
+  await modal.locator(".guide-reader").waitFor();
+  await accessible("mobile-question-guide");
+  await shot("mobile-question-guide");
+  for (const width of [320, 360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert.equal(await modal.evaluate((el) => el.scrollWidth > el.clientWidth + 1), false, "Guide dialog overflow at " + width);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await modal.getByRole("button", { name: "Close dialog" }).click();
+  assert.deepEqual(await state(), beforeGuide, "Reading a guide leaves question state untouched");
+  assert.equal(new URL(page.url()).hash, "#session");
+  assert(await page.locator('input[value="2"]').isChecked());
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.reload();
+  await page.getByRole("heading", { name: "You’ve got it." }).waitFor();
+  assert.match(await page.locator(".answer-explanation > .rich-text").innerText(), /Correct option: A\./);
+  assert.equal(await page.locator('.answer-option:has(input[value="2"]) .option-letter').innerText(), "A");
+  assert.doesNotMatch(await page.locator(".answer-explanation").innerText(), /<<\d+>>/);
+  const beforeShare = await state();
+  await page.evaluate(() => {
+    window.sharedTexts = [];
+    Object.defineProperty(navigator, "share", { configurable: true, value: async (payload) => { window.sharedTexts.push(payload); } });
+    Object.defineProperty(navigator, "canShare", { configurable: true, value: () => true });
+  });
+  for (const part of ["Question", "Answer", "Both"]) {
+    await page.getByRole("button", { name: "Share question or answer", exact: true }).click();
+    const shareDialog = page.getByRole("dialog", { name: "Share as text" });
+    await shareDialog.getByRole("radio", { name: new RegExp("^" + part + " ") }).check();
+    await shareDialog.getByText("Preview text", { exact: true }).click();
+    const preview = await shareDialog.locator("pre").innerText();
+    if (part === "Both") { await accessible("mobile-share"); await shot("mobile-share"); }
+    await shareDialog.getByRole("button", { name: "Share text", exact: true }).click();
+    await shareDialog.waitFor({ state: "hidden" });
+    const payload = await page.evaluate(() => window.sharedTexts.at(-1));
+    assert.deepEqual(Object.keys(payload), ["text"], "Native sharing sends text, never an app URL or file");
+    assert.equal(payload.text, preview);
+    assert.doesNotMatch(payload.text, /<<\d+>>/);
+    if (part === "Question") assert.doesNotMatch(payload.text, /Correct answer|Explanation/);
+    else assert.match(payload.text, /Correct option: A\./);
+    if (part !== "Answer") assert(payload.text.includes(markedQuestion.question));
+    else assert(!payload.text.includes(markedQuestion.question));
+  }
+  await page.evaluate(() => Object.defineProperty(navigator, "share", { configurable: true, value: async () => { throw new DOMException("Canceled", "AbortError"); } }));
+  await page.getByRole("button", { name: "Share question or answer", exact: true }).click();
+  await page.getByRole("button", { name: "Share text", exact: true }).click();
+  assert.equal(await page.getByRole("dialog").getByRole("alert").count(), 0, "Canceling native sharing is not an error");
+  await page.getByRole("button", { name: "Close dialog" }).click();
+  await page.evaluate(() => Object.defineProperty(navigator, "share", { configurable: true, value: undefined }));
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.getByRole("button", { name: "Share question or answer", exact: true }).click();
+  assert.equal(await page.getByRole("button", { name: "Share text", exact: true }).count(), 0);
+  await page.getByRole("button", { name: "Copy text", exact: true }).click();
+  await page.getByRole("button", { name: "Copied", exact: true }).waitFor();
+  assert.match(await page.evaluate(() => navigator.clipboard.readText()), /Correct option: A\./);
+  await page.getByRole("button", { name: "Close dialog" }).click();
+  assert.deepEqual(await state(), beforeShare, "Sharing does not change answers or grading");
+  console.log("PASS text-only native share payloads for question/answer/both, cancel handling and clipboard fallback");
+  await page.locator(".question-guide .guide-topic-links button").first().click();
+  await modal.locator(".guide-reader").waitFor();
+  await modal.getByRole("button", { name: "Close dialog" }).click();
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  console.log("PASS one-tap random practice, no immediate repeats, saved grading, guide overlay before/after answering and shuffled references after reload");
+
+  await navigate("Guide");
+  await page.getByRole("heading", { name: "Your field guide" }).waitFor();
+  assert.equal(await page.locator(".guide-topic").count(), 17);
+  await accessible("mobile-guide-topics");
+  await shot("mobile-guide-topics");
+  await page.getByRole("searchbox", { name: "Search the guide" }).fill("no-such-service-12345");
+  assert.equal(await page.locator(".guide-topic").count(), 0);
+  await page.getByRole("searchbox").fill("");
+  await page.getByRole("button", { name: "By question", exact: true }).click();
+  await page.getByRole("searchbox").fill("Q9200");
+  assert.equal(await page.locator(".guide-question").count(), 1);
+  await accessible("mobile-guide-index");
+  await shot("mobile-guide-index");
+  await page.locator(".guide-question .guide-topic-links button").first().click();
+  await page.getByRole("heading", { name: "Networking, private connectivity, and DNS", exact: true }).waitFor();
+  await page.reload();
+  await page.getByRole("heading", { name: "Networking, private connectivity, and DNS", exact: true }).waitFor();
+  for (const width of [320, 360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, "Guide reader overflow at " + width);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await accessible("mobile-guide-reader");
+  await shot("mobile-guide-reader");
+  await page.evaluate(() => { location.hash = "guide/identity"; });
+  await page.getByRole("link", { name: "Current policy", exact: true }).click();
+  await page.locator("#guide-src-poweruser").waitFor({ state: "attached" });
+  assert.equal(new URL(page.url()).hash, "#guide/src-poweruser");
+  assert((await page.locator("#guide-src-poweruser").boundingBox()).y < 844, "Source anchor scrolled into view");
+  await page.goBack();
+  await page.getByRole("heading", { name: "Identity, federation, and authorization", exact: true }).waitFor();
+  console.log("PASS searchable guide, all 391 question mappings, deep links, source anchors, mobile tables and browser back");
+
   const multi = bank.find((q) => q.correct_option_ids.length === 3);
   const config = { title: "Multiple-answer check", domain: multi.exam_domain, pool: "all", count: 1, timed: false, minutes: 1, feedback: "immediate", ids: [multi.id] };
   const p = freshProgress();
@@ -165,7 +298,7 @@ try {
   await navigate("Settings");
   await page.getByRole("button", { name: "Save all diagrams" }).click();
   await page.getByRole("button", { name: "All diagrams saved" }).waitFor({ timeout: 60000 });
-  assert.match(await page.locator(".offline-status").innerText(), /351 of 351/);
+  assert((await page.locator(".offline-status").innerText()).includes(imageCount + " of " + imageCount));
   const cdp = await context.newCDPSession(page);
   const installability = await cdp.send("Page.getInstallabilityErrors");
   assert.deepEqual(installability.installabilityErrors, [], "Chrome installation requirements");
@@ -178,7 +311,12 @@ try {
   await context.setOffline(true);
   await page.reload();
   await page.getByRole("heading", { name: "Your study setup" }).waitFor();
-  await page.getByText("351 of 351 diagrams saved").waitFor();
+  await page.getByText(imageCount + " of " + imageCount + " diagrams saved").waitFor();
+  await navigate("Guide");
+  await page.locator(".guide-topic").first().click();
+  await page.reload();
+  await page.locator(".guide-reader").waitFor();
+  assert((await page.locator(".guide-prose").innerText()).length > 500, "Guide available offline");
   const diagramQuestion = bank.find((q) => q.question_images?.length);
   const offline = freshProgress();
   offline.active = createSession(bank, offline, { ...config, domain: diagramQuestion.exam_domain, ids: [diagramQuestion.id] });
@@ -188,12 +326,29 @@ try {
   assert(await page.locator(".question-prompt").innerText());
   await context.setOffline(false);
   await seed(backup, "study");
-  console.log("PASS GitHub Pages subpath, manifest/installability, full 351-image offline pack and offline reload");
+  console.log("PASS GitHub Pages subpath, manifest/installability, full offline image pack and offline reload");
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await accessible("desktop-home");
   await shot("desktop-home");
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+  // Exercise every real guide table at phone, tablet, and desktop widths.
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const section of guide.sections) {
+      await page.evaluate((id) => { location.hash = "guide/" + id; }, section.id);
+      await page.getByRole("heading", { name: section.title, exact: true }).waitFor();
+      const overflowing = await page.locator(".guide-table").evaluateAll((tables) => tables.filter((table) => table.scrollWidth > table.clientWidth + 1).length);
+      assert.equal(overflowing, 0, section.id + " has clipped table columns at " + width);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, section.id + " page overflow at " + width);
+    }
+  }
+  await page.evaluate(() => { location.hash = "guide/network"; });
+  await page.getByRole("heading", { name: "Networking, private connectivity, and DNS", exact: true }).waitFor();
+  const cells = page.locator(".guide-table tbody tr").first().locator("td");
+  assert((await cells.nth(0).boundingBox()).width < (await cells.nth(1).boundingBox()).width / 2, "Short labels leave most table space for explanations");
+  await accessible("desktop-guide");
+  await shot("desktop-guide");
   assert.deepEqual(errors, [], "Browser errors");
   await writeFile(join(artifacts, "accessibility.json"), JSON.stringify(issues, null, 2));
   assert.equal(issues.length, 0, "Accessibility violations; see output/playwright/accessibility.json");

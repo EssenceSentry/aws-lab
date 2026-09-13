@@ -1,7 +1,7 @@
 import { freshProgress, parseProgress } from "./core.ts";
 import type { Progress, Question } from "./core.ts";
 
-export const STORAGE_KEY = "waypoint.sap-c02.progress.v1";
+export const STORAGE_KEY = "waypoint.sap-c02.progress.v2";
 export function loadProgress(bank: Question[]): { progress: Progress; error: string } {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);

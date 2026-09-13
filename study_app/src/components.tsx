@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { Check, ChevronRight, X, ZoomIn } from "lucide-react";
+import { resolveOptionReferences } from "./option-references.ts";
 import { DOMAINS, eligibleQuestions } from "./core.ts";
 import type { Progress, Question, SessionConfig } from "./core.ts";
 
@@ -45,8 +46,9 @@ function LinkedText({ text }: { text: string }) {
   })}</>;
 }
 
-export function RichText({ value, className = "" }: { value: string; className?: string }) {
-  return <div className={"rich-text " + className}>{value.split(/\n\s*\n/).map((part, i) =>
+export function RichText({ value, className = "", optionOrder }: { value: string; className?: string; optionOrder?: string[] }) {
+  const display = optionOrder ? resolveOptionReferences(value, optionOrder) : value;
+  return <div className={"rich-text " + className}>{display.split(/\n\s*\n/).map((part, i) =>
     /^\s*\{[\s\S]*\}\s*$/.test(part) ? <pre key={i}>{part}</pre> : <p key={i}><LinkedText text={part} /></p>,
   )}</div>;
 }
