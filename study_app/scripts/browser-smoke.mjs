@@ -224,6 +224,31 @@ try {
   await page.getByRole("button", { name: "Done", exact: true }).click();
   console.log("PASS one-tap random practice, no immediate repeats, saved grading, guide overlay before/after answering and shuffled references after reload");
 
+  for (const [id, expected] of [
+    ["010", "Select F, D and the corrected C."],
+    ["221", "full S3 permissions (option E)"],
+    ["084", "1. Set up a web identity federation"],
+    ["136", "1. Delete\n2. Retain\n3. Snapshot"],
+  ]) {
+    const question = bank.find((q) => q.id === id);
+    const progress = freshProgress();
+    progress.active = createSession([question], progress, { title: "Reference regression", domain: "all", pool: "all", count: 1, timed: false, minutes: 1, feedback: "immediate", quick: true });
+    const order = question.options.map((o) => o.id).reverse();
+    progress.active.optionOrders[id] = order;
+    await seed(progress);
+    for (const choice of question.correct_option_ids) await page.locator('input[value="' + choice + '"]').check();
+    await page.getByRole("button", { name: "Check answer" }).click();
+    await page.reload();
+    await page.getByRole("heading", { name: "You’ve got it." }).waitFor();
+    assert((await page.locator(".answer-explanation > .rich-text").innerText()).includes(expected), "Q" + id + " explanation after shuffle and reload");
+    for (const [index, choice] of order.entries()) {
+      assert.equal(await page.locator('.answer-option:has(input[value="' + choice + '"]) .option-letter').innerText(), String.fromCharCode(65 + index));
+    }
+    if (id === "010") await shot("mobile-repaired-option-references");
+    await page.getByRole("button", { name: "Done", exact: true }).click();
+  }
+  console.log("PASS repaired choice references and preserved procedure numbers with shuffled options after reload");
+
   await navigate("Guide");
   await page.getByRole("heading", { name: "Your field guide" }).waitFor();
   assert.equal(await page.locator(".guide-topic").count(), 17);

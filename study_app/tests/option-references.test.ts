@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { createSession, freshProgress, parseProgress } from "../src/core.ts";
 import type { Question } from "../src/core.ts";
 import { optionLabel, resolveOptionReferences, validateOptionReferences } from "../src/option-references.ts";
+import { questionShareText } from "../src/share.ts";
 
 const bank: Question[] = readFileSync(new URL("../../question_bank/questions.jsonl", import.meta.url), "utf8").trim().split("\n").map((line) => JSON.parse(line));
 test("option references follow the saved permutation, including after backup restoration", () => {
@@ -23,11 +24,63 @@ test("unknown IDs and malformed markers fail rather than become incorrect labels
   assert.throws(() => resolveOptionReferences("<<9>>", ["1"]), /Unknown/);
   validateOptionReferences("350 seconds. [4] 1. Configure the gateway.", ["1"]);
 });
+test("bank validation rejects bare choice phrases and partially marked choice lists", () => {
+  const ids = ["1", "2", "3", "4", "5", "6"];
+  for (const text of [
+    "Option 1 is correct.", "Answers: 2 and 5.", "Choice 4 is incorrect.",
+    "Select 1, 3 and the corrected 4.", "Select the revised 2 and 3.",
+    "Select <<1>> and 3.", "Select 1 and <<3>>.",
+    "Options <<1>>, 2, and the corrected <<3>> are correct.",
+    "Multipart upload (option 1)", "For option 4, use SAML.",
+  ]) assert.throws(() => validateOptionReferences(text, ids), /Unmarked option reference/, text);
+  for (const text of [
+    "Select <<1>>, <<3>> and the corrected <<4>>.", "Select the revised <<2>> and <<3>>.",
+    "Options <<1>>, <<2>>, and <<3>> are correct.",
+    "Select 2 answers. Select 3 instances. Repeat steps 1 and 2.",
+    "The following option:\n\n1. Set up federation.\n2. Create an IAM role.",
+    "DeletionPolicy Options:\n\n1. Delete\n2. Retain\n3. Snapshot",
+    "SAML 2.0. Version ID of 1 is incorrect. [1] 3 GiB. 2–4 hours. us-east-1.",
+  ]) assert.doesNotThrow(() => validateOptionReferences(text, ids), text);
+});
+test("repaired real explanations and shared answers use the displayed letters", () => {
+  const cases: [string, string[]][] = [
+    ["010", ["Select F, D and the corrected C."]],
+    ["013", ["Select E and C."]],
+    ["029", ["Select B and A."]],
+    ["036", ["D. Set up a public hosted zone", "B. Set up a public hosted zone"]],
+    ["046", ["Select E and the corrected C."]],
+    ["047", ["Select E and the corrected B."]],
+    ["069", ["Select C and the corrected A."]],
+    ["070", ["Select the revised D and C."]],
+    ["217", ["Multipart upload (option D)", "offered by option B."]],
+    ["221", ["full S3 permissions (option E)", "source marketing account (option C)", "whole management account (option B)"]],
+    ["224", ["For option B,", "For option A,"]],
+    ["232", ["backup prescription in option D."]],
+  ];
+  for (const [id, expected] of cases) {
+    const q = bank.find((q) => q.id === id)!;
+    const order = q.options.map((o) => o.id).reverse();
+    for (const text of [resolveOptionReferences(q.explanation.text, order), questionShareText(q, order, "answer"), questionShareText(q, order, "both")]) {
+      for (const snippet of expected) assert.ok(text.includes(snippet), "Q" + id + ": " + snippet);
+      assert.doesNotMatch(text, /<<|>>/);
+    }
+  }
+});
+test("procedure and policy list numbers stay numeric after shuffling", () => {
+  for (const [id, snippet] of [
+    ["084", "1. Set up a web identity federation"],
+    ["136", "1. Delete\n2. Retain\n3. Snapshot"],
+  ]) {
+    const q = bank.find((q) => q.id === id)!;
+    const order = q.options.map((o) => o.id).reverse();
+    assert.ok(resolveOptionReferences(q.explanation.text, order).includes(snippet));
+    assert.ok(questionShareText(q, order, "answer").includes(snippet));
+  }
+});
 test("the complete active bank has valid explicit option references and no bare choice numbers", () => {
   let references = 0;
   for (const q of bank) {
-    validateOptionReferences(q.explanation.text, q.options.map((o) => o.id));
-    assert.doesNotMatch(q.explanation.text, /\b(?:options?|answers?)\s*:?\s*\d/i, "Q" + q.id);
+    assert.doesNotThrow(() => validateOptionReferences(q.explanation.text, q.options.map((o) => o.id)), "Q" + q.id);
     references += [...q.explanation.text.matchAll(/<<\d+>>/g)].length;
   }
   assert.ok(references > 300);

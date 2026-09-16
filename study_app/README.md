@@ -73,8 +73,11 @@ multiple choice from `correct_option_ids.length`. Explanations remain plain
 text and use `<<4>>` to refer to option ID `4`. If the saved session order is
 `["2", "4", "1", "3"]`, `Option <<4>>` displays and shares as `Option B`.
 Use a separate marker for every referenced option, such as
-`Options <<1>> and <<4>>`. Citation numbers, procedural steps, and service
-limits stay ordinary text. The build rejects malformed or unknown references.
+`Options <<1>> and <<4>>`, `Select <<1>> and <<3>>`, or `(option <<2>>)`. Citation
+numbers, procedural steps, and service limits stay ordinary text. The build
+rejects malformed or unknown references and bare numbers in explicit choice
+phrases. Indirect references still need editorial review; use `option <<id>>`
+to make their meaning clear.
 The same saved order drives answer cards, explanations, review, and sharing.
 
 The guide and index remain Markdown authoring sources. The build sanitizes
