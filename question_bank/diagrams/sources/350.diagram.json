@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Organization membership drives trail coverage",
+  "columns": [
+    "Account state",
+    "Organization-trail behavior"
+  ],
+  "rows": [
+    [
+      "Existing member",
+      "Central trail records configured events"
+    ],
+    [
+      "New member joins",
+      "Organization-trail coverage is added"
+    ],
+    [
+      "Member administrator",
+      "Can view but cannot modify the central trail"
+    ],
+    [
+      "Account leaves",
+      "New organization-trail logging stops, retained S3 logs remain"
+    ]
+  ],
+  "footnote": "The trail must be logging successfully, with correct bucket permissions and event selectors.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

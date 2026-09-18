@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Reuse the image, adapt the runtime configuration",
+  "columns": [
+    "Shared or specific",
+    "Development and production behavior"
+  ],
+  "rows": [
+    [
+      "Shared container image",
+      "The same compatible application build can run in both environments"
+    ],
+    [
+      "Shared ECS management",
+      "ECS APIs and deployment tooling manage the workloads"
+    ],
+    [
+      "On-premises development",
+      "EXTERNAL tasks on registered hosts, bridge/host/none networking"
+    ],
+    [
+      "AWS production",
+      "Fargate tasks with awsvpc networking and Fargate-compatible settings"
+    ],
+    [
+      "Host responsibility",
+      "Customer maintains external hosts, AWS manages Fargate infrastructure"
+    ]
+  ],
+  "footnote": "Portable application packaging does not imply identical task and networking settings.",
+  "emphasis_rows": [
+    2,
+    3
+  ]
+}

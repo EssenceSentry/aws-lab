@@ -1,0 +1,64 @@
+{
+  "question_id": "057",
+  "base_record_sha256": "440ebb9214417e8acde92d7b03d2d2390be6da351d84c692a3afa76d5b681186",
+  "record": {
+    "id": "057",
+    "exam_domain": "Design for New Solutions",
+    "question": "A university runs a public learning website on EC2 instances behind an existing Application Load Balancer. Students use ordinary web browsers on unmanaged devices. The university owns the domain and needs HTTPS with the lowest additional certificate cost and renewal effort.\n\nWhich solution should the solutions architect implement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Request and validate a non-exportable ACM public certificate in the ALB Region. Attach it to an HTTPS listener and retain the configuration required for managed renewal."
+      },
+      {
+        "id": "2",
+        "text": "Create an AWS Private CA, issue a private certificate for the website through ACM, and attach it to the ALB HTTPS listener."
+      },
+      {
+        "id": "3",
+        "text": "Request an exportable ACM public certificate, replace the ALB with a TCP Network Load Balancer, and deploy the certificate and renewed private-key material to the EC2 web servers."
+      },
+      {
+        "id": "4",
+        "text": "Create an AWS Private CA, export a private certificate to each EC2 web server, and replace the ALB with a TCP Network Load Balancer."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Choose <<1>>. An ACM public certificate supplies a browser-trusted chain for the validated domain. The ALB integrates with ACM so the certificate can be managed without distributing private keys to each server. Non-exportable public certificates for integrated AWS services have no additional certificate charge; the existing infrastructure still has its normal charges.\n\n<<2>> can secure traffic for clients configured to trust the private CA, but ordinary unmanaged browsers do not automatically trust that CA. <<3>> is possible: exportable ACM public certificates can be installed on EC2. It adds certificate charges, a load-balancer change and responsibility for deploying renewals, none of which is needed here. <<4>> combines private-CA trust distribution with host-level certificate deployment and does not meet the stated operating model.\n\nChoose the trust model first, then the termination point. Public users need a chain their browsers trust. Use the existing ACM-integrated endpoint when it satisfies the requirements, and validate that the certificate covers the website hostname and can continue renewing.\n\nAWS documentation (checked September 18, 2026): [ALB HTTPS certificates](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/https-listener-certificates.html), [ACM certificate pricing](https://aws.amazon.com/certificate-manager/pricing/), [ACM exportable certificates](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html), [Certificate trust](https://docs.aws.amazon.com/acm/latest/userguide/acm-concepts.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/057.diagram.json",
+  "diagram_alt": "Public trust and certificate deployment responsibilities distinguish an integrated public certificate from private or exported alternatives.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/https-listener-certificates.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB HTTPS listeners integrate with ACM and support automatic renewal of ACM-issued certificates."
+    },
+    {
+      "url": "https://aws.amazon.com/certificate-manager/pricing/",
+      "checked_on": "2026-09-18",
+      "supports": "Non-exportable public certificates for integrated AWS services have no certificate charge; exportable certificates are charged."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html",
+      "checked_on": "2026-09-18",
+      "supports": "Exportable public certificates can be deployed on EC2; customers manage deployment of renewed exported certificates."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Browser certificate validation depends on a trusted CA root and certificate chain."
+    }
+  ],
+  "editorial_notes": [
+    "Retained correct option 1 while acknowledging that ACM public certificate export to EC2 is supported.",
+    "Made the EC2 alternatives use TCP pass-through so they are technically coherent rather than assuming an ALB can pass through HTTPS unchanged.",
+    "Avoided fixed dollar figures and certificate-validity periods that can drift."
+  ],
+  "review_status": "authored"
+}

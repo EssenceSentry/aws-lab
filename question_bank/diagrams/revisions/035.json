@@ -1,0 +1,62 @@
+{
+  "question_id": "035",
+  "base_record_sha256": "81ceb5120a065a082f0659b80a347640c2358efc4c1e84713d0b86b6151ae46f",
+  "record": {
+    "id": "035",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company makes pet collars that submit authenticated HTTPS measurements every second. Its portal must show recent biometric trends within seconds and support independent consumers that can replay at least 24 hours of measurements. Analysts also need a durable archive for historical SQL analysis.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Accept uploads through an HTTPS API and store them in S3. Run a scheduled daily batch job and refresh all portal measurements from its output."
+      },
+      {
+        "id": "2",
+        "text": "Use an authenticated HTTPS API to write measurements to Kinesis Data Streams with at least 24 hours of retention. Use a streaming consumer such as Managed Service for Apache Flink to compute live results for the portal, and deliver records to S3 for historical analysis with Redshift."
+      },
+      {
+        "id": "3",
+        "text": "Use an authenticated HTTPS API to put measurements on one SQS queue. Have independent analytics consumers compete for messages and delete each message after the first consumer processes it."
+      },
+      {
+        "id": "4",
+        "text": "Use an authenticated HTTPS API to overwrite one current-value item per collar in DynamoDB. Build every historical report and replay consumer from those current-value items."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. A retained stream separates ingestion from processing and lets independent consumers read and replay records. A streaming processor computes live trends; a separate serving path exposes those results to the portal. S3 retains historical data that Redshift can load or query for analysis.\n\n<<1>> supports an archive but a daily batch refresh does not meet the seconds-level display requirement.\n\n<<3>> uses competing consumers: deleting a queue message after one consumer finishes does not provide every independent consumer with a replayable history. SQS can participate in other valid designs, but this configuration misses the requirement.\n\n<<4>> discards prior measurements by overwriting them, so it cannot support the required replay and historical reports.\n\nA stream is a transport and retention service, not the analytics calculation or dashboard. Configure retention, throughput, consumer failure handling, and idempotency explicitly; retained records can be processed more than once.\n\nOfficial AWS references (checked 2026-09-18):\n[Processing Kinesis records](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html)\n[Kinesis retention and consumers](https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html)\n[Managed Flink processing](https://docs.aws.amazon.com/managed-flink/latest/java/how-it-works.html)\n[Redshift Spectrum](https://docs.aws.amazon.com/redshift/latest/dg/c-using-spectrum.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/035.mmd",
+  "diagram_alt": "Retained measurements feed independent live and historical paths, with replay controlled by each consumer.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html",
+      "checked_on": "2026-09-18",
+      "supports": "Streams have consumers, batching and retry/duplicate processing considerations"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Minimum 24-hour retention and independent concurrent consumers"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/managed-flink/latest/java/how-it-works.html",
+      "checked_on": "2026-09-18",
+      "supports": "Streaming source, transformations and sink are explicit parts of the application"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-using-spectrum.html",
+      "checked_on": "2026-09-18",
+      "supports": "SQL analysis can query S3 data without loading it into Redshift tables"
+    }
+  ],
+  "editorial_notes": [
+    "Added independent-consumer replay and seconds-level requirements, replaced nonfunctional service-name combinations with clear alternative mechanisms. Removed retired Data Pipeline references. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

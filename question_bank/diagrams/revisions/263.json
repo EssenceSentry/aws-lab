@@ -1,0 +1,52 @@
+{
+  "question_id": "263",
+  "base_record_sha256": "900f08be84268c493461c548dc093b10a76a47509ed1034de6c17d1b636ce741",
+  "record": {
+    "id": "263",
+    "exam_domain": "Design for New Solutions",
+    "question": "A device platform receives millions of small event records per minute. It needs durable storage with low-latency reads by device ID and event time, without relational joins or a custom search index. Each record is smaller than 4 KB. The application must stop returning a record 120 days after creation, but physical deletion may occur several days later. The team wants managed expiration and minimal database-maintenance code.\n\nWhich design best fits these access and retention requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Retain records in an MSK topic for 120 days and use topic scanning as the sole way to retrieve records for a particular device and event time."
+      },
+      {
+        "id": "2",
+        "text": "Use DynamoDB with a well-distributed device-oriented partition key and event-time sort key. Size capacity and quotas for the workload, set a numeric TTL expiration for each record, and exclude expired items in the read path."
+      },
+      {
+        "id": "3",
+        "text": "Use DynamoDB with a TTL timestamp for each record and return every item found by a read. Assume the TTL service removes each item at the exact expiration second."
+      },
+      {
+        "id": "4",
+        "text": "Store each record as an S3 object and use an S3 Lifecycle rule as the only mechanism for enforcing the exact 120-day application-visible cutoff."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The key design supports the stated lookups, while TTL performs asynchronous cleanup. The application checks expiration separately so an item that is physically present after day 120 is not exposed to users.\n\n<<1>> provides a retained event log, but scanning it is not the requested indexed device-and-time retrieval path.\n\n<<3>> assumes synchronous deletion. DynamoDB TTL commonly removes expired items within a few days, not at an exact second.\n\n<<4>> also substitutes background storage expiration for a strict read-visibility rule and does not provide the requested database query path.\n\nStore the TTL as a Number containing Unix epoch seconds. Query results can use an expiration filter; a point-read result must be checked by the application. Filtering does not avoid the read work already performed. Validate hot-device traffic, index overhead, capacity ramp-up and actual retained bytes before estimating cost; a maximum record size alone does not establish an annual storage total.\n\nOfficial AWS references (checked September 18, 2026): [DynamoDB TTL](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html). [Partition-key design](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/263.svg",
+  "diagram_alt": "A schematic timeline separates the exact application visibility cutoff at day 120 from later asynchronous DynamoDB TTL deletion.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html",
+      "checked_on": "2026-09-18",
+      "supports": "Numeric epoch-second TTL, asynchronous deletion and filtering expired reads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html",
+      "checked_on": "2026-09-18",
+      "supports": "Composite keys, distributed access and capacity constraints."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced unsupported annual storage estimate and generic cost claim with explicit key access, managed cleanup and a strict application-visible cutoff."
+  ],
+  "review_status": "authored"
+}

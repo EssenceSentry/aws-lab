@@ -1,0 +1,53 @@
+{
+  "question_id": "184",
+  "base_record_sha256": "7c7eb438b135615731f4c5c7f6059ddc4817835685d3d958b774d98c73cf320b",
+  "record": {
+    "id": "184",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An existing Lambda function receives S3 PUT notifications, performs a required custom transformation, and copies each result to buckets in other accounts. Processing can be delayed, and load tests show that bursts drain within the configured asynchronous event age. The Region has a concurrency quota of 1,000. Critical functions reserve 700 units, and other functions peak at 150 concurrent executions. The new function needs no more than 100 concurrent executions.\n\nWhich change limits its impact with the least development effort?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Set the transformation function's reserved concurrency to 100. Monitor throttling and asynchronous event age, and configure failure handling for events that expire or exhaust retries."
+      },
+      {
+        "id": "2",
+        "text": "Increase the function timeout to five minutes so throttled requests can wait inside the function until concurrency becomes available."
+      },
+      {
+        "id": "3",
+        "text": "Move the function to a separate account, add SQS event buffering there, and rebuild the cross-account event and permission configuration."
+      },
+      {
+        "id": "4",
+        "text": "Add a loop inside the function that checks account concurrency and waits before transforming an object when the account is busy."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Reserved concurrency caps this function at 100 and sets aside those 100 units exclusively for it. With 700 already reserved for critical functions, 200 remain unreserved, exceeding the measured 150-unit peak of the other functions.\n\n<<2>> changes how long an invocation may run after it starts; it does not let code execute while Lambda is refusing an invocation for lack of capacity. <<3>> can isolate capacity and provide durable buffering but requires substantially more integration work. <<4>> consumes a concurrency slot while its waiting code runs and does not enforce admission before invocation.\n\nReservations reduce the shared pool even when their function is idle. Provisioned concurrency addresses initialization latency rather than providing this cap. Asynchronous retries and event age are finite, so monitor dropped events and preserve failed work through a destination or dead-letter queue. For sustained backlogs beyond the tested envelope, add durable buffering and revisit the design.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html\nhttps://docs.aws.amazon.com/lambda/latest/dg/invocation-async-error-handling.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/184.diagram.json",
+  "diagram_alt": "A 100-unit reservation caps the transformation function and leaves a 200-unit shared pool after the existing 700-unit reservations.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reserved concurrency is both an exclusive allocation and a cap and reduces the unreserved pool even while idle."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-error-handling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous events have finite retries and age and may be discarded without configured failure handling."
+    }
+  ],
+  "editorial_notes": [
+    "Added required custom transformation to explain retaining Lambda instead of native S3 replication.",
+    "Added tested capacity and finite-backlog assumptions rather than implying a cap guarantees no impact under any traffic."
+  ],
+  "review_status": "authored"
+}

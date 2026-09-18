@@ -1,0 +1,52 @@
+{
+  "question_id": "362",
+  "base_record_sha256": "d3ac5d887f5e648a4b116c7188a112eb4aa04434a58f6d592eb2b3ddfced350f",
+  "record": {
+    "id": "362",
+    "exam_domain": "Design for New Solutions",
+    "question": "A consortium of healthcare organizations plans to use a permissioned Managed Blockchain network to verify the history of patient-record versions. Only specifically authorized recipients may retrieve a patient's full record. The design must avoid placing directly identifying patient data on the shared ledger and must allow off-chain retention policies to be enforced.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store complete patient records in ledger transactions and rely on network membership alone to limit every member to the patients they are authorized to see."
+      },
+      {
+        "id": "2",
+        "text": "Store encrypted, access-controlled records in DynamoDB. Use Lambda to publish a cryptographic commitment to each version on the ledger, with a random per-version nonce and identifying metadata kept off-chain."
+      },
+      {
+        "id": "3",
+        "text": "Store patient names and patient identifiers on the ledger, while retaining clinical details and other sensitive attributes in DynamoDB."
+      },
+      {
+        "id": "4",
+        "text": "Encrypt complete patient records before placing them on the ledger, retain the ciphertext there permanently, and rely solely on future decryption-key deletion to satisfy all off-chain retention requirements."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Authorized recipients retrieve the record through the controlled off-chain path and verify its version against the ledger commitment. The ledger supplies a shared integrity reference without becoming the repository for full patient records or direct identifiers.\n\n<<1>> distributes sensitive records through the shared ledger and equates consortium membership with patient-specific authorization.\n\n<<3>> still puts directly identifying information on the ledger, contrary to the requirement.\n\n<<4>> keeps the complete encrypted record on the ledger and makes retention depend entirely on key disposal. That does not implement the required off-chain record lifecycle.\n\nUse a documented, reviewed commitment construction over a canonical record version and a sufficiently random nonce that is disclosed only to authorized verifiers. A bare hash of a name or patient ID can be guessed and linked; hashing alone is not anonymization. A matching commitment detects a changed record relative to that version, but does not prove that the original clinical information was true. Nor does the ledger make DynamoDB immutable. Define record access, key handling, versioning, audit, backups, and retention separately, including the privacy implications of the remaining ledger metadata.\n\nAWS documentation (checked September 18, 2026): [Managed Blockchain permissioned networks](https://docs.aws.amazon.com/managed-blockchain/latest/hyperledger-fabric-dev/what-is-managed-blockchain.html); [Verifying off-chain data](https://aws.amazon.com/blogs/database/store-off-chain-data-using-amazon-managed-blockchain-and-amazon-s3-part-2/).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/362.mmd",
+  "diagram_alt": "A reader verifies off-chain content by recomputing its commitment and comparing it with the ledger, which supplies integrity evidence rather than record confidentiality.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/managed-blockchain/latest/hyperledger-fabric-dev/what-is-managed-blockchain.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed Blockchain supports private Hyperledger Fabric networks with controlled member organizations."
+    },
+    {
+      "url": "https://aws.amazon.com/blogs/database/store-off-chain-data-using-amazon-managed-blockchain-and-amazon-s3-part-2/",
+      "checked_on": "2026-09-18",
+      "supports": "An off-chain record can be retrieved and hashed again, then checked against its ledger hash to detect modification; this verifies integrity rather than database immutability."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2 while repairing raw-hash privacy assumptions. Explicitly distinguishes off-chain retention, patient authorization, tamper detection and clinical truth. Uses a nonce-based commitment as a design requirement, not a claim that Managed Blockchain provides automatic anonymization."
+  ],
+  "review_status": "authored"
+}

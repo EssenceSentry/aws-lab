@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Private reachability needs transport and route exchange
+accDescr: The application reaches on-premises dependencies using private addressing over a private virtual interface, with BGP between the customer router and AWS.
+O[On-premises dependency<br/>Private IP]:::inputData --> R[Customer router<br/>VLAN + BGP with MD5]:::decision
+R --> C[Dedicated Direct Connect path]:::inputData
+C --> V[Private virtual interface]:::decision
+V --> G[VPC gateway and routes]:::decision
+G --> A[Private EC2 application]:::output
+N[No instance Elastic IP required]:::warning -. private addressing .-> A

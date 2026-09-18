@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Two post-launch detection paths
+accDescr: Config change evaluation or scheduled inventory can detect an unapproved running AMI, after which a current-state recheck precedes termination and notification.
+L[EC2 test instance launches]:::inputData --> C[Config evaluates AMI ID]:::process
+L --> P[Scheduled inventory checks AMI ID]:::process
+C --> R{Currently running an unapproved AMI?}:::decision
+P --> R
+R -->|Yes| T[Terminate instance]:::warning
+T --> N[Notify security through SNS]:::output
+R -->|No| K[No remediation]:::output
+W[Detection window exists after launch]:::reference -.-> L

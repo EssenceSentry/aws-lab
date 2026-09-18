@@ -1,0 +1,57 @@
+{
+  "question_id": "333",
+  "base_record_sha256": "083eeb1c05442283f8c7a09290d5e45b1e2d7adc33a668a9a760c05b8ac944ea",
+  "record": {
+    "id": "333",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company plans to migrate Windows and Ubuntu virtual machines from its data center to EC2. Before starting replication, it must identify application dependencies, group servers into migration waves, and select initial EC2 sizes based on observed usage. The team can grant a central collector access to the hypervisors and guest operating systems.\n\nWhich approach meets these requirements with the least custom tooling?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy the AWS Transform discovery tool with hypervisor and OS access. Use the collected data in Transform migration planning for application groups and waves, and in a migration assessment for initial EC2 sizing and cost scenarios."
+      },
+      {
+        "id": "2",
+        "text": "Install Systems Manager Agent and collect software inventory. Enter each server's allocated CPU and memory in AWS Pricing Calculator, and use the resulting prices as dependency and right-sizing recommendations."
+      },
+      {
+        "id": "3",
+        "text": "Use AWS Transform MGN to start block replication immediately. After production cutover, use Compute Optimizer to select instance sizes and infer the original migration waves."
+      },
+      {
+        "id": "4",
+        "text": "Deploy the AWS Transform discovery tool and prepare migration waves. Migrate each server using its current allocated capacity, then wait for EC2 history before using Compute Optimizer to right-size it."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> makes discovery evidence available before execution. AWS Transform supports centralized discovery of server configuration and usage. Authorized OS access adds information about connections and their associated processes. Migration planning uses dependencies to organize application groups and waves, while migration assessments evaluate initial EC2 sizing and cost assumptions.\n\nOption <<2>> collects useful inventory but treats a pricing calculation as if it measured runtime behavior and dependencies. Pricing Calculator prices the configuration supplied to it. Option <<3>> begins replication before the required assessment and asks post-migration optimization to retroactively plan the migration. Option <<4>> gathers planning data but delays sizing until after cutover, contrary to the requirement.\n\nValidate collection coverage and observe a representative workload period, including peaks. A discovered dependency graph is evidence for a plan, not proof that every rare or scheduled dependency has been observed. Review the proposed groupings and sizing with application owners before migrating.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-configure.html\nhttps://docs.aws.amazon.com/transform/latest/userguide/transform-app-vmware.html\nhttps://docs.aws.amazon.com/transform/latest/userguide/transform-app-assessments.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/333.mmd",
+  "diagram_alt": "Observed connections and observed utilization support distinct planning decisions before migration begins.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-configure.html",
+      "checked_on": "2026-09-18",
+      "supports": "Remote OS collection includes performance and process-associated network connections."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/transform-app-vmware.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transform migration planning groups applications and sequences waves across supported sources."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/transform-app-assessments.html",
+      "checked_on": "2026-09-18",
+      "supports": "Migration assessments provide initial sizing, scenario assumptions and costs."
+    }
+  ],
+  "editorial_notes": [
+    "Clarified centralized discovery with guest access and the pre-migration timing requirement. Avoided describing the collector as a per-server installed agent; key 1 unchanged."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Installation and compliance history have different owners
+accDescr: Patch Manager installs approved updates, Systems Manager reports the resulting compliance, and Config records changes over time.
+B["Approved patch baseline"] --> P["Patch Manager install operation"]
+P --> N["Managed EC2 nodes"]
+N --> C["Current SSM compliance"]
+C --> H[("Config compliance history")]
+A["Association compliance changes"] --> H
+class B,A inputData
+class P decision
+class H storage

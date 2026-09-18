@@ -1,0 +1,53 @@
+{
+  "question_id": "125",
+  "base_record_sha256": "2a64c429524eb850d53028ac151c08e2d78e874fdd014a5910148da239468bb6",
+  "record": {
+    "id": "125",
+    "exam_domain": "Design for New Solutions",
+    "question": "A city is deploying a MySQL-compatible web portal at the zone apex example.com in a Route 53 public hosted zone. The application must continue operating after a single Availability Zone failure, and the database needs a ready failover instance in another AZ. Application instances are stateless. The team must avoid maintaining DNS records containing individual load-balancer IP addresses.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use an ALB and an Auto Scaling group across two AZs with an RDS Multi-AZ DB instance. Create a non-alias A record at example.com containing the ALB’s current IP addresses."
+      },
+      {
+        "id": "2",
+        "text": "Use an ALB and an Auto Scaling group across three AZs. Use Aurora MySQL with a writer and replicas in other AZs, and create an A alias record at example.com targeting the ALB."
+      },
+      {
+        "id": "3",
+        "text": "Use an ALB and an Auto Scaling group across three AZs with an RDS Multi-AZ DB instance and read replicas. Create a CNAME record at example.com targeting the ALB DNS name."
+      },
+      {
+        "id": "4",
+        "text": "Use an ALB and an Auto Scaling group across three AZs. Use one Aurora MySQL writer without any replica instances, and create an A alias record at example.com targeting the ALB."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> combines compute capacity across AZs, database failover compute in another AZ and a Route 53 alias that tracks the ALB endpoint. Aurora’s distributed storage and separately placed replica instances provide different parts of database resilience.\n\n<<1>> has a suitable availability foundation but pins DNS to changing ALB addresses. <<3>> uses a CNAME at the hosted-zone apex, where CNAME records are not permitted. A CNAME can be valid for a subdomain, so it is the apex requirement that eliminates this choice. <<4>> has durable multi-AZ Aurora storage but lacks the requested ready replica instance for failover.\n\nAn alias can be an A record: “alias” describes Route 53 target resolution, while A is the DNS record type. Size surviving application capacity for the AZ failure and test connection recovery; a multi-AZ diagram does not itself guarantee a numerical RTO.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Reliability.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/125.mmd",
+  "diagram_alt": "An apex alias prevents fixed ALB address maintenance while separate compute and database replicas provide AZ resilience.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html",
+      "checked_on": "2026-09-18",
+      "supports": "A alias records support ELB targets at zone apexes; CNAME records support subdomains only."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Reliability.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora replicas across AZs improve availability beyond its replicated storage."
+    }
+  ],
+  "editorial_notes": [
+    "Added an explicit zone-apex constraint, replacing the false claim that CNAME is always unsuitable for ALB.",
+    "Replaced unspecified strict RPO/RTO language with concrete single-AZ failure requirements."
+  ],
+  "review_status": "authored"
+}

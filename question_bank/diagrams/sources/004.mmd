@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Persistent license identity and refreshed database configuration
+accDescr: An AZ-local licensed ENI moves from a retired instance to a new one, while a separate configuration workflow refreshes database addresses.
+subgraph AZ[One Availability Zone]
+ Old[Retired EC2 instance] -->|detach and release| ENI[Licensed secondary ENI]
+ ENI -->|attach| New[Replacement EC2 instance]
+end
+ Lic[S3 license file for this MAC] -->|matching license| New
+ Event[Database replacement workflow] --> L[Lambda]
+ L -->|publish current IPs| P[Parameter Store]
+ P -->|refresh IPs| New
+class Old,Event inputData
+class ENI,Lic,P storage
+class New output

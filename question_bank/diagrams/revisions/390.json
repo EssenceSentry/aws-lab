@@ -1,0 +1,62 @@
+{
+  "question_id": "390",
+  "base_record_sha256": "7567a21458d42e7d67c9f4cad3f52c81c5d61a0a2b216bbc7b68c273c4e69e1d",
+  "record": {
+    "id": "390",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An education platform serves a proprietary non-HTTP TCP protocol and a UDP collaboration protocol from EC2 Auto Scaling groups in us-east-1, eu-west-1, and ap-southeast-1. Customer firewalls must allowlist the same two static IPv4 ingress addresses worldwide. New connections must use the AWS global network to reach healthy Regional endpoints; clients can reconnect after failure. Each Region already has tested capacity and quotas for the failover load.\n\nThe application stores immutable events with globally unique IDs and accepts asynchronous cross-Region visibility. Which ingress and database design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a standard Global Accelerator with TCP and UDP listeners and a Network Load Balancer endpoint in each Region. Store events in a multi-Region eventual-consistency DynamoDB global table across the three Regions."
+      },
+      {
+        "id": "2",
+        "text": "Use a standard Global Accelerator with Application Load Balancer endpoints in each Region to forward the raw TCP and UDP protocols. Store events in a multi-Region eventual-consistency DynamoDB global table."
+      },
+      {
+        "id": "3",
+        "text": "Use Route 53 latency records that point directly to the Regional Network Load Balancers. Treat their Regional addresses as one shared pair of global IPv4 addresses and use an eventual-consistency DynamoDB global table."
+      },
+      {
+        "id": "4",
+        "text": "Use a standard Global Accelerator with Regional Network Load Balancer endpoints. Store events in one multi-Region strong-consistency DynamoDB global table spanning the specified US, Ireland, and Singapore Regions."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> satisfies three separate constraints. An IPv4 standard Global Accelerator supplies two static anycast addresses and routes new connections toward healthy endpoints over the AWS network. Regional NLBs support the application's TCP/UDP protocol model. DynamoDB multi-Region eventual consistency asynchronously replicates the events across the requested Regions.\n\nOption <<2>> selects the wrong Regional load balancer: ALB listeners support HTTP/HTTPS and WebSockets, not arbitrary raw TCP and UDP forwarding. Option <<3>> can select a Regional endpoint through DNS, but its Regional NLB addresses do not become a single pair of global static addresses. Option <<4>> chooses a real DynamoDB consistency mode with the wrong topology. MRSC deployments must remain within a supported Region set; the specified US, European, and Singapore combination is not supported.\n\nThe immutable, globally unique event model avoids concurrent updates to the same item. For mutable items, MREC's cross-Region lag and last-writer-wins conflict resolution require application design. Neither Global Accelerator nor an Auto Scaling policy guarantees replacement capacity or moves an established stateful connection seamlessly, which is why capacity readiness and reconnect behavior are explicit.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html\nhttps://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html\nhttps://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html\nhttps://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/390.svg",
+  "diagram_alt": "A single pair of static accelerator addresses fronts all three Regions while each Regional stack uses a local asynchronously replicated DynamoDB table.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html",
+      "checked_on": "2026-09-18",
+      "supports": "Two static IPv4 addresses, Regional endpoints, AWS network routing and new-connection health failover behavior."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html",
+      "checked_on": "2026-09-18",
+      "supports": "MREC asynchronous replication and conflict resolution, plus MRSC Region-set restrictions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB listener protocols and WebSocket support do not provide arbitrary TCP/UDP forwarding."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html",
+      "checked_on": "2026-09-18",
+      "supports": "NLB listener protocols include TCP, UDP and TCP_UDP."
+    }
+  ],
+  "editorial_notes": [
+    "Retained prior correctness repairs while rewriting all prose and removing provenance commentary. Verified current MRSC Region sets, raw-protocol and fixed-ingress distinctions. Key 1 unchanged."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,72 @@
+{
+  "question_id": "242",
+  "base_record_sha256": "7727e4edbf0b3e1a8a105abd517f91f8c8fc0f4fb26695f147b8fd97077eb5f6",
+  "record": {
+    "id": "242",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A write application runs in ECS on Fargate and connects to Aurora MySQL in the same VPC. Its task definition currently puts a Secrets Manager ARN in environment[].value for DB_PASSWORD and uses an instance-specific DB_HOST. The database security group has no rule for the task security group. The application must reconnect to the writer after failover. Execution-role secret access, supported Fargate platform version, routes, task egress and network ACLs are already configured.\n\nWhich changes are required? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep DB_PASSWORD in environment[] and replace its value with the Secrets Manager secret name so ECS resolves the password."
+      },
+      {
+        "id": "2",
+        "text": "Set DB_HOST to the current writer instance endpoint and retain it unchanged after any writer promotion."
+      },
+      {
+        "id": "3",
+        "text": "Move DB_PASSWORD to the container definition secrets[] array with valueFrom set to the secret ARN and the password JSON-key selector, if needed."
+      },
+      {
+        "id": "4",
+        "text": "Allow inbound TCP 3306 on the Aurora security group from the security group attached to the Fargate task ENIs."
+      },
+      {
+        "id": "5",
+        "text": "Add an inbound TCP 3306 rule to the Fargate task security group with the Aurora security group as its source."
+      },
+      {
+        "id": "6",
+        "text": "Set DB_HOST to the Aurora cluster writer endpoint and reconnect through that hostname after failover."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "4",
+      "6"
+    ],
+    "explanation": {
+      "text": "<<3>>, <<4>> and <<6>> are correct. ECS resolves secrets[] references at task startup. Aurora must admit the task-initiated connection, and its cluster endpoint directs new connections to the current writer. The application still needs retry/reconnection logic and appropriate DNS caching.\n\n<<1>> supplies a literal environment value rather than secret injection. <<2>> pins connections to a specific instance, which might become a reader after promotion of another instance. <<5>> opens the wrong direction: the task initiates the database connection, and stateful security groups permit its response traffic.\n\nNetwork reachability, credentials and writer discovery are separate requirements. An instance endpoint can work while that instance is the writer; it is not inherently unusable. Secret rotation also does not refresh an existing container environment: start new tasks or implement runtime retrieval.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html\nhttps://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html\nhttps://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/242.mmd",
+  "diagram_alt": "Three independent gates cover startup secret injection, database ingress, and a hostname that follows writer failover.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "ECS injects secrets through containerDefinitions[].secrets using execution-role access; injected values do not refresh automatically after rotation."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security groups allow traffic by direction, protocol and source/destination, support same-VPC group references and do not have deny rules."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora cluster endpoints follow the primary instance and support reconnecting after writer failover."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security groups are stateful and permit response traffic for allowed connections."
+    }
+  ],
+  "editorial_notes": [
+    "Integrated the previous writer-failover clarification into a concrete misconfiguration scenario."
+  ],
+  "review_status": "authored"
+}

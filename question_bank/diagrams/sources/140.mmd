@@ -1,0 +1,17 @@
+sequenceDiagram
+accTitle: A replica supplies compute for DocumentDB failover
+accDescr: After the primary fails, an existing replica in another Availability Zone is promoted. The application reconnects through the cluster endpoint, while replicated storage alone would not provide replacement compute.
+participant A as Java application
+participant E as Cluster endpoint
+participant P as Primary, AZ A
+participant R as Replica, AZ B
+A->>E: Open database connection
+E-->>A: Resolve current primary
+A->>P: Database requests
+Note over P: Primary or AZ A fails
+Note over R: DocumentDB promotes existing replica
+A->>E: Refresh resolution and reconnect
+E-->>A: Resolve promoted primary
+A->>R: Retry database requests
+R-->>A: Resume service
+Note over P,R: Shared durable storage does not replace replica compute

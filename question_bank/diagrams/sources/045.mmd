@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Separate TLS key custody from log decryption
+accDescr: TCP traffic reaches web servers, TLS private-key operations stay in CloudHSM, and archived logs require both S3 and KMS authorization.
+U["Browser"] -->|"TLS over TCP"| N["NLB: TCP listener"] --> W["Web server: TLS endpoint"]
+subgraph H["Dedicated CloudHSM boundary"]
+ K["Non-extractable private key"]
+end
+W -->|"private-key operation"| K
+K -->|"operation result, no key export"| W
+W -->|"write logs"| S[("S3: SSE-KMS archive")]
+A["Audit role"] --> R{"S3 read allowed?"} --> D{"KMS decrypt allowed?"} -->|"both required"| S

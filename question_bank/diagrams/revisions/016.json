@@ -1,0 +1,47 @@
+{
+  "question_id": "016",
+  "base_record_sha256": "bfb138a84e119a3efbd8092a66e05f3e761cfb87b202c413160181e2cb8ec611",
+  "record": {
+    "id": "016",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company has 50 AWS accounts with VPCs connected to a shared transit gateway in one Region. Each VPC currently has its own internet egress. The security team requires a single shared egress VPC with managed, rule-based outbound inspection. Workloads must not have an alternate uninspected internet route. The team wants to avoid operating firewall or proxy servers.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy a Network Firewall in every workload VPC and centrally distribute policies with Firewall Manager. Retain each VPC’s local NAT gateways and internet egress."
+      },
+      {
+        "id": "2",
+        "text": "Connect an egress VPC to the transit gateway. Deploy AZ-appropriate Network Firewall endpoints and public NAT gateways there. Route spoke default traffic to the transit gateway and then the egress attachment, and route locally through the firewall, NAT, and internet gateway with symmetric return routing. Remove bypass paths."
+      },
+      {
+        "id": "3",
+        "text": "Create an Auto Scaling group of proxy EC2 instances in every account. Use each Auto Scaling group as the default-route target in its workload VPC."
+      },
+      {
+        "id": "4",
+        "text": "Deploy Network Firewall endpoints and NAT gateways in one egress VPC. Set every spoke VPC’s default route directly to a firewall endpoint ID in the egress VPC, bypassing transit-gateway routing."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> uses valid next hops at each boundary: spoke route to transit gateway, transit-gateway route to the egress attachment, then local routes through inspection and NAT. The return path must traverse the matching stateful firewall path.\n\n<<1>> is a viable distributed inspection design, but violates the required single shared egress topology. <<3>> adds self-managed servers and an Auto Scaling group is not a route-table target. <<4>> attempts to route directly to an endpoint in another VPC; the transit gateway must connect those routing domains.\n\nNetwork Firewall inspects traffic and NAT translates addresses; neither replaces the other. Design per-AZ paths, remove bypass routes, test stateful return routing, and size the complete path for actual traffic. Central policy administration alone does not imply centralized egress.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-with-firewall.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/016.mmd",
+  "diagram_alt": "The bidirectional packet path crosses the transit gateway before reaching the egress VPC’s local inspection and NAT resources.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-with-firewall.html",
+      "checked_on": "2026-09-18",
+      "supports": "Central TGW egress path, firewall before NAT, AZ-local endpoints, and separate distributed alternative."
+    }
+  ],
+  "editorial_notes": [
+    "Made shared egress and managed infrastructure explicit, preserving distributed Firewall Manager as a legitimate but mismatching alternative. Removed an unnecessary fixed throughput assumption. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

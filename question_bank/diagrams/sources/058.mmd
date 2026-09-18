@@ -1,0 +1,12 @@
+flowchart LR
+accTitle: SSE-S3 envelope encryption happens inside S3
+accDescr: S3 uses a unique data key to encrypt an object and protects the data key with S3-managed key material, without returning a plaintext key to the application.
+A["Application"] -->|"HTTPS upload"| O["Object plaintext"]
+subgraph S["Amazon S3 encryption boundary"]
+ O --> E["Encrypt object"]
+ D["Unique data key"] --> E
+ E --> C[("Object ciphertext")]
+ M["S3-managed key material"] --> W["Encrypt data key"]
+ D --> W
+ W --> K[("Encrypted data key")]
+end

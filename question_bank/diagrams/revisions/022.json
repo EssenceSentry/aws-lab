@@ -1,0 +1,57 @@
+{
+  "question_id": "022",
+  "base_record_sha256": "dacc705c2490f535b57e72385d1fd515c9e315d77f359ded4ab767829f10adc6",
+  "record": {
+    "id": "022",
+    "exam_domain": "Design for New Solutions",
+    "question": "A retailer is launching a mobile photo-sharing application and expects large, unpredictable traffic increases. Users sign in with social identities and upload photos with captions of up to 100 characters. The application retrieves metadata by user ID and photo ID and does not need relational joins. The team wants managed services that minimize server and database capacity administration.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Amazon Cognito for sign-in, an Amazon RDS for MySQL instance for metadata, and Amazon EBS volumes attached to application servers for photos. Serve the photos directly from the servers."
+      },
+      {
+        "id": "2",
+        "text": "Use Amazon Cognito for sign-in, DynamoDB on-demand tables for metadata, and a private S3 bucket for photos. Deliver published photos and static assets through CloudFront with origin access control."
+      },
+      {
+        "id": "3",
+        "text": "Use an on-premises Active Directory deployment for customer identities, DynamoDB for metadata, and S3 with CloudFront for photos. Build and operate a custom identity integration."
+      },
+      {
+        "id": "4",
+        "text": "Use Amazon Cognito for sign-in, a provisioned RDS for MySQL deployment for metadata, and S3 with CloudFront for photos. Size and resize the database instances for expected peaks."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. Cognito supports social sign-in; DynamoDB fits the stated key-based metadata access; S3 stores image objects; and CloudFront caches published content near users. On-demand capacity reduces database throughput administration. Keep the S3 origin private and authorize uploads and private content separately.\n\n<<1>> couples photo availability to application servers and EBS volumes and introduces instance capacity management.\n\n<<3>> adds an identity system and custom integration that this public consumer application does not require.\n\n<<4>> can be a valid application architecture, but the specified provisioned database requires capacity administration without a relational requirement to justify it. RDS is not inherently incapable of storing captions or scaling.\n\nSeparate large objects from queryable metadata. Automatic scaling still has quotas and ramp-up behavior: prepare DynamoDB warm throughput and relevant service quotas for a known launch surge.\n\nOfficial AWS references (checked 2026-09-18):\n[Cognito social identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-provider.html)\n[DynamoDB on-demand capacity](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html)\n[CloudFront private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/022.mmd",
+  "diagram_alt": "Metadata uses a key-based database path; photo uploads and cached reads use separate authorized object-storage paths.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-provider.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed social sign-in"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html",
+      "checked_on": "2026-09-18",
+      "supports": "Automatic throughput scaling, quotas and warm-throughput limitations"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Origin access control authenticates CloudFront requests to a private S3 origin"
+    }
+  ],
+  "editorial_notes": [
+    "Added explicit key-based access and minimum capacity-administration requirements; removed categorical claims that RDS cannot store simple records. Added private-origin and authorized-upload qualifications. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

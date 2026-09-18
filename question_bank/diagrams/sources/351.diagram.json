@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Match each operational requirement",
+  "columns": [
+    "Requirement",
+    "Responsibility boundary"
+  ],
+  "rows": [
+    [
+      "Kubernetes application interfaces",
+      "EKS retains the Kubernetes deployment model"
+    ],
+    [
+      "No worker-host administration",
+      "Fargate runs compatible pods"
+    ],
+    [
+      "Elastic transaction compute",
+      "Aurora serverless scales within configured bounds"
+    ],
+    [
+      "Elastic analytical compute",
+      "Redshift Serverless runs warehouse queries"
+    ],
+    [
+      "Event-driven ingestion",
+      "EventBridge routes, application workers process and load"
+    ]
+  ],
+  "footnote": "Moving the application to another cloud does not move its AWS data services.",
+  "emphasis_rows": [
+    0,
+    4
+  ]
+}

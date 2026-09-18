@@ -1,0 +1,53 @@
+{
+  "question_id": "191",
+  "base_record_sha256": "df4ab55da2621e1688cd27e7d65087cc10220afdd5f409e2a8bfdcedbdae5e43",
+  "record": {
+    "id": "191",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A vendor's multi-tenant auditing application runs in the vendor's AWS account and needs a limited set of EC2 discovery API operations in a customer account. The vendor supplies its designated AWS principal and a unique identifier it generated for this customer. The customer prohibits distributing persistent access keys and wants to prevent another vendor customer from causing the vendor to assume this customer's role.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a role with only the required discovery permissions. Restrict trust to the designated vendor principal and require sts:ExternalId to match the vendor-generated customer identifier."
+      },
+      {
+        "id": "2",
+        "text": "Create a role that trusts the vendor principal and add the customer identifier only as a role tag, without an ExternalId trust condition."
+      },
+      {
+        "id": "3",
+        "text": "Provide an administrator's access key and secret key to the vendor, and require the vendor to include the customer identifier in its application logs."
+      },
+      {
+        "id": "4",
+        "text": "Create a least-privilege IAM user for the vendor and give it persistent access keys, relying on the restricted permissions to prevent confused-deputy access."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Principal restrictions identify the trusted vendor, and the ExternalId condition checks which customer the vendor is acting for when it requests a session. The role's permissions separately limit the EC2 discovery operations. The vendor must also authorize its own caller to assume the role.\n\n<<2>> stores metadata but does not make the identifier an evaluated trust condition. <<3>> shares excessive, persistent credentials; logging a customer ID does not prevent misuse. <<4>> scopes actions but still distributes prohibited long-term keys and omits the customer-binding role-assumption check.\n\nExternal IDs are not secrets or per-request restrictions attached to every later API call. They mitigate the confused-deputy problem at AssumeRole. Protect the resulting temporary credentials because possession of a valid session can still permit its authorized actions until the session expires or is otherwise restricted.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/191.mmd",
+  "diagram_alt": "The same vendor principal receives a session only when its customer-specific external ID matches the target role trust condition.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html",
+      "checked_on": "2026-09-18",
+      "supports": "A vendor-controlled per-customer ExternalId prevents another customer from inducing the vendor to assume the wrong role."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html",
+      "checked_on": "2026-09-18",
+      "supports": "Third-party access uses least-privilege roles, designated principals and external IDs that are not secrets."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced the impossible promise that credentials can never be reused with a precise confused-deputy requirement.",
+    "Replaced an unrelated Amazon Connect distractor with a plausible role-tag-versus-trust-condition mistake."
+  ],
+  "review_status": "authored"
+}

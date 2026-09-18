@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Two sources of tags meet two different requirements
+accDescr: The governed provisioning path combines Service Catalog origin tags and template business tags on resources that support creation-time tagging.
+U[Employee uses<br/>approved catalog product]:::inputData --> P[CloudFormation product<br/>Governed provisioning path]:::decision
+P --> A[Service Catalog AutoTags<br/>Product and principal origin]:::inputData
+P --> B[Template Tags properties<br/>CostCenter and Owner]:::inputData
+A --> R[Supported resources<br/>Tagged during provisioning]:::output
+B --> R
+N[Resource-specific propagation<br/>must be configured]:::warning -.-> R

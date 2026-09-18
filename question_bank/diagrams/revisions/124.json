@@ -1,0 +1,64 @@
+{
+  "question_id": "124",
+  "base_record_sha256": "ff4174628381d38f0f9f4c5ae522b495ab1477f67dcc55c087d40992b49473f2",
+  "record": {
+    "id": "124",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company uses AWS Organizations and must retain an audit record of management API activity across all organization accounts and enabled Regions. Delivered log object versions must resist deletion for 365 days, including deletion attempts by account administrators. The security team also needs evidence of whether delivered log files have been altered.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a multi-Region trail only in the management account. Store logs in a versioned S3 bucket and enable MFA Delete."
+      },
+      {
+        "id": "2",
+        "text": "Create a multi-Region organization trail and enable log-file integrity validation. Deliver logs to an encrypted, restricted S3 bucket in the logging account with Object Lock compliance-mode retention for 365 days. Run integrity validation and monitor trail delivery."
+      },
+      {
+        "id": "3",
+        "text": "Create a single-Region organization trail. Send SNS delivery notifications and encrypt the destination bucket, relying on notifications to establish complete coverage and immutable retention."
+      },
+      {
+        "id": "4",
+        "text": "Create a multi-Region organization trail with integrity validation. Use an encrypted, versioned S3 bucket with a lifecycle rule that expires logs after 365 days, relying on that schedule to prevent earlier administrator deletion."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> covers account scope, Region scope, retention and integrity as separate controls. The organization trail includes member accounts. Object Lock compliance mode protects each retained object version from deletion or overwrite during its retention period. Signed CloudTrail digest files enable validation of delivered log files; enabling digest delivery is not the same as actually running validation.\n\n<<1>> does not include member-account events merely because the trail is multi-Region, and MFA Delete is not the specified fixed retention mechanism. <<3>> omits activity outside one Region; notifications and encryption do not enforce retention or prove integrity. <<4>> schedules object expiration but does not prevent an authorized administrator from deleting retained versions earlier.\n\nConfigure the required event selectors: management events cover control-plane activity, while selected data events are needed for object or item access. Protect logging and KMS administration separately and monitor delivery failures.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html\nhttps://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html\nhttps://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/log-archive.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/124.diagram.json",
+  "diagram_alt": "A control comparison separates audit coverage, immutable retention, integrity evidence and delivery monitoring.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html",
+      "checked_on": "2026-09-18",
+      "supports": "Organization coverage and multi-Region coverage are separate and enabled Regions are included."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compliance mode protects object versions from deletion or overwrite during retention."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Digest delivery enables later validation but does not itself perform validation."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/log-archive.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudTrail log protection in a dedicated archive includes Object Lock, access controls and integrity validation."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced ambiguous MFA Delete retention with an explicit 365-day Object Lock requirement.",
+    "Avoided claiming CloudTrail captures every possible resource change or that enabling validation automatically validates files.",
+    "Replaced client-specific trail fiction with a plausible lifecycle-versus-immutability distractor."
+  ],
+  "review_status": "authored"
+}

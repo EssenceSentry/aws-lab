@@ -1,0 +1,52 @@
+{
+  "question_id": "081",
+  "base_record_sha256": "65162152fb99942cad39414ac0cc119c72fe765804459cbb1a7867f691c010c0",
+  "record": {
+    "id": "081",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company deploys a web application to an EC2 Auto Scaling group through AWS CodePipeline. AWS CloudFormation manages the infrastructure, and instance user data downloads application artifacts from Amazon S3. A recent template update replaced instances before the new application was ready, causing an outage.\n\nThe company wants automated validation before production changes, visibility into resource replacements, and a quick way to return application traffic to the previous release. Which deployment approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add cfn-init and cfn-signal to instance user data. Have a tester inspect the application after each in-place production stack update."
+      },
+      {
+        "id": "2",
+        "text": "Run automated tests in CodeBuild against a nonproduction environment. Review a CloudFormation change set, then use a CodeDeploy blue/green deployment with health validation and rollback alarms before retiring the previous environment."
+      },
+      {
+        "id": "3",
+        "text": "Validate the template syntax in the developer IDE and with the CloudFormation CLI. Continue replacing the production Auto Scaling group directly after validation succeeds."
+      },
+      {
+        "id": "4",
+        "text": "Use CodeDeploy blue/green deployment to switch production traffic immediately after installation. Run the functional tests after the previous environment has been terminated."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Automated tests exercise the release before production, a change set exposes infrastructure changes such as replacement, and a blue/green deployment keeps a known release available while the replacement is validated. Health checks and rollback alarms provide a controlled traffic cutover. Infrastructure changes must also remain compatible with both application releases.\n\n<<1>> improves bootstrap coordination only when the signals are wired to the relevant CloudFormation policies. It does not provide the required preproduction application tests or a separate rollback environment.\n\n<<3>> checks template validity but does not prove that the application starts correctly or that replacing production instances is safe. Even a valid change set can fail during execution.\n\n<<4>> uses a suitable deployment mechanism but places the test gate too late and discards the previous environment before validation.\n\nTraffic rollback does not automatically undo destructive database migrations or every infrastructure update. Design those changes for backward compatibility and recovery.\n\nAWS documentation (checked September 18, 2026): [CloudFormation change sets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html); [CodeDeploy EC2 blue/green deployments](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-steps-server.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/081.mmd",
+  "diagram_alt": "Tests and infrastructure review gate deployment, and the previous environment remains available until green is validated.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html",
+      "checked_on": "2026-09-18",
+      "supports": "Change sets preview resource updates and replacements, but do not establish application runtime correctness."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-steps-server.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 blue/green deployments register replacement instances and deregister original instances through a load balancer."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Distinguished application tests, infrastructure preview, and traffic rollback. Clarified that blue/green rollback does not reverse destructive data changes."
+  ],
+  "review_status": "authored"
+}

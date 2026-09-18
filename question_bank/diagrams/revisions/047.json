@@ -1,0 +1,58 @@
+{
+  "question_id": "047",
+  "base_record_sha256": "90a52b95eee0dd63693be1ef2597230d63b9a043e3c9bffa993944ac059d31d1",
+  "record": {
+    "id": "047",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A utility ingests meter readings through API Gateway and invokes Lambda once per request. As usage grows, Lambda reports TooManyRequestsException, and DynamoDB PutItem calls report provisioned write-capacity throttling. Profiling shows most of the longer execution time is spent retrying database writes; CPU and memory are not saturated. Readings may be processed asynchronously, but every accepted reading must be retained.\n\nWhich combination addresses both bottlenecks? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase the provisioned write capacity of the affected DynamoDB table and indexes to cover sustained demand, with appropriate Auto Scaling bounds and retry handling."
+      },
+      {
+        "id": "2",
+        "text": "Increase Lambda memory while leaving the invocation pattern, database write capacity and retry configuration unchanged."
+      },
+      {
+        "id": "3",
+        "text": "Have meters combine more readings into larger requests while leaving database capacity and the backend processing architecture unchanged."
+      },
+      {
+        "id": "4",
+        "text": "Integrate the ingestion API with Kinesis Data Streams and return after durable ingestion. Process records with a Lambda event-source mapping using tuned batches and shard parallelism that fit the available concurrency."
+      },
+      {
+        "id": "5",
+        "text": "Increase API Gateway rate and burst limits so that more requests can invoke the existing Lambda functions simultaneously."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "Select <<1>> and <<4>>. Sufficient DynamoDB write capacity addresses sustained storage demand. A durable stream separates accepting readings from processing them, so transient bursts wait in Kinesis instead of requiring one simultaneous long-running Lambda invocation per request. Tune batch size, shard count and parallelization against Lambda concurrency and downstream write capacity.\n\n<<2>> can benefit CPU-bound code, but the measured delay is database retry time; more memory does not increase DynamoDB WCUs. <<3>> alone neither fixes sustained write demand nor creates a durable server-side backlog. <<5>> admits more work into already-throttled components and can worsen the problem.\n\nBatching does not reduce the write capacity needed for the same set of item writes. Use backoff for throttled operations and idempotent processing because stream records can be delivered more than once. Monitor iterator age and retention so the backlog drains before records expire. A buffer absorbs bursts; it cannot compensate indefinitely for a consumer slower than sustained ingestion.\n\nAWS documentation (checked September 18, 2026): [Lambda stream processing](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html), [DynamoDB capacity throttling](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/throttling-provisioned-capacity-exceeded-mitigation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/047.mmd",
+  "diagram_alt": "Kinesis absorbs temporary bursts while Lambda concurrency and DynamoDB capacity determine sustainable drain rate.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda consumes Kinesis records in batches with shard-based parallelism and at-least-once processing."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/throttling-provisioned-capacity-exceeded-mitigation.html",
+      "checked_on": "2026-09-18",
+      "supports": "Sustained demand above table or index provisioned write capacity causes throttling; capacity and scaling bounds must be adjusted."
+    }
+  ],
+  "editorial_notes": [
+    "Added profiling evidence to disambiguate the memory distractor and explicitly permitted asynchronous processing.",
+    "Kept answer set 1 and 4; clarified that batching does not discount item write capacity."
+  ],
+  "review_status": "authored"
+}

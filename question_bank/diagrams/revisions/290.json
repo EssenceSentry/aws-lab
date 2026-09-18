@@ -1,0 +1,52 @@
+{
+  "question_id": "290",
+  "base_record_sha256": "a5fefa326c265c8fdc9efc33e03b449f0b6c858101e8f8670eb130d23f729ee4",
+  "record": {
+    "id": "290",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A portal generates presigned S3 PUT URLs on EC2 using instance-role credentials. URLs work immediately, but some uploads fail when clients reuse saved URLs later. The same operation succeeds with newly generated URLs. The bucket and role policies have not changed, the signer remains authorized, and request methods and signed headers match. Local tests use a different valid credential session.\n\nWhich conditions can explain the saved URLs failing? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "S3 Versioning is enabled, which invalidates a presigned upload URL after its first successful use."
+      },
+      {
+        "id": "2",
+        "text": "The EC2 instance has no local AWS credentials file, even though its SDK successfully obtained instance-role credentials."
+      },
+      {
+        "id": "3",
+        "text": "The expiration time specified in a saved presigned URL has passed."
+      },
+      {
+        "id": "4",
+        "text": "The issuing EC2 instance was replaced, which by itself invalidates every previously issued URL even while its signing credentials remain valid."
+      },
+      {
+        "id": "5",
+        "text": "The temporary credentials used to sign a saved URL have expired, even if the URL's requested expiration time is later."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<5>> are correct. A presigned URL cannot outlive either its configured expiration or the credentials that signed it. A longer requested URL lifetime does not extend an EC2 role session. Fresh credentials and a newly signed URL can therefore succeed while an older saved URL fails.\n\n<<1>> is incorrect. Versioning changes how object versions are retained; it does not turn presigned PUT URLs into single-use tokens.\n\n<<2>> is incorrect. An SDK can obtain temporary instance-role credentials without a local credentials file.\n\n<<4>> is incorrect as stated. URL validity is tied to the signing credentials and applicable authorization, not to continued execution of the process or instance that generated it.\n\nGenerate URLs close to use with refreshed credentials and a suitably short lifetime. Treat them as bearer capabilities. Policy changes, revoked credentials, or mismatched signed request fields can also cause failures, but those alternatives are excluded by this scenario.\n\nOfficial AWS references (checked September 18, 2026): [Presigned URL validity](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/290.diagram.json",
+  "diagram_alt": "The validity table shows why either URL expiry or earlier signing-session expiry can reject a saved upload URL.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+      "checked_on": "2026-09-18",
+      "supports": "Effective lifetime is bounded by URL expiry and signing-credential expiry, with permissions and request matching still required"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 3 and 5. Isolated independent URL and credential expiry causes, excluded permission or signature mismatches, and removed the false requirement for local credentials files."
+  ],
+  "review_status": "authored"
+}

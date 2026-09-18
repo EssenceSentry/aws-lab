@@ -1,0 +1,64 @@
+{
+  "question_id": "065",
+  "base_record_sha256": "21e156bc30d6c7ef411c7adff0aac5b908e1afdd6e35814ffec820f2e5966c06",
+  "record": {
+    "id": "065",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A photo-sharing service stores photos and associated JSON metadata in Amazon S3 Standard. Objects are larger than 128 KB, remain frequently accessed for 30 days, and then are retained for at least a year with infrequent access. All objects must remain immediately retrievable. The service uses an RDS Single-AZ DB instance. The company also wants to detect personal information in the JSON files and automatically fail over after a database Availability Zone failure.\n\nWhich combination best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Amazon Macie sensitive data discovery jobs for the JSON files, transition eligible S3 objects to S3 Glacier Flexible Retrieval after 30 days, and convert the database to an RDS Multi-AZ DB instance deployment."
+      },
+      {
+        "id": "2",
+        "text": "Use Amazon Macie sensitive data discovery jobs for the JSON files, transition eligible S3 objects to S3 Standard-IA after 30 days, and convert the database to an RDS Multi-AZ DB instance deployment."
+      },
+      {
+        "id": "3",
+        "text": "Use Amazon Macie sensitive data discovery jobs for the JSON files, transition eligible S3 objects to S3 Standard-IA after 30 days, and create a read replica of the Single-AZ database in another Availability Zone."
+      },
+      {
+        "id": "4",
+        "text": "Use Amazon Inspector to discover personal information in S3, transition eligible S3 objects to S3 Standard-IA after 30 days, and convert the database to an RDS Multi-AZ DB instance deployment."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> matches all three requirements. Macie can inspect supported JSON object contents for sensitive data. S3 Standard-IA retains millisecond access for long-lived objects whose reads become infrequent. An RDS Multi-AZ DB instance adds a synchronous standby and automatic failover. Evaluate transition, retrieval and minimum-storage charges against the observed access pattern.\n\n<<1>> uses an archive class that requires a restore before ordinary object retrieval, so it fails the immediate-access requirement. <<3>> provides an asynchronous read replica that requires a separate promotion procedure; it does not provide the requested automatic Multi-AZ failover. <<4>> uses a vulnerability-management service for a sensitive-data discovery task; Macie is the appropriate service for supported JSON objects in S3.\n\nMacie creates findings; protection or remediation requires a response workflow. It does not inspect the visual content of photographs. The JSON metadata is the supported sensitive-data discovery target in this scenario.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html\nhttps://docs.aws.amazon.com/macie/latest/user/what-is-macie.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/065.diagram.json",
+  "diagram_alt": "A requirements matrix separates S3 lifecycle and immediate access, Macie JSON discovery, and RDS Multi-AZ automatic failover.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html",
+      "checked_on": "2026-09-18",
+      "supports": "Macie supports JSON and Standard-IA but not image content."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html",
+      "checked_on": "2026-09-18",
+      "supports": "Macie findings can drive separately configured remediation workflows."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard-IA immediate access, minimum duration and retrieval fees; archive distinctions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multi-AZ DB instance standby and automatic failover."
+    }
+  ],
+  "editorial_notes": [
+    "Constrained discovery to supported JSON files instead of implying Macie scans photos.",
+    "Removed the claim that Macie itself automatically protects discovered data.",
+    "Root replaced unrelated service substitutions with otherwise-valid combinations that each fail one stated requirement; converted the wide three-path diagram into an aligned requirements matrix."
+  ],
+  "review_status": "authored"
+}

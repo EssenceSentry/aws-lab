@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Separate a friendly request from provisioning authority
+accDescr: The scientist selects an approved size, Service Catalog invokes the launch role, and the fixed template provisions a notebook with the approved key and runtime role.
+U["Scientist selects approved size"] --> P["Service Catalog product"]
+P --> L["Launch role provisions template"]
+L --> N["Notebook: approved key and execution role"]
+N --> O["Name or ARN plus authenticated access"]
+class U inputData
+class P,L decision
+class N storage
+class O output

@@ -1,0 +1,57 @@
+{
+  "question_id": "389",
+  "base_record_sha256": "457a9f3103a02a05a1c04b70c3afd03d4a63b75743a9d50c3b0b30a75bf23e85",
+  "record": {
+    "id": "389",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company routes internet-bound traffic from its spoke VPCs through a centralized inspection VPC connected by Transit Gateway. It will deploy stateful third-party firewall appliances that support Gateway Load Balancer encapsulation. The design must operate across two Availability Zones and preserve symmetric forward and return traffic. NAT and route-table changes are in scope, and clients can reconnect after a failed appliance or AZ.\n\nWhich design provides the appropriate inspection path and removes a single-AZ dependency?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place both appliances in one Availability Zone behind a Gateway Load Balancer. Route all spoke traffic through one Gateway Load Balancer endpoint in that zone."
+      },
+      {
+        "id": "2",
+        "text": "Place appliances in two Availability Zones behind a Network Load Balancer. Create a standard interface endpoint and use that endpoint as the transparent next hop for all routed IP traffic."
+      },
+      {
+        "id": "3",
+        "text": "Place both appliances in one Availability Zone behind an Application Load Balancer. Route all protocols through a standard interface endpoint to that load balancer."
+      },
+      {
+        "id": "4",
+        "text": "Place appliances behind a multi-AZ Gateway Load Balancer and deploy Gateway Load Balancer endpoints in both AZs. Enable appliance mode on the inspection VPC transit attachment and configure zonal NAT and symmetric inspection routes, with tested failure handling."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> uses the load balancer and endpoint type designed for transparent insertion of virtual network appliances. A Gateway Load Balancer endpoint is a route-table target. GWLB sends the original traffic through the selected appliance using GENEVE encapsulation, then returns it to the endpoint so routing can continue. Appliances must support the encapsulation and health checks.\n\nFor this stateful centralized design, Transit Gateway appliance mode helps keep both directions in the same inspection AZ, while GWLB flow affinity keeps a flow on its selected appliance. Deploy endpoints, appliances, and the required NAT/routing paths across AZs; a multi-AZ target fleet behind a single zonal endpoint still leaves a dependency. Test new-flow behavior, appliance and AZ failures, and return routes. Existing connections are not guaranteed seamless migration to another stateful appliance.\n\nOption <<1>> leaves all inspection capacity and its endpoint in one failure domain. Option <<2>> confuses a standard interface endpoint for an NLB service with a routable GWLB endpoint for transparent IP inspection. Option <<3>> has the same endpoint problem, limits the load-balancer protocol model to HTTP/HTTPS, and also uses only one AZ.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-and-gwlb-with-ec2.html\nhttps://docs.aws.amazon.com/prescriptive-guidance/latest/inline-traffic-inspection-third-party-appliances/solution-options.html\nhttps://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/389.mmd",
+  "diagram_alt": "A selected zonal path inspects both outbound and return traffic through the same stateful firewall, with the entire path repeated in another AZ.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-and-gwlb-with-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Centralized TGW, GWLB endpoints and NAT egress architecture, GENEVE support, appliance mode and multi-AZ availability."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/inline-traffic-inspection-third-party-appliances/solution-options.html",
+      "checked_on": "2026-09-18",
+      "supports": "Per-AZ endpoint and transit attachment design and appliance-mode considerations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "GWLB transparent Layer 3 appliance load balancing and GENEVE behavior."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced the inherited Network Firewall source with GWLB-specific egress guidance. Made the TGW topology, zonal endpoint/NAT paths, symmetry, and reconnect assumptions explicit. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,62 @@
+{
+  "question_id": "205",
+  "base_record_sha256": "08c173a08955d285a62c830cb30a72a8cb42452e1eea18717b67df7bd4af3f7f",
+  "record": {
+    "id": "205",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A dynamic web application stores immutable media files on a fleet of EC2 file servers and copies each file between those servers. The growing replication backlog is causing missing media after server failures. The application can use object keys and HTTPS for media access and does not need shared file locks or POSIX semantics. The company wants to remove media-serving servers, improve durability, and analyze ongoing spending.\n\nWhich redesign best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Move media to S3 and serve it through CloudFront with an S3 origin and origin access control. Keep dynamic processing on an ALB-backed EC2 Auto Scaling group, and use Cost Explorer to analyze costs and usage."
+      },
+      {
+        "id": "2",
+        "text": "Move media to S3, but retain the existing EC2 file-server fleet as the required download proxy for every media request. Use Cost Explorer to analyze spending."
+      },
+      {
+        "id": "3",
+        "text": "Move media to EFS and mount it on a separate multi-AZ EC2 media-serving fleet behind an ALB. Keep the dynamic web tier and analyze spending with Cost Explorer."
+      },
+      {
+        "id": "4",
+        "text": "Move media to EFS and run both media-serving processes and dynamic code in a Beanstalk environment behind CloudFront. Use Cost Explorer to analyze spending."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Media durability no longer depends on copies managed by EC2 servers, and CloudFront can retrieve objects directly from a private S3 origin. Dynamic server-side code stays on a compute tier that can scale separately. Cost Explorer helps attribute and monitor actual usage costs.\n\n<<2>> improves the durable backing store, but retains the media-server dependency that the requirement removes.\n\n<<3>> can provide durable shared files, but adds a dedicated serving fleet and a file interface the application does not need.\n\n<<4>> is a valid way to serve EFS content through an HTTP application, but still operates media-serving processes rather than using the direct managed object-delivery path.\n\nCloudFront does not use an EFS mount target directly as an HTTP origin; a server or other supported origin must expose the content. S3 also does not execute the application's server-side code. Compare the complete workload's request, transfer, storage, and compute costs rather than assuming one storage service is universally cheaper.\n\nOfficial AWS references (checked September 18, 2026): [Private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html). [Supported CloudFront origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html). [S3 data durability](https://docs.aws.amazon.com/AmazonS3/latest/userguide/DataDurability.html). [Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-exploring-data.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/205.mmd",
+  "diagram_alt": "Static media and dynamic processing have separate serving paths and independent lifecycles.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Origin access control and distribution-scoped S3 access"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 and HTTP application origins"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/DataDurability.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed redundant object storage independent of EC2 media servers"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-exploring-data.html",
+      "checked_on": "2026-09-18",
+      "supports": "Costs, trends and usage reports"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced invalid direct-EFS-origin and dynamic-S3-hosting choices with working alternatives that retain the explicitly unwanted media-serving tier; avoided universal storage-price claims."
+  ],
+  "review_status": "authored"
+}

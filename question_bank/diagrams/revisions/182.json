@@ -1,0 +1,48 @@
+{
+  "question_id": "182",
+  "base_record_sha256": "15aa836674f66c91ce179ba622450de6231748a7942e3c65edece59ed05c80a6",
+  "record": {
+    "id": "182",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "EC2 instances download updates over HTTPS from an approved set of vendor hostnames. The vendors change their IP addresses, and the applications support explicit proxy settings. The company must block connections to other internet hosts and prevent workloads from bypassing the restriction. Filtering encrypted URL paths is not required.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Move the instances to private subnets and add static routes for the vendors' current IP addresses through a NAT gateway. Leave those routes unchanged when vendor addresses change."
+      },
+      {
+        "id": "2",
+        "text": "Create network ACL rules that permit TCP 443 to the vendors' current IP addresses and deny other traffic, using the ACL as a hostname allowlist."
+      },
+      {
+        "id": "3",
+        "text": "Allow outbound TCP 443 to 0.0.0.0/0 in the workload security group and rely on HTTPS certificate validation to restrict traffic to approved vendors."
+      },
+      {
+        "id": "4",
+        "text": "Configure the applications to use a restricted forward proxy that allows only the approved HTTPS destinations. Remove workload internet bypass paths and permit only the required proxy connections, while providing controlled internet egress for the proxy."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The forward proxy evaluates the destination hostname, and the network configuration forces the workloads to use that enforcement point. Restrict who can reach the proxy, configure every relevant client, and retain the proxy's own controlled path to the internet.\n\n<<1>> is tied to a changing IP list and does not provide hostname policy enforcement. <<2>> uses an IP/protocol/port control as if it understood hostnames. <<3>> allows any HTTPS destination; certificate validation authenticates a server's identity but does not make it an approved destination.\n\nFor supported HTTPS traffic, a proxy can restrict CONNECT destinations or inspect visible TLS server names without reading encrypted URL paths. Those capabilities must match the clients' protocol behavior. An HTTP proxy is an application endpoint, not automatically a route-table next hop. Test both allowed downloads and attempts to bypass the proxy.\n\nAWS documentation (checked 2026-09-18):\nhttps://aws.amazon.com/blogs/security/how-to-set-up-an-outbound-vpc-proxy-with-domain-whitelisting-and-content-filtering/",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/182.mmd",
+  "diagram_alt": "Hostname filtering and enforced proxy use work together; allowing HTTPS alone does not restrict destination hosts.",
+  "sources": [
+    {
+      "url": "https://aws.amazon.com/blogs/security/how-to-set-up-an-outbound-vpc-proxy-with-domain-whitelisting-and-content-filtering/",
+      "checked_on": "2026-09-18",
+      "supports": "A domain-allowlisting proxy requires proxy-capable clients, controlled client access and its own internet connectivity; encrypted paths are not inspected."
+    }
+  ],
+  "editorial_notes": [
+    "Added changing provider IPs, proxy-capable clients and hostname-only inspection to make the mechanism precise.",
+    "Replaced URL-routing fiction with plausible IP-filter and HTTPS-trust distractors."
+  ],
+  "review_status": "authored"
+}

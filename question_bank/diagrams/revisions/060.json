@@ -1,0 +1,58 @@
+{
+  "question_id": "060",
+  "base_record_sha256": "1d6d9bbd4ceb44b1daad586af6d628ae2cd216a62eea45db92feebf0460c4090",
+  "record": {
+    "id": "060",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company runs batch applications in private IPv4 subnets across two Availability Zones. They use public NAT instances to reach internet APIs. Instance failures and bandwidth limits repeatedly interrupt jobs. The company wants resilient outbound IPv4 access without maintaining NAT operating systems or custom failover automation.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a public zonal NAT gateway with an Elastic IP address in a public subnet in each AZ. Route each private subnet default IPv4 route to its same-AZ gateway, and route the public subnets to an internet gateway."
+      },
+      {
+        "id": "2",
+        "text": "Replace the existing NAT instances with larger EC2 instances that support enhanced networking. Keep the current routes and perform operating-system patching during maintenance windows."
+      },
+      {
+        "id": "3",
+        "text": "Run a NAT instance in each AZ and build monitoring and Lambda automation to replace failed instances and update private-subnet routes during outages."
+      },
+      {
+        "id": "4",
+        "text": "Attach an egress-only internet gateway to the VPC and replace the private subnet default IPv4 routes with routes to that gateway."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Choose <<1>>. Public NAT gateways provide managed outbound translation for the private IPv4 workloads. A zonal gateway is redundant within its AZ; placing one in each AZ and routing workloads to the local gateway avoids making both AZs depend on one gateway AZ. Internet access also requires a public-subnet route to an internet gateway and an Elastic IP for each public NAT gateway.\n\n<<2>> may increase bandwidth, but retains customer maintenance and the instance-failure problem. <<3>> can form a resilient NAT-instance design, but explicitly requires the maintenance and custom failover automation the company wants to remove. <<4>> cannot carry the required IPv4 traffic because an egress-only internet gateway is for IPv6.\n\nManaged NAT does not make every topology resilient: a shared zonal gateway still introduces an AZ dependency. Size and monitor connection and throughput limits, and verify route tables and NACLs. NAT permits response traffic for connections initiated from inside; it does not expose private instances for unsolicited internet connections.\n\nAWS documentation (checked September 18, 2026): [NAT gateway resilience](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html), [NAT gateway comparison](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html), [Egress-only IPv6 gateway](https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/060.mmd",
+  "diagram_alt": "Each AZ has its own zonal public NAT gateway and local private-subnet default route, sharing only the VPC internet gateway.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html",
+      "checked_on": "2026-09-18",
+      "supports": "Zonal NAT gateways are redundant within an AZ; same-AZ routing avoids dependency on a different AZ."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html",
+      "checked_on": "2026-09-18",
+      "supports": "AWS manages NAT gateways, which scale bandwidth; NAT instances require customer maintenance and failover."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html",
+      "checked_on": "2026-09-18",
+      "supports": "Egress-only internet gateways support IPv6 only, not the IPv4 egress required here."
+    }
+  ],
+  "editorial_notes": [
+    "Specified IPv4 and explicit per-AZ zonal NAT placement instead of implying one NAT gateway is cross-AZ resilient.",
+    "Replaced the invalid two-identical-default-routes distractor with a feasible but operationally heavier NAT-instance failover design."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "382",
+  "base_record_sha256": "33bfbf9574fefe3975072d0b946a144ce5451f19faa4d575f234d8b09ec0b0d7",
+  "record": {
+    "id": "382",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is preparing to migrate an undocumented application distributed across physical and virtual servers. Several tightly coupled components communicate through a custom TCP protocol on port 1000. AWS Transform discovery has collected server and connection data during representative workloads. The team has also exported connection records to S3 and cataloged them for Athena queries.\n\nWhich approach best identifies and validates a complete migration group before cutover?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Query the exported data for direct port 1000 connections to the first known server. Migrate only the directly connected servers without checking their additional dependencies."
+      },
+      {
+        "id": "2",
+        "text": "Run VPC Network Access Analyzer against the on-premises network to discover operating-system processes and application dependencies automatically."
+      },
+      {
+        "id": "3",
+        "text": "Replicate the first known server with AWS Transform MGN and cut it over. Use CloudWatch metrics in AWS to identify missing components afterward."
+      },
+      {
+        "id": "4",
+        "text": "Review the AWS Transform dependency groupings and use Athena to trace the port 1000 connections and their downstream dependencies. Validate discovery coverage and infrequent dependencies with application owners, then place tightly coupled components in one move group."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> combines observed connections with dependency closure and validation. If the entry server calls another component that calls a third, migrating only the first server's immediate neighbors can split the application. Review the connected dependency graph, confirm the roles of the communicating processes, and validate the proposed move group with owners and representative tests before scheduling its wave.\n\nDiscovery evidence has limits: unobserved scheduled work and servers outside the discovery inventory can leave gaps. AWS Transform uses collected data to propose application and move groupings; those proposals require review. The stem explicitly provides an exported, Athena-queryable dataset rather than assuming that Transform automatically creates an Application Discovery Service Athena integration.\n\nOption <<1>> stops at direct connections and treats a port filter as proof of completeness. Option <<2>> uses a tool for analyzing AWS VPC network access paths, not discovering on-premises processes and their live connections. Option <<3>> postpones dependency discovery until after the risky cutover. Rehosting tools move servers; they do not make an incomplete application group safe to migrate.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/transform/latest/userguide/transform-vmware-review-groupings-and-waves.html\nhttps://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-configure.html\nhttps://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/382.mmd",
+  "diagram_alt": "A transitive dependency joins the migration group even though it is absent from the entry server’s direct connection list.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/transform-vmware-review-groupings-and-waves.html",
+      "checked_on": "2026-09-18",
+      "supports": "Review application groupings, co-dependent move groups and migration waves using technical and business constraints."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-configure.html",
+      "checked_on": "2026-09-18",
+      "supports": "Discovery collection and inventory prerequisites for observed connection data."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Network Access Analyzer evaluates potential AWS VPC paths rather than discovering on-premises processes."
+    }
+  ],
+  "editorial_notes": [
+    "Changed ambiguous IP-port wording to TCP and explicitly supplied the exported Athena dataset. Added transitive dependency and coverage validation instead of promising complete discovery from a port filter. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

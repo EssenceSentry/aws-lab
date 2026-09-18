@@ -1,0 +1,57 @@
+{
+  "question_id": "340",
+  "base_record_sha256": "1ec096306738a110254ebaff1cf2b5cbdf2803b97d2b13d4cf1480756940dc0a",
+  "record": {
+    "id": "340",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses several Lambda functions in a Step Functions transaction workflow. Each function has at most 1,792 MB of configured memory and has run at least 50 times during the past 14 days. The company wants a weekly CSV in S3 containing average observed memory use, current and recommended memory settings, and estimated monthly savings. It wants to use managed recommendations rather than build a sizing model.\n\nWhich solution requires the least development effort?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Arrange weekly AWS Support reviews of the functions. Have an engineer copy the findings and estimated savings into an S3 CSV file."
+      },
+      {
+        "id": "2",
+        "text": "Enable CloudWatch Lambda Insights. Build a weekly Lambda job that aggregates memory metrics and implements a custom algorithm to calculate memory recommendations and savings."
+      },
+      {
+        "id": "3",
+        "text": "Opt in to AWS Compute Optimizer and enable the required billing access for savings estimates. Use EventBridge Scheduler to invoke a weekly Lambda function that calls ExportLambdaFunctionRecommendations with the required fields and an authorized S3 destination, and monitor the export job to completion."
+      },
+      {
+        "id": "4",
+        "text": "Extract memory and duration values from function logs. Build a SageMaker Canvas prediction workflow, derive cost comparisons, and manually export the forecasts as CSV."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Option <<3>> uses a managed recommendation service and its native CSV export. Compute Optimizer's Lambda export supports average observed memory, current and recommended configuration, and estimated-savings fields. The function initiates an asynchronous export into an existing authorized bucket; monitoring the job confirms that the report was actually delivered. Schedule the export for the relevant Region and scope.\n\nOption <<1>> makes a repeatable reporting requirement depend on manual analysis and copying. Option <<2>> collects useful diagnostics but still requires the company to build the recommendation and savings logic. Option <<4>> adds a custom forecasting workflow and manual export instead of using the available recommendation API.\n\nThe stated memory and invocation thresholds establish current Lambda recommendation eligibility. Opt-in, sufficient observation, and billing prerequisites still matter. Missing recommendations should be reported as unavailable rather than interpreted as zero savings. Recommendations and savings describe modeled alternatives based on observed behavior, so performance-test a change before applying it.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/compute-optimizer/latest/APIReference/API_ExportLambdaFunctionRecommendations.html\nhttps://docs.aws.amazon.com/compute-optimizer/latest/ug/exported-files.html\nhttps://docs.aws.amazon.com/compute-optimizer/latest/ug/requirements.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/340.diagram.json",
+  "diagram_alt": "The CSV distinguishes observed memory from configured and recommended memory and identifies savings as an estimate.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/APIReference/API_ExportLambdaFunctionRecommendations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Native asynchronous Lambda recommendation export to CSV and JSON metadata in an existing S3 bucket."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/exported-files.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda export fields include average memory, current and recommended memory, and savings."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda eligibility requires memory at most 1792 MB and at least 50 invocations in 14 days; billing data prerequisites."
+    }
+  ],
+  "editorial_notes": [
+    "Added current eligibility thresholds and explicit asynchronous completion monitoring. Distinguishes weekly delivery from recommendation lookback. Key 3 unchanged."
+  ],
+  "review_status": "authored"
+}

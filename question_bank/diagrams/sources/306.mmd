@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Quarantine spans detection, cleanup and the approval wait
+accDescr: A user starts with a protected explicit-deny boundary. Event detection starts cleanup and security notification, then a recorded approval is the only path to approved permissions. Rejection or failure retains denial.
+U[Create user<br/>Protected explicit deny already applied]:::inputData --> E[EventBridge starts workflow<br/>Verify quarantine and clean permissions]:::process
+E --> N[Notify security<br/>Wait for authenticated decision]:::process
+N --> A{Approval recorded?}:::decision
+A -->|Yes| P[Authorized release<br/>Only approved permissions]:::output
+A -->|Rejected, timeout or failure| Q[Keep explicit-deny quarantine]:::warning

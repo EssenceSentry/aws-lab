@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Backup connectivity must survive loss of the primary circuit
+accDescr: The data center reaches AWS through a preferred Direct Connect path or an independently routed internet VPN. The backup does not depend on the primary physical circuit.
+D[Data center router]:::external -->|Preferred route| X[Direct Connect circuit]:::process
+D -->|Backup route| I[Independent internet service]:::external
+I --> V[Site-to-Site VPN]:::process
+X --> A[AWS private network]:::output
+V --> A
+F[DX failure withdraws preferred route]:::warning -.-> D
+L[Backup has reduced performance]:::reference -.-> V

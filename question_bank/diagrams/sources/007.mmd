@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Country filtering must gate the content request
+accDescr: CloudFront checks the apparent client country before serving cached or origin content. The private origin does not allow direct viewer access.
+ V[Viewer request] --> CF{CloudFront country check}
+ CF -->|country denied| Deny[403 response]
+ CF -->|allowed or unknown| Cache{Cached report?}
+ Cache -->|yes| Serve[Report response]
+ Cache -->|no| S3[Private S3 origin]
+ S3 -->|OAC-authorized fetch| Serve
+ V -.->|direct origin request| Block[Denied by bucket policy]
+class V inputData
+class CF,Cache decision
+class Deny,Block warning
+class S3 storage
+class Serve output

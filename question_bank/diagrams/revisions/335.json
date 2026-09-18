@@ -1,0 +1,52 @@
+{
+  "question_id": "335",
+  "base_record_sha256": "ac11d4370621a352a7d0a9b62d018de13f4fa9edebaaba045d67850da321ba96",
+  "record": {
+    "id": "335",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is moving short, stateless webhook handlers from EC2 to Lambda. A social platform can send an HTTPS POST to a different URL for each event type. Each handler validates the platform's signature and processes duplicate events safely. Payloads and execution times fit Lambda function URL limits. The company does not need custom domains, API keys, request transformation, or gateway-level routing.\n\nWhich endpoint design meets the requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Lambda function URL for each handler with auth type NONE and the required invocation resource policy. Validate the platform signature in the handler before processing the event."
+      },
+      {
+        "id": "2",
+        "text": "Create an AppSync GraphQL API with Lambda resolvers. Point the existing webhook POSTs at the GraphQL endpoint without changing their payload format."
+      },
+      {
+        "id": "3",
+        "text": "Package the handlers as ECS services on Fargate behind an ALB. Add API Gateway HTTP API routes through a VPC link to the ALB."
+      },
+      {
+        "id": "4",
+        "text": "Create an API Gateway REST API with a resource and Lambda proxy integration for every webhook. Deploy and manage stages for the REST API."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> exposes each function through a managed HTTPS endpoint without a separate API tier. A public third-party webhook can use auth type NONE with the required resource-based permissions, while the function performs application-level signature validation before accepting the event. NONE does not itself authenticate the platform.\n\nOption <<2>> expects the GraphQL request contract rather than the platform's existing webhook body. Option <<3>> can host an HTTP service but adds container, load-balancer, and API configuration to a workload already suited to Lambda. Option <<4>> is technically viable, but its API resources and stages add administration for capabilities this scenario does not require.\n\nUse API Gateway when its API-management features are requirements. Function URLs are a simpler fit here, not a universal replacement. Public function URL policies must authorize both lambda:InvokeFunctionUrl and lambda:InvokeFunction under current requirements; restrict the latter to invocation through the URL where appropriate. Retain signature, replay, and duplicate-event checks in the application.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html\nhttps://docs.aws.amazon.com/lambda/latest/dg/best-practices.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/335.mmd",
+  "diagram_alt": "A function URL admits public HTTP requests, while application signature checks determine whether the webhook is trusted.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html",
+      "checked_on": "2026-09-18",
+      "supports": "Function URL NONE versus AWS_IAM authorization, public policies, and both required invocation actions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html",
+      "checked_on": "2026-09-18",
+      "supports": "Idempotent processing protects against duplicate event effects."
+    }
+  ],
+  "editorial_notes": [
+    "Added scope constraints that justify function URLs over a working API Gateway alternative. Made public endpoint permissions and application signature validation explicit; key 1 retained."
+  ],
+  "review_status": "authored"
+}

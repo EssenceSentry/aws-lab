@@ -1,0 +1,57 @@
+{
+  "question_id": "342",
+  "base_record_sha256": "a166e7eda8a7839bb974bf1a2809d5fb5273c7448777a2d247dacc31cb86ccfa",
+  "record": {
+    "id": "342",
+    "exam_domain": "Design for New Solutions",
+    "question": "An S3 upload invokes a Python Lambda function that encodes a video and records the output location in DynamoDB. New clips require 30–45 minutes of uninterrupted encoding, exceeding the function's maximum timeout. The encoder cannot split or checkpoint an individual job without substantial rewriting, but it has been tested in a Linux container with resources supported by Fargate. The company wants to retain the encoder and avoid managing worker servers.\n\nWhich actions meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Package the tested encoder as a container image and push the image to Amazon ECR."
+      },
+      {
+        "id": "2",
+        "text": "Use Step Functions Map states to invoke the unchanged encoder in Lambda, and enable provisioned concurrency for those functions."
+      },
+      {
+        "id": "3",
+        "text": "Port the encoder to a supported SnapStart runtime and enable SnapStart while retaining a single Lambda invocation per video."
+      },
+      {
+        "id": "4",
+        "text": "Queue jobs in SQS and process them on a fleet of EC2 instances that the team patches and scales."
+      },
+      {
+        "id": "5",
+        "text": "Create an ECS task definition for the image and run encoding tasks on Fargate. Use a short S3-triggered Lambda dispatcher to call ECS RunTask, while the task writes its output and completion state."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<5>> are correct. The container packages the existing encoder, and an ECS task on Fargate runs it outside Lambda's 15-minute per-invocation limit. The dispatcher only starts work; it does not wait for the entire encoding job inside Lambda.\n\n<<2>> does not shorten the unchanged, indivisible job. Workflow fan-out and provisioned concurrency do not extend a function invocation's execution limit.\n\n<<3>> changes startup behavior, not the maximum duration of the encoding invocation.\n\n<<4>> removes the Lambda duration limit but retains worker-server administration.\n\nUse job identifiers, completion tracking, bounded retries, and idempotent output handling. A successfully accepted RunTask request is not proof that encoding completed. Fargate jobs can still fail or be interrupted, so persistent job state remains necessary.\n\nOfficial AWS references (checked September 18, 2026): [Lambda timeout quota](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html). [ECS standalone tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/342.mmd",
+  "diagram_alt": "The dispatch invocation ends independently of the longer encoding task, whose output and completion state must be recorded durably.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "A function invocation has a 900-second maximum duration"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Batch-style tasks can run on Fargate with AWS-managed task infrastructure"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 5. Added indivisible encoding and tested Fargate resource fit, and separated task dispatch from durable completion tracking."
+  ],
+  "review_status": "authored"
+}

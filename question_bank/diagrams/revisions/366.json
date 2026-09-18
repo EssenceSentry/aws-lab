@@ -1,0 +1,52 @@
+{
+  "question_id": "366",
+  "base_record_sha256": "edbec8d461095c03753a6ee079beb34b53a71eb6da2b313c42a296f1ae9932db",
+  "record": {
+    "id": "366",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An online retailer's single EC2 web server becomes unresponsive during traffic surges. Read-heavy queries also saturate its RDS PostgreSQL primary. The application is stateless and already supports separate read and write database connection strings. Compatibility testing has confirmed that it can use Aurora PostgreSQL.\n\nWhich listed design removes the single web-server dependency and adds database read capacity with minimal application changes?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy the web tier in an EC2 Auto Scaling group across Availability Zones behind an ALB. Convert RDS to a traditional Multi-AZ DB instance and send application reads to its standby."
+      },
+      {
+        "id": "2",
+        "text": "Deploy the web tier in an EC2 Auto Scaling group across Availability Zones behind an ALB. Migrate to Aurora PostgreSQL with replicas, using the reader endpoint for eligible reads and the writer endpoint for writes."
+      },
+      {
+        "id": "3",
+        "text": "Upgrade the existing single web server to a larger instance. Migrate to Aurora PostgreSQL with replicas and route eligible reads through the reader endpoint."
+      },
+      {
+        "id": "4",
+        "text": "Deploy the web tier across Availability Zones behind an ALB. Migrate to Aurora with replicas but continue routing all application reads and writes to the writer endpoint."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Multiple web instances behind the ALB remove the single-instance dependency, while the Auto Scaling group adjusts web capacity. Routing eligible reads to Aurora Replicas supplies the independent database read capacity that the current primary lacks.\n\n<<1>> uses a traditional RDS Multi-AZ standby as if it were a read replica. That standby is reserved for availability and cannot serve the application's reads.\n\n<<3>> improves individual web-server capacity but leaves one server as the application availability dependency.\n\n<<4>> creates replicas without sending the read workload to them, so it does not relieve the stated writer bottleneck.\n\nThe Aurora reader endpoint balances new connections among available replicas, not each query inside an established connection. Consider connection-pool behavior and replication lag, and keep consistency-sensitive operations on the appropriate writer path. This scenario has already validated compatibility and supports endpoint configuration changes; migration is not automatically change-free for every PostgreSQL application. Keeping RDS PostgreSQL and adding ordinary read replicas could also meet the broad need, but that complete design is not one of the choices. Do not generalize the standby restriction to readable instances in supported RDS Multi-AZ DB clusters.\n\nAWS documentation (checked September 18, 2026): [Aurora reader endpoints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html); [RDS single-standby Multi-AZ](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/366.mmd",
+  "diagram_alt": "The web fleet scales behind the ALB, while explicit read and write routing sends the read-heavy workload to Aurora Replicas.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html",
+      "checked_on": "2026-09-18",
+      "supports": "With Aurora Replicas present, the reader endpoint distributes new read-only connections among replicas; it does not balance individual queries within a connection."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "A traditional Multi-AZ DB instance standby provides synchronous replication and failover, but cannot serve read traffic; read replicas and Multi-AZ DB clusters are separate options."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added statelessness, configured read/write endpoints and verified Aurora compatibility to justify minimal changes. Replaced malformed CloudFront-origin distractors with valid designs that fail availability or actual read offload."
+  ],
+  "review_status": "authored"
+}

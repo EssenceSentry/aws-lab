@@ -1,0 +1,42 @@
+{
+  "type": "table",
+  "title": "SSE-C request fields have different jobs",
+  "columns": [
+    "Field or control",
+    "Value supplied",
+    "Purpose"
+  ],
+  "rows": [
+    [
+      "Algorithm header",
+      "AES256",
+      "Select encryption algorithm"
+    ],
+    [
+      "Customer-key header",
+      "Base64 of 256-bit key",
+      "Encrypt or decrypt this object version"
+    ],
+    [
+      "Key-MD5 header",
+      "Base64 of key digest",
+      "Detect key transmission errors"
+    ],
+    [
+      "HTTPS transport",
+      "TLS-protected request",
+      "Protect the supplied key in transit"
+    ],
+    [
+      "Application key catalog",
+      "Object version → retained key",
+      "Make future retrieval possible"
+    ]
+  ],
+  "footnote": "S3 discards the supplied key; a presigned URL does not replace the required headers.",
+  "emphasis_rows": [
+    1,
+    3,
+    4
+  ]
+}

@@ -1,0 +1,20 @@
+flowchart TB
+accTitle: Central egress with separate VPC ownership
+accDescr: Application VPC routes converge on a shared transit gateway. In the egress VPC a Gateway Load Balancer endpoint inserts stateful inspection before NAT and internet access.
+subgraph Teams[Application accounts]
+ A[Team A VPC<br/>Team-owned routes]:::inputData
+ B[Team B VPC<br/>Team-owned routes]:::inputData
+end
+A -->|Default route| T[Shared Transit Gateway]:::decision
+B -->|Default route| T
+subgraph E[Network account: egress VPC]
+ G[GWLB endpoint]:::decision
+ F[GWLB and appliance fleet<br/>Symmetric flow path]:::output
+ N[NAT gateway]:::output
+ I[Internet gateway]:::output
+ G <-->|Inspection detour| F
+ G -->|Inspected packets| N
+ N --> I
+end
+T --> G
+I --> NET[Internet]:::output

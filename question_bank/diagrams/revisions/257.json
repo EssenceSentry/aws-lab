@@ -1,0 +1,62 @@
+{
+  "question_id": "257",
+  "base_record_sha256": "b6437fd815b44e4e2040bb540f8a67e19955b438f2b49fb4cccaa0f7644461f0",
+  "record": {
+    "id": "257",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "Partners upload files nightly using SFTP and SSH keys to sftp.example.com. One EC2 server accepts the uploads on local storage, and a cron job later copies them to an S3 data lake. The company wants to remove that server and copy-job failure point while preserving the SFTP client workflow and hostname. It prefers the least server administration.\n\nWhich solution should it implement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place multiple EC2 SFTP servers behind a TCP NLB, retain local upload directories on each server, and run independent cron jobs that copy completed files to S3."
+      },
+      {
+        "id": "2",
+        "text": "Place multiple EC2 SFTP servers behind an HTTPS ALB and route sftp.example.com to the ALB listener."
+      },
+      {
+        "id": "3",
+        "text": "Replace the server with an S3 File Gateway and route sftp.example.com to its SMB file-share endpoint for the existing SFTP clients."
+      },
+      {
+        "id": "4",
+        "text": "Create a Transfer Family SFTP server backed directly by the S3 data lake. Configure partner identities, directory and IAM access, preserve or coordinate the host key, then point the existing hostname to the service endpoint."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Transfer Family accepts SFTP while placing uploaded data directly in the configured S3 storage, eliminating the self-managed SFTP host and the later local-to-S3 copy process. Migrate users and access mappings as well as DNS.\n\n<<1>> can be developed into a working architecture, but still requires server patching, upload-state coordination and reliable per-server copying. <<2>> uses an HTTP-oriented load balancer listener for an SSH-based protocol. <<3>> provides a different file protocol and cannot receive the unchanged SFTP clients.\n\nPreserving a DNS name does not preserve SSH server identity by itself. Import a supported host key or coordinate a verified client change. Use a VPC-hosted endpoint if the deployment needs chosen Elastic IPs or security-group source restrictions, and validate object-completion handling before downstream processing starts.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html\nhttps://docs.aws.amazon.com/transfer/latest/userguide/configuring-servers-change-host-key.html\nhttps://docs.aws.amazon.com/transfer/latest/userguide/create-server-in-vpc.html\nhttps://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/257.mmd",
+  "diagram_alt": "The managed path removes the single host’s local landing area and the separate scheduled copy step.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transfer Family manages scalable SFTP endpoints and transfers files directly into S3 or EFS."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/configuring-servers-change-host-key.html",
+      "checked_on": "2026-09-18",
+      "supports": "Existing supported host keys can be imported to preserve SFTP server identity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/create-server-in-vpc.html",
+      "checked_on": "2026-09-18",
+      "supports": "Internet-facing VPC-hosted Transfer Family endpoints support security groups and an Elastic IP per selected subnet across up to three AZs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 File Gateway presents NFS or SMB file access rather than an SFTP server."
+    }
+  ],
+  "editorial_notes": [
+    "Changed the inherited branded hostname to example.com and made removal of both failure points the decisive requirement."
+  ],
+  "review_status": "authored"
+}

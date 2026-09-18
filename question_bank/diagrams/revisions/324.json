@@ -1,0 +1,57 @@
+{
+  "question_id": "324",
+  "base_record_sha256": "37b563cab37645013f25d73fc0b8f572081a79c65d4baad6adc7b654474ffbd5",
+  "record": {
+    "id": "324",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company runs a PHP application on EC2 with an Aurora MySQL provisioned cluster. Demand is unpredictable. Database reads are the bottleneck, while the writer has adequate capacity. The application sends reads to the reader endpoint. It requires cookie-based affinity for a local session cache, but durable session state is stored externally so instances can be replaced.\n\nWhich TWO changes automatically scale the web tier and database read capacity? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure Aurora Auto Scaling to adjust the number of Aurora Replicas in response to reader utilization."
+      },
+      {
+        "id": "2",
+        "text": "Configure Aurora Auto Scaling to add writer DB instances as the write endpoint becomes busy."
+      },
+      {
+        "id": "3",
+        "text": "Place EC2 instances in an Auto Scaling group behind a Network Load Balancer. Enable HTTP-cookie stickiness and least-outstanding-request routing on the NLB."
+      },
+      {
+        "id": "4",
+        "text": "Place EC2 instances in an Auto Scaling group with a target tracking policy behind an Application Load Balancer. Use round robin routing with cookie-based target-group stickiness."
+      },
+      {
+        "id": "5",
+        "text": "Place EC2 instances in an Auto Scaling group behind an Application Load Balancer. Use client-port preservation as the mechanism for keeping HTTP sessions on the same target."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "Options <<1>> and <<4>> scale the two constrained tiers. Aurora Auto Scaling adds or removes reader instances, and the reader endpoint distributes new read connections. EC2 Auto Scaling adds or removes application instances; ALB cookie stickiness keeps subsequent eligible requests with the selected target. The initial target selection can use round robin.\n\nOption <<2>> confuses reader scaling with writer scaling. Aurora Auto Scaling does not add writers to a conventional provisioned cluster. Option <<3>> attributes ALB HTTP routing features to an NLB: NLB affinity is not HTTP-cookie stickiness, and it does not use the ALB least-outstanding-request algorithm. Option <<5>> does not provide ALB session affinity; retaining a client port is not a cookie-based target-group feature.\n\nStickiness is routing behavior, not durable session storage. A failed or removed target still requires the application to recover session state. Reader scaling also cannot solve a write bottleneck, which the scenario explicitly excludes.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html\nhttps://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/324.mmd",
+  "diagram_alt": "Independent scaling policies change application instance count and Aurora reader count, while writes remain on the writer.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora Auto Scaling affects reader count, not the writer workload."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB initial routing algorithms and cookie stickiness bypassing later target selection."
+    }
+  ],
+  "editorial_notes": [
+    "Specified read bottleneck, reader endpoint and external durable sessions. Preserved keys 1 and 4 without implying stickiness provides durability."
+  ],
+  "review_status": "authored"
+}

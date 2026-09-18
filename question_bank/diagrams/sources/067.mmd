@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Identity and reachability are separate gates
+accDescr: Employees from the office or home authenticate to Client VPN. Group authorization and routing permit a private application path, and security groups restrict the final access.
+O[Office employee]:::inputData --> V[AWS Client VPN]:::decision
+H[Home employee]:::inputData --> V
+ID[Corporate identity provider]:::inputData -->|Federated authentication| V
+V --> A{Authorized group<br/>and destination?}:::decision
+A -->|No| D[Access denied]:::warning
+A -->|Yes, route exists| SG[Application security group<br/>Allows Client VPN group]:::decision
+SG --> APP[Private application IP]:::output

@@ -1,0 +1,63 @@
+{
+  "question_id": "135",
+  "base_record_sha256": "36db65b07000f7a217729ac49caf9cd75fca110474249ae53106628268aeeb09",
+  "record": {
+    "id": "135",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An application instance and a PostgreSQL database instance run in different subnets of the same VPC. The database listens on TCP port 5432, both instances are healthy, and their route tables retain the normal local VPC route. Connections from the application time out. The company also needs a history of changes to security groups and network ACLs from now onward.\n\nWhich actions meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Check security group rules for the application-to-database connection. Check both subnet network ACLs for the database-port traffic and the return traffic to the client's ephemeral port range."
+      },
+      {
+        "id": "2",
+        "text": "Create a Route 53 private hosted zone and add a database record so that Route 53 forwards packets between the two subnets."
+      },
+      {
+        "id": "3",
+        "text": "Add a default route through a NAT gateway or internet gateway to both subnets to enable private instance-to-instance traffic."
+      },
+      {
+        "id": "4",
+        "text": "Enable AWS Config recording for the relevant security groups, network ACLs and related resources, and retain their configuration history."
+      },
+      {
+        "id": "5",
+        "text": "Enable Systems Manager Inventory collection of installed software on the two instances to obtain the history of VPC security group and network ACL changes."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<4>> are correct. Security groups must allow the initiating connection, and their stateful behavior allows response traffic. Network ACLs are stateless, so the subnet rules must permit traffic in both directions, including responses to the client's ephemeral port. AWS Config records changes to the supported resource types selected for recording.\n\n<<2>> provides DNS resolution, not inter-subnet packet forwarding. <<3>> is unnecessary for communication covered by the existing local VPC route and does not repair restrictive security rules. <<5>> collects host inventory; the specified software inventory does not provide the required configuration history of VPC security resources.\n\nRecording must be enabled before changes occur to build a useful history; enabling Config now does not recreate unrecorded past configurations. A connectivity diagnosis still checks routes and application listeners, which the stem has already verified.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html\nhttps://docs.aws.amazon.com/config/latest/developerguide/how-does-config-work.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-inventory.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/135.diagram.json",
+  "diagram_alt": "Security groups track the connection, network ACLs need forward and return rules, and Config records rule changes rather than forwarding traffic.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security groups are stateful and network ACLs require explicit return-traffic rules."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/how-does-config-work.html",
+      "checked_on": "2026-09-18",
+      "supports": "Config records resource configurations and changes for selected resource types."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-inventory.html",
+      "checked_on": "2026-09-18",
+      "supports": "Systems Manager Inventory collects managed-node metadata such as installed software."
+    }
+  ],
+  "editorial_notes": [
+    "Added concrete TCP and routing assumptions, clarified stateless return traffic and narrowed the Systems Manager distractor to its specified inventory collection.",
+    "Made the history requirement prospective rather than implying that Config reconstructs unrecorded past changes."
+  ],
+  "review_status": "authored"
+}

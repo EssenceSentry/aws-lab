@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Tag compliance and billing are separate controls
+accDescr: Existing resources are repaired, future create requests are blocked when required tags are absent, and Billing activation makes applied tag keys available for cost allocation.
+E[Existing RDS and DynamoDB resources]:::inputData --> T[Apply CostCenter and ProjectID]:::process
+N[New creation request]:::inputData --> C{Both required tags present?}:::decision
+C -->|No| X[SCP denies request]:::error
+C -->|Yes and IAM permits| R[Create tagged resource]:::process
+T --> B[Activate tag keys in Billing]:::process
+R --> B
+B --> O[Costs grouped by tag values]:::output
+D[SCP blocks required-tag removal]:::reference -.-> R

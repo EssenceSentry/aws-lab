@@ -1,0 +1,63 @@
+{
+  "question_id": "193",
+  "base_record_sha256": "53dd641d4f7fadfe386c8b5d8d752bcbbbb76f7459d3efe1ebe39dcb9a5e07d6",
+  "record": {
+    "id": "193",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is migrating an NGINX application and an Oracle RAC One Node database to AWS. It must retain the approved RAC deployment model. The database team has validated an EC2 cluster topology, storage and networking, and a cluster-consistent backup procedure using custom Systems Manager pre/post scripts plus Oracle-native log backups. It now needs scheduled EBS snapshot creation and retention with minimal custom scheduling code.\n\nWhich approach meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run NGINX on EC2 and migrate the database to an RDS for Oracle RAC cluster with automated backups."
+      },
+      {
+        "id": "2",
+        "text": "Run NGINX on EC2 and use RDS for Oracle Multi-AZ, assuming that its standby deployment preserves the required RAC One Node model."
+      },
+      {
+        "id": "3",
+        "text": "Use the validated EC2 database topology and have an administrator run an unscheduled shell script to create EBS snapshots after each maintenance session."
+      },
+      {
+        "id": "4",
+        "text": "Use the validated EC2 deployment and an instance-targeted Data Lifecycle Manager snapshot policy with the tested pre/post scripts, retention schedule and failure monitoring. Retain the required Oracle-native backup and log procedures."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Data Lifecycle Manager supplies scheduled snapshot lifecycle management, while the validated scripts and Oracle procedures establish the required application and cluster consistency. Configure failure handling so a failed consistency step is not silently treated as a successful application-consistent backup.\n\n<<1>> assumes an RDS RAC offering that does not exist. <<2>> substitutes RDS Multi-AZ for a different, explicitly required Oracle cluster model. <<3>> preserves the deployment but provides no unattended schedule or managed retention.\n\nA bare EC2 instance and attached EBS volumes do not automatically reproduce RAC networking and shared-storage requirements. Likewise, independent crash-consistent volume snapshots do not prove coordinated cluster recovery. DLM pre scripts run before snapshot initiation and post scripts after initiation, so I/O can resume before snapshot completion. Verify script outcomes, log coverage and restore tests, not only snapshot existence.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Concepts.FeatureSupport.html\nhttps://docs.aws.amazon.com/whitepapers/latest/oracle-database-aws-best-practices/architecting-for-high-availability.html\nhttps://docs.aws.amazon.com/ebs/latest/userguide/automate-app-consistent-backups.html\nhttps://docs.aws.amazon.com/ebs/latest/userguide/script-flow.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/193.mmd",
+  "diagram_alt": "Scheduled snapshots become a recovery strategy only when cluster preparation, I/O recovery, log coverage and restore verification are coordinated.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Concepts.FeatureSupport.html",
+      "checked_on": "2026-09-18",
+      "supports": "Oracle RAC is unsupported in RDS for Oracle."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/oracle-database-aws-best-practices/architecting-for-high-availability.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 RAC architectures require appropriate clustered storage and networking, including supported third-party solutions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/automate-app-consistent-backups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Instance-targeted DLM policies can invoke custom SSM pre/post scripts for consistency."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/script-flow.html",
+      "checked_on": "2026-09-18",
+      "supports": "Pre/post timing and failure behavior must be handled around snapshot initiation."
+    }
+  ],
+  "editorial_notes": [
+    "Made vendor-supported EC2 topology and cluster-wide backup consistency explicit prerequisites instead of implied outcomes of ordinary EBS snapshots.",
+    "Distinguished RDS Multi-AZ from RAC and post-script execution from eventual snapshot completion."
+  ],
+  "review_status": "authored"
+}

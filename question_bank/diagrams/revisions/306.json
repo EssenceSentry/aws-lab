@@ -1,0 +1,72 @@
+{
+  "question_id": "306",
+  "base_record_sha256": "6a85768d8c5180c5a418cdf4e299ceef10e30ab0849dfec6a3f1bd60305dcd93",
+  "record": {
+    "id": "306",
+    "exam_domain": "Design for New Solutions",
+    "question": "A bank permits a limited set of legacy IAM users only after security approval. Its provisioning controls already require every new user to have a protected permissions boundary with an explicit deny of all actions. Provisioners cannot change that boundary, and credentials are withheld until approval. A multi-Region CloudTrail trail is enabled.\n\nThe bank needs an automated workflow that detects user creation, removes unintended permissions, notifies security, and preserves quarantine until an authenticated approval is recorded. Which components should it implement? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use only CloudTrail log-file delivery notifications to SNS and treat successful delivery of a log file as approval of any users mentioned in that file."
+      },
+      {
+        "id": "2",
+        "text": "Invoke a Step Functions Standard workflow that verifies quarantine, cleans up unintended policies and group memberships, and waits for authenticated approval before the authorized approval service enables the approved permissions."
+      },
+      {
+        "id": "3",
+        "text": "Use periodic Audit Manager evidence collection as the sole trigger and completion record for the operational user-approval process."
+      },
+      {
+        "id": "4",
+        "text": "Have the workflow publish an SNS notification to security with user details and a link to the protected approval application."
+      },
+      {
+        "id": "5",
+        "text": "Create an EventBridge rule matching successful CloudTrail CreateUser events from IAM and route matching events to the approval workflow."
+      },
+      {
+        "id": "6",
+        "text": "Run a one-off Fargate task that removes current user policies and then terminates, without retaining approval state or coordinating the later permission release."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "4",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<2>>, <<4>>, and <<5>> form the required workflow. EventBridge selects user-creation activity, Step Functions coordinates cleanup and the durable approval wait, and SNS notifies reviewers. The pre-existing explicit-deny boundary remains effective while asynchronous detection and review take place.\n\n<<1>> confuses log-file delivery with a user-specific authorization decision. Receiving an audit artifact is not security approval.\n\n<<3>> gathers audit evidence but does not implement the requested event-triggered cleanup and approval lifecycle.\n\n<<6>> can remove permissions that exist at that moment, but it does not track the approval decision or control the authorized release from quarantine.\n\nCreateUser does not itself grant service permissions; later policy attachments, group membership, credentials, or resource policies are separate concerns. This is why the protected preventive boundary is established during provisioning rather than attached only after an event arrives. Its explicit deny matters: an implicit deny in a boundary does not constrain every form of resource-based grant in the same way. Protect all ways to alter or remove the boundary. Make event handling idempotent, restrict the approval callback to authenticated reviewers, and retain quarantine on rejection, timeout, or workflow failure. An SNS notification alone must never release access.\n\nAWS documentation (checked September 18, 2026): [IAM user creation steps](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html); [IAM permissions boundaries](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html); [IAM API events in EventBridge](https://docs.aws.amazon.com/eventbridge/latest/ref/events-ref-iam.html); [Step Functions integration patterns](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/306.mmd",
+  "diagram_alt": "Quarantine is present before the asynchronous workflow begins and persists through cleanup and review until an authorized approval releases only approved permissions.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html",
+      "checked_on": "2026-09-18",
+      "supports": "Creating an IAM user, provisioning credentials and granting permissions are distinct operations; a new user does not automatically receive permissions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+      "checked_on": "2026-09-18",
+      "supports": "An explicit deny in a permissions boundary overrides allows, while an implicit boundary deny has exceptions for certain resource-based grants; provisioning policies can require a specific boundary."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/eventbridge/latest/ref/events-ref-iam.html",
+      "checked_on": "2026-09-18",
+      "supports": "IAM API activity can be routed through CloudTrail-backed EventBridge events using eventSource and eventName filters."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard workflows can retain state while waiting for an external callback, supporting approval workflows that resume only when an authorized callback arrives."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2, 4 and 5. Made preventive provisioning controls explicit to close the event-delay race. Required an explicit deny rather than relying on implicit permissions-boundary behavior, and kept approval distinct from SNS delivery."
+  ],
+  "review_status": "authored"
+}

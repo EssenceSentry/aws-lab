@@ -1,0 +1,18 @@
+sequenceDiagram
+accTitle: Authorize first, then sign a direct S3 request
+accDescr: The application checks ownership and object existence before locally signing a URL. The client later requests the object directly from S3.
+actor U as Signed-in user
+participant A as EC2 application
+participant M as IMDSv2
+participant S as Private S3 bucket
+U->>A: Request a PDF download
+A->>A: Check user access to object
+A->>M: SDK obtains role credentials
+M-->>A: Temporary credentials
+A->>S: HeadObject using role
+S-->>A: Object metadata
+A->>A: SDK signs a short-lived GET URL
+A-->>U: Presigned URL
+U->>S: GET using URL
+S->>S: Evaluate signer permissions
+S-->>U: PDF bytes

@@ -1,0 +1,47 @@
+{
+  "question_id": "297",
+  "base_record_sha256": "ddd053376fc3fec001167f960cf1f3b50b20cf1d1b5c6aeb7c1f890f616cf17a",
+  "record": {
+    "id": "297",
+    "exam_domain": "Design for New Solutions",
+    "question": "Every new EC2 application instance installs a stable custom framework through user data. Installation and compilation take 20 minutes, while download time is negligible. Application releases change frequently, but the framework changes only monthly. The application cannot start until the framework installation is complete.\n\nWhich change removes the repeated dependency-installation delay from instance launches?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Prepare and validate a build instance with the framework installed, create a versioned AMI with Systems Manager Automation and AWS-CreateImage, and use that AMI in the application launch template."
+      },
+      {
+        "id": "2",
+        "text": "Compress the framework installer in S3 and continue installing and compiling the framework in user data on every application instance."
+      },
+      {
+        "id": "3",
+        "text": "Run framework installation and application startup in parallel on each new instance, without waiting for the dependency to become available."
+      },
+      {
+        "id": "4",
+        "text": "Move the application to Elastic Beanstalk but retain the same 20-minute framework installation in an instance initialization hook."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Baking the stable dependency into an AMI moves its installation to the image-build stage. New instances start from that prepared image and need only the remaining application-specific deployment work.\n\n<<2>> reduces a transfer cost that the measurements say is negligible. The dominant installation and compilation still occur on every launch.\n\n<<3>> violates the dependency order and can start an application against a partially installed framework.\n\n<<4>> changes the deployment service but retains the same per-instance bottleneck. Elastic Beanstalk would need a changed image or initialization design to remove it.\n\nAWS-CreateImage captures the specified EC2 instance; it does not install the framework by itself. Build from a clean source, install and test the dependency, capture the AMI, and validate a fresh instance from it. Rebuild images for patches or framework changes and roll out a new launch-template version. Keep secrets and instance-specific identity out of the image. Baking the dependency accelerates startup but does not eliminate later image maintenance.\n\nAWS documentation (checked September 18, 2026): [Systems Manager AWS-CreateImage runbook](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-aws-createimage.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/297.mmd",
+  "diagram_alt": "One tested image build replaces the repeated 20-minute framework installation on each new application instance.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-aws-createimage.html",
+      "checked_on": "2026-09-18",
+      "supports": "AWS-CreateImage creates an AMI from a specified EC2 instance, so dependencies must already be installed and validated on that build instance."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Made installation rather than transfer the measured bottleneck and clarified that AWS-CreateImage captures a prepared instance instead of installing the dependency automatically."
+  ],
+  "review_status": "authored"
+}

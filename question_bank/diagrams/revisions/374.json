@@ -1,0 +1,67 @@
+{
+  "question_id": "374",
+  "base_record_sha256": "f1646a9592e2b76da8c88a6e5af26a5b12f617a56864d20de7d8d5dde864454f",
+  "record": {
+    "id": "374",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An energy company stores turbine data in an S3 lake cataloged with Lake Formation. Governance has approved direct S3 object reads by a research IAM role used on EC2 in two private subnets. The role already has the necessary object permissions, but its credentials must not work from unapproved networks.\n\nResearch reads must use the approved VPC without Internet routing, and direct bucket requests must not bypass this restriction. Which actions should the architect take? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an S3 gateway endpoint in the research VPC, associate both subnet route tables, and configure its policy for the required bucket and access point."
+      },
+      {
+        "id": "2",
+        "text": "Create an S3 access point with network origin restricted to the approved VPC, grant the intended research access, and configure clients to use that access point."
+      },
+      {
+        "id": "3",
+        "text": "Delegate the required bucket access through the approved access point using s3:DataAccessPointArn, and explicitly deny unintended direct or other access-point reads by the research role while aligning all relevant policies."
+      },
+      {
+        "id": "4",
+        "text": "Enable SSE-KMS and grant the research role decryption permission, leaving the existing S3 network and request-path permissions unchanged."
+      },
+      {
+        "id": "5",
+        "text": "Add an Allow condition checking only s3:DataAccessPointAccount for the research account, while retaining the existing direct-bucket permission."
+      },
+      {
+        "id": "6",
+        "text": "Route both private subnets through a NAT gateway and continue using the existing direct-bucket permissions without a VPC-origin access point."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<1>>, <<2>>, and <<3>> establish the private route, approved network origin, and enforced access path. The gateway endpoint supplies S3 connectivity from both subnets. The VPC-origin access point rejects requests from other VPCs, and the bucket policy prevents the research role from avoiding that access point.\n\n<<4>> protects stored data and governs decryption, but does not establish the required network-origin restriction.\n\n<<5>> identifies the account that owns an access point, not the VPC from which the request originated. Keeping direct-bucket access also leaves a bypass.\n\n<<6>> provides outbound connectivity without the requested endpoint path or network-origin authorization constraint.\n\nAn access point is not automatically the bucket's only entrance. Its policy applies only to requests made through it, and a conditional Allow does not cancel another Allow. Scope the deny to the intended research access so other approved lake services retain their required paths. The endpoint policy must allow the access point and the underlying bucket; IAM, bucket, access-point and any KMS permissions must also align. This question concerns already approved direct S3 reads, not a claim that these network controls replace Lake Formation permissions for governed query services. Test permitted VPC access, outside-VPC credentials, and direct-bucket attempts.\n\nAWS documentation (checked September 18, 2026): [VPC-restricted S3 access points](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-vpc.html); [S3 access-point and bucket policies](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-policies.html); [S3 gateway endpoint routing](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/374.diagram.json",
+  "diagram_alt": "Private routing, a VPC-restricted access point, and a bucket policy that prevents bypass jointly enforce the approved research network path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-vpc.html",
+      "checked_on": "2026-09-18",
+      "supports": "A VPC-origin access point rejects requests from outside its configured VPC, and the VPC endpoint policy must allow the access point and underlying bucket."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-policies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Access-point restrictions apply only to requests using that access point; bucket delegation and DataAccessPointArn conditions must be combined with controls against unintended direct access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Same-Region VPC traffic can reach S3 through route-table associations to a gateway endpoint without NAT or endpoint charges; the route does not by itself restrict all alternate access paths."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1, 2 and 3. Explicitly scoped the scenario to governed-but-approved direct S3 reads and the research principal. Retained explicit bypass prevention and avoided claiming that account ownership conditions identify a VPC or replace Lake Formation query permissions."
+  ],
+  "review_status": "authored"
+}

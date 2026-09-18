@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Keep the public TLS key outside EC2 administration
+accDescr: The security team controls a non-exportable ACM certificate attached to an ALB, DevOps administers the application hosts without receiving that key.
+S["Cybersecurity role"] -->|"certificate and listener administration"| C["ACM: non-exportable certificate"]
+C -->|"managed certificate association"| A["ALB: public TLS termination"]
+U["Browser"] -->|"public HTTPS session"| A
+A -->|"backend request / separate session"| E["EC2 application hosts"]
+D["DevOps role"] -->|"OS administration"| E
+C -.->|"private key stays outside hosts"| K["No public TLS key installed on EC2"]

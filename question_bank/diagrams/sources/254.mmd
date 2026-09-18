@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Feature validation and production release have separate paths
+accDescr: Feature changes build and test in an isolated account, and only reviewed source merges trigger the main-branch production artifact path.
+F[GitHub feature branch]:::inputData --> DEV[Feature pipeline, build and tests]
+DEV --> TEST[Test-account artifact]:::storage
+TEST --> REVIEW{Tests pass and review approved?}:::decision
+REVIEW -->|yes| MAIN[Merge into main]:::inputData
+REVIEW -->|no| EDIT[Continue feature work]:::warning
+EDIT --> F
+MAIN --> PROD[Production pipeline]
+PROD --> RELEASE[Separate production artifact]:::output

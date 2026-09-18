@@ -1,0 +1,62 @@
+{
+  "question_id": "215",
+  "base_record_sha256": "aa1ed1cb859ca190e55fbf567dbe787ed6f59b29f7c0fe480ce9c3c457df27e6",
+  "record": {
+    "id": "215",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A studio is migrating a tape-based video archive while retaining its media asset management (MAM) application. The MAM can restore tape contents as ordinary files to an NFS share. A Direct Connect path is available, and supported video renditions can be produced when necessary. The studio has labeled reference photos of known performers and wants managed identification and object labels in its existing search catalog, with little custom model operation.\n\nWhich implementation best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Restore video files through the MAM to an S3 File Gateway share and confirm their upload completion. Index reference face images in a Rekognition collection with person-ID mappings. Use Lambda to start asynchronous stored-video face-search and label jobs, retrieve completed results, and update the MAM catalog."
+      },
+      {
+        "id": "2",
+        "text": "Restore files through the MAM and transfer them to S3 with DataSync, then train, deploy, and maintain custom face-recognition and object-detection models on SageMaker for the catalog."
+      },
+      {
+        "id": "3",
+        "text": "Restore and upload the videos to S3, but use Rekognition label detection alone to assign the specific identities in the studio’s performer catalog."
+      },
+      {
+        "id": "4",
+        "text": "Restore and upload the videos to S3 through Transfer Family, then maintain EC2 inference servers with open-source face and object models and a custom scheduling system."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The MAM converts the tape contents into accessible files, File Gateway provides the existing file interface with S3 backing, and managed Rekognition operations supply face matching and labels. Confirming upload completion keeps analysis from starting before the intended file is ready.\n\n<<2>> is a valid data-transfer and custom-ML design, but adds model development and operation that the stated requirements avoid.\n\n<<3>> can identify generic objects and scenes but does not match performers against the supplied face collection.\n\n<<4>> can perform the analysis, but requires ongoing inference-server, library, model, and scheduling maintenance.\n\nIndex reference images before calling StartFaceSearch, retain mappings from returned identifiers to MAM people, and use completion notifications followed by Get operations. Lambda orchestrates the asynchronous jobs rather than waiting through the whole analysis. Validate video formats and per-object limits, prepare compatible renditions or segments when needed, and retain source-timestamp mappings for catalog navigation.\n\nOfficial AWS references (checked September 18, 2026): [S3 File Gateway](https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html). [Gateway upload completion](https://docs.aws.amazon.com/filegateway/latest/files3/monitoring-file-gateway.html). [Stored-video analysis](https://docs.aws.amazon.com/rekognition/latest/dg/video.html). [Face collections](https://docs.aws.amazon.com/rekognition/latest/dg/collections.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/215.mmd",
+  "diagram_alt": "File extraction and upload completion precede separate face-search and label jobs whose results populate the existing catalog.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "File-protocol interface and object-backed storage"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/monitoring-file-gateway.html",
+      "checked_on": "2026-09-18",
+      "supports": "File upload notifications before downstream processing"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/video.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous Start/Get jobs, completion notifications and supported video limits"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/collections.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reference-image indexing and stored-video face search"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1 and tape-extraction repair. Added gateway upload completion and rendition constraints, and replaced invalid Kinesis-to-S3 assumptions with a valid but incomplete label-only design."
+  ],
+  "review_status": "authored"
+}

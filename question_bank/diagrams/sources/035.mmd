@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: One retained stream supports live and historical analytics
+accDescr: A retained Kinesis stream supplies a live processing path and an independent archive path, while consumer checkpoints allow replay.
+C[Collars] -->|Authenticated POST| A[HTTPS ingestion API]
+A --> K[Kinesis stream - at least 24 hours]
+K -->|Independent consumer| F[Streaming calculation]
+F --> V[Result store and portal API]
+V --> D[Live dashboard]
+K -->|Archive delivery| S[(S3 history)]
+S --> R[Redshift historical analysis]
+P[Consumer checkpoint] -.->|Replay retained records| K
+class C inputData
+class K,S storage
+class D,R output

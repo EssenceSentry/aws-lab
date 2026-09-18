@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Resource tags become a billing filter only after activation
+accDescr: A resource tag and management-account activation feed consolidated cost data, which splits into attributed analytics line items and charges requiring separate allocation.
+T["Resource tag
+expenseUnit = analytics"]:::inputData
+A["Management account
+activate expenseUnit key"]:::inputData
+T --> C["Organization CUR in S3"]:::storage
+A --> C
+C --> F{"Line item has
+analytics tag value?"}:::decision
+F -->|Yes| R["Direct analytics charges"]:::output
+F -->|No| U["Other or unallocated charges
+separate finance rules"]:::warning

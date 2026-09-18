@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Diverse physical paths and multi-Region gateway associations
+accDescr: Two headquarters routers connect through distinct Direct Connect locations. Private VIFs share a logical Direct Connect gateway with VGW associations to VPCs in two Regions.
+subgraph HQ[Headquarters]
+A[Customer router A]:::external
+B[Customer router B]:::external
+end
+A --- L1[Direct Connect location A]:::process
+B --- L2[Direct Connect location B]:::process
+L1 ---|Private VIF| G[Direct Connect gateway]:::process
+L2 ---|Private VIF| G
+G ---|VGW association| V1[Region 1<br/>VGW and VPC]:::storage
+G ---|VGW association| V2[Region 2<br/>VGW and VPC]:::storage
+N[Logical associations shown<br/>Locations provide physical diversity]:::reference -.-> G

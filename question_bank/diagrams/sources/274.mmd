@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Canonicalize before cache lookup
+accDescr: Equivalent query strings with different case and order converge to one canonical string before lookup, while changing a meaningful value still selects another image.
+A["Color=Red and Size=Large"] --> C["Viewer request: normalize and sort"]
+B["size=large and color=red"] --> C
+C --> D["color=red and size=large"]
+D --> E["One cache identity"]
+E -->|Only on a miss| F["Origin request processing"]
+class A,B inputData
+class C decision
+class D,E output
+class F storage

@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Move the bulk before the write outage
+accDescr: The full terabyte and repeated changes transfer before the freeze, leaving a measured final delta and verification inside the six-hour outage.
+A["Before Friday: seed 1 TB"] --> B["Repeat changed-file syncs"]
+B --> C["Friday: freeze writes"]
+C --> D["Final delta: at most 25 GB"]
+D --> E["Verify data and switch application"]
+C -.-> F["Six-hour outage budget"]
+F -.-> E
+class A,B inputData
+class C decision
+class D storage
+class E output
+class F warning

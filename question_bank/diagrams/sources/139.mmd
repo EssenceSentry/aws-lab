@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Trusted identity binding plus a policy intersection
+accDescr: LDAP authentication maps the user to bucket A. A session policy for bucket A intersects with the broader role policy to limit the issued session to bucket A.
+L[Authenticated LDAP user]:::inputData --> M[Trusted mapping<br/>User → bucket A]:::decision
+M --> S[Session policy<br/>Allows bucket A only]:::inputData
+R[Role policy<br/>Allows buckets A and B]:::inputData --> I{Policy intersection}:::decision
+S --> I
+I --> A[(Bucket A<br/>Permitted actions)]:::storage
+I --> B[Bucket B<br/>No session permission]:::warning
+N[Assumes no broader<br/>resource-based session grant]:::warning -. scope of this model .-> I

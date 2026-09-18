@@ -1,0 +1,52 @@
+{
+  "question_id": "289",
+  "base_record_sha256": "9d0f4c886639c3ee5120671e1e3b6fcec40558ceb8918656f4a669317b5597ac",
+  "record": {
+    "id": "289",
+    "exam_domain": "Design for New Solutions",
+    "question": "A public library is migrating a 50-TB digital collection to AWS. It has machine-readable document text and metadata alongside the original files. Visitors need a dynamic website with interactive full-text search and links to the matching originals. The library wants durable object storage, a managed search engine, and repeatable infrastructure deployments.\n\nWhich design provides all three capabilities?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use CloudFormation to deploy an RDS catalog containing titles and authors, store originals in S3, and search only the catalog metadata from the website."
+      },
+      {
+        "id": "2",
+        "text": "Use CloudFormation to deploy S3 storage, an OpenSearch Service domain, and the website's application infrastructure. Ingest document text and metadata into OpenSearch with identifiers that link results to the original S3 objects."
+      },
+      {
+        "id": "3",
+        "text": "Use CloudFormation to deploy S3 storage and the website, and retain the text only in Kinesis Data Streams for consumers that scan the stream whenever a visitor searches."
+      },
+      {
+        "id": "4",
+        "text": "Use CloudFormation to deploy an S3-hosted static catalog that searches only object-name prefixes through ListObjects requests."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. S3 stores the original collection, OpenSearch supplies the document-content index, and CloudFormation describes the deployable infrastructure. The ingestion process is essential: creating a search domain does not automatically index arbitrary S3 objects.\n\n<<1>> provides useful catalog lookup, but its stated index omits document contents. A relational database is not inherently unable to search text; this proposed implementation simply does not index that text.\n\n<<3>> uses an event stream as a query-time corpus scan rather than maintaining an interactive search index.\n\n<<4>> lists matching object names, not words inside documents. A static frontend can participate in a dynamic application, but it still needs an appropriate search backend.\n\nKeep a stable identifier from each indexed document to its source object, track ingestion failures and updates, and return original-file links only after the application's applicable access checks.\n\nOfficial AWS references (checked September 18, 2026): [OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html). [S3 object storage](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/289.mmd",
+  "diagram_alt": "Provisioning creates resources; ingestion populates the search index and preserves links to the original objects.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed search and integration with CloudFormation and data-ingestion services"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Durable object storage for the original collection"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Removed unrelated Pinpoint, explicitly included indexing rather than merely provisioning a domain, and avoided false claims that relational databases or static frontends cannot support search applications."
+  ],
+  "review_status": "authored"
+}

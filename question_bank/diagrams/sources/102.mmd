@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Scale web capacity and database reads separately
+accDescr: The web Auto Scaling group shares session state, sends writes to one writer, and sends read connections to an independently scaled reader pool.
+U["User requests"] --> A["Application Load Balancer"]
+A --> W["EC2 Auto Scaling group"]
+W <--> S[("Shared session store")]
+W -->|Writes| P["Aurora writer endpoint"]
+W -->|Read-only connections| R["Aurora reader endpoint"]
+P --> DB[("Writer")]
+R --> RP[("Aurora Replica pool")]
+AS["Aurora Auto Scaling"] -->|Add or remove readers| RP
+DB -->|Replicated changes| RP
+class U inputData
+class S,DB,RP storage
+class AS decision

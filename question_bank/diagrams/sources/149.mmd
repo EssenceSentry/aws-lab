@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Reduce repeated work, then distribute eligible reads
+accDescr: Read requests check a cache first, cache misses use read replicas, and writes remain on the primary which replicates asynchronously.
+READ["Eligible profile read"] --> C{"Cache hit?"}
+C -->|Yes| HIT["Return cached result"]
+C -->|No| REPL[("Read replicas")]
+REPL --> FILL["Return and cache result"]
+WRITE["Write or immediate-consistency read"] --> P[("Primary database")]
+P -.->|Asynchronous replication| REPL
+class READ,WRITE inputData
+class C decision
+class REPL,P storage
+class HIT,FILL output

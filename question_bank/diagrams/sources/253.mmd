@@ -1,0 +1,13 @@
+sequenceDiagram
+accTitle: Secrets resolve at startup, before application use
+accDescr: ECS retrieves the secret with the execution role and injects it into a new container, which then connects to the managed database endpoint.
+participant ECS as ECS task startup
+participant SM as Secrets Manager
+participant APP as Fargate container
+participant DB as RDS SQL Server
+ECS->>SM: Get secret using execution role
+SM-->>ECS: Current credential value
+ECS->>APP: Start with injected environment
+APP->>DB: Connect through DB endpoint
+Note over SM,APP: Later secret rotation does not alter this environment
+Note over APP,DB: New tasks refresh credentials, reconnect after DB failover

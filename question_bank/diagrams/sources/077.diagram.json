@@ -1,0 +1,37 @@
+{
+  "type": "table",
+  "title": "Spend standby capacity where state requires it",
+  "columns": [
+    "Tier",
+    "Before an outage",
+    "Recovery work"
+  ],
+  "rows": [
+    [
+      "Stateless web and app",
+      "Copied release artifacts and templates",
+      "Rebuild in the tested 10 minutes"
+    ],
+    [
+      "40 TB Aurora MySQL",
+      "Live cross-Region replica, lag monitored",
+      "Promote and reconnect"
+    ],
+    [
+      "End-to-end application",
+      "Rehearsed recovery procedure",
+      "Verified total below 30 minutes"
+    ],
+    [
+      "Nightly backups alone",
+      "Up to a day between recovery points",
+      "Cannot establish 5-minute RPO"
+    ]
+  ],
+  "footnote": "These timings are measured for this workload, not general service guarantees.",
+  "emphasis_rows": [
+    0,
+    1,
+    2
+  ]
+}

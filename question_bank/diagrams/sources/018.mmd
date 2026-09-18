@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Deployment control and runtime credential access
+accDescr: CodeDeploy controls agents on both target types. Each target has its own temporary identity for retrieving the encrypted parameter over TLS.
+ CD[CodeDeploy service role] -->|orchestrate| ECA[CodeDeploy agent on EC2]
+ CD -->|orchestrate| OPA[CodeDeploy agent on premises]
+ ECID[EC2 instance-profile credentials] --> ECA
+ OPID[Refreshed STS role-session credentials] --> OPA
+ ECA -->|deploy code| ECR[EC2 application]
+ OPA -->|deploy code| OPR[On-premises application]
+ ECR -->|authorized GetParameter over TLS| SSM[Parameter Store SecureString]
+ OPR -->|authorized GetParameter over TLS| SSM
+ SSM <-->|KMS decrypt authorization| KMS[KMS key]
+class ECID,OPID inputData
+class SSM storage
+class ECR,OPR output

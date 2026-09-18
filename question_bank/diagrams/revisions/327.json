@@ -1,0 +1,57 @@
+{
+  "question_id": "327",
+  "base_record_sha256": "af458c8dfae7e1325e126fb3c8c23e3faf2db09c4cc9458bcbd62b0d13a443d1",
+  "record": {
+    "id": "327",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations with all features enabled. A network member account owns a nondefault VPC and eligible private subnets. Application teams in accounts under the Customers OU must launch their own EC2 resources in those subnets. The network team must retain control of the VPC's subnets and route tables.\n\nWhich TWO actions establish this shared network model? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach an SCP to Customers that denies VPC configuration changes, without creating a resource share."
+      },
+      {
+        "id": "2",
+        "text": "From the management account, enable sharing with AWS Organizations by using AWS RAM."
+      },
+      {
+        "id": "3",
+        "text": "Create a VPC in every application account and connect the VPCs with a transit gateway instead of sharing subnets."
+      },
+      {
+        "id": "4",
+        "text": "From the network account, create an AWS RAM resource share containing the selected subnets and grant the share to the Customers OU."
+      },
+      {
+        "id": "5",
+        "text": "Share the network account's managed prefix lists with Customers so that the application accounts can launch instances in the referenced networks."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "4"
+    ],
+    "explanation": {
+      "text": "Options <<2>> and <<4>> establish VPC subnet sharing. The management account enables organization sharing through RAM, creating the required integration. The resource owner then shares its eligible subnets with the OU. Participant accounts can create and manage their own supported application resources inside those subnets, while the owner retains network-resource control. Participants still need appropriate IAM permissions.\n\nOption <<1>> can restrict actions but grants no access to the owner's subnets. Option <<3>> creates separately owned networks and connectivity; it does not place resources in the centrally owned VPC. Option <<5>> shares reusable address ranges, not subnet-placement rights.\n\nEnabling RAM trusted access only through the Organizations console is insufficient because that path does not create RAM's required service-linked role. Use the RAM console or its organization-sharing API. Sharing also does not, by itself, prohibit application accounts from creating separate VPCs elsewhere.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html\nhttps://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/327.mmd",
+  "diagram_alt": "The VPC owner shares placement access while participants retain ownership of their own EC2 resources.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Management-account RAM organization-sharing enablement, service-linked role, and owner-created OU shares."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Shared subnet resource ownership and participant/owner permissions."
+    }
+  ],
+  "editorial_notes": [
+    "Removed unrelated Security Hub administration. Distinguished RAM enablement from Organizations-only trusted access and clarified owner versus participant responsibilities. Keys 2 and 4 unchanged."
+  ],
+  "review_status": "authored"
+}

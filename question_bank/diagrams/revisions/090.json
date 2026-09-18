@@ -1,0 +1,57 @@
+{
+  "question_id": "090",
+  "base_record_sha256": "8e029d0b35c3c4e82e6c4bf29390a9040cb0324713556a90639e57fe0e1eff95",
+  "record": {
+    "id": "090",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A Lambda function processes records from DynamoDB Streams and calls downstream AWS services. The team wants each new release to receive approximately 10% of invocations for five minutes, then receive the remaining traffic if alarms remain healthy. The team also needs sampled execution traces with downstream call timing and enough correlation data to identify the source stream.\n\nWhich implementation meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Publish function versions and use CodeDeployDefault.LambdaAllAtOnce on an alias targeted by the event source mapping. Enable active tracing and record the source stream ARN."
+      },
+      {
+        "id": "2",
+        "text": "Publish function versions and point the event source mapping to a deployment alias. Use CodeDeployDefault.LambdaCanary10Percent5Minutes with rollback alarms, enable active tracing, instrument downstream calls, and record source-stream correlation data."
+      },
+      {
+        "id": "3",
+        "text": "Publish function versions and point the event source mapping to an alias. Use CodeDeployDefault.LambdaLinear10PercentEvery1Minute, enable active tracing, and record the source stream ARN."
+      },
+      {
+        "id": "4",
+        "text": "Publish function versions and configure an alias with CodeDeployDefault.LambdaCanary10Percent5Minutes. Keep the event source mapping pinned to the original version, and enable active tracing and downstream instrumentation."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. CodeDeploy changes the alias weights from an initial 10% allocation to the new version to 100% after five minutes, subject to deployment success and configured rollback behavior. The event source mapping must invoke that alias for the routing change to affect stream processing. Active tracing and downstream instrumentation provide sampled timing data, while source ARN and record identifiers support correlation.\n\n<<1>> shifts all traffic immediately, eliminating the required observation interval.\n\n<<3>> uses a linear rollout, adding 10 percentage points each minute instead of holding at 10% for five minutes and then shifting the rest.\n\n<<4>> updates an alias that the event source mapping does not invoke, so it leaves the stream workload on the original version.\n\nAlias routing is probabilistic per invocation. For a batched stream consumer, it does not promise exactly 10% of individual records. Tracing also does not automatically provide an unsampled, continuous trace back through every DynamoDB writer.\n\nAWS documentation (checked September 18, 2026): [CodeDeploy deployment configurations](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html); [Lambda weighted aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuring-alias-routing.html); [Lambda with X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/090.diagram.json",
+  "diagram_alt": "The canary holds a 10% allocation for five minutes before moving to full traffic, and can return to the original version on rollback.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html",
+      "checked_on": "2026-09-18",
+      "supports": "LambdaCanary10Percent5Minutes shifts 10 percent initially and the remaining traffic five minutes later."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuring-alias-routing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Weighted aliases route invocations probabilistically between two published versions, with CodeDeploy supporting gradual rollouts."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html",
+      "checked_on": "2026-09-18",
+      "supports": "Active tracing captures sampled Lambda traces and instrumented downstream calls, rather than guaranteeing an end-to-end trace for every stream record."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Distinguished canary from linear shifting, required the event source mapping to target the alias, and qualified X-Ray sampling and stream correlation."
+  ],
+  "review_status": "authored"
+}

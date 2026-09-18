@@ -1,0 +1,52 @@
+{
+  "question_id": "269",
+  "base_record_sha256": "973e587a97f405405fbbf35597a068963d80049fe88aac5b4c1c830ebbd1b479",
+  "record": {
+    "id": "269",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An organization uses SCPs to limit a departmental OU to EC2 and S3. The following SCP replaces FullAWSAccess at that OU; SCPs at every other level on the account path permit these actions.\n\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"ec2:*\",\n        \"s3:*\"\n      ],\n      \"Resource\": \"*\"\n    }\n  ]\n}\n\nA newly created IAM user in a member account has no identity policies or group memberships. Its CreateBucket request is denied. Investigation finds no applicable explicit deny or other permission restriction.\n\nWhat explains the result?",
+    "options": [
+      {
+        "id": "1",
+        "text": "The SCP permits delegation of S3 actions but does not grant them to the IAM user. The user still needs an applicable IAM permission for s3:CreateBucket."
+      },
+      {
+        "id": "2",
+        "text": "OU-attached SCPs are not inherited by member accounts until the same policy is separately attached to every account."
+      },
+      {
+        "id": "3",
+        "text": "The Resource value must contain the new bucket ARN; an SCP using an asterisk cannot permit bucket creation."
+      },
+      {
+        "id": "4",
+        "text": "An SCP with S3 allow statements authorizes only the member-account root user, so ordinary IAM users cannot receive S3 permissions."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The organization guardrail allows the action to be granted, but the described user has no identity permission that grants it. Add only the required IAM permissions within the allowed scope.\n\n<<2>> denies the inheritance that OU policies provide. The account does not need a duplicate attachment merely to inherit the OU restriction.\n\n<<3>> invents a requirement for a bucket-specific SCP resource. The shown wildcard does not cause the missing IAM grant.\n\n<<4>> misstates SCP scope. SCPs can limit member-account IAM users and roles as well as root activity within their documented scope; they are not grants reserved for root.\n\nEvaluate the organization ceiling and the actual access grant separately. The stem explicitly establishes permits at every ancestor and the account level. Leaving FullAWSAccess beside this allowlist at the same OU would broaden that level's permitted actions rather than enforcing an EC2-and-S3-only ceiling.\n\nOfficial AWS references (checked September 18, 2026): [SCPs do not grant access](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html). [SCP evaluation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/269.diagram.json",
+  "diagram_alt": "A truth table separates effective SCP permission from the IAM grant needed for the described new-bucket request.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCP non-grant behavior and member-account scope."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "Allows needed at every path level, inheritance and same-level broader allows."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Repaired malformed JSON, removed unsupported assumptions about existing SCP attachments, and avoided claiming root must have an IAM identity policy."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "210",
+  "base_record_sha256": "2cee16efdb6ad4a17cb72d1e4fd9b2906449bf580e493f1ce7943859cd9f6e4f",
+  "record": {
+    "id": "210",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company must migrate 150 VMs containing 40 TB within three months. Its migration link is limited to 12 Mbps, and funding for a higher-capacity connection is unavailable. A tested plan shows that the critical subset and its change traffic fit that bandwidth and deadline. Noncritical VMs may be shut down from export until import and cutover, and their images meet VM Import/Export requirements. The company already has approved Data Transfer Terminal access, a suitable reservation, and secure transport within the schedule.\n\nWhich plan meets these constraints?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Order a new 1-Gbps Direct Connect circuit and replicate every VM through MGN over that connection."
+      },
+      {
+        "id": "2",
+        "text": "Use the existing assessment inventory to refactor every application onto managed services before the deadline, without a data-transfer or cutover plan."
+      },
+      {
+        "id": "3",
+        "text": "Export every VM and upload all 40 TB through Transfer Family over the existing 12-Mbps connection, then import the images into EC2."
+      },
+      {
+        "id": "4",
+        "text": "Use MGN continuous replication and tested cutovers for the critical subset. Export the powered-off noncritical VMs, upload them to S3 at the reserved Data Transfer Terminal facility, and use VM Import/Export to launch and validate them."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. It assigns the limited online path to workloads needing short cutovers and moves the large, quiesced exports over the facility's connection. The explicit bandwidth, image-support, shutdown, and reservation premises make the combined plan feasible.\n\n<<1>> violates the funding constraint even though a suitable faster connection could support another migration plan.\n\n<<2>> treats assessment as migration execution and proposes an unvalidated redesign rather than the required transfer plan.\n\n<<3>> changes the transfer protocol but retains the bottleneck: 40 decimal TB over 12 Mbps takes about 309 days at ideal full utilization, before overhead or new changes.\n\nTerminal service access and transport logistics must be arranged in advance; uploading an image does not automatically convert it into a running EC2 instance. Protect and verify exports, test the imports, and keep noncritical sources quiesced unless a separate delta strategy exists. Continuous replication still needs sufficient throughput to catch up with source changes.\n\nOfficial AWS references (checked September 18, 2026): [Data Transfer Terminal access](https://docs.aws.amazon.com/datatransferterminal/latest/userguide/what-is-dtt.html). [Supported VM images](https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html). [MGN replication](https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/210.diagram.json",
+  "diagram_alt": "The critical subset uses verified online replication capacity, while quiesced bulk exports bypass the constrained internet link.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/datatransferterminal/latest/userguide/what-is-dtt.html",
+      "checked_on": "2026-09-18",
+      "supports": "Physical upload facility, reservation and access eligibility"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html",
+      "checked_on": "2026-09-18",
+      "supports": "Import format, OS and disk compatibility prerequisites"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html",
+      "checked_on": "2026-09-18",
+      "supports": "Continuous block-level migration for the critical subset"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4 and prior feasibility repair. Added approved Terminal access and a write-quiescence plan for offline exports; retained the 309-day bandwidth lower bound."
+  ],
+  "review_status": "authored"
+}

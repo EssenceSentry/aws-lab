@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Authentication and directory metadata both cross the trust
+accDescr: Multiple self-managed AD domains and forests have two-way trust relationships with Managed Microsoft AD. Identity Center uses the integrated directory for centrally assigned AWS and application access.
+A[Self-managed AD<br/>Multiple domains and forests]:::external <-->|Two-way trusts| M[AWS Managed Microsoft AD]:::process
+M -->|Identities and group metadata| I[IAM Identity Center]:::process
+G[Group assignments]:::reference -.-> I
+I --> P[AWS account permission sets]:::output
+I --> S[Supported SAML applications]:::output

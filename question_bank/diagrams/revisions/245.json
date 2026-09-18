@@ -1,0 +1,57 @@
+{
+  "question_id": "245",
+  "base_record_sha256": "1b714d2439b20749b79bab9730b1277f3bc6711da21f73d7a94095c912227b13",
+  "record": {
+    "id": "245",
+    "exam_domain": "Design for New Solutions",
+    "question": "Financial batches arrive in an encrypted S3 raw-data bucket. Only an approved processing role may read them, and raw records must never enter queues, job arguments, logs or the downstream bucket. A tested PySpark job masks account numbers, joins each batch to a large reference dataset and emits JSON in about 20 minutes. Catalog definitions already exist. The team must reuse this whole-batch code, meet a 60-minute target and avoid managing a compute cluster.\n\nWhich processing design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Send each raw record through SQS to a Lambda consumer that masks it before writing downstream."
+      },
+      {
+        "id": "2",
+        "text": "Run the unchanged Spark transformation in one standard Lambda invocation with a 30-minute timeout."
+      },
+      {
+        "id": "3",
+        "text": "Start a Glue Spark job with object references when a complete batch is ready. Use the approved role and catalog metadata, validate the sanitized output in restricted staging, then publish the accepted batch downstream."
+      },
+      {
+        "id": "4",
+        "text": "Run a Glue crawler to update the catalog and copy the raw objects downstream when the crawler succeeds."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A Glue Spark job can execute the existing transformation without operating a cluster. The catalog describes data; the job actually masks and reshapes it. A separate validation and publication gate prevents a failed or incomplete sanitization attempt from becoming a downstream batch.\n\n<<1>> violates the explicit prohibition on placing raw records in queues. <<2>> exceeds the 15-minute limit of a standard Lambda invocation and does not provide the requested Spark execution model. <<4>> mistakes schema discovery for transformation: a crawler does not sanitize object contents.\n\nPass references, restrict staging and logs, and publish a batch manifest only after all expected sanitized objects pass validation. The runtime is a workload assumption, not a claim that Glue always finishes within that duration. Test capacity, schema changes and failure recovery against the target.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/glue/latest/dg/add-crawler.html\nhttps://docs.aws.amazon.com/glue/latest/dg/author-job-glue.html\nhttps://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/245.mmd",
+  "diagram_alt": "Schema metadata supports transformation, but downstream visibility requires successful sanitization and batch validation.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html",
+      "checked_on": "2026-09-18",
+      "supports": "Crawlers populate catalog metadata while ETL jobs read, transform and write the underlying data."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/glue/latest/dg/author-job-glue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Glue jobs can run supplied PySpark scripts on the managed Spark ETL engine."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard Lambda functions have a maximum configurable timeout of 900 seconds."
+    }
+  ],
+  "editorial_notes": [
+    "Kept the deliberate batch runtime/reuse constraints and made complete-batch publication explicit rather than implying the service itself guarantees sanitization."
+  ],
+  "review_status": "authored"
+}

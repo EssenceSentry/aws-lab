@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Move only the controller into the existing cluster group
+accDescr: The controller is stopped, assigned to the existing cluster placement group, and restarted when capacity permits. Worker instances stay running throughout.
+C[Controller running outside group]:::inputData --> S[Stop controller]:::process
+S --> M[Modify placement group membership]:::process
+M --> R[Restart when capacity is available]:::process
+subgraph AZ[Same Availability Zone]
+subgraph PG[Cluster placement group]
+W[Workers remain running]:::process
+N[Controller after restart]:::process
+N <-->|Private IP traffic| W
+end
+end
+R --> N

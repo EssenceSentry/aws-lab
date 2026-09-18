@@ -1,0 +1,58 @@
+{
+  "question_id": "137",
+  "base_record_sha256": "4c4a10491cf18440e4d9bddb16507be2e1f1e8c762353b6c8de657a5082303fe",
+  "record": {
+    "id": "137",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company hosts approved public web assets directly on an S3 website endpoint without CloudFront. The bucket name matches www.example.com, static website hosting is enabled, and index.html is configured and present. The objects use S3 managed encryption keys. Route 53 resolves www.example.com to the intended website endpoint. HTTP requests to both the site root and /index.html return 403 Access Denied, including requests sent directly to the website endpoint.\n\nWhat should the solutions architect investigate first?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Whether an error document is configured, because an S3 website cannot return its index document without one."
+      },
+      {
+        "id": "2",
+        "text": "Whether visitors include index.html explicitly, because an S3 website endpoint cannot resolve a root URL to an index document."
+      },
+      {
+        "id": "3",
+        "text": "Whether the Route 53 record needs more propagation time, despite the same 403 response from the direct website endpoint."
+      },
+      {
+        "id": "4",
+        "text": "Whether the objects are publicly readable through an effective GetObject permission and whether account-level or bucket-level Block Public Access settings prevent that access."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Direct S3 website hosting requires public read access to the content. An existing object returns 403 when the requester lacks permission. Check the bucket policy and the effective Block Public Access settings, including the account settings, because the most restrictive applicable combination is enforced.\n\n<<1>> is incorrect because an error document is optional and does not authorize access to the index object. <<2>> is incorrect because the configured index document handles a request to the site root; the explicit object request also fails here. <<3>> cannot explain the same authorization response from the direct endpoint, which bypasses the custom DNS record.\n\nMatch the diagnosis to the observed layer: DNS resolution succeeded, the object exists, and S3 returned an authorization error. If the content must stay private or use HTTPS, use a suitable CloudFront design with a private S3 REST origin and origin access control instead of direct website hosting.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/IndexDocumentSupport.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/137.mmd",
+  "diagram_alt": "A direct-endpoint 403 for an existing object points to effective public-read authorization rather than custom DNS or a missing filename.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html",
+      "checked_on": "2026-09-18",
+      "supports": "Direct website content must be publicly readable and Block Public Access settings can prevent access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/IndexDocumentSupport.html",
+      "checked_on": "2026-09-18",
+      "supports": "The configured index document serves root and directory requests."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "A private S3 REST origin can use CloudFront OAC, while website endpoints require a different origin configuration."
+    }
+  ],
+  "editorial_notes": [
+    "Removed the unrelated apex-domain failure and supplied HTTP status evidence so one diagnosis is defensible.",
+    "Scoped the scenario to direct website hosting and public assets, preserving the separate private-CloudFront alternative in the explanation."
+  ],
+  "review_status": "authored"
+}

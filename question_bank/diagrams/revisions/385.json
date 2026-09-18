@@ -1,0 +1,67 @@
+{
+  "question_id": "385",
+  "base_record_sha256": "8a1cb162addc9fe3198aaa0fdf8144621d5f5e78d7c011e1f0a506df38ac67a1",
+  "record": {
+    "id": "385",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A research company stores telemetry as partitioned ORC files in HDFS on a persistent EMR cluster. Analysts use Presto to run SQL queries only between 18:00 and 02:00; the cluster serves no other workload. The company can redirect new telemetry files to S3 and migrate the existing files without changing their format. A pilot confirms that Athena supports the queries and completes them within the required 15 minutes.\n\nWhich design removes idle analytics compute and avoids a separate data-loading pipeline with the least operational effort?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Load the ORC data into Redshift tables and maintain an ingestion pipeline for new telemetry before analysts can query it."
+      },
+      {
+        "id": "2",
+        "text": "Use Glue ETL to transform and load the files into Aurora tables, then run the analytical queries against the database."
+      },
+      {
+        "id": "3",
+        "text": "Convert the ORC files to JSON with Lambda and load them into DynamoDB, then redesign the analytical queries for the new data model."
+      },
+      {
+        "id": "4",
+        "text": "Store the ORC files in S3, register their schemas and partitions in the Glue Data Catalog, and run SQL queries with Athena on-demand pricing."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> separates durable file storage from query execution. Athena can query ORC directly in S3 using table and partition metadata in the Glue Data Catalog. The company no longer keeps EMR compute running to retain HDFS data, and it avoids loading a second database. With on-demand Athena SQL, query charges depend on data scanned; partition pruning and columnar ORC can reduce that amount. S3 storage, requests, and applicable catalog charges remain.\n\nThe nightly window lasts eight hours, leaving sixteen hours without analytics. That identifies idle compute, but it does not alone prove that Athena is always cheapest. Query frequency, scanned bytes, concurrency, and measured performance still determine economics. The pilot supplies the required compatibility and latency evidence.\n\nOption <<1>> adds a loading pipeline. Redshift can be appropriate for analytics, including through Serverless and Spectrum; it is not inherently an always-on provisioned-only service. Option <<2>> adds transformation and database loading where direct file queries already work. Option <<3>> discards the existing columnar format and requires a different query/data model. DynamoDB's PartiQL support does not make it a drop-in replacement for these Presto analytical queries.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/athena/latest/ug/what-is.html\nhttps://docs.aws.amazon.com/athena/latest/ug/orc-serde.html\nhttps://docs.aws.amazon.com/athena/latest/ug/data-sources-glue.html\nhttps://aws.amazon.com/redshift/pricing/\nhttps://aws.amazon.com/athena/pricing/",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/385.mmd",
+  "diagram_alt": "ORC files move to S3 without conversion; Athena reads them using Glue metadata without retaining an idle HDFS compute cluster.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Serverless SQL analysis of S3 data without managing a query cluster."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/orc-serde.html",
+      "checked_on": "2026-09-18",
+      "supports": "Athena directly supports ORC and partitioned external tables."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/data-sources-glue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Glue Data Catalog stores S3 table and column metadata used by Athena."
+    },
+    {
+      "url": "https://aws.amazon.com/redshift/pricing/",
+      "checked_on": "2026-09-18",
+      "supports": "Redshift has Serverless, provisioned and Spectrum pricing rather than requiring always-on provisioned compute."
+    },
+    {
+      "url": "https://aws.amazon.com/athena/pricing/",
+      "checked_on": "2026-09-18",
+      "supports": "On-demand SQL scanned-data pricing, separate capacity pricing and S3/catalog charges."
+    }
+  ],
+  "editorial_notes": [
+    "Removed false absolutes about Redshift, Aurora and DynamoDB SQL support. Reframed the decision around direct file querying, idle compute and a measured Athena performance premise. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

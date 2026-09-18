@@ -1,0 +1,52 @@
+{
+  "question_id": "107",
+  "base_record_sha256": "fa79779e82f6b04ce01489ae83f9ee5f6d3c8215c108b567d6c7a1051f3d52a2",
+  "record": {
+    "id": "107",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses AWS CloudFormation to deploy EC2 application instances and a DynamoDB table in the same account. The application must call DynamoDB without storing long-lived AWS access keys in the template, image, or instance configuration.\n\nWhich template design meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Give the CloudFormation execution role access to DynamoDB and allow the EC2 instances to inherit that role automatically after deployment."
+      },
+      {
+        "id": "2",
+        "text": "Create an IAM user for the application, pass its access keys as NoEcho template parameters, and write the keys into the instances' user data."
+      },
+      {
+        "id": "3",
+        "text": "Create an IAM role trusted by the EC2 service with the required table permissions. Add the role to an AWS::IAM::InstanceProfile, assign the profile through the instances' IamInstanceProfile property, and use the SDK credential provider chain."
+      },
+      {
+        "id": "4",
+        "text": "Create an IAM role with the required table permissions and store credentials obtained during stack creation in a configuration file on each instance."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The role defines EC2 trust and application permissions; the instance profile attaches that role to the instance. The SDK can obtain and refresh temporary role credentials through the instance metadata credential provider. Scope the role to required DynamoDB actions and table resources.\n\n<<1>> confuses deployment permissions with runtime permissions. CloudFormation's execution role is used by CloudFormation to manage resources, not inherited by the EC2 application.\n\n<<2>> still distributes long-lived credentials. `NoEcho` masks some parameter displays but does not turn access keys into a managed credential mechanism or secure their use in user data.\n\n<<4>> snapshots credentials rather than arranging automatic credential refresh. Temporary credentials expire, and copying them at deployment is unnecessary when the instance profile provides them at runtime.\n\nInfrastructure permissions and application permissions are separate identities. Creating the role alone is insufficient: the instance profile must be associated with the EC2 instance.\n\nOfficial AWS references (checked September 18, 2026): [CloudFormation instance profiles](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-instanceprofile.html). [IAM roles for EC2 applications](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/107.mmd",
+  "diagram_alt": "The instance profile links deployment configuration to automatically refreshed runtime role credentials.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-instanceprofile.html",
+      "checked_on": "2026-09-18",
+      "supports": "InstanceProfile Roles property and use with EC2"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Trust, permissions, instance profiles, temporary credentials and SDK refresh"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced malformed CloudFormation property distractors with plausible deployment/runtime identity and credential-lifecycle mistakes."
+  ],
+  "review_status": "authored"
+}

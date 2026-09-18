@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Consumption advances checkpoints, not retention
+accDescr: Two separate KCL applications consume the same seven-day log and keep separate progress, then send processed microbatches to a deduplicating warehouse load.
+K[("Kinesis: seven-day retained log")] --> A["Analysis A and checkpoint A"]
+K --> B["Analysis B and checkpoint B"]
+A --> S[("Processed microbatches in S3")]
+B --> S
+S --> C["COPY to staging, deduplicate, merge"]
+C --> R[("Redshift results")]
+class K,S,R storage
+class A,B inputData
+class C decision

@@ -1,0 +1,11 @@
+sequenceDiagram
+accTitle: Cross-account private DNS requires two account owners
+accDescr: The hosted-zone owner authorizes the VPC, the VPC owner associates it, and the hosted-zone owner removes the authorization while the association remains.
+participant A as Account A, zone owner
+participant B as Account B, VPC owner
+Note over A: CreateVPCAssociationAuthorization
+A-->>B: Association authorized for this VPC
+Note over B: AssociateVPCWithHostedZone
+B-->>A: Association complete
+Note over A: DeleteVPCAssociationAuthorization
+Note over B: Existing association remains usable

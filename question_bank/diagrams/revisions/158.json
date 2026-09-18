@@ -1,0 +1,52 @@
+{
+  "question_id": "158",
+  "base_record_sha256": "48ba00da7d4e2249ba6e48ee81b77d755848a554a58339be9cd61f2a1de127f4",
+  "record": {
+    "id": "158",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A research team will run one EMR job for approximately eight hours on 200 EC2 instances. The workload uses HDFS for important intermediate data and can retry individual compute tasks, but restarting the coordinator or rebuilding lost HDFS data would exceed its time budget. Results will be staged in S3 before loading Redshift. The team has no applicable existing commitments and no planned use for these instances after the job.\n\nWhich purchasing arrangement best balances cost and interruption risk?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use On-Demand instances for the primary and core nodes and diversified Spot capacity for task nodes. Keep critical application-master processes on stable nodes."
+      },
+      {
+        "id": "2",
+        "text": "Purchase new one-year Reserved Instances covering the primary and core capacity, and use Spot task nodes."
+      },
+      {
+        "id": "3",
+        "text": "Use Spot capacity for the primary, core, and task nodes, with no separation of critical cluster state from interruptible capacity."
+      },
+      {
+        "id": "4",
+        "text": "Purchase a new one-year Reserved Instance for the primary capacity, use On-Demand core nodes, and use Spot task nodes."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The primary coordinates the cluster, core nodes store HDFS data, and task nodes supply compute without storing HDFS blocks. Using On-Demand for critical roles avoids Spot reclamation of that capacity while retryable task work uses discounted spare capacity.\n\n<<2>> and <<4>> require new long-term billing commitments for a one-time job with no subsequent use. Existing matching discounts could change that economics, but the stem excludes them.\n\n<<3>> exposes coordination and HDFS storage to interruptions that this workload cannot tolerate within its time budget.\n\nOn-Demand does not eliminate ordinary failures, and losing a task node can still cause recomputation or shuffle loss. Configure retries and the appropriate YARN node labels for the chosen EMR release, rather than assuming application masters always avoid task nodes by default. Reserved Instances are billing discounts, not a distinct physical node type.\n\nOfficial AWS references (checked September 18, 2026): [EMR node responsibilities](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html). [EC2 Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/158.diagram.json",
+  "diagram_alt": "EMR node responsibilities determine where Spot interruptions are acceptable for this one-time HDFS workload.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html",
+      "checked_on": "2026-09-18",
+      "supports": "Primary coordination, core HDFS storage, task compute and release-specific YARN placement"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
+      "checked_on": "2026-09-18",
+      "supports": "Billing-discount semantics and one- or three-year new commitments"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Removed obsolete Spot Blocks and master terminology, specified HDFS and retry constraints, and qualified new commitment economics and release-dependent application-master placement."
+  ],
+  "review_status": "authored"
+}

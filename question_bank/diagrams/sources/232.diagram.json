@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Availability and historical recovery solve different failures",
+  "columns": [
+    "Protection",
+    "Recovery material",
+    "Corruption recovery"
+  ],
+  "rows": [
+    [
+      "Multi-AZ standby only",
+      "Current replicated database state",
+      "May contain the same bad changes"
+    ],
+    [
+      "Hourly snapshots only",
+      "One recovery point per hour",
+      "Potential loss exceeds 10 minutes"
+    ],
+    [
+      "Continuous PITR protection",
+      "Backup plus transaction-log history",
+      "Choose a clean time within retention"
+    ],
+    [
+      "Restore drill",
+      "New instance, validation and cutover",
+      "Measure the entire 2-hour objective"
+    ]
+  ],
+  "footnote": "Freshness establishes the available recovery point. A timed end-to-end drill establishes whether the recovery-time target is achievable.",
+  "emphasis_rows": [
+    2,
+    3
+  ]
+}

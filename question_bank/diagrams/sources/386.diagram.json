@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Commit only where the usage floor is dependable",
+  "columns": [
+    "Workload",
+    "Observed usage floor",
+    "Matching purchase"
+  ],
+  "rows": [
+    [
+      "EC2 family in one Region",
+      "Continuous stable baseline",
+      "EC2 Instance Savings Plan"
+    ],
+    [
+      "Lambda events",
+      "Zero in some hours",
+      "On demand for now"
+    ],
+    [
+      "MemoryDB nodes",
+      "Continuous matching nodes",
+      "Reserved-node billing discount"
+    ]
+  ],
+  "footnote": "A discount commitment does not provision resources. Lambda eligibility for Compute Savings Plans does not create a dependable hourly usage floor.",
+  "emphasis_rows": [
+    1
+  ]
+}

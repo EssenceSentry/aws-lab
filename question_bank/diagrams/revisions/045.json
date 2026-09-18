@@ -1,0 +1,63 @@
+{
+  "question_id": "045",
+  "base_record_sha256": "741e72e35753106e528879c4f5d25be29d7d6bd7d63efbb2dcaa037317c2c8e9",
+  "record": {
+    "id": "045",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An insurer runs web servers behind a load balancer. Its security policy requires the TLS private key to be generated and used inside company-controlled dedicated HSMs, with key extraction disabled. Application logs must survive instance termination, and only an audit role may read and decrypt the archived logs.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Pass TCP traffic through a Network Load Balancer. Store the TLS private key on encrypted EBS volumes attached to the web servers. Archive logs in S3 with SSE-KMS and restrict access to the audit role."
+      },
+      {
+        "id": "2",
+        "text": "Pass TCP traffic through a Network Load Balancer. Download the TLS private key from a restricted S3 bucket at server startup. Archive logs in S3 with SSE-S3 and allow all server administrators to read them."
+      },
+      {
+        "id": "3",
+        "text": "Pass TCP traffic through a Network Load Balancer. Use a non-extractable key in CloudHSM for TLS private-key operations. Store logs only on encrypted EC2 instance-store volumes."
+      },
+      {
+        "id": "4",
+        "text": "Pass TCP traffic through a Network Load Balancer. Use a non-extractable key in a multi-AZ CloudHSM cluster for TLS private-key operations. Archive logs in S3 with SSE-KMS and restrict object reads and key decryption to the audit role."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Choose <<4>>. The web servers terminate TLS while delegating supported private-key operations to CloudHSM. The Network Load Balancer uses a TCP listener so it passes the TLS session through. Generating the key inside the HSM and marking it non-extractable establishes the required key boundary. S3 provides durable log storage, and S3 authorization plus the KMS key policy restrict who can obtain plaintext archives.\n\n<<1>> places usable private-key material on the servers, even though the disks are encrypted. <<2>> likewise copies the key out of an HSM boundary; SSE-S3 does not prevent permitted S3 readers from receiving decrypted logs. <<3>> protects the TLS key but instance store is not durable across termination.\n\nKey custody and data-read authorization are separate controls. An HSM can protect a key from extraction while an authorized application still invokes it. Configure HSM client access, resilient HSM placement and least-privilege log-writer permissions; do not grant the writers log-read access merely because they upload logs.\n\nAWS documentation (checked September 18, 2026): [CloudHSM TLS offload](https://docs.aws.amazon.com/cloudhsm/latest/userguide/ssl-offload.html), [CloudHSM key attributes](https://docs.aws.amazon.com/cloudhsm/latest/userguide/key-attribute-table.html), [S3 SSE-KMS permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html). [CloudHSM availability](https://docs.aws.amazon.com/cloudhsm/latest/userguide/cluster-high-availability-load-balancing.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/045.mmd",
+  "diagram_alt": "TLS key operations stay inside CloudHSM; separate S3 and KMS checks control archived-log reads.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/ssl-offload.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compatible web servers delegate TLS private-key cryptographic operations to CloudHSM."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/key-attribute-table.html",
+      "checked_on": "2026-09-18",
+      "supports": "Extractable and never-extractable attributes govern whether HSM key material can be exported."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "SSE-KMS downloads require KMS decryption permission in addition to S3 access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/cluster-high-availability-load-balancing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multiple HSMs in separate AZs provide redundant key operations and synchronized keys."
+    }
+  ],
+  "editorial_notes": [
+    "Made dedicated-HSM custody, non-extractability, durable logs and audit-role access explicit so ACM alone is not an equally valid answer.",
+    "Clarified CloudHSM offload covers private-key operations rather than every byte of TLS traffic."
+  ],
+  "review_status": "authored"
+}

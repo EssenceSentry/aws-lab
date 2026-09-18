@@ -1,0 +1,19 @@
+flowchart TB
+accTitle: Protect different attack and failure surfaces
+accDescr: Edge filtering precedes a multi-AZ application, while Session Manager uses a separate administration path without inbound SSH.
+U["Customer HTTP requests"] --> E["CloudFront and Shield Advanced"]
+E --> F["AWS WAF web ACL"]
+F --> L["Application Load Balancer"]
+L --> A["Web instances in AZ A"]
+L --> B["Web instances in AZ B"]
+A --> P[("RDS primary")]
+B --> P
+P -->|Synchronous replication| S[("Standby in another AZ")]
+ADM["Authorized operator"] --> SM["Session Manager"]
+SM -.->|Managed session| A
+SM -.->|Managed session| B
+N["No inbound SSH rule"] -.-> A
+class U,ADM inputData
+class F decision
+class P,S storage
+class N warning

@@ -1,0 +1,47 @@
+{
+  "question_id": "231",
+  "base_record_sha256": "c48bb452b8edef662bc5caf525456ddb85bda74e642249427f45e6dba17b5c62",
+  "record": {
+    "id": "231",
+    "exam_domain": "Design for New Solutions",
+    "question": "A bank connects ten VPCs to its data center through virtual private gateways and a single 1 Gbps Direct Connect connection. An independent Internet connection already has enough capacity for the bank's reduced backup traffic. The bank must retain Direct Connect as its primary path and add automatic failover without purchasing another leased circuit or redesigning the VPC connectivity.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Purchase a second Direct Connect connection with a public virtual interface, and carry Site-to-Site VPN connections over that circuit."
+      },
+      {
+        "id": "2",
+        "text": "Add a second set of private virtual interfaces to the existing Direct Connect connection, and use BGP to prefer the original virtual interfaces."
+      },
+      {
+        "id": "3",
+        "text": "Create Internet-based Site-to-Site VPN connections from the data center to each VPC virtual private gateway. Configure BGP and routing preferences so the VPN paths take over when Direct Connect fails."
+      },
+      {
+        "id": "4",
+        "text": "Purchase a physically diverse Direct Connect connection with private virtual interfaces, and configure BGP failover between the two connections."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The existing Internet service supplies an independent transport path, and Site-to-Site VPN provides encrypted connectivity to the current virtual private gateways. BGP and appropriate routing preferences allow the primary Direct Connect route to give way to the backup path after failure detection.\n\n<<1>> can provide an encrypted path over a separate circuit, but requires the additional leased connection that the budget excludes.\n\n<<2>> provides additional logical interfaces, not physical-path independence. Failure of the shared Direct Connect connection removes both sets of virtual interfaces.\n\n<<4>> is a strong resilience design when diverse Direct Connect circuits are justified, but also violates the no-new-circuit constraint.\n\nTest both traffic directions, route withdrawal, convergence, and the reduced-throughput workload. A VPN carried over the same Direct Connect connection would not survive failure of that connection. Backup capacity and cost depend on the actual Internet service and traffic, so this choice is based on the stated existing capacity rather than a universal claim that VPN is always cheaper.\n\nAWS documentation (checked September 18, 2026): [Direct Connect redundancy and VPN backup](https://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/231.mmd",
+  "diagram_alt": "An independent Internet VPN path remains available when the shared Direct Connect connection fails.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html",
+      "checked_on": "2026-09-18",
+      "supports": "A separate Internet VPN can back up Direct Connect; redundant virtual interfaces on one physical connection do not remove the connection failure domain, and routing failover must be tested."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Explicitly scoped cost and backup throughput assumptions, removed misleading VPN-over-Direct-Connect justification, and replaced an implausible direct-MPLS alternative with a meaningful shared-physical-path failure."
+  ],
+  "review_status": "authored"
+}

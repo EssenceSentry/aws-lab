@@ -1,0 +1,57 @@
+{
+  "question_id": "203",
+  "base_record_sha256": "47fe2b82e20887cc109776ec2ed686f3a83819d46a887268c6d44bd75fc2f22c",
+  "record": {
+    "id": "203",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A travel website runs on premises and cannot be migrated before a global campaign begins. Most projected bandwidth is for public, cacheable destination photos. Load testing shows that the existing servers can handle the remaining uncached booking requests. The company also needs HTTP rules for SQL injection and cross-site scripting. Its web servers can act as an HTTPS origin.\n\nWhich change meets these requirements before the campaign?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place CloudFront in front of the existing origin and associate a WAF web ACL. Cache public images, forward the required dynamic request methods and session data without caching personalized responses, and restrict direct origin access."
+      },
+      {
+        "id": "2",
+        "text": "Complete a server migration to EC2, configure an ALB and Auto Scaling, and place CloudFront with WAF in front of the new web fleet before accepting campaign traffic."
+      },
+      {
+        "id": "3",
+        "text": "Copy the public images to an S3 bucket and serve only those images through CloudFront, leaving booking traffic on the original hostname without WAF inspection."
+      },
+      {
+        "id": "4",
+        "text": "Put the existing website behind CloudFront, cache every response using only the URL path, and configure WAF while omitting cookies and authorization data from origin requests."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. CloudFront can use an existing HTTP server as its origin. Cache hits remove image transfers from the constrained site, and the associated WAF rules inspect viewer requests before they reach that origin. Separate cache behaviors preserve dynamic transactions and session handling.\n\n<<2>> could provide a scalable future architecture, but requires the migration that cannot be completed by the deadline.\n\n<<3>> offloads images but leaves the dynamic application outside the required WAF entry path.\n\n<<4>> risks mixing personalized responses and breaking authenticated transactions by treating all content as public static data.\n\nA CDN does not create unlimited capacity for uncached application work. The stated load test is essential, as are correct cache keys, origin forwarding, TLS, and bypass restrictions. WAF rules should be tested against normal booking traffic.\n\nOfficial AWS references (checked September 18, 2026): [CloudFront origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html). [Origin load reduction](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html). [WAF with CloudFront](https://docs.aws.amazon.com/waf/latest/developerguide/cloudfront-features.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/203.mmd",
+  "diagram_alt": "WAF filters the common entry path, while edge cache hits reduce image traffic and dynamic requests still reach the origin.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html",
+      "checked_on": "2026-09-18",
+      "supports": "HTTP custom origins and S3 origins"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache hits avoid origin requests and limited benefit for low-cacheability dynamic content"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/cloudfront-features.html",
+      "checked_on": "2026-09-18",
+      "supports": "Web ACL request inspection for CloudFront distributions"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added measured uncached capacity, secure origin handling and dynamic request semantics; avoided guaranteeing that caching solves every load bottleneck."
+  ],
+  "review_status": "authored"
+}

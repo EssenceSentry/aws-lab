@@ -1,0 +1,6 @@
+flowchart TB
+accTitle: Publish one hybrid service without broad partner network peering
+accDescr: A partner application uses a private interface endpoint. PrivateLink connects it to the provider VPC NLB endpoint service, which reaches on-premises targets over the existing protected Direct Connect path.
+A[Partner VPC<br/>Application]:::inputData --> E[Partner VPC<br/>Interface endpoint]:::process
+E -->|PrivateLink, approved connection| N[Provider VPC<br/>NLB endpoint service]:::process
+N -->|Protected Direct Connect path| T[Data center<br/>TCP service at private IP targets]:::external

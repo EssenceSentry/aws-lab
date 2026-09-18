@@ -1,0 +1,52 @@
+{
+  "question_id": "101",
+  "base_record_sha256": "3d51520570dc2a0677db27656a8b864bde7bb40ac29ba722e3d175f6997ee1e7",
+  "record": {
+    "id": "101",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A governance team finds that several AWS Lambda execution roles allow all actions on all Amazon S3 buckets and DynamoDB tables. The team must replace these policies with permissions based on each function's actual needs, including infrequently used recovery paths. It wants to use AWS tooling to reduce manual analysis without treating observed activity as a complete specification.\n\nWhich actions should the team take? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Amazon GuardDuty findings as the complete list of API actions required by each function. Remove every permission that does not appear in a finding."
+      },
+      {
+        "id": "2",
+        "text": "Use service last-accessed timestamps to retain full access to each recently used service and remove all other services."
+      },
+      {
+        "id": "3",
+        "text": "Use IAM Access Analyzer policy generation for each role. Review the generated template, add required permissions not inferred by the tool using logs and application requirements, scope resources, and test the replacement policy."
+      },
+      {
+        "id": "4",
+        "text": "Configure a CloudTrail trail with relevant management events and S3 object and DynamoDB data events. Collect representative function activity, including recovery paths, for policy generation and supplemental review."
+      },
+      {
+        "id": "5",
+        "text": "Attach the same AWS managed full-access policies for S3 and DynamoDB to every execution role so that AWS maintains the permissions."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<4>> are correct. CloudTrail supplies usage evidence, and IAM Access Analyzer turns supported activity into a policy starting point. Representative execution and a tested review are still necessary: an operation absent from the observation window might be required later.\n\nAccess Analyzer does not infer action-level permissions from data events. Capturing S3 object and DynamoDB data events supports supplemental analysis; it does not remove that limitation. Review required data-plane actions, resource ARNs, conditions, and other omissions such as `iam:PassRole` where applicable before replacing the policy.\n\n<<1>> confuses threat detection with a required-permissions inventory. Legitimate activity need not produce GuardDuty findings.\n\n<<2>> identifies used services but retains excessive actions and resources within them.\n\n<<5>> retains broad permissions and does not distinguish what individual functions require.\n\nThe transferable rule is to use observed access as evidence for least privilege, then reconcile it with required behavior and test it.\n\nOfficial AWS references (checked September 18, 2026): [IAM Access Analyzer policy generation](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/101.mmd",
+  "diagram_alt": "CloudTrail evidence supports policy generation and separate data-plane review, followed by reconciliation and tests.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudTrail-based policy generation, service/action coverage, data-event and PassRole limitations, and review requirements"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 3 and 4. Explicitly distinguished data-event collection from Access Analyzer action-level generation, which does not use those events."
+  ],
+  "review_status": "authored"
+}

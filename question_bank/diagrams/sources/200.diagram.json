@@ -1,0 +1,41 @@
+{
+  "type": "table",
+  "title": "Scale waiting work relative to worker capacity",
+  "columns": [
+    "Visible backlog",
+    "Worker count (InService)",
+    "Backlog per worker",
+    "Initial response"
+  ],
+  "rows": [
+    [
+      "20 messages",
+      "5 workers",
+      "20 ÷ 5 = 4",
+      "Above target: scale out"
+    ],
+    [
+      "20 messages",
+      "10 workers",
+      "20 ÷ 10 = 2",
+      "At target"
+    ],
+    [
+      "0 messages",
+      "Workers may still process jobs",
+      "0 waiting per worker",
+      "Drain active jobs before scale-in"
+    ],
+    [
+      "Messages arrive",
+      "0 workers",
+      "Undefined division",
+      "Bootstrap worker capacity"
+    ]
+  ],
+  "footnote": "Target ≈ 10-minute queue delay ÷ 5-minute mean processing = 2 messages/worker. A 30-minute job exceeds Lambda’s 15-minute invocation limit.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "254",
+  "base_record_sha256": "bcb75703fbb862664e34600e7cd90b1f95ab8370ba82f0e9386db263d57544ca",
+  "record": {
+    "id": "254",
+    "exam_domain": "Design for New Solutions",
+    "question": "A team stores its application in one GitHub repository. A CodePipeline pipeline builds the main branch for production. Developers need isolated feature development, automatic unit tests, separate development and production artifacts, and a reviewed path to merge changes back into main. Feature code must run only in a separate test account before approval.\n\nWhich workflow meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a feature-branch CodePipeline workflow with CodeBuild build and test actions and artifacts in the test account. Use distinct artifact locations and scoped roles, then merge reviewed changes into main to trigger the production pipeline."
+      },
+      {
+        "id": "2",
+        "text": "Create a feature-branch pipeline with unit tests, but write successful builds to the same S3 object key consumed automatically by the production deployment stage."
+      },
+      {
+        "id": "3",
+        "text": "Create a feature-branch pipeline that deploys each feature to production first and runs its CodeBuild unit tests afterward, rolling back only when tests fail."
+      },
+      {
+        "id": "4",
+        "text": "Give the feature pipeline access to the production deployment role and let developers select the production account for integration tests before their pull requests are approved."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Branch-specific triggers separate feature and release workflows, CodeBuild executes the unit tests, and account plus artifact permissions prevent development output from replacing production releases. Reviewed merges retain a clear integration path in the original repository.\n\n<<2>> keeps separate pipeline names but shares the artifact consumed by production. <<3>> exposes production to unapproved feature code before validation. <<4>> permits the very preapproval production execution that the requirement forbids.\n\nA branch name is not a security boundary. Use separate roles, S3 permissions and, for cross-account encrypted artifacts, appropriate customer-managed KMS key policies. Block promotion when tests fail and preserve commit-to-artifact provenance. CodePipeline orchestrates actions; CodeBuild performs builds and tests.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-triggers.html\nhttps://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html\nhttps://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create-cross-account.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/254.mmd",
+  "diagram_alt": "Feature artifacts stay in the test path; reviewed source merges trigger a separate production build and artifact.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-triggers.html",
+      "checked_on": "2026-09-18",
+      "supports": "CodePipeline connection-based triggers can filter GitHub branch pushes and pull-request events."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "CodeBuild compiles code, runs tests and produces artifacts as pipeline actions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create-cross-account.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cross-account pipeline actions require coordinated IAM, S3 and customer-managed KMS access."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced implausible service-function distractors with coherent workflows that fail concrete isolation or approval requirements."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Routing health and replacement are separate
+accDescr: The apex alias reaches the ALB, which sends traffic to a multi-AZ group and also reports unhealthy targets to Auto Scaling for replacement.
+DNS["example.com A alias"] --> L["ALB and application health check"]
+L -->|Request traffic| G["Multi-AZ EC2 Auto Scaling group"]
+L -.->|ELB health checks enabled| R["Replace unhealthy instance"]
+R --> G
+D["Demand metric"] -->|Scale capacity| G
+class DNS,D inputData
+class L,R decision
+class G output

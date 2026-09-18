@@ -1,0 +1,52 @@
+{
+  "question_id": "142",
+  "base_record_sha256": "8f232fbd83c61d97c35e748c2e93e4383ad4bd76027c408fe7fe734760a0394e",
+  "record": {
+    "id": "142",
+    "exam_domain": "Design for New Solutions",
+    "question": "A supported operating-system patch fixes a critical vulnerability across a company's EC2 fleet. The instances are already Systems Manager managed nodes, and an emergency patch window is approved. Auditors also require a history of changes to patch and State Manager association compliance. The company wants to use native integrations and minimize custom reporting code.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Build a patched AMI during the next weekly image release and replace the fleet then. Retain the image pipeline build logs as the only compliance history."
+      },
+      {
+        "id": "2",
+        "text": "Use Patch Manager to install the approved patch during the emergency window. Configure AWS Config to record SSM patch-compliance and association-compliance resource types."
+      },
+      {
+        "id": "3",
+        "text": "Run an Amazon Inspector assessment immediately and retain the findings. Use the findings as evidence that the patch has been installed."
+      },
+      {
+        "id": "4",
+        "text": "Write custom State Manager scripts to install patches and export every compliance change to OpenSearch through a custom collection pipeline."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Patch Manager performs the patch installation using the approved baseline and patching operation. Systems Manager exposes current compliance, and Config records the supported patch and association compliance resources to provide historical changes. Configure recording before the changes that must be retained.\n\n<<1>> defers an urgent repair and records image-build activity rather than the required managed-node compliance history. An immutable image rollout can be a sound patching strategy, but this proposed schedule and evidence do not meet the requirements.\n\n<<3>> detects vulnerabilities; a finding or assessment does not install the missing patch.\n\n<<4>> can be engineered to work, but duplicates native installation and history capabilities with custom reporting components.\n\nA scan alone does not install patches, and Config does not perform the patch operation. Use controlled rollout batches, approved reboot behavior, and post-patch application validation.\n\nOfficial AWS references (checked September 18, 2026): [Patch compliance remediation](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-compliance-remediation.html). [Compliance history with Config](https://docs.aws.amazon.com/systems-manager/latest/userguide/compliance-about.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/142.mmd",
+  "diagram_alt": "Patch Manager changes hosts; Config retains the resulting patch and association compliance history.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-compliance-remediation.html",
+      "checked_on": "2026-09-18",
+      "supports": "Scan versus install operations, on-demand patching, and maintenance-window options"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/compliance-about.html",
+      "checked_on": "2026-09-18",
+      "supports": "Recording SSM PatchCompliance and AssociationCompliance for history and change tracking"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Named the actual Config resource types and removed false claims that patched AMIs inherently lack patch control or rollback."
+  ],
+  "review_status": "authored"
+}

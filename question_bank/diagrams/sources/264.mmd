@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Preserve evidence, investigate, restore automation
+accDescr: A bounded incident workflow suspends Auto Scaling termination, uses the existing Session Manager channel, captures evidence and resumes the suspended process.
+F["Failing instance<br/>Still reachable with Session Manager"]:::inputData --> T["Temporarily suspend<br/>ASG Terminate process"]:::warning
+T --> S["Connect with Session Manager<br/>Inspect exact failing state"]:::process
+S --> E["Capture logs and evidence<br/>Identify repair or rollback"]:::storage
+E --> R["Resume Terminate<br/>Verify normal recovery"]:::output
+T -.-> C["Maintain healthy serving capacity<br/>Track temporary suspension"]:::reference

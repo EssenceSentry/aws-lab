@@ -1,0 +1,52 @@
+{
+  "question_id": "112",
+  "base_record_sha256": "14458d27019ba2dad2c438470860287bf0342e4477b21b909d140fa7baa55209",
+  "record": {
+    "id": "112",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "Each EC2 application instance has a separate 120 GiB io1 EBS data volume provisioned for 3,000 IOPS. The application needs persistent block storage, not a shared network file system. Production-workload tests on a 120 GiB gp3 volume at 3,000 IOPS and 125 MiB/s meet the application's latency, throughput, and durability requirements. The EC2 instances have sufficient EBS bandwidth.\n\nWhich change removes unnecessary storage and provisioned-performance expense while preserving the tested requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Replace each data volume with an Amazon EFS file system and access it through NFS."
+      },
+      {
+        "id": "2",
+        "text": "Change each data volume to 120 GiB gp3 with its included baseline of 3,000 IOPS and 125 MiB/s."
+      },
+      {
+        "id": "3",
+        "text": "Change each data volume to a 1 TiB gp2 volume to obtain slightly more than 3,000 baseline IOPS."
+      },
+      {
+        "id": "4",
+        "text": "Move the data to EC2 instance store volumes and recreate them whenever an instance is replaced."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. gp3 includes 3,000 IOPS and 125 MiB/s independently of volume size. The stated test establishes that this baseline meets the workload's needs, so additional performance provisioning and extra capacity are unnecessary.\n\n<<1>> changes the required storage interface from block storage to a network file system.\n\n<<3>> couples performance to unnecessary capacity. gp2 baseline IOPS scale at 3 IOPS per GiB, so 1,024 GiB provides 3,072 baseline IOPS, but the application needs only 120 GiB.\n\n<<4>> does not preserve the required data lifecycle. Instance store data does not persist through instance stop or termination.\n\nIOPS and throughput are different constraints: IOPS counts operations per second, while MiB/s measures bytes transferred. The conclusion depends on measured latency, throughput, durability needs, and instance limits, not matching an IOPS number alone.\n\nOfficial AWS references (checked September 18, 2026): [General Purpose SSD volumes](https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html). [EC2 instance store persistence](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/112.diagram.json",
+  "diagram_alt": "A comparison separates storage capacity from baseline IOPS and identifies the gp3 configuration already validated by workload testing.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html",
+      "checked_on": "2026-09-18",
+      "supports": "gp3 included baseline independent of capacity and gp2 baseline IOPS per GiB"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html",
+      "checked_on": "2026-09-18",
+      "supports": "Temporary block storage and data persistence limits"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2 and the existing repaired workload test; retained separate latency, throughput, persistence, and durability constraints."
+  ],
+  "review_status": "authored"
+}

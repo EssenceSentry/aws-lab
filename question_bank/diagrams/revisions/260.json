@@ -1,0 +1,57 @@
+{
+  "question_id": "260",
+  "base_record_sha256": "cad9c25244b0af719c1dc0596a5840f2b47c4d4355faef3d33ef2d15382d4db9",
+  "record": {
+    "id": "260",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company receives multipage scanned forms in S3. Staff manually extract key-value fields and tables, identify people and organizations mentioned in free-text notes, then submit validated results to an external API. A pilot has confirmed that AWS managed document and language services support the forms' languages and required entities. The company wants less manual work and no model training, while retaining review for uncertain results.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Operate an OCR engine on EKS, maintain custom parsers for fields and tables, and build an entity-recognition model before submitting validated results."
+      },
+      {
+        "id": "2",
+        "text": "Use Step Functions with Rekognition text detection and Transcribe to infer form fields, tables and entities from the scanned pages."
+      },
+      {
+        "id": "3",
+        "text": "Train and host a custom OCR and entity-extraction model in SageMaker, then implement a separate workflow for validation and API submission."
+      },
+      {
+        "id": "4",
+        "text": "Use Step Functions to coordinate Textract document analysis, Comprehend entity analysis of extracted notes, and validation. Send uncertain results for human review, store approved output in S3, and use Lambda to submit it with retry and duplicate protection."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Textract extracts document text, forms and tables, while Comprehend supplies the required entity analysis for the free-text notes. Orchestration separates asynchronous analysis, validation, review and the downstream API action.\n\n<<1>> can work but adds cluster, parser and model operations that the requirements seek to avoid. <<2>> combines image text detection with a speech-to-text service and does not provide the required document-structure and entity workflow. Rekognition can detect text; the issue is not a total absence of OCR capability. <<3>> introduces model development despite the validated managed-service fit.\n\nConfidence scores are evidence for routing, not guarantees of correctness. Calibrate thresholds and business validation against representative forms, review missing or inconsistent fields, and keep source provenance. Use suitable asynchronous Textract operations for multipage documents, and make retried API submission idempotent to avoid duplicate records.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/textract/latest/dg/textract-best-practices.html\nhttps://docs.aws.amazon.com/comprehend/latest/dg/what-is.html\nhttps://docs.aws.amazon.com/rekognition/latest/dg/text-detection.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/260.mmd",
+  "diagram_alt": "Document extraction and language analysis feed a validation gate that retains human review for uncertain results.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/textract/latest/dg/textract-best-practices.html",
+      "checked_on": "2026-09-18",
+      "supports": "Textract handles forms, tables and multipage documents, and confidence thresholds can route uncertain results for human scrutiny."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Comprehend extracts text entities using managed pretrained analysis, with feature-specific language support."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/text-detection.html",
+      "checked_on": "2026-09-18",
+      "supports": "Rekognition can detect words and lines in images; it is incorrect to claim it cannot recognize text."
+    }
+  ],
+  "editorial_notes": [
+    "Added an actual free-text entity requirement for Comprehend, removed the false no-OCR claim about Rekognition, and replaced guaranteed accuracy with validation and human review."
+  ],
+  "review_status": "authored"
+}

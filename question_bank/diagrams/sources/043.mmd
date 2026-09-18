@@ -1,0 +1,17 @@
+sequenceDiagram
+accTitle: Two buffering stages in IoT lake ingestion
+accDescr: Basic Ingest routes telemetry to Firehose, which buffers for transformation and again for S3 delivery.
+participant S as Sensors
+participant I as IoT rules engine
+participant F as Data Firehose
+participant L as Lambda enrichment
+participant B as S3 data lake
+S->>I: Publish Basic Ingest topic
+Note over S,I: Authenticated connection, broker bypassed
+I->>F: Firehose rule action
+Note over F: Short transformation buffer
+F->>L: Batch of records
+L-->>F: Enriched records
+Note over F: S3 buffer: 300 seconds or size threshold
+F->>B: Write buffered objects
+Note over S,B: Budget includes both buffers and processing

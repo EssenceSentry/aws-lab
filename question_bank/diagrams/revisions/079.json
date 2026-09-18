@@ -1,0 +1,53 @@
+{
+  "question_id": "079",
+  "base_record_sha256": "3e5c7eb86109c71c881063131e351e240b0f07ed1a57d64a60753a08a369a860",
+  "record": {
+    "id": "079",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A promotions service writes customer submissions to RDS for PostgreSQL. Short, unpredictable bursts overwhelm the database. Each submission must eventually be committed without duplicate business effects, but the API may return an acceptance receipt before the database transaction completes. The company must preserve its relational data model and limit database write concurrency.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase the database instance size before expected promotions and continue writing synchronously from every incoming request."
+      },
+      {
+        "id": "2",
+        "text": "Persist accepted submissions in SQS and process them with a Lambda event source mapping. Bound consumer concurrency, use idempotent database transactions, and configure retries, failure monitoring and dead-letter recovery."
+      },
+      {
+        "id": "3",
+        "text": "Replace the PostgreSQL schema with DynamoDB tables and modify all transactional access patterns to use DynamoDB."
+      },
+      {
+        "id": "4",
+        "text": "Buffer accepted submissions only in ElastiCache for Memcached and write them to PostgreSQL when the traffic burst ends."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> decouples acceptance rate from database commit rate. A durable queue absorbs a temporary burst while bounded consumers drain work at a rate the database can support. Idempotency prevents repeated deliveries from duplicating business effects. Acknowledge successful processing only after the database transaction commits, and recover failed messages before retention expires.\n\n<<1>> requires predicting the burst and provides no durable buffer if capacity is exceeded. <<3>> violates the requirement to preserve the relational model. <<4>> uses an evictable cache as the only record of accepted work and therefore risks losing submissions.\n\nSQS and Lambda event source mappings can deliver a message more than once. A crash after database commit but before acknowledgment must therefore be safe to retry. An acceptance receipt means durable intake, not that the business transaction has already committed; expose processing status separately when needed.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html\nhttps://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/079.mmd",
+  "diagram_alt": "A sequence shows durable acceptance before a later idempotent database commit and queue acknowledgment.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda polls SQS, acknowledges successful processing, retries failures and requires idempotent handling."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard queues provide durable at-least-once delivery with possible duplicates."
+    }
+  ],
+  "editorial_notes": [
+    "Made asynchronous acceptance explicit so queuing does not silently change a synchronous commitment requirement.",
+    "Added bounded concurrency, idempotency and recovery from retained failures."
+  ],
+  "review_status": "authored"
+}

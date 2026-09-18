@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Transcribe now, archive after the review window
+accDescr: Selected recordings enter an asynchronous transcription path immediately, while all recordings follow a separate ninety-day lifecycle before archival.
+S[("S3 recording uploaded")] --> T["Start selected Transcribe job"]
+T --> R["Job completes, persist transcript"]
+S --> H["Days 0–90: immediate playback"]
+H --> G[("After day 90: archive with restore")]
+class S,G storage
+class T decision
+class R,H output

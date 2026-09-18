@@ -1,0 +1,52 @@
+{
+  "checked_on": "2026-09-18",
+  "status": "complete",
+  "bank_sha256": "94494a9837ab62b278ea45570230d62ce454535d659f62db337676572dd4dd90",
+  "integrated_ranges": [
+    "001-391"
+  ],
+  "counts": {
+    "bank": 391,
+    "authored": 391,
+    "rendered": 391,
+    "reviewed": 391,
+    "integrated": 391,
+    "explanation_diagrams": 391,
+    "referenced_images": 392,
+    "mermaid_sources": 300,
+    "graphic_table_sources": 89,
+    "svg_sources": 2
+  },
+  "checks": [
+    {
+      "command": "node question_bank/diagrams/validate.mjs --complete",
+      "result": "All 391 authored, rendered, manually reviewed and integrated; source, revision, renderer, PNG and bank hashes passed"
+    },
+    {
+      "command": "Comparison against HEAD bank",
+      "result": "All 391 question IDs, domains, option IDs/order, answer keys and essential stem images preserved; one generated explanation image per question"
+    },
+    {
+      "command": "node --test question_bank/diagrams/common.test.mjs",
+      "result": "2 tests passed; reversed ranges fail instead of selecting the entire bank"
+    },
+    {
+      "command": "npm test (study_app)",
+      "result": "36 tests passed"
+    },
+    {
+      "command": "npm run build (study_app)",
+      "result": "391 questions and 392 referenced images verified; TypeScript, production build and offline service worker passed"
+    },
+    {
+      "command": "npm run test:browser (study_app)",
+      "result": "Mobile 320–430px and desktop layouts, WCAG AA and console, scoring, saved progress, shuffled references, inline code, citations, sharing, guide mappings, timed exams, project subpath, complete offline image pack and reload, and isolated mocked Drive sync all passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "review": "Every revised stem, option and explanation received editorial review against recorded official-source evidence. Every final diagram was visually inspected; source/PNG edits invalidate recorded approvals.",
+  "reproducibility": "Editable sources and JavaScript dependencies are retained. System Chrome, operating system and fonts can change fresh export pixels; the renderer fingerprint does not pin them. Existing exports are verified by content hash."
+}

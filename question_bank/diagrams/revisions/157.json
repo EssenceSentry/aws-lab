@@ -1,0 +1,47 @@
+{
+  "question_id": "157",
+  "base_record_sha256": "ba5dad46c55a97c06fa539f999dffd2ad8d3223aeb8df0ae782d6fc3d0ea00fe",
+  "record": {
+    "id": "157",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A design studio shares large media objects from its S3 buckets with a partner. The partner downloads the objects to its own data center using credentials from its own AWS account. The contract permits charging the partner for eligible requests and downloads, while the studio retains ownership and pays for storage. The studio wants to avoid maintaining a second synchronized copy.\n\nWhich change meets this cost-allocation requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Copy every object to a partner-owned bucket and maintain synchronization before allowing each download."
+      },
+      {
+        "id": "2",
+        "text": "Enable S3 Requester Pays on the shared buckets, retain the required access policies, and have the partner include the requester-pays acknowledgment in authenticated requests."
+      },
+      {
+        "id": "3",
+        "text": "Move the partner into the studio's AWS Organization and use SCPs to change which account S3 bills for each object download."
+      },
+      {
+        "id": "4",
+        "text": "Grant the partner cross-account GetObject permission and leave the buckets in their default billing configuration."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Requester Pays shifts eligible request and data-download charges to the authenticated requester. The partner must acknowledge the charge, such as with `--request-payer requester` in the CLI. The studio remains responsible for storage charges and must still authorize access.\n\n<<1>> can change where future requests are served, but violates the requirement to avoid a second synchronized copy.\n\n<<3>> confuses authorization controls and consolidated billing with S3 request-payment configuration. SCPs do not select the payer for an object request.\n\n<<4>> grants access but does not, by itself, change the normal bucket-owner billing behavior.\n\nThis reallocates eligible costs; it does not eliminate them. Use the partner's account credentials as stated: if a requester assumes a role in the studio's account, that role's owning account is charged. Requester Pays requires authenticated requests and does not allow anonymous access.\n\nOfficial AWS references (checked September 18, 2026): [S3 Requester Pays](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/157.diagram.json",
+  "diagram_alt": "The bucket owner keeps storage charges while the authenticated partner accepts eligible request and download charges.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+      "checked_on": "2026-09-18",
+      "supports": "Request/download versus storage charges, authenticated acknowledgment, and assumed-role account billing"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Made partner consent, partner-owned credentials, retained ownership and no-second-copy constraints explicit; distinguished cost allocation from actual cost reduction."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Visibility time and receive budget solve different problems
+accDescr: A receive makes a message temporarily invisible. Success leads to deletion. An uncompleted attempt may become eligible again, but the redrive receive budget limits retries before dead-letter handling.
+Q["Available SQS job"]:::inputData --> R["Receive attempt<br/>Visibility window begins"]:::process
+R --> S{"Work completes<br/>and message deleted?"}:::decision
+S -->|Yes| D["Completed job"]:::output
+S -->|No| V["Visibility expires<br/>Job eligible again"]:::process
+V --> B{"Receive budget<br/>permits retry?"}:::decision
+B -->|Yes| Q
+B -->|No| L["Dead-letter queue<br/>Investigate and redrive"]:::warning

@@ -1,0 +1,52 @@
+{
+  "question_id": "265",
+  "base_record_sha256": "4d36ed013f0d1b1e82943bbfdfdf0925ef313db491848a764b9dc9d742c16b5a",
+  "record": {
+    "id": "265",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "EC2 workers consume video jobs from an SQS standard queue. Jobs normally take 20–40 minutes, the visibility timeout is one hour, and the redrive policy sets maxReceiveCount to 1. The workers already delete messages only after successful completion and make repeated processing idempotent. Some messages reach the dead-letter queue without a completed processing attempt. Investigation finds transient receive/delivery failures but no jobs exceeding the visibility timeout.\n\nWhich configuration change directly gives these transient failures an opportunity to recover?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase the Auto Scaling group minimum while keeping maxReceiveCount at 1, so additional workers eliminate transient delivery failures."
+      },
+      {
+        "id": "2",
+        "text": "Increase the visibility timeout to two hours while keeping maxReceiveCount at 1, so the redrive policy permits additional receives."
+      },
+      {
+        "id": "3",
+        "text": "Increase the queue delivery delay while keeping maxReceiveCount at 1, so failed receives are excluded from the redrive policy."
+      },
+      {
+        "id": "4",
+        "text": "Increase maxReceiveCount to a value such as 10, selected for the retry budget, and continue monitoring and investigating messages that ultimately reach the dead-letter queue."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. A receive limit of one leaves no useful tolerance for a transient failure. SQS can record a delivery even when the consumer does not receive the message. A larger receive budget allows subsequent attempts before dead-letter handling.\n\n<<1>> changes available processing capacity rather than the message's allowed retry budget.\n\n<<2>> changes how long a received message is hidden. It does not increase the redrive receive limit, and the observed processing duration already fits the current timeout.\n\n<<3>> delays initial availability; it does not remove failed receives from the redrive behavior.\n\nTen is an example, not a universal optimum. Balance recovery opportunity against repeated processing cost, poison-message delay, and the message retention period. Increasing maxReceiveCount does not shorten the one-hour invisibility window, so the total retry latency must also fit the workload requirements. Retain idempotency, delete after success, and extend visibility if real work can run longer. Repeated ReceiveMessage API calls alone are normal polling and do not prove that one particular video was retried; correlate message receive counts with application evidence.\n\nOfficial AWS references (checked September 18, 2026): [Delivery inconsistency](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/avoiding-inconsistent-message-processing.html). [Dead-letter redrive policy](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/265.mmd",
+  "diagram_alt": "A message lifecycle distinguishes temporary invisibility from the redrive receive budget and shows successful deletion, retry and dead-letter paths.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/avoiding-inconsistent-message-processing.html",
+      "checked_on": "2026-09-18",
+      "supports": "SQS can mark a message delivered without consumer receipt; max receives of one is discouraged."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "maxReceiveCount controls the receive budget before dead-letter handling."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Removed impossible per-video ReceiveMessage targeting and unsupported CloudTrail inference; kept retry count distinct from visibility and initial delivery delay."
+  ],
+  "review_status": "authored"
+}

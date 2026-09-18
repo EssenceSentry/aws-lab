@@ -1,0 +1,57 @@
+{
+  "question_id": "348",
+  "base_record_sha256": "5d249a0291755ca53d3f31e69a685e821e507e0c90b3f328709286f42a83bc35",
+  "record": {
+    "id": "348",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company must move several VMware vSphere virtual machines to EC2 while retaining their installed operating systems, applications, and configuration. The applications contain undocumented settings, so rebuilding them from installation recipes is undesirable. A planned shutdown and offline export are acceptable. The guest operating systems, disk formats, boot settings, and licensing have been checked against VM Import/Export requirements.\n\nWhich approach meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Export each VM as a supported OVA or disk image, upload it to an S3 staging bucket, and use VM Import/Export with the required service role to import an AMI. Launch and validate EC2 instances from the imported AMIs."
+      },
+      {
+        "id": "2",
+        "text": "Copy the VMware disk files to S3 through an S3 File Gateway. Use the EC2 CreateRestoreImageTask API to restore those VMware files directly as AMIs."
+      },
+      {
+        "id": "3",
+        "text": "Use DataSync to copy the VMs' application directories to a new EC2 installation. Create an AMI from the new instance without migrating the source operating-system images."
+      },
+      {
+        "id": "4",
+        "text": "Create EC2 Image Builder recipes using the applications' standard installers. Build new AMIs and omit settings that are not represented in the recipes."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. VM Import/Export converts supported VM images into AMIs, retaining the installed software and configuration subject to compatibility requirements. Validate the resulting instances, drivers, networking, and application behavior before cutover. An OVF descriptor alone does not contain the virtual disks needed for import.\n\n<<2>> transports files, but CreateRestoreImageTask restores an AMI previously stored by the EC2 AMI store workflow. It does not convert an arbitrary VMware disk into an AMI.\n\n<<3>> is useful for migrating file data. Copying selected directories to a new operating system does not capture the full installed VM stack and undocumented configuration.\n\n<<4>> produces reproducible new images when installation and configuration are known. It does not discover and preserve the unspecified settings in this scenario.\n\nFile transfer, image conversion, and image rebuilding solve different migration problems.\n\nOfficial AWS references (checked September 18, 2026): [Restore a stored AMI](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateRestoreImageTask.html). [VM Import/Export requirements](https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html). [Import a VM as an AMI](https://docs.aws.amazon.com/vm-import/latest/userguide/vmimport-image-import.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/348.mmd",
+  "diagram_alt": "A complete supported VM image passes through S3 and VM Import/Export to become an AMI, followed by launch validation.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateRestoreImageTask.html",
+      "checked_on": "2026-09-18",
+      "supports": "CreateRestoreImageTask accepts an object produced by CreateStoreImageTask, not arbitrary VMware disks."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html",
+      "checked_on": "2026-09-18",
+      "supports": "Import requires supported guest systems, boot configuration, licensing, and image formats such as OVA and supported disk images."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vm-import/latest/userguide/vmimport-image-import.html",
+      "checked_on": "2026-09-18",
+      "supports": "VM Import/Export imports VM images into AMIs that can launch EC2 instances."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced ambiguous OVF-only import with supported OVA or disk images and stated compatibility and offline-cutover assumptions."
+  ],
+  "review_status": "authored"
+}

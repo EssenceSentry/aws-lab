@@ -1,0 +1,59 @@
+{
+  "question_id": "050",
+  "base_record_sha256": "925f75068be79604fabceac441f6d556b38d2f0bdfeca8dcb8ecdfb9090bdef9",
+  "record": {
+    "id": "050",
+    "exam_domain": "Design for New Solutions",
+    "question": "An online retailer expects a sharp burst of checkout requests during a sale. Users sign in with Google or Facebook. The checkout service must durably accept orders even when payment and fulfillment workers are temporarily at capacity. The UI may show a pending order and later display the completed result. Repeated requests must not create duplicate orders.\n\nWhich design best supports these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use CloudFront and an ALB with an EC2 Auto Scaling group. Authenticate users through Amazon Cognito and complete payment processing synchronously before inserting each order into a Multi-AZ RDS database."
+      },
+      {
+        "id": "2",
+        "text": "Use CloudFront and an ALB with an EC2 Auto Scaling group and Cognito sign-in. Send orders to SQS using an EC2 role. Scale separate idempotent workers to process orders and persist status in DynamoDB."
+      },
+      {
+        "id": "3",
+        "text": "Host the frontend on an S3 website endpoint and add that endpoint to Global Accelerator. Use Cognito sign-in and have the browser write completed orders directly to DynamoDB."
+      },
+      {
+        "id": "4",
+        "text": "Use CloudFront and an ALB with a fixed-size EC2 fleet and Cognito sign-in. Complete each payment request synchronously in the web tier before writing the order to DynamoDB."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Choose <<2>>. The queue provides a durable boundary between request acceptance and downstream work. Web capacity and worker capacity can scale independently, while order status in DynamoDB supports the pending-to-completed user flow. Use role credentials and enforce authorization before accepting an order.\n\n<<1>> retains a synchronous dependency on payment processing. It cannot durably accept checkout work while those workers are at capacity; adding database redundancy does not create a backlog. <<3>> uses an unsupported Global Accelerator endpoint type; S3 content delivery belongs behind a service such as CloudFront. Writing a record also does not establish that payment and fulfillment succeeded. <<4>> has no durable backlog and couples checkout acceptance to the fixed web fleet and downstream response time. DynamoDB itself is not the scalability defect.\n\nSQS standard queues can deliver a message more than once. Store a stable order or idempotency key and make payment and status transitions safe to retry. A successful enqueue means accepted for processing, not payment completed; report those states accurately to the customer.\n\nAWS documentation (checked September 18, 2026): [SQS standard queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html), [Global Accelerator endpoints](https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html). [Cognito social sign-in](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-social-idp.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/050.mmd",
+  "diagram_alt": "Checkout acceptance, processing, retry and completion are separate states, with one order ID across retries.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "SQS decouples producers and workers; standard queues can deliver duplicate or out-of-order messages."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard accelerator endpoints are ALBs, NLBs, EC2 instances or Elastic IP addresses, not S3 website endpoints."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-social-idp.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cognito user pools integrate Facebook and Google sign-in with user pool tokens."
+    }
+  ],
+  "editorial_notes": [
+    "Introduced asynchronous pending status and idempotency to make the queued checkout behavior correct.",
+    "Removed unsupported claims that DynamoDB cannot scale or that RDS is always more expensive.",
+    "Strengthened the first distractor to use valid Cognito authentication; its failure is the synchronous processing dependency."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Retain the repository and release the temporary working set
+accDescr: S3 retains durable inputs, a temporary SSD Lustre file system serves each monthly job, and teardown waits for verified output export.
+A["S3 durable repository"] -->|Load required files| B["SSD Persistent 2 Lustre"]
+B --> C["72-hour job with file semantics"]
+C --> D["Export changed results to S3"]
+D --> E{"Export verified?"}
+E -->|Yes| F["Delete working file system"]
+E -->|No| G["Keep working copy and resolve"]
+D -.->|Apply lifecycle| A
+class A,B storage
+class C,D inputData
+class E decision
+class F output
+class G warning

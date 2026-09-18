@@ -1,0 +1,57 @@
+{
+  "question_id": "288",
+  "base_record_sha256": "98a1122a0ace4b4dc2c9fcaca6773082beac62a00bd8c9ad47cb339c14e8d778",
+  "record": {
+    "id": "288",
+    "exam_domain": "Design for New Solutions",
+    "question": "A CloudFormation stack deploys an EC2 Auto Scaling application and RDS for MySQL. An approved bootstrap process creates a dedicated application database user. Its password must rotate automatically every 60 days, and new and existing instances must obtain the current password without a stack redeployment. Passwords must not be embedded in templates, user data, or machine images.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Pass the password through a NoEcho CloudFormation parameter and write it into each instance's user data, replacing instances every 60 days."
+      },
+      {
+        "id": "2",
+        "text": "Create a Secrets Manager secret for the database user, initialize that user through the approved bootstrap process, and configure supported database rotation on a 60-day schedule. Grant the instance role access to this secret and have the application retrieve and refresh its current value at runtime."
+      },
+      {
+        "id": "3",
+        "text": "Create a Secrets Manager secret, resolve its current value only during deployment, and save that value permanently in the application image while enabling secret rotation."
+      },
+      {
+        "id": "4",
+        "text": "Store the password in an existing Systems Manager SecureString parameter, retrieve it through the instance role, and rely on automatic rotation of the KMS encryption key to rotate the database password."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Secrets Manager database rotation coordinates a new secret value with the database credential. Runtime retrieval through the instance role avoids static credentials in deployment artifacts, and bounded caching with refresh lets existing processes adopt the rotated password.\n\n<<1>> uses NoEcho as if it protected every downstream destination. It does not make embedding a password in instance user data safe, and instance replacement is not database rotation.\n\n<<3>> leaves a stale credential in the image after the database password changes.\n\n<<4>> protects the stored parameter, but rotating its encryption key does not change the password accepted by MySQL.\n\nUse an appropriate rotation strategy, function permissions, and network path to the database. CloudFormation dynamic references are useful in supported properties, but are resolved during resource operations; they are not a runtime refresh mechanism. Keep the application's database privileges and secret access limited to its needs.\n\nOfficial AWS references (checked September 18, 2026): [Database secret rotation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_turn-on-for-db.html). [Rotation schedules](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_schedule.html). [CloudFormation secret references](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references-secretsmanager.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/288.mmd",
+  "diagram_alt": "Rotation updates the credential and secret together, while runtime refresh keeps application connections current.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_turn-on-for-db.html",
+      "checked_on": "2026-09-18",
+      "supports": "Rotation updates both database and secret and requires function access and permissions"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_schedule.html",
+      "checked_on": "2026-09-18",
+      "supports": "Configurable rate-based rotation schedule"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references-secretsmanager.html",
+      "checked_on": "2026-09-18",
+      "supports": "Dynamic references are resolved on resource creation or applicable updates rather than ongoing runtime refresh"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Separated application credentials from the master user, made initial user provisioning explicit, and distinguished runtime refresh from CloudFormation dynamic-reference resolution and KMS key rotation."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Origin definition and behavior selection are both required
+accDescr: The assets path chooses the S3 origin with OAC. Unmatched dynamic paths keep using the default ALB origin.
+R[Viewer URL path]:::inputData --> P{Matches<br/>/assets/*?}:::decision
+P -->|Yes| S[S3 REST origin<br/>Signing OAC]:::process
+S --> O[(Object key<br/>assets/logo.png)]:::storage
+P -->|No| A[Default behavior<br/>ALB origin]:::process
+A --> D[Dynamic application]:::output

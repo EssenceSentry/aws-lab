@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Canonicalize equivalent requests before cache lookup
+accDescr: Two case and order variants normalize to one query string before CloudFront looks up the cached representation.
+A["?Size=M&amp;Color=Blue"]:::inputData --> N["Viewer-request function<br/>Lowercase, then sort"]
+B["?color=blue&amp;size=m"]:::inputData --> N
+N --> K["Cache key includes<br/>color=blue&amp;size=m"]:::output
+K --> C[("One cached blue / M response")]:::storage
+D["?color=red&amp;size=m"]:::inputData -->|"After the same normalization"| R[("Different red / M entry")]:::storage

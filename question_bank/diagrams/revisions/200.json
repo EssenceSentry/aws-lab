@@ -1,0 +1,58 @@
+{
+  "question_id": "200",
+  "base_record_sha256": "480818d429f2abb29d412901f57e1487a51e7f1506d9f2829a2e32b10bd8c3cc",
+  "record": {
+    "id": "200",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is moving a queued media-processing application to AWS. Each indivisible job averages five minutes and can run for 30 minutes. Upload traffic varies sharply during the day. The application can use S3 object storage and a standard message queue, and has no requirement for a broker-specific protocol or shared filesystem. The company wants elastic worker capacity with an initial queue-delay target of ten minutes.\n\nWhich design best meets these requirements without splitting jobs into smaller steps?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store inputs in S3, enqueue object references in SQS, and process each complete job in one Lambda invocation with a 30-minute timeout."
+      },
+      {
+        "id": "2",
+        "text": "Store inputs in EFS and use an Amazon MQ broker with a fixed EC2 fleet sized for peak daytime load, leaving all workers running overnight."
+      },
+      {
+        "id": "3",
+        "text": "Store inputs in S3 and invoke Lambda from an SQS queue, extending message visibility so that each Lambda invocation can run for 30 minutes."
+      },
+      {
+        "id": "4",
+        "text": "Store inputs and results in S3 and enqueue object references in SQS. Use EC2 workers in an Auto Scaling group, scale with backlog per worker, extend visibility while processing, and delete a message only after its result is durable."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. EC2 workers can complete the indivisible 30-minute jobs, while SQS buffers variable demand and S3 supplies durable object storage. With one job processed at a time per worker, an initial backlog target is acceptable queue delay divided by average processing time: 10 ÷ 5 = 2 waiting messages per worker. Tune this estimate using measured latency and runtime variation.\n\n<<1>> exceeds the 15-minute maximum for a standard Lambda invocation. <<2>> keeps unnecessary broker, shared-file and peak compute capacity for a workload that needs none of those constraints. <<3>> changes SQS message visibility, not Lambda's execution-duration limit.\n\nMake processing idempotent because standard queues can deliver duplicates. Protect active jobs during scale-in, monitor age and failures, and use a dead-letter queue for repeated failures. If scaling to zero, configure a way to start workers when backlog appears; backlog per worker needs special handling when the worker count is zero.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html\nhttps://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html\nhttps://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/200.diagram.json",
+  "diagram_alt": "Backlog per worker distinguishes insufficient capacity from a queue already matched to the latency target, while active jobs must survive scale-in.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Scale using backlog per instance relative to acceptable latency and average processing time, and protect active workers during scale-in."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "checked_on": "2026-09-18",
+      "supports": "Visibility can be extended, duplicates remain possible, and messages should be deleted after processing."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "A standard Lambda invocation has a 900-second maximum timeout."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced inconsistent MQ/SQS producer-consumer distractors with coherent alternatives that fail explicit runtime or elasticity requirements.",
+    "Added a quantitative backlog target and separated SQS visibility duration from Lambda execution duration."
+  ],
+  "review_status": "authored"
+}

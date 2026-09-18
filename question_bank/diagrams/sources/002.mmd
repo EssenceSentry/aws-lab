@@ -1,0 +1,20 @@
+sequenceDiagram
+accTitle: Authorize the request, then correlate its trace
+accDescr: A signed call passes IAM authorization before invoking Lambda. Sampled API Gateway and Lambda segments share a trace.
+participant Client
+participant API as API Gateway
+participant Fn as Lambda
+participant XR as X-Ray
+Client->>API: SigV4 request using role credentials
+API->>API: Validate signature and evaluate IAM authorization
+alt Permission denied
+ API-->>Client: Request rejected
+else Permission allowed
+ API->>Fn: Invoke with trace context
+ Fn-->>API: Response
+ API-->>Client: Response
+ opt Request sampled
+ API-->>XR: API segment
+ Fn-->>XR: Function and downstream segments
+ end
+end

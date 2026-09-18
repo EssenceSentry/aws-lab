@@ -1,0 +1,67 @@
+{
+  "question_id": "311",
+  "base_record_sha256": "c8953a67d48a2aeb569dc7193f75e2943988c2ee5a2aa06157e7cd88b97dc2e9",
+  "record": {
+    "id": "311",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A development team stores application code and infrastructure templates in GitHub. It wants an AWS-managed pipeline that runs unit tests and configured security scanners, notifies developers when a gate fails, and requires the lead developer to approve each production release. Feature choices must alter the infrastructure synthesized for a release; changing business features without redeployment is outside this requirement.\n\nWhich design meets these requirements with the least custom orchestration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Connect GitHub to CodePipeline. Run tests and scanners in CodeBuild with failure propagation, notify through EventBridge and SNS, use CDK application context and conditional code during synthesis, and add a manual approval action before production deployment."
+      },
+      {
+        "id": "2",
+        "text": "Connect GitHub to CodePipeline. Run tests and scanners in CodeBuild, put a Lambda action that publishes to SNS after the test stage, use CDK application context during synthesis, and deploy after emailing the lead developer without waiting for an approval response."
+      },
+      {
+        "id": "3",
+        "text": "Connect GitHub to CodePipeline. Run tests and scanners in CodeBuild with failure notifications, use CDK framework feature flags as application runtime switches, and add a manual approval action after production deployment."
+      },
+      {
+        "id": "4",
+        "text": "Connect GitHub to CodePipeline. Store build packages in CodeArtifact in place of executing tests and scanners, notify on package publication, use CDK application context during synthesis, and add manual approval before production deployment."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. CodePipeline coordinates the stages; CodeBuild executes the configured test and scanner commands and must fail when the required gates fail. An EventBridge rule can react to a failed build and publish to SNS independently of the successful pipeline path. The manual approval action pauses execution until an authorized approver responds.\n\n<<2>> places notification on a path that a failed preceding stage does not reach. Sending an email also does not make deployment wait for approval.\n\n<<3>> uses the wrong kind of feature flag and approves too late. CDK framework flags select CDK behavior; application context and ordinary conditional code can control synthesis-time choices.\n\n<<4>> substitutes a package repository for executing the required tests and security checks. Publishing a package does not establish that those gates passed.\n\nKeep release-time configuration, test results and approval tied to the same reviewed revision. A requirement for runtime feature changes would need an application configuration mechanism rather than another CDK synthesis.\n\nOfficial AWS references (checked September 18, 2026): [Manual approval actions](https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals.html). [Build failure notifications](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html). [CodeBuild buildspec](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html). [CDK framework flags](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html). [CDK application context](https://docs.aws.amazon.com/cdk/v2/guide/context.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/311.mmd",
+  "diagram_alt": "Pipeline flow separates automatic gate failure and notification from successful synthesis, manual approval and production release.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals.html",
+      "checked_on": "2026-09-18",
+      "supports": "Manual approval pauses a pipeline; IAM-authorized approval permits continuation."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html",
+      "checked_on": "2026-09-18",
+      "supports": "Build events can trigger SNS notifications independently of later pipeline stages."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html",
+      "checked_on": "2026-09-18",
+      "supports": "Buildspec commands execute configured tests and propagate failures."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html",
+      "checked_on": "2026-09-18",
+      "supports": "Feature flags control CDK framework behavior, not arbitrary business features."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cdk/v2/guide/context.html",
+      "checked_on": "2026-09-18",
+      "supports": "Context values are read by CDK applications during synthesis."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Made synthesis-time configuration explicit, removed the conflation with runtime business switches, and made failure notification and approval actual control gates."
+  ],
+  "review_status": "authored"
+}

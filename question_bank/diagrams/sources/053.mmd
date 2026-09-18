@@ -1,0 +1,16 @@
+sequenceDiagram
+accTitle: Match identity, assertion and role trust
+accDescr: The IdP emits authorized role mappings, the client exchanges a matching assertion with STS, and role trust decides whether a session is issued.
+participant U as Employee
+participant I as Corporate IdP
+participant C as Federation client
+participant S as AWS STS
+U->>I: Authenticate
+I-->>C: Signed assertion + user role mappings
+C->>S: RoleArn + PrincipalArn + SAMLAssertion
+S->>S: Evaluate role trust and assertion conditions
+alt Trust and assertion match
+S-->>C: Temporary credentials
+else Missing mapping or mismatch
+S-->>C: Federation request denied
+end

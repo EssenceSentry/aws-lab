@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Choose evidence that covers both scope and time",
+  "columns": [
+    "Evidence",
+    "What it can establish"
+  ],
+  "rows": [
+    [
+      "Collected Storage Lens advanced history",
+      "Organization-wide usage and activity across the requested six months"
+    ],
+    [
+      "Storage Lens free history",
+      "A 14-day query window, insufficient for this comparison"
+    ],
+    [
+      "New S3 Inventory report",
+      "Current object metadata, not past request activity"
+    ],
+    [
+      "Access Analyzer findings",
+      "Access-policy exposure, not storage growth"
+    ]
+  ],
+  "footnote": "A dashboard can query retained observations, but cannot create observations that were never collected.",
+  "emphasis_rows": [
+    0
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "question_id": "370",
+  "base_record_sha256": "dd8c2bf437ac8304e3d65eaccd8829ccd4707e09279916dbf8d588b80edb54a8",
+  "record": {
+    "id": "370",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A GitHub Actions workflow deploys to S3 using a long-lived IAM-user access key. An IAM role already has the required deployment permissions. Security requires unattended access using short-lived credentials, with trust restricted to the approved repository and production branch or protected environment.\n\nWhich change meets the requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Register GitHub as an IAM OIDC provider and configure the deployment role for AssumeRoleWithWebIdentity with the intended audience and approved repository subject. Let the workflow request an OIDC token and obtain temporary role credentials."
+      },
+      {
+        "id": "2",
+        "text": "Require an engineer to complete an IAM Identity Center browser login before each deployment and copy the resulting temporary credentials into GitHub repository secrets."
+      },
+      {
+        "id": "3",
+        "text": "Keep the IAM-user access key in a GitHub secret and rotate it daily, using that key to call AssumeRole for each deployment."
+      },
+      {
+        "id": "4",
+        "text": "Use GitHub OIDC and the deployment role, but allow all repositories and branches in the GitHub organization to assume the role rather than restricting the approved deployment subject."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The workflow presents a GitHub-issued identity token to STS and receives temporary credentials for the deployment role. Restricting the trust policy's audience and subject connects that authority to the intended repository and permitted branch or environment.\n\n<<2>> introduces a human credential-distribution step instead of the required unattended workload federation.\n\n<<3>> produces temporary role sessions but preserves the long-lived bootstrap key that security requires the company to eliminate.\n\n<<4>> uses the correct federation mechanism with an overbroad trust boundary, allowing workflows outside the approved deployment scope.\n\nGrant the workflow id-token: write so it can request the token, and use an appropriate credential-exchange action or equivalent STS call. That workflow permission does not itself grant S3 access: the role's permissions and trust policy still control AWS access. Protect the referenced GitHub branch or environment, test allowed and disallowed subjects, then revoke the old key after the replacement is validated. A token's audience and repository claims must be verified by the trust relationship rather than accepted from arbitrary workflow input.\n\nAWS documentation (checked September 18, 2026): [IAM OIDC trust for GitHub](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html); [GitHub workflow role federation](https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/370.mmd",
+  "diagram_alt": "GitHub proves the workflow identity to STS, which checks the deployment trust conditions and issues temporary credentials for S3 access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html",
+      "checked_on": "2026-09-18",
+      "supports": "GitHub federation uses a registered OIDC provider and AssumeRoleWithWebIdentity, with audience and subject restrictions to limit the allowed repository and branch or environment."
+    },
+    {
+      "url": "https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/",
+      "checked_on": "2026-09-18",
+      "supports": "GitHub Actions can request an OIDC token with id-token: write and exchange it for temporary role credentials without an IAM-user access key."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Reused the existing permissions role and replaced vague STS/Cognito alternatives with meaningful failures: interactive login, retained bootstrap keys and overbroad OIDC subjects."
+  ],
+  "review_status": "authored"
+}

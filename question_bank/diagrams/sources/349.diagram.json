@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Remote access requires separate controls",
+  "columns": [
+    "Control",
+    "What it establishes"
+  ],
+  "rows": [
+    [
+      "Directory credentials",
+      "The user has the first factor"
+    ],
+    [
+      "RADIUS MFA",
+      "The user completes a second factor"
+    ],
+    [
+      "Client VPN authorization",
+      "The user may reach a destination network"
+    ],
+    [
+      "Routes and security groups",
+      "The permitted destination has a working network path"
+    ]
+  ],
+  "footnote": "A private circuit is connectivity, not a user authentication factor.",
+  "emphasis_rows": [
+    1
+  ]
+}

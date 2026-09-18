@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: DNS and failover capacity solve separate constraints
+accDescr: An apex A alias resolves to the ALB without fixed addresses. The application fleet spans AZs, and Aurora has a writer plus ready replicas in other AZs.
+DNS[example.com<br/>Route 53 A alias]:::inputData -->|Resolves ALB endpoint| L[Application Load Balancer]:::decision
+L --> F[Stateless Auto Scaling fleet<br/>AZ A, AZ B, AZ C]:::output
+F --> DB[Aurora cluster endpoint]:::decision
+DB --> W[Writer in AZ A]:::output
+DB -.->|Failover target| R[Ready replicas<br/>AZ B and AZ C]:::output
+W --- S[(Aurora cluster storage<br/>Copies across three AZs)]:::storage
+R --- S

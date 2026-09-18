@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "What changes during EC2 host recovery?",
+  "columns": [
+    "Element",
+    "CloudWatch recover action"
+  ],
+  "rows": [
+    [
+      "Underlying impaired host",
+      "Move to different healthy infrastructure when recovery succeeds"
+    ],
+    [
+      "Instance ID and network addresses",
+      "Preserved, including the existing public IPv4 address"
+    ],
+    [
+      "Attached EBS volumes",
+      "Preserved for application restart"
+    ],
+    [
+      "RAM and operating-system uptime",
+      "Lost or reset, as with an unplanned reboot"
+    ],
+    [
+      "Availability Zone",
+      "Preserved, this is not cross-AZ failover"
+    ]
+  ],
+  "footnote": "The alarm watches system status checks, and recovery still depends on eligibility and available capacity.",
+  "emphasis_rows": [
+    0,
+    1,
+    2
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "question_id": "053",
+  "base_record_sha256": "f2ae900500cfc7aa56e7994660bd0f3c0928a2fab5a954e6010780711c0058e7",
+  "record": {
+    "id": "053",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company has configured direct IAM SAML 2.0 federation with its corporate identity provider. A custom federation client exchanges SAML assertions for AWS STS credentials. One administrator can assume a role successfully, but other employees authenticate at the IdP and fail when requesting AWS credentials. No IAM users are provisioned for these employees.\n\nWhich configuration checks directly address this failure? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an IAM user for each employee and attach a policy allowing sts:AssumeRoleWithSAML to that user."
+      },
+      {
+        "id": "2",
+        "text": "Confirm that each target role trusts the correct IAM SAML provider and permits sts:AssumeRoleWithSAML with conditions that match the assertion."
+      },
+      {
+        "id": "3",
+        "text": "Confirm that the employees belong to an IAM group named AWSFederatedUser, which AWS automatically creates for the SAML provider."
+      },
+      {
+        "id": "4",
+        "text": "Confirm that the STS request includes the correct RoleArn, PrincipalArn for the SAML provider, and valid SAMLAssertion from the IdP."
+      },
+      {
+        "id": "5",
+        "text": "Confirm that every workload subnet in the VPC has a route to the corporate IdP so that the workloads can authenticate each STS request."
+      },
+      {
+        "id": "6",
+        "text": "Confirm that the IdP maps the affected users or groups to the appropriate AWS role and provider ARN pairs in the assertion."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "4",
+      "6"
+    ],
+    "explanation": {
+      "text": "Select <<2>>, <<4>> and <<6>>. The target role must trust the intended SAML provider and accept the assertion conditions. The client must pass the matching role ARN, provider ARN and assertion to AssumeRoleWithSAML. The IdP must include the role mapping for each affected user; one administrator succeeding does not prove that other groups receive the same mappings.\n\n<<1>> is unnecessary: this federation flow is specifically designed to obtain temporary credentials without a separate IAM user for each employee. <<3>> names a nonexistent automatically provisioned IAM group. Role mappings are configured in the IdP, rather than inherited from such a group. <<5>> confuses workload networking with federation. The federation client needs connectivity to the relevant endpoints; each application subnet does not have to contact the IdP to validate an STS request.\n\nSeparate trust from permissions. Role trust controls whether the identity can obtain a session; the role permission policies control what a successful session may do. Also inspect assertion validity, audience, signature and time conditions when troubleshooting. This is direct IAM federation, not an IAM Identity Center role flow.\n\nAWS documentation (checked September 18, 2026): [IAM SAML federation](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html), [AssumeRoleWithSAML](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/053.mmd",
+  "diagram_alt": "STS issues a role session only when the user mapping, assertion parameters and role trust agree.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html",
+      "checked_on": "2026-09-18",
+      "supports": "Role trust names the SAML provider and IdP assertions map users or groups to roles."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html",
+      "checked_on": "2026-09-18",
+      "supports": "STS exchanges an assertion, provider ARN and role ARN for temporary credentials without per-user IAM credentials."
+    }
+  ],
+  "editorial_notes": [
+    "Changed the scenario to an explicit custom credential-exchange client, matching the AssumeRoleWithSAML API choices.",
+    "Removed the inherited confusion between the direct AWS SAML sign-in endpoint and IAM Identity Center.",
+    "Preserved the three-answer set 2, 4 and 6."
+  ],
+  "review_status": "authored"
+}

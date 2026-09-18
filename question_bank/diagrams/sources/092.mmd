@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Move chatty application calls into AWS
+accDescr: A remote user exchanges display and input with a streamed desktop application. Its frequent API calls stay close to a Multi-AZ backend and Aurora database.
+U[Remote user]:::external -->|Display and input stream| C
+subgraph AWS[AWS Region]
+C[WorkSpaces Applications<br/>Existing desktop app]:::process -->|Frequent HTTP calls| L[Application Load Balancer]:::process
+L --> A[App servers in AZ A]:::process
+L --> B[App servers in AZ B]:::process
+A --> W[Aurora writer in AZ A]:::storage
+B --> W
+W -.->|Failover target| R[Aurora reader in AZ B]:::storage
+W --> V[(Aurora shared multi-AZ storage)]:::storage
+R --> V
+end

@@ -1,0 +1,67 @@
+{
+  "question_id": "221",
+  "base_record_sha256": "bb60e6d4eed971444ac8cda3e221b3cc6e7032fbbb67f1edeecc71d1ec90fd67",
+  "record": {
+    "id": "221",
+    "exam_domain": "Design for New Solutions",
+    "question": "Marketing owns an S3 bucket and a customer managed KMS key used to encrypt its campaign objects. Reviewers successfully assume the mgmt_reviewer role in a separate Management account, but cannot browse or download objects under published/. No applicable explicit deny exists.\n\nSecurity requires read-only access to that prefix and delegation specifically to mgmt_reviewer, rather than to the entire Management account. Which policy changes are required? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add a Marketing bucket policy allowing the exact mgmt_reviewer role ARN to list the published/ prefix and read objects in that prefix."
+      },
+      {
+        "id": "2",
+        "text": "Add a role policy granting mgmt_reviewer all S3 actions on the Marketing bucket and kms:Decrypt on the campaign key."
+      },
+      {
+        "id": "3",
+        "text": "Add a Marketing KMS key-policy statement allowing kms:Decrypt for the exact mgmt_reviewer role ARN."
+      },
+      {
+        "id": "4",
+        "text": "Add a Marketing bucket policy granting the required reads to the Marketing account principal, without authorizing the Management role."
+      },
+      {
+        "id": "5",
+        "text": "Add a Marketing KMS key-policy statement delegating kms:Decrypt to the entire Management account so its administrators can authorize additional principals."
+      },
+      {
+        "id": "6",
+        "text": "Add a mgmt_reviewer identity policy allowing prefix-scoped s3:ListBucket, s3:GetObject on published/*, and kms:Decrypt on the exact campaign key ARN."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "3",
+      "6"
+    ],
+    "explanation": {
+      "text": "<<1>>, <<3>>, and <<6>> are correct. The role needs S3 permission on both sides of the account boundary and separate KMS authorization to decrypt the objects. The bucket policy names the reviewer role, its identity policy grants the required object and key operations, and the key policy authorizes that same external role.\n\n<<2>> includes unnecessary upload, deletion, and other S3 permissions, violating read-only access.\n\n<<4>> authorizes a principal in the resource-owning account instead of the external reviewer role.\n\n<<5>> can work technically when combined with appropriate identity policies, but grants broader delegation than this scenario permits. Naming the exact role limits whom external administrators can authorize through this key-policy statement.\n\nScope s3:ListBucket to the bucket ARN with a prefix condition and s3:GetObject to the object ARNs. KMS and S3 are independent authorization checks: a successful role assumption or allowed object read does not itself establish decryption permission. Confirm that the actual objects use the expected key.\n\nAWS documentation (checked September 18, 2026): [Cross-account resource authorization](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html); [Cross-account KMS authorization](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html); [S3 SSE-KMS object permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/221.diagram.json",
+  "diagram_alt": "S3 object access and KMS decryption require coordinated grants in the caller role, bucket policy, and key policy.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html",
+      "checked_on": "2026-09-18",
+      "supports": "Direct cross-account resource access requires resource-side authorization and suitable caller identity permissions, subject to applicable explicit denies."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cross-account decryption requires the key policy and the external principal's IAM policy; a specific role is narrower delegation than an account principal."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "Downloading an SSE-KMS encrypted object requires kms:Decrypt, and cross-account sharing uses customer managed keys."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1, 3 and 6. Made direct role delegation and prefix listing explicit so the broader account-principal alternative is valid in general but fails this stated least-privilege requirement."
+  ],
+  "review_status": "authored"
+}

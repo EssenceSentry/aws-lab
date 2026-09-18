@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Where the Config deny applies",
+  "columns": [
+    "Policy layout",
+    "Production account",
+    "Onboarding account"
+  ],
+  "rows": [
+    [
+      "Deny at root",
+      "Blocked",
+      "Blocked, even with OU Allow"
+    ],
+    [
+      "Deny at Production OU",
+      "Blocked",
+      "Allowed by SCP path; IAM still required"
+    ],
+    [
+      "Account moved to Production",
+      "Blocked",
+      "Now inherits Production deny"
+    ]
+  ],
+  "footnote": "Attach the deny to Production before removing it from the root. Preserve required SCP allows and shared guardrails.",
+  "emphasis_rows": [
+    1
+  ]
+}

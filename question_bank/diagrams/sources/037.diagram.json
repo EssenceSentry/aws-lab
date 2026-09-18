@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Each constraint selects a mechanism",
+  "columns": [
+    "Requirement",
+    "Matching mechanism",
+    "Near miss"
+  ],
+  "rows": [
+    [
+      "Route /catalog/* and /checkout/*",
+      "ALB path conditions",
+      "NLB has no HTTP path rules"
+    ],
+    [
+      "Keep Windows application unchanged",
+      "Windows EC2 Auto Scaling",
+      "Container migration violates scope"
+    ],
+    [
+      "One Region; two AZs",
+      "Regional multi-AZ deployment",
+      "Two Regions violate placement"
+    ],
+    [
+      "Keep live database after deletion",
+      "Retain cluster and DB instances",
+      "Snapshot keeps a recovery artifact"
+    ]
+  ],
+  "footnote": "Required networking and secrets must survive too.",
+  "emphasis_rows": [
+    0,
+    3
+  ]
+}

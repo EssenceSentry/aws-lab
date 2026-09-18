@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Measure recovery points and recovery time separately",
+  "columns": [
+    "Event in an illustrative drill",
+    "Time",
+    "What it demonstrates"
+  ],
+  "rows": [
+    [
+      "Last recoverable point in the original incident",
+      "10:30 a.m.",
+      "90 minutes exposed before noon"
+    ],
+    [
+      "Proposed complete log chain is durable through",
+      "11:55 a.m.",
+      "5 minutes exposed before noon"
+    ],
+    [
+      "Failure occurs",
+      "12:00 p.m.",
+      "Recovery clock starts"
+    ],
+    [
+      "Restore, replay, validation and app recovery finish",
+      "1:30 p.m.",
+      "90-minute RTO in this drill"
+    ]
+  ],
+  "footnote": "Illustrative successful measurements, not guarantees. Backup frequency alone establishes neither actual RPO nor actual RTO.",
+  "emphasis_rows": [
+    1,
+    3
+  ]
+}

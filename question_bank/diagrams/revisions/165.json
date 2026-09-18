@@ -1,0 +1,47 @@
+{
+  "question_id": "165",
+  "base_record_sha256": "9d8f54bc92f9e03e6f50495381cd322d73b9e13346292864dda2744a31e80bbd",
+  "record": {
+    "id": "165",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company uses two Direct Connect connections between its data center and AWS. It wants to reduce recurring connectivity cost while retaining a dedicated primary path. During a primary-path outage, the business accepts lower bandwidth and less predictable latency as long as connectivity remains available. An independent internet connection already exists at the data center.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep one Direct Connect connection as the preferred path and configure an AWS Site-to-Site VPN over the independent internet connection as backup. Set routing preferences and test failover and failback."
+      },
+      {
+        "id": "2",
+        "text": "Keep one Direct Connect connection and configure a second private virtual interface on that same physical connection as the backup path."
+      },
+      {
+        "id": "3",
+        "text": "Keep one Direct Connect connection and run an IPsec VPN over that connection as the only backup path."
+      },
+      {
+        "id": "4",
+        "text": "Replace both Direct Connect connections with internet Site-to-Site VPN tunnels, and use VPN CloudHub to route through them."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The dedicated connection remains the normal path, while the independently routed internet VPN provides a path when that connection fails. This design avoids retaining a second dedicated circuit, with the accepted tradeoff that backup performance differs from Direct Connect. Routing must prefer the intended primary and withdraw or supersede failed routes correctly.\n\n<<2>> adds a logical interface but retains the same physical failure point.\n\n<<3>> can add encryption to traffic carried over Direct Connect, but the VPN is unavailable if its underlying Direct Connect path fails.\n\n<<4>> can provide internet VPN connectivity but removes the dedicated primary path required by the business. CloudHub does not create dedicated network capacity.\n\nA VPN backup is not equivalent to diverse redundant Direct Connect circuits. Validate its throughput, tunnel redundancy, customer equipment, and failover behavior against the reduced-service requirements before removing the second circuit.\n\nAWS documentation (checked September 18, 2026): [Direct Connect redundancy](https://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/165.mmd",
+  "diagram_alt": "An independent internet VPN survives failure of the preferred Direct Connect circuit, unlike a VPN or VIF carried on that circuit.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html",
+      "checked_on": "2026-09-18",
+      "supports": "Redundant connections or a VPN backup require appropriate routing and failover, and diverse Direct Connect locations provide stronger physical resilience."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Made independent internet connectivity and degraded backup performance explicit and replaced vague built-in failover with a realistic same-circuit VIF distractor."
+  ],
+  "review_status": "authored"
+}

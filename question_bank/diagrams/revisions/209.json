@@ -1,0 +1,62 @@
+{
+  "question_id": "209",
+  "base_record_sha256": "88f989525afae28b78ec165e2023e72b9a70c30b1ac15b82df40b1fcc9bb68f2",
+  "record": {
+    "id": "209",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company will rehost VMware virtual machines as EC2 instances. Supported guest operating systems may run migration agents. Source applications must remain available while their disks are copied, and changes must continue replicating through testing until a planned cutover. The team wants a managed agent-based migration workflow rather than repeated full image exports.\n\nWhich actions are required for this approach? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure AWS Transform MGN, formerly AWS Application Migration Service, with the target replication and EC2 launch settings, then use its test and cutover workflow."
+      },
+      {
+        "id": "2",
+        "text": "Install and configure the AWS Replication Agent inside each supported source VM guest operating system, with the required permissions and connectivity."
+      },
+      {
+        "id": "3",
+        "text": "Export each VM once, import it through VM Import/Export, and launch the resulting AMI while leaving the source VM writable until cutover."
+      },
+      {
+        "id": "4",
+        "text": "Create a CloudFormation template for equivalent EC2 instance sizes and networking, without a process to transfer the guest operating systems and disks."
+      },
+      {
+        "id": "5",
+        "text": "Publish new standard EC2 AMIs through Service Catalog and use those clean images as substitutes for the existing server disks."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<2>> are correct. MGN provides continuous server-disk replication and test/cutover launches. In the selected agent-based approach, each source guest needs its own Replication Agent; installing software only on vCenter does not capture every guest's disks through that agent workflow.\n\n<<3>> creates a point-in-time import and leaves subsequent source changes outside the imported image.\n\n<<4>> provisions infrastructure definitions but does not capture the existing operating system, application installation, and data.\n\n<<5>> distributes approved new images but does not migrate the state of the source machines.\n\nValidate supported operating systems, disk layouts, bandwidth, credentials, and target networking. Rehearse the application as a whole before freezing writes and completing the cutover. MGN is more than an AMI-generation utility; the ongoing replication and launch lifecycle are what satisfy this scenario.\n\nOfficial AWS references (checked September 18, 2026): [Per-server Replication Agent](https://docs.aws.amazon.com/mgn/latest/ug/agent-installation.html). [MGN migration workflow](https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html). [VM import requirements](https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/209.mmd",
+  "diagram_alt": "The agent belongs inside each migrated guest and captures disk state, whereas inventory management alone does not perform that replication.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/agent-installation.html",
+      "checked_on": "2026-09-18",
+      "supports": "Agent installation is on each source server"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html",
+      "checked_on": "2026-09-18",
+      "supports": "Continuous block replication and test/cutover conversion"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported image import rather than continuous guest replication"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 1 and 2. Reframed the AMI-only stem around continuous agent-based rehosting so the two actions are required rather than confused with one-time VM import."
+  ],
+  "review_status": "authored"
+}

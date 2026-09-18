@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Transcoding creates the package that the CDN serves
+accDescr: MediaConvert turns a master video into an HLS manifest and multiple renditions, while only the original master follows the archival lifecycle.
+MASTER[S3 MP4 master]:::inputData --> MC[MediaConvert HLS job]
+MC --> MAN[HLS manifest]:::storage
+MC --> LOW[Low bitrate segments]:::storage
+MC --> HIGH[High bitrate segments]:::storage
+MAN --> CF[CloudFront]
+LOW --> CF
+HIGH --> CF
+CF --> PLAYER[Player selects a supported rendition]:::output
+MC -. after processing, master-only lifecycle .-> ARCHIVE[Original master<br/>Glacier Instant Retrieval]:::storage

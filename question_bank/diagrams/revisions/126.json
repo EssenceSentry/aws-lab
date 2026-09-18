@@ -1,0 +1,58 @@
+{
+  "question_id": "126",
+  "base_record_sha256": "c344a83e6b1d5047868a3ed9c574feace5ec713f7804d9da83454ca380a823b5",
+  "record": {
+    "id": "126",
+    "exam_domain": "Design for New Solutions",
+    "question": "A document-sharing application runs on EC2 and stores PDFs in a private S3 bucket. After checking the signed-in user's authorization, the application checks whether a requested download exists and generates a presigned URL. Uploads also use presigned URLs. Long-term AWS access keys must not be stored on the instance.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an IAM user with GetObject and PutObject permissions and store its access keys in an encrypted configuration file on the instance."
+      },
+      {
+        "id": "2",
+        "text": "Create an IAM user with GetObject and PutObject permissions and associate the user with the instance so that its credentials appear in instance metadata."
+      },
+      {
+        "id": "3",
+        "text": "Attach a role with ListBucket permission to the instance and read its temporary credentials from EC2 user data before signing URLs."
+      },
+      {
+        "id": "4",
+        "text": "Attach an instance profile containing a role with GetObject and PutObject permissions on the permitted prefixes. Add ListBucket only if needed. Use the SDK's instance-profile credential provider with IMDSv2 to sign URLs."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The instance profile supplies a role to EC2, and the SDK obtains rotating temporary credentials from instance metadata. GetObject authorizes downloads and HeadObject checks, while PutObject authorizes uploads. Presigning runs locally with the credentials; S3 evaluates the resulting request against the signer's permissions. The application must authorize the user before issuing the URL.\n\n<<1>> encrypts stored keys but still retains long-term credentials. <<2>> confuses an IAM user with an instance profile: EC2 metadata does not expose an attached IAM user's credentials. <<3>> lacks object read/write permissions and uses the wrong credential location; user data is not the instance-profile credential endpoint.\n\nListBucket is not needed simply to issue HeadObject, but it affects a missing object's response: 404 with ListBucket and 403 without it. A presigned URL is a bearer token and cannot remain valid beyond the signing credentials' lifetime. SSE-KMS objects can require additional KMS permissions.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/126.mmd",
+  "diagram_alt": "The application performs authorization and signs locally, while the client transfers the PDF directly from S3.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Instance profiles deliver temporary role credentials to EC2 applications."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html",
+      "checked_on": "2026-09-18",
+      "supports": "HeadObject needs GetObject and missing-object errors depend on ListBucket."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+      "checked_on": "2026-09-18",
+      "supports": "Presigned requests depend on signer permissions and temporary credential expiration."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved corrected GetObject and PutObject permissions and added the HeadObject 403-versus-404 qualification.",
+    "Removed instance sizing as irrelevant to credential selection."
+  ],
+  "review_status": "authored"
+}

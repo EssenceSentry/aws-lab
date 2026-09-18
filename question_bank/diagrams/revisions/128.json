@@ -1,0 +1,53 @@
+{
+  "question_id": "128",
+  "base_record_sha256": "cb865b06c4d26225e9667c13713f8689f231dc3a793434ee2c57597a1e7f381c",
+  "record": {
+    "id": "128",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company must expand storage for a backup application on a non-x86 on-premises server. The application needs a POSIX filesystem backed by block storage and cannot use an object API. The data set is 1,000 TiB, and users must read the active working set while backups run. The company wants to keep only that working set locally and use one supported Storage Gateway appliance. The host's iSCSI and filesystem layer has been validated to combine multiple volumes into one namespace.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store the data in S3 Glacier Deep Archive and mount the archive directly as an iSCSI block device on the server."
+      },
+      {
+        "id": "2",
+        "text": "Use a Volume Gateway with stored volumes and allocate up to 32 volumes of 16 TiB each."
+      },
+      {
+        "id": "3",
+        "text": "Use a Volume Gateway with cached volumes and allocate sufficient volumes within the limit of 32 volumes of 32 TiB each. Aggregate the iSCSI devices on the host and size the local cache for the active working set."
+      },
+      {
+        "id": "4",
+        "text": "Write directly to an S3 bucket through the S3 API and use the bucket name as the application's POSIX mount point."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Cached volumes provide iSCSI block devices with primary storage in AWS and a local cache for frequently accessed data. A gateway supports up to 32 cached volumes of 32 TiB each: 1,024 TiB in aggregate, enough for the 1,000-TiB data set. The host supplies the filesystem and the combined namespace.\n\n<<1>> provides archival object storage, not a directly mounted iSCSI volume with immediate working-set access. <<2>> retains the entire primary data set on premises and provides only 512 TiB per gateway, so it violates both the local-storage requirement and the capacity requirement. <<4>> requires object-API integration and does not create POSIX semantics by naming a bucket.\n\nThe 1,024-TiB limit is not the size of one volume. Gateway appliance compatibility, host filesystem limits, cache sizing and workload performance must all be validated independently.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/storagegateway/latest/vgw/resource-gateway-limits.html\nhttps://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/128.diagram.json",
+  "diagram_alt": "Thirty-two cached volumes can provide 1,024 TiB in aggregate, while stored volumes are limited to 512 TiB per gateway.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/resource-gateway-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cached-volume and stored-volume per-volume, volume-count and gateway capacity limits."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cached volumes keep primary data in AWS, expose iSCSI storage and retain an active-data cache locally."
+    }
+  ],
+  "editorial_notes": [
+    "Made all capacity units TiB and constrained the solution to one gateway so the numerical comparison is decisive.",
+    "Preserved the separate supported gateway and host-managed namespace qualifications."
+  ],
+  "review_status": "authored"
+}

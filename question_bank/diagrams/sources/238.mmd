@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Edge caching can precede application migration
+accDescr: Media requests can be satisfied by CloudFront cache hits, whereas media misses and personalized requests continue to the existing on-premises HTTPS origin.
+U[Global shoppers]:::inputData --> C[CloudFront path behaviors]:::process
+C -->|Product media| H{Media cached?}:::decision
+H -->|Hit| R[Return cached content]:::output
+H -->|Miss| O[Existing on-premises HTTPS origin]:::external
+C -->|Checkout and account<br/>Caching disabled| O
+O --> A[Existing application and data]:::storage

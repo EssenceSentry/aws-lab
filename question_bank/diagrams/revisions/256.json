@@ -1,0 +1,57 @@
+{
+  "question_id": "256",
+  "base_record_sha256": "0e26eed7f984d77afd3d1eb2465c9cdfe8fb290ae43a751ee431307a9d891d27",
+  "record": {
+    "id": "256",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A network account shares one regional transit gateway with an AWS Organization. Each attached VPC contains either development or production workloads and uses nonoverlapping CIDRs. All attachments currently use the same default transit gateway route table, so both environments can reach each other. Same-environment VPCs must remain connected, but development and production must be isolated. No alternative inter-VPC path is required.\n\nWhich configuration provides the required routing isolation?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Tag attachments by environment and rely on Transit Gateway Network Manager inventory tags to block packets between different environments."
+      },
+      {
+        "id": "2",
+        "text": "Add explicit deny rules to the EC2 security groups for the opposite environment while leaving the shared transit gateway routes unchanged."
+      },
+      {
+        "id": "3",
+        "text": "Disable the shared default associations and propagations. Create development and production transit gateway route tables, associate each attachment with its environment's table, and propagate its routes only into that table."
+      },
+      {
+        "id": "4",
+        "text": "Keep every attachment associated with the default table and propagate all VPC routes into both new environment tables, using attachment tags as the packet-routing selector."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. An attachment's association selects the transit gateway route table used for traffic arriving from that attachment. Propagation determines which destination routes a table learns. Keeping both operations within each environment prevents the routing table from learning the other environment's VPC routes.\n\n<<1>> applies descriptive metadata rather than packet-forwarding rules. <<2>> proposes security-group deny rules, which do not exist. <<4>> neither selects the new lookup tables through associations nor isolates their route contents; tags are not a route lookup key.\n\nAn attachment associates with one transit gateway route table but can propagate into multiple tables, so inspect both settings. Remove cross-environment static routes or default routes that could bypass isolation, update VPC routes as needed, and control who may change the network configuration. Security groups can provide additional filtering with allow rules.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html\nhttps://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html\nhttps://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/256.diagram.json",
+  "diagram_alt": "Traffic entering from each environment uses only that environment’s table, whose destination routes exclude the other environment.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transit gateway route tables control attachment forwarding and propagation; an attachment can propagate into multiple tables."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html",
+      "checked_on": "2026-09-18",
+      "supports": "An attachment associates with one route table, which determines forwarding for traffic arriving from it."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security groups allow traffic by direction, protocol and source/destination, support same-VPC group references and do not have deny rules."
+    }
+  ],
+  "editorial_notes": [
+    "Corrected attachment association terminology and made propagation confinement plus removal of bypass routes explicit."
+  ],
+  "review_status": "authored"
+}

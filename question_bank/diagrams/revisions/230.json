@@ -1,0 +1,62 @@
+{
+  "question_id": "230",
+  "base_record_sha256": "2af5f55584cca6da7489f83b1e2a5175450a276997568430cab350eb240d853b",
+  "record": {
+    "id": "230",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A retailer wants to replace its on-premises call-center platform with managed AWS services. It needs inbound calling, contact flows, queues, and agent routing. Callers should also be able to state a request naturally, supply required details, and complete supported tasks without an agent, with context available if transfer is needed.\n\nWhich services should form the core of this solution? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Amazon Polly as the sole component for recognizing caller intent and collecting conversational details."
+      },
+      {
+        "id": "2",
+        "text": "Use Amazon Connect to provide the contact center, telephone numbers, flows, queues, and agent routing."
+      },
+      {
+        "id": "3",
+        "text": "Use a fixed touch-tone menu as the only automated interaction, with no speech or natural-language intent processing."
+      },
+      {
+        "id": "4",
+        "text": "Transcribe completed call recordings and analyze the text with Amazon Comprehend after calls end, using that analysis as the self-service interaction."
+      },
+      {
+        "id": "5",
+        "text": "Integrate an Amazon Lex V2 bot into the contact flow to recognize intent, collect slots, and invoke supported business operations or transfer with context."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<5>> are correct. Connect supplies the contact-center workflow and agent handling. Lex provides speech recognition, natural-language understanding, and dialog state so the flow can gather the information needed for a supported task. Fulfillment code can call the retailer's authorized backend operations.\n\n<<1>> turns text into speech, but does not by itself understand the caller's intent or manage the required dialog.\n\n<<3>> can implement useful menu routing, but fails the natural-language interaction requirement.\n\n<<4>> supports retrospective analytics rather than resolving the caller's request during the live conversation.\n\nConfigure intents, slots, error handling, fulfillment authorization, and the agent-transfer path. Speech understanding is not caller identity verification, and a bot should authenticate the customer before performing sensitive operations. Use a published Lex V2 version and appropriate alias for production traffic.\n\nAWS documentation (checked September 18, 2026): [Connect and Lex integration](https://docs.aws.amazon.com/connect/latest/adminguide/amazon-lex.html); [Amazon Lex V2 capabilities](https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html); [Amazon Polly text to speech](https://docs.aws.amazon.com/polly/latest/dg/what-is.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/230.mmd",
+  "diagram_alt": "Connect handles the call and agent path, while Lex gathers intent and details for an authorized self-service action.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/connect/latest/adminguide/amazon-lex.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Connect flow can integrate a Lex bot for intents, slots, self-service interactions, and transfer to an agent."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lex V2 provides automatic speech recognition, natural language understanding, dialog management, and business-function integration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Polly converts text to speech rather than recognizing caller intent."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2 and 5. Removed obsolete Alexa for Business and unrelated visual-recognition distractors, and contrasted live conversational fulfillment with valid but insufficient speech output, keypad routing, and post-call analytics."
+  ],
+  "review_status": "authored"
+}

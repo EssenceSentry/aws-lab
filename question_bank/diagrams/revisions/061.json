@@ -1,0 +1,58 @@
+{
+  "question_id": "061",
+  "base_record_sha256": "4042a06d7dcb35ce048ce34786ff0b54f98845b64811e5a8bd6e40395b02c800",
+  "record": {
+    "id": "061",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company uses AWS Organizations to manage thousands of accounts. Each application team must retain ownership of its VPC and route tables. The network team must centrally inspect outbound internet traffic with third-party stateful appliances. Organization guardrails prevent application accounts from creating alternative internet egress paths.\n\nWhich design meets these requirements with the least network management overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Build an EC2 transit VPC with a VPN connection from every application VPC. Operate the routing and firewall appliances in the transit VPC."
+      },
+      {
+        "id": "2",
+        "text": "Share subnets from a central VPC with the application accounts through AWS RAM. Allow each participant account to manage its subnet route tables and use central proxy servers."
+      },
+      {
+        "id": "3",
+        "text": "Peer every application VPC with an inspection VPC. Route internet-bound packets through the peering connections to the inspection VPC internet gateway."
+      },
+      {
+        "id": "4",
+        "text": "Share an AWS Transit Gateway through AWS RAM. Attach the application VPCs and a central egress VPC. Route outbound traffic through Gateway Load Balancer endpoints and a fleet of inspection appliances before NAT and internet egress."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> separates application VPC ownership from centrally managed transit and inspection. Transit Gateway aggregates the VPC attachments, and Gateway Load Balancer endpoints insert the appliance fleet into the packet path. Configure the return path consistently, use Transit Gateway appliance mode where required for flow symmetry, and deploy the egress components across Availability Zones.\n\n<<1>> can implement transit, but managing a VPN overlay and EC2 routing fleet adds overhead at this scale. <<2>> fails the ownership requirement: shared-subnet participants cannot manage the owner’s route tables. <<3>> cannot provide internet-gateway transit through VPC peering. Peering connectivity to a proxy application is a different design from transparent gateway transit.\n\nCentral routing is only effective if account permissions and guardrails prevent workloads from bypassing inspection.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-and-gwlb-with-ec2.html\nhttps://docs.aws.amazon.com/en_en/vpc/latest/userguide/vpc-share-limitations.html\nhttps://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/061.mmd",
+  "diagram_alt": "Independently owned application VPCs converge on centrally controlled inspection and egress.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-and-gwlb-with-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Centralized Transit Gateway egress using Gateway Load Balancer endpoints, appliances, NAT and symmetric routing."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/en_en/vpc/latest/userguide/vpc-share-limitations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Shared VPC participants cannot manage route tables."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html",
+      "checked_on": "2026-09-18",
+      "supports": "VPC peering does not permit internet gateway or NAT edge-to-edge transit."
+    }
+  ],
+  "editorial_notes": [
+    "Clarified that application route autonomy operates within guardrails that prevent bypass.",
+    "Replaced scale-limit trivia with transit, ownership and operational distinctions."
+  ],
+  "review_status": "authored"
+}

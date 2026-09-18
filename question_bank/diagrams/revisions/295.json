@@ -1,0 +1,67 @@
+{
+  "question_id": "295",
+  "base_record_sha256": "19bf35b7da6dabde268a42217028924ac9e0d62f17457e022cbd97bbbafb76a7",
+  "record": {
+    "id": "295",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A weather-map service uses CloudFront with an S3 origin in eu-west-1. It publishes new immutable map objects each hour. Measurements show that North American cache misses are slow because they fetch across the Atlantic, while cache-hit latency is already acceptable. The team plans a second S3 origin in us-east-1 and can publish each new map only after its replica is available.\n\nWhich changes together address the measured bottleneck? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Register the new S3 bucket directly as a Global Accelerator endpoint and use that accelerator as the CloudFront origin."
+      },
+      {
+        "id": "2",
+        "text": "Use an origin-request Lambda@Edge function to select the us-east-1 S3 origin for North American viewers, with appropriate origin authorization and geographic cache configuration."
+      },
+      {
+        "id": "3",
+        "text": "Keep only the European S3 origin and create Global Accelerator endpoint groups that reference that bucket in both Regions."
+      },
+      {
+        "id": "4",
+        "text": "Extend the CloudFront TTL of all map objects indefinitely and keep fetching every new hourly object from the European origin."
+      },
+      {
+        "id": "5",
+        "text": "Configure S3 cross-Region replication to the us-east-1 bucket, backfill existing objects, and verify replica availability before publishing new map references."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<5>> are correct. Replication places the data in the nearby origin, and the origin-request function selects that origin when CloudFront needs to fetch an object for the relevant viewers. Both data placement and routing are required: an empty regional bucket or an unused replica does not improve the measured miss path.\n\n<<1>> and <<3>> use an unsupported Global Accelerator endpoint type. Standard accelerators accept supported load balancers, EC2 instances, or Elastic IP addresses, not S3 buckets.\n\n<<4>> can retain objects longer, but cannot eliminate the first miss for each new immutable hourly object. It leaves that initial origin fetch across the Atlantic.\n\nLive S3 replication is asynchronous and does not automatically backfill objects that existed before the rule. Use Batch Replication or another validated backfill and confirm new replicas before publishing their URLs. Configure the country header and cache policy consistently with the origin-selection logic. An origin-request function runs when an origin request is needed, not on ordinary cache hits, so the design targets the observed miss latency rather than promising that every download becomes faster.\n\nAWS documentation (checked September 18, 2026): [Lambda@Edge dynamic origin selection](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html); [S3 replication scope and backfill](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-what-is-isnot-replicated.html); [Global Accelerator endpoints](https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html); [CloudFront caching](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/295.mmd",
+  "diagram_alt": "Edge hits already avoid the origin, while geographic selection uses the replicated US bucket for North American misses.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html",
+      "checked_on": "2026-09-18",
+      "supports": "An origin-request function can select an S3 origin based on CloudFront-Viewer-Country, with appropriate origin fields, request headers and caching configuration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-what-is-isnot-replicated.html",
+      "checked_on": "2026-09-18",
+      "supports": "Live replication applies to eligible new objects after configuration; existing objects require a backfill mechanism such as Batch Replication."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard accelerator endpoints are supported load balancers, EC2 instances or Elastic IP addresses, not S3 buckets."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront serves cached objects at edge locations and fetches cache misses from the configured origin."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2 and 5. Narrowed the performance claim to measured origin cache misses, required backfill and publication gating for asynchronous replicas, and replaced a dubious acceleration-endpoint distractor with a valid TTL change that leaves first misses unresolved."
+  ],
+  "review_status": "authored"
+}

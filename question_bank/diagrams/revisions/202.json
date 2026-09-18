@@ -1,0 +1,57 @@
+{
+  "question_id": "202",
+  "base_record_sha256": "c33cdb77178cab24ffcb9659a358b7e1f136c91c2afde76908be2f62d31a9c89",
+  "record": {
+    "id": "202",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A financial company wants to replace offsite physical tapes with durable cloud archives. Its existing backup application supports an iSCSI virtual tape library and must retain its tape catalogs, backup jobs, and restore procedures. Completed backup tapes are rarely retrieved, and retrieval delays are acceptable.\n\nWhich approach preserves the workflow while reducing long-term storage expense?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy Tape Gateway, present its virtual tape library to the backup application, and eject completed tapes for archival in S3 Glacier Flexible Retrieval or S3 Glacier Deep Archive according to the restore requirement."
+      },
+      {
+        "id": "2",
+        "text": "Deploy a stored Volume Gateway, rewrite the backup jobs to target iSCSI block volumes, and keep point-in-time EBS snapshots."
+      },
+      {
+        "id": "3",
+        "text": "Deploy Tape Gateway and retain every completed virtual tape in its online virtual tape library indefinitely, without ejecting tapes for archival."
+      },
+      {
+        "id": "4",
+        "text": "Deploy S3 File Gateway and rewrite the backup application to create file-based backup sets on its NFS or SMB share."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Tape Gateway exposes virtual tape drives and a media changer through the interface the backup application already understands. Ejecting a completed virtual tape initiates upload and archival; archived tapes use the selected supported Glacier archive class.\n\n<<2>> offers block storage and snapshots, but does not preserve the virtual-tape interface and existing jobs.\n\n<<3>> preserves tape compatibility but omits the archive transition for tapes that rarely need to be online.\n\n<<4>> offers a file interface and can support file backups, but requires the workflow change that the stem excludes.\n\nThe virtual tape shelf is the archive abstraction, not a separate non-Glacier alternative. An archived tape must be retrieved to a gateway before the backup application restores its contents. Select the archive pool for the required retrieval time and retention economics, configure access and encryption, and test restoration with the retained backup catalog.\n\nOfficial AWS references (checked September 18, 2026): [Tape Gateway](https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html). [Tape archival and restoration](https://docs.aws.amazon.com/storagegateway/latest/tgw/backup_netbackup-vtl.html). [S3 File Gateway interface](https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/202.mmd",
+  "diagram_alt": "Tape compatibility is preserved while ejecting and retrieving tapes controls the boundary between online and archived storage.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cloud-backed tape archives use Glacier Flexible Retrieval or Deep Archive"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/backup_netbackup-vtl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Backup-application eject operation moves tapes into archive and restoration retrieves them first"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "NFS and SMB interface versus virtual tape"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced the ambiguous virtual-tape-shelf distractor because the shelf is the Glacier-backed archive, and updated storage-class names."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "027",
+  "base_record_sha256": "15798c1d4a4f4ab53487e9728af66554e0e3d0e6fe863d91155bd5426b433837",
+  "record": {
+    "id": "027",
+    "exam_domain": "Design for New Solutions",
+    "question": "A delivery company runs an EC2 application and an RDS for MySQL DB instance in one AWS Region. It needs a lower-cost alternative to a pilot-light deployment for regional disaster recovery, with an RPO of 15 minutes and an RTO under 3 hours. Restore exercises using a supported destination Region have met both targets. Application infrastructure is reproducible from templates. The company also exports selected records as Parquet files to a controlled S3 bucket and must discover sensitive data in those exports.\n\nWhich solution meets the requirements with the lowest ongoing recovery-environment cost?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Copy a daily RDS snapshot to the recovery Region and use that snapshot as the only database recovery source. Run Amazon Macie discovery jobs against the S3 exports."
+      },
+      {
+        "id": "2",
+        "text": "Enable RDS automated backups and cross-Region automated-backup replication. Restore to an available recovery point and recreate the application during recovery. Run Macie discovery jobs on the S3 exports and route findings to a separate remediation workflow."
+      },
+      {
+        "id": "3",
+        "text": "Keep an RDS cross-Region read replica and a running EC2 fleet in the recovery Region. Use AWS Shield to discover sensitive data in the database and S3 exports."
+      },
+      {
+        "id": "4",
+        "text": "Enable a Multi-AZ RDS deployment in the source Region and use it as the regional disaster-recovery copy. Run Macie directly against RDS-managed automated backups."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. Backup and restore avoids a continuously running recovery application and database. RDS can replicate automated snapshots and transaction logs to a supported destination Region; recovery uses the destination's available restore points. Macie analyzes the exported, supported S3 objects, and a separate workflow handles remediation.\n\n<<1>> leaves up to a day of database changes outside the recovery copy, exceeding the 15-minute RPO.\n\n<<3>> incurs the standby cost the company is trying to avoid. Shield mitigates DDoS attacks; it does not classify sensitive records.\n\n<<4>> protects against some in-Region failures, not loss of that Region. Macie does not inspect RDS-managed backups in place.\n\nRPO measures data loss; RTO includes database restore, application deployment, and cutover. Monitor the destination recovery point and repeat recovery exercises as data volume changes. The tested targets are workload evidence, not an AWS restore-time guarantee.\n\nOfficial AWS references (checked 2026-09-18):\n[RDS point-in-time recovery](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html)\n[Cross-Region automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html)\n[Macie supported data](https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/027.mmd",
+  "diagram_alt": "RDS backup replication supports recovery; a distinct S3 export makes selected records available for Macie analysis.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed transaction logs and restoring a new DB instance"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Replication of snapshots and transaction logs with engine and Region support limits"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html",
+      "checked_on": "2026-09-18",
+      "supports": "Macie analyzes supported S3 objects including Parquet database exports"
+    }
+  ],
+  "editorial_notes": [
+    "Specified Region-loss scope and successful recovery exercises so RTO/RPO feasibility is supported by the scenario. Removed non-native RDS backup scheduling. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

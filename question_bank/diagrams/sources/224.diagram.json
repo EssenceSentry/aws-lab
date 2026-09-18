@@ -1,0 +1,38 @@
+{
+  "type": "table",
+  "title": "Two complete paths from directory login to signed AWS calls",
+  "columns": [
+    "Stage",
+    "SAML architecture",
+    "OIDC architecture"
+  ],
+  "rows": [
+    [
+      "Authenticate employee",
+      "Custom IdP checks LDAP",
+      "Custom IdP checks LDAP"
+    ],
+    [
+      "Issue proof",
+      "Signed SAML assertion",
+      "OIDC ID token"
+    ],
+    [
+      "Exchange proof",
+      "STS AssumeRoleWithSAML",
+      "Cognito identity pool"
+    ],
+    [
+      "Authorize session",
+      "IAM SAML provider and role trust",
+      "Trusted IdP and identity-pool role mapping"
+    ],
+    [
+      "Call AWS API",
+      "Temporary role credentials sign request",
+      "Temporary role credentials sign request"
+    ]
+  ],
+  "footnote": "These are alternatives. Neither a directory password nor an arbitrary application token is itself an AWS API credential.",
+  "emphasis_rows": []
+}

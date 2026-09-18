@@ -1,0 +1,33 @@
+{
+  "type": "table",
+  "title": "Preserve the application model while changing its platform",
+  "columns": [
+    "Component",
+    "Current deployment",
+    "Target and purpose"
+  ],
+  "rows": [
+    [
+      "Java runtime",
+      "Commercial JDK in Docker",
+      "Tested Corretto image: OpenJDK"
+    ],
+    [
+      "Container execution",
+      "Self-managed virtual machines",
+      "ECS on Fargate: no container hosts to operate"
+    ],
+    [
+      "Relational database",
+      "Self-managed MySQL",
+      "RDS MySQL: managed database infrastructure"
+    ],
+    [
+      "Migration data path",
+      "Live source database",
+      "DMS full load plus changes, then validated cutover"
+    ]
+  ],
+  "footnote": "The language, container model, and relational data model remain. Compatibility and cutover still require testing.",
+  "emphasis_rows": []
+}

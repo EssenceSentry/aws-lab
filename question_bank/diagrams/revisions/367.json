@@ -1,0 +1,52 @@
+{
+  "question_id": "367",
+  "base_record_sha256": "87495da655518cbcf8d1ef479f4ec55e5469a38a0ae5d109297353f456059d7d",
+  "record": {
+    "id": "367",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company hosts a proprietary TCP service in its data center. A provider VPC already reaches the service's private IP addresses through redundant Direct Connect paths with the required encryption in place. Approved partner companies need to consume only this service from their own AWS VPCs, without Internet exposure or broad network peering.\n\nWhich design should the company use?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an NLB in the provider VPC with the reachable on-premises private IPs as targets. Publish an endpoint service for approved partner principals, accept authorized connections, and have partners create interface endpoints."
+      },
+      {
+        "id": "2",
+        "text": "Create an ALB in the provider VPC and associate it directly with a load-balancer-backed VPC endpoint service, without an NLB, for the unchanged TCP protocol."
+      },
+      {
+        "id": "3",
+        "text": "Keep only the existing Direct Connect attachment and provider-VPC security groups, and assume that these automatically give every partner VPC a private service connection."
+      },
+      {
+        "id": "4",
+        "text": "Create a public NLB for the on-premises targets and restrict its listener to approved partner public egress addresses, letting partners connect through their Internet gateways."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The consumer interface endpoint exposes a private service connection inside each partner VPC. PrivateLink carries it to the provider's NLB, which forwards it over the existing private hybrid path to the registered on-premises targets. Endpoint-service permissions and connection acceptance control which partners can connect.\n\n<<2>> is not the supported direct load-balancer association for this endpoint-service design and does not preserve the arbitrary TCP protocol. For HTTP use cases, an ALB can sit behind an NLB, but that is a different topology from the proposed direct ALB association.\n\n<<3>> provides the provider's hybrid connectivity without establishing a connection for the partner VPCs.\n\n<<4>> exposes an Internet-facing path, contrary to the stated private-access requirement, even if source addresses are restricted.\n\nRegister supported private IP ranges and configure forward and return routing, health checks, security controls, and sufficient hybrid capacity. Use multiple Availability Zones for the endpoint service and test loss of a hybrid path. Direct Connect supplies a private network path but is not, by itself, a blanket encryption guarantee; this scenario separately supplies the required encryption. Keep application authentication and tenant authorization even when the network connection is private.\n\nAWS documentation (checked September 18, 2026): [PrivateLink endpoint services](https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html); [NLB IP targets](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/367.mmd",
+  "diagram_alt": "PrivateLink provides a narrow partner-to-service connection, and the provider NLB reaches the existing data-center targets through the separate hybrid connection.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html",
+      "checked_on": "2026-09-18",
+      "supports": "An NLB-backed endpoint service can be exposed to approved principals, and consumers create interface endpoints to access it privately."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "NLB IP target groups can register supported private on-premises IP addresses reachable over Direct Connect or Site-to-Site VPN; an ALB can also be placed behind an NLB."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Explicitly supplies reachable private IP targets, partner interface endpoints, acceptance controls and hybrid encryption. Avoids claiming that Direct Connect alone encrypts traffic or that PrivateLink endpoint services universally support only NLBs."
+  ],
+  "review_status": "authored"
+}

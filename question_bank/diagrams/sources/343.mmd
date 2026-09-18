@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Stop divergence before cloning and cutover
+accDescr: The target function is prepared in advance, while a write freeze encloses cloning and validation so the independent target does not miss later source writes.
+A["Prepare target Lambda and permissions"] --> D["Validate target application"]
+B["Freeze source writes"] --> C["Create independent Aurora clone"]
+C --> D
+D --> E["Redirect traffic and reopen writes"]
+F["Later source writes do not replicate"] -.-> C
+class A inputData
+class B,D decision
+class C storage
+class E output
+class F warning

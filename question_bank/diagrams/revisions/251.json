@@ -1,0 +1,57 @@
+{
+  "question_id": "251",
+  "base_record_sha256": "0f6531791ac0215cad59dfedf598b6e83fc6d4b9f323f3afabd9d1559f7bb5be",
+  "record": {
+    "id": "251",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company publishes new MP4 training videos each month for employees around the world. Its player requires adaptive-bitrate HLS. The company wants managed transcoding and global delivery without maintaining video servers. Original masters are rarely accessed, must remain immediately retrievable, and are retained for at least a year.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run transcoding jobs on a self-managed EC2 fleet and store the HLS outputs on each worker's EBS volume. Use the changing worker fleet as the CloudFront origin."
+      },
+      {
+        "id": "2",
+        "text": "Use MediaConvert to produce only standalone MP4 outputs in S3 and distribute them with CloudFront, relying on the CDN to create HLS manifests and segments."
+      },
+      {
+        "id": "3",
+        "text": "Submit MediaConvert jobs with an HLS output group and multiple bitrate renditions to S3. Serve the HLS objects through CloudFront, and use a lifecycle rule scoped to eligible original masters to move them to S3 Glacier Instant Retrieval."
+      },
+      {
+        "id": "4",
+        "text": "Use CodePipeline and a custom transcoder to create HLS in S3, then serve global employee playback from a single AWS Wavelength Zone."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. MediaConvert creates the manifests and renditions required for adaptive streaming, S3 stores the output objects, and CloudFront distributes them geographically. Scope archival lifecycle rules to original masters so active streaming segments remain in the intended serving class.\n\n<<1>> adds server and per-worker storage management and requires additional origin-availability coordination. <<2>> omits HLS packaging; CloudFront distributes content but does not transcode an MP4 into HLS. <<4>> can orchestrate custom processing, but a Wavelength Zone is not a substitute for a global CDN.\n\nChoose bitrate and codec settings supported by the player and protect private training content with appropriate origin and viewer access controls. Glacier Instant Retrieval provides immediate retrieval but has retrieval charges and a minimum storage duration, so lifecycle choices depend on actual retention and access patterns.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/mediaconvert/latest/ug/output-settings.html\nhttps://docs.aws.amazon.com/mediaconvert/latest/ug/setting-up-a-job.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/251.mmd",
+  "diagram_alt": "MediaConvert produces the HLS manifest and bitrate renditions; CloudFront serves those objects, while only the original master is archived.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/mediaconvert/latest/ug/output-settings.html",
+      "checked_on": "2026-09-18",
+      "supports": "MediaConvert creates HLS adaptive-bitrate packages that can be delivered through CloudFront."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/mediaconvert/latest/ug/setting-up-a-job.html",
+      "checked_on": "2026-09-18",
+      "supports": "MediaConvert output groups specify an S3 destination and contain configured output renditions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Glacier Instant Retrieval is immediately accessible archival storage with retrieval fees and a minimum storage duration."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced the retired Elastic Transcoder distractor with the current distinction between standalone MP4 and HLS packaging; added master-only lifecycle scope."
+  ],
+  "review_status": "authored"
+}

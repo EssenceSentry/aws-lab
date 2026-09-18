@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Streaming ingestion must feed a serving path
+accDescr: Session-keyed events enter a stream, a stateful consumer validates sequence and duplicates, and current features are read on the next page request.
+E["Click: session, event ID, sequence"] --> K[("Kinesis partitioned by session")]
+K --> C["Continuous session-state consumer"]
+C --> F[("Current session features")]
+F --> P["Next page recommendation"]
+class E inputData
+class K,F storage
+class C decision
+class P output

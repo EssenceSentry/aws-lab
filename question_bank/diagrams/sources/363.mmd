@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Replicate continuously, then gate traffic on recovery readiness
+accDescr: EC2 state continuously enters the DRS staging area and Aurora changes reach the secondary Region. A disaster triggers application launch and database failover, followed by a health gate before routing users to recovery.
+P[Primary Region<br/>EC2 application and Aurora writer]:::inputData -->|Continuous replication| R[Recovery Region ready state<br/>DRS staging and Aurora secondary]:::storage
+R -->|Disaster recovery invoked| A[Launch application instances<br/>Fail over Aurora secondary]:::process
+A --> H{Writable database<br/>and healthy application?}:::decision
+H -->|Yes| D[Enable recovery traffic<br/>Route 53 failover destination]:::output
+H -->|No| W[Keep recovery destination unready<br/>Resolve failed checks]:::warning

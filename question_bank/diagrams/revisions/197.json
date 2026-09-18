@@ -1,0 +1,53 @@
+{
+  "question_id": "197",
+  "base_record_sha256": "2078d2aff953ed4a0f3435e940051cbd6606d51170ee3dcd03ff58f1ac3b3d63",
+  "record": {
+    "id": "197",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is moving a virtual-machine application to private EC2 instances. The application must continue reaching on-premises services through private IP addresses over a dedicated connection that avoids internet transit. The company can arrange connectivity to an AWS Direct Connect location.\n\nWhich components are required for the proposed Direct Connect path? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "An internet gateway attached to the VPC as the termination point for the dedicated private connection."
+      },
+      {
+        "id": "2",
+        "text": "A customer-side router with the required Ethernet/VLAN capabilities and BGP support, including the configured MD5 authentication key for the virtual-interface session."
+      },
+      {
+        "id": "3",
+        "text": "A Direct Connect connection and a private virtual interface with appropriate VPC gateway association and routes for the on-premises and VPC prefixes."
+      },
+      {
+        "id": "4",
+        "text": "An Elastic IP address on each application instance so the on-premises servers can reach the instances over Direct Connect."
+      },
+      {
+        "id": "5",
+        "text": "A transit VPC with VPN appliances as a substitute for the underlying dedicated circuit."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<3>> are correct. The physical connection and private virtual interface establish the private path into the VPC, and BGP exchanges the network prefixes between the customer router and AWS. The virtual-interface BGP configuration includes an MD5 authentication key.\n\n<<1>> does not terminate a Direct Connect private virtual interface. <<4>> is unnecessary because this traffic uses private addressing. <<5>> can be part of a routing architecture, but it does not create the dedicated transport required by the scenario.\n\nProvision the complete path, including customer or partner connectivity to the Direct Connect location, VLAN and BGP configuration, gateway association, routing and security rules. A dedicated path does not imply payload encryption or redundancy. Add those capabilities when the workload requires them.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/197.mmd",
+  "diagram_alt": "A dedicated Direct Connect path and correctly configured private-VIF BGP routing connect private EC2 addresses to on-premises dependencies.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html",
+      "checked_on": "2026-09-18",
+      "supports": "Direct Connect setup includes private virtual interfaces, VLAN/BGP configuration and MD5 BGP authentication."
+    }
+  ],
+  "editorial_notes": [
+    "Expanded the link shorthand into connection, private VIF, gateway and routing components without implying Direct Connect is automatically encrypted or redundant.",
+    "Preserved BGP MD5 requirements after checking the current Direct Connect setup guide."
+  ],
+  "review_status": "authored"
+}

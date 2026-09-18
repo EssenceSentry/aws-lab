@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Web redundancy and database read scaling solve different bottlenecks
+accDescr: The ALB spreads requests across a multi-AZ web fleet. The application routes writes to the Aurora writer and eligible reads through the reader endpoint to replicas.
+U[Web requests]:::inputData --> A[ALB and multi-AZ<br/>EC2 Auto Scaling web tier]:::process
+A -->|Writes and consistency-sensitive reads| W[(Aurora writer)]:::storage
+A -->|Eligible read-only connections| R[Reader endpoint]:::process
+R --> P[(Aurora Replicas)]:::storage
+W -.->|Replicated changes| P

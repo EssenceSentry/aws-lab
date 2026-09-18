@@ -1,0 +1,47 @@
+{
+  "question_id": "353",
+  "base_record_sha256": "b3e00032b56de1599b709d1e44875b97fd0c52859f38862e4317076a76d1d65e",
+  "record": {
+    "id": "353",
+    "exam_domain": "Design for New Solutions",
+    "question": "A financial company uses WorkSpaces Personal with public streaming endpoints. Policy requires new desktop streaming sessions to originate from approved office networks. Each office has known, static public egress IP ranges. The company is opening another office and wants a central control that applies across the directory without changing individual desktops or application firewalls.\n\nWhich solution meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Assign a separate Elastic IP address to an EC2 jump host for each employee and record those destination addresses in the desktop inventory."
+      },
+      {
+        "id": "2",
+        "text": "Create a Direct Connect connection from each office to the VPC while leaving the WorkSpaces streaming access policy open to all client addresses."
+      },
+      {
+        "id": "3",
+        "text": "Update the Windows Firewall on every WorkSpace to allow access only to application servers in the offices' private address ranges."
+      },
+      {
+        "id": "4",
+        "text": "Create a WorkSpaces IP access control group containing the approved offices' public egress CIDR ranges and associate the group with the WorkSpaces directory. Add the new office's ranges to the group."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. WorkSpaces IP access control groups evaluate the source networks from which users establish streaming sessions. Associating a custom group with the directory replaces its default unrestricted group. Rules must use the public source addresses WorkSpaces sees, including any office NAT or VPN egress addresses.\n\n<<1>> assigns addresses to infrastructure but does not restrict the source of WorkSpaces streaming connections.\n\n<<2>> adds private network connectivity. It does not by itself restrict access through the existing public WorkSpaces streaming endpoints.\n\n<<3>> controls traffic handled by individual desktop operating systems and changes application connectivity. It does not configure the requested directory-level streaming-origin restriction.\n\nThis control identifies a network origin, not an employee's physical location. It also does not restrict public management API operations such as restart or rebuild. Separate IAM controls govern those operations.\n\nOfficial AWS references (checked September 18, 2026): [WorkSpaces IP access control groups](https://docs.aws.amazon.com/workspaces/latest/adminguide/amazon-workspaces-ip-access-control-groups.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/353.mmd",
+  "diagram_alt": "The directory IP group filters the public source of a new streaming connection before the user completes desktop authentication.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/workspaces/latest/adminguide/amazon-workspaces-ip-access-control-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Directory-associated groups allow trusted public source CIDRs for streaming sessions, while management API operations remain a separate control."
+    }
+  ],
+  "editorial_notes": [
+    "Scoped policy to new streaming sessions through public endpoints and source-network identity, avoiding claims of physical geolocation or blanket API restriction."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Public website certificate choices",
+  "columns": [
+    "Choice",
+    "Unmanaged browser trust",
+    "Private-key deployment"
+  ],
+  "rows": [
+    [
+      "ACM public + existing ALB",
+      "Public CA chain",
+      "ACM integration; no host distribution"
+    ],
+    [
+      "Private CA + ALB",
+      "Requires adding private trust root",
+      "Managed attachment; CA administration"
+    ],
+    [
+      "Exportable public + EC2",
+      "Public CA chain",
+      "Export, secure storage and renewal rollout"
+    ],
+    [
+      "Private CA + EC2",
+      "Requires adding private trust root",
+      "CA plus host key distribution"
+    ]
+  ],
+  "footnote": "A non-exportable public ACM certificate on the existing ALB minimizes additional certificate cost and renewal work.",
+  "emphasis_rows": [
+    0
+  ]
+}

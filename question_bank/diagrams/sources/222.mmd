@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Durable job references feed elastic long-running workers
+accDescr: Uploaded files remain in S3 while an SQS job reference is processed by a scaled EC2 worker. The worker commits output before deleting the message.
+U[Portal upload]:::inputData --> B[(S3 input files)]:::storage
+U -->|Object key| Q[(SQS job queue)]:::storage
+Q --> W[EC2 worker<br/>Up to 30 minutes per job]:::process
+B -->|Read input| W
+W --> O[(S3 committed output)]:::storage
+O --> D[Delete completed queue message]:::output
+M[Backlog per instance<br/>Scale-in protection while busy]:::reference -.-> W

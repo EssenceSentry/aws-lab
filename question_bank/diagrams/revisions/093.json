@@ -1,0 +1,47 @@
+{
+  "question_id": "093",
+  "base_record_sha256": "1f557682c38c3115a85f143e267efb67c759cb6f35dbb0cdf97d06f938cbef1e",
+  "record": {
+    "id": "093",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "EC2 instances in private subnets call an external service through a NAT gateway. The application reuses TCP connections that can remain idle for several minutes. Logs show that an idle connection is reset when it is reused after more than 350 seconds. NAT gateway metrics show no port-allocation errors or packet-rate exhaustion.\n\nWhich change most directly addresses the cause?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable TCP keepalive so the first probe occurs before 350 seconds of inactivity and subsequent probes maintain the connection. Also handle resets with connection reestablishment and appropriate retries."
+      },
+      {
+        "id": "2",
+        "text": "Change the NAT gateway idle timeout from 350 seconds to 30 minutes so idle connections remain in its connection table."
+      },
+      {
+        "id": "3",
+        "text": "Add more NAT gateways and distribute outbound traffic across them without changing the application's connection behavior."
+      },
+      {
+        "id": "4",
+        "text": "Replace the NAT gateway route with a direct route to an internet gateway while leaving the instances with private IPv4 addresses only."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. A NAT gateway expires a connection that is idle for 350 seconds. When the client subsequently sends traffic on that connection, the gateway returns a TCP reset. Timely TCP keepalive traffic prevents that idle interval. The application should still tolerate broken connections and retry only operations that can safely be retried.\n\n<<2>> assumes a configurable timeout that the NAT gateway does not expose.\n\n<<3>> can help other scaling or port-allocation problems, but every new gateway has the same idle-connection behavior. The metrics exclude the relevant capacity symptoms here.\n\n<<4>> removes the required IPv4 source translation. A private-only instance cannot obtain direct internet connectivity merely by adding an internet gateway route.\n\nMatch the remedy to the observed failure mode: connection lifetime and gateway capacity are different causes.\n\nAWS documentation (checked September 18, 2026): [NAT gateway troubleshooting](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-troubleshooting.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/093.mmd",
+  "diagram_alt": "The timeline contrasts a connection reset after NAT idle expiration with timely keepalive traffic.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-troubleshooting.html",
+      "checked_on": "2026-09-18",
+      "supports": "NAT gateways expire connections idle for 350 seconds and send RST on subsequent use, with TCP keepalive as a mitigation."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Retained the repaired NAT troubleshooting focus, excluded capacity symptoms, and specified the first keepalive probe timing."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,62 @@
+{
+  "question_id": "281",
+  "base_record_sha256": "e05ba1aad7ab12d93e6b95a2f7b9a65f0bc717c81920a67dc63f3336436a25b2",
+  "record": {
+    "id": "281",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company currently sends variable-schema JSON events to an on-premises PostgreSQL database. It wants managed AWS ingestion and searchable dashboards that refresh within a few minutes. Events need a small normalization transform. The pipeline must buffer records, retry destination failures, and retain failed deliveries in S3 with minimal custom delivery code. Independent stream consumers and stream replay are not required. Network access to the AWS ingestion service is already established.\n\nWhich components should the company choose? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Amazon Data Firehose with a Lambda transformation and its built-in OpenSearch Service destination, retry settings, and S3 failure backup."
+      },
+      {
+        "id": "2",
+        "text": "Load the events into Amazon Neptune as a graph and build a custom graph-query dashboard."
+      },
+      {
+        "id": "3",
+        "text": "Load JSONB records into Aurora PostgreSQL and refresh reporting tables and dashboards with an hourly batch job."
+      },
+      {
+        "id": "4",
+        "text": "Index the normalized events in Amazon OpenSearch Service and build search and aggregation views in OpenSearch Dashboards."
+      },
+      {
+        "id": "5",
+        "text": "Use Kinesis Data Streams with a Lambda consumer that implements the OpenSearch indexing, retry, and S3 failure-backup logic."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<4>> are correct. Firehose supplies managed buffering and delivery to OpenSearch, with Lambda available for normalization. OpenSearch indexes the events for search and aggregation, and Dashboards presents the results. Tune buffering, index capacity, and refresh behavior to the measured freshness target.\n\n<<2>> introduces a graph model and custom dashboard work for a search-and-aggregation use case with no graph requirement.\n\n<<3>> can store JSON, but its hourly refresh misses the stated freshness requirement. PostgreSQL's ability to handle JSON is not the issue.\n\n<<5>> is a valid streaming design, but requires the custom destination-handling code the team wants to minimize. It becomes more attractive when independent consumers or replay are needed.\n\nFailure backup preserves undelivered records for later remediation; it does not automatically make every failed record searchable. Monitor the backup path and implement controlled redelivery.\n\nOfficial AWS references (checked September 18, 2026): [Firehose to OpenSearch integration](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/integrations-fh.html). [Firehose destination controls](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html). [OpenSearch Service and Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/281.mmd",
+  "diagram_alt": "Buffered delivery feeds the search index, while failed records take an explicit recovery path instead of silently disappearing.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/integrations-fh.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed OpenSearch destination and optional Lambda transformation"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html",
+      "checked_on": "2026-09-18",
+      "supports": "OpenSearch buffering, indexing retries and S3 failure destination"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Search, analytics and integrated dashboard capabilities"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 4. Replaced the false claim that PostgreSQL cannot handle JSON with a freshness constraint, and distinguished Kinesis by custom delivery work rather than incompatibility."
+  ],
+  "review_status": "authored"
+}

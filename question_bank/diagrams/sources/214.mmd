@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Authentication ends in an enforced object-prefix boundary
+accDescr: A user-pool sign-in produces identity-pool credentials, and IAM permits only objects under that identity ID while rejecting another identity prefix.
+U["User pool: signed-in customer"] --> I["Identity pool: identity A"]
+I --> R["Temporary authenticated-role credentials"]
+R --> P{"Requested object matches private/A/?"}
+P -->|Yes| A["Allow required object action"]
+P -->|No, private/B/| D["Deny absent another grant"]
+class U inputData
+class I,R,P decision
+class A output
+class D warning

@@ -1,0 +1,82 @@
+{
+  "question_id": "320",
+  "base_record_sha256": "985104a93b01eadaa271e65e3b9a5f99ffef16c039ffbc5081336c722939dcd3",
+  "record": {
+    "id": "320",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company is assessing migration of thousands of Linux and Windows servers across VMware, Hyper-V and externally hosted environments. The servers run Java and PHP applications with MySQL and Oracle databases, but the inventory and dependency documentation are incomplete. Before authorizing a migration wave, management needs an evidence-based inventory, a review of organizational readiness, and a cost model with explicit sizing and licensing assumptions. The discovery team can obtain approved network access and collection credentials.\n\nWhich THREE actions should the solutions architect take? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure the AWS Transform discovery tool for the supported hypervisors and imported servers. Collect available OS metrics, process and connection data, and reconcile missing systems and business dependencies with application owners."
+      },
+      {
+        "id": "2",
+        "text": "Begin production cutover launches with AWS Transform MGN and treat successful instance launches as the required inventory, organizational-readiness assessment and cost estimate."
+      },
+      {
+        "id": "3",
+        "text": "Instrument selected applications for tracing and use those traces alone as the complete inventory of all servers, storage, licensing and organizational capabilities."
+      },
+      {
+        "id": "4",
+        "text": "Complete an AWS Cloud Readiness Assessment against the Cloud Adoption Framework with relevant stakeholders, and document gaps in skills, governance, security and operations."
+      },
+      {
+        "id": "5",
+        "text": "Enable Amazon Inspector and treat its vulnerability findings as a complete on-premises migration inventory, dependency map and financial business case."
+      },
+      {
+        "id": "6",
+        "text": "Create AWS Transform migration assessment scenarios from the validated inventory. Review right-sizing, target Region, pricing and infrastructure assumptions, and supplement unsupported workload or licensing details before producing the business case."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4",
+      "6"
+    ],
+    "explanation": {
+      "text": "<<1>>, <<4>> and <<6>> supply complementary evidence. Discovery measures the estate and observed connections. A readiness assessment evaluates the organization’s capabilities. Migration assessment scenarios translate validated inputs and assumptions into a directional cost and sizing model.\n\n<<2>> starts execution before the requested assessment is complete. A successful server launch does not establish portfolio completeness, team readiness or total cost.\n\n<<3>> can reveal useful behavior in instrumented applications, but it does not discover every uninstrumented server, storage dependency, license constraint or organizational gap.\n\n<<5>> confuses vulnerability assessment with migration planning. Inspector’s managed workload scanning is not a complete on-premises inventory and financial assessment.\n\nDiscovery completeness depends on reachability, credentials, collection modules and an observation window that includes important business cycles. Imported hosts and owner interviews help fill gaps. Treat automated recommendations as estimates to review, particularly for Oracle licensing, application changes and services that lack detailed assessment support. The current readiness guidance uses Cloud Readiness Assessment; older material calls the survey the Cloud Adoption Readiness Tool.\n\nOfficial AWS references (checked September 18, 2026): [Transform discovery](https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool.html). [Discovery data collection](https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-data-collection.html). [Discovery prerequisites](https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-setup.html). [Organizational readiness](https://docs.aws.amazon.com/transform/latest/launchguide/organizational-readiness.html). [Migration assessment scenarios](https://docs.aws.amazon.com/transform/latest/userguide/transform-app-assessments.html). [Inspector scope](https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/320.diagram.json",
+  "diagram_alt": "A three-track evidence diagram merges technical discovery, stakeholder readiness and reviewed cost assumptions into a migration decision.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported inventory sources include VMware, Hyper-V and imported servers."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-data-collection.html",
+      "checked_on": "2026-09-18",
+      "supports": "OS metrics, processes and server connections support inventory and dependency evidence."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-setup.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reachability, credentials and guest-address discovery affect OS collection completeness."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/launchguide/organizational-readiness.html",
+      "checked_on": "2026-09-18",
+      "supports": "Current CRA evaluates gaps across six CAF perspectives."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/transform-app-assessments.html",
+      "checked_on": "2026-09-18",
+      "supports": "Inventory-driven sizing, cost scenarios, assumption refinement and limitations of rough added estimates."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html",
+      "checked_on": "2026-09-18",
+      "supports": "Inspector vulnerability findings for supported workloads do not constitute a full migration business case."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1, 4 and 6. Updated CART terminology to current CRA, distinguished inventory from organizational readiness and costing, and removed claims that application tracing is never useful to migration."
+  ],
+  "review_status": "authored"
+}

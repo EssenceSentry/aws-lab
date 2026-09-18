@@ -1,0 +1,58 @@
+{
+  "question_id": "160",
+  "base_record_sha256": "a02f2e630286efef5df4e4cc2e36c0b687e8b12c78e59887f8101177395c1d2d",
+  "record": {
+    "id": "160",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A homogeneous, unweighted EC2 Auto Scaling group serves a stateless application behind an ALB. The company requires each eligible scale-in action to remove exactly one instance when the group's average CPU utilization is 15% or lower for three consecutive one-minute periods. A cooldown must allow capacity to settle between actions, and the group must never scale below its configured minimum.\n\nWhich solution implements this rule with the least custom code?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create scheduled scaling actions that decrease desired capacity by one at fixed times when low usage is usually expected."
+      },
+      {
+        "id": "2",
+        "text": "Enable detailed monitoring for existing and future group instances. Create a CloudWatch CPU alarm with the specified threshold and evaluation periods. Attach a simple scaling policy with ChangeInCapacity set to -1, configure its cooldown, and retain the group minimum."
+      },
+      {
+        "id": "3",
+        "text": "Run a custom Lambda scheduler that reads CPU metrics, maintains evaluation and cooldown state, and calls the Auto Scaling API to decrement desired capacity."
+      },
+      {
+        "id": "4",
+        "text": "Configure a target tracking policy with a CPU target of 15% and rely on it to remove exactly one instance for every qualifying low-CPU condition."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Detailed monitoring supplies one-minute EC2 CPU measurements; basic monitoring supplies five-minute measurements. The alarm defines the metric condition and observation window, while the simple scaling policy defines the fixed decrement. In this unweighted group, `ChangeInCapacity = -1` removes one capacity unit, which is one instance. The cooldown and group minimum constrain subsequent actions.\n\n<<1>> responds to time rather than the measured CPU condition.\n\n<<3>> can implement the rule, but duplicates native alarm and scaling behavior with custom state and code.\n\n<<4>> pursues a utilization target and calculates capacity adjustments dynamically; it does not promise the requested fixed one-instance decrement.\n\nFor simple and step scaling, you create and manage the CloudWatch alarms. Target tracking manages its own alarms and is often suitable for ordinary utilization targets, but that is a different policy objective. Allow ALB deregistration and graceful shutdown, and evaluate scale-out thresholds to prevent repeated scale-in and scale-out oscillation.\n\nOfficial AWS references (checked September 18, 2026): [Fixed scaling adjustments](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html). [Scaling cooldowns](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-cooldowns.html). [EC2 monitoring granularity](https://docs.aws.amazon.com/autoscaling/ec2/userguide/enable-as-instance-metrics.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/160.mmd",
+  "diagram_alt": "A qualifying low-CPU alarm drives a fixed decrement, bounded by minimum capacity and cooldown.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html",
+      "checked_on": "2026-09-18",
+      "supports": "User-managed CloudWatch alarms, ChangeInCapacity semantics, cooldown versus target tracking, and anti-flapping guidance"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-cooldowns.html",
+      "checked_on": "2026-09-18",
+      "supports": "Simple scaling cooldown behavior and settling periods"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/enable-as-instance-metrics.html",
+      "checked_on": "2026-09-18",
+      "supports": "One-minute EC2 CPU measurement requires detailed monitoring on existing instances and the launch template for future instances; alarm periods must match monitoring granularity."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Repaired the explanation that conflated simple scaling with target tracking, specified an unweighted group and evaluation periods, and made fixed decrement, cooldown and minimum constraints explicit.",
+    "Root review added detailed monitoring for existing and future instances so three consecutive one-minute CPU periods have the necessary metric resolution."
+  ],
+  "review_status": "authored"
+}

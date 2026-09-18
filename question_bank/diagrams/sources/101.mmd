@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: From observed use to tested permissions
+accDescr: CloudTrail evidence feeds policy generation and manual data-plane review, which are reconciled with required recovery paths before testing.
+A["Representative Lambda activity"] --> B["CloudTrail management events"]
+A --> C["S3 and DynamoDB data events"]
+B --> D["Access Analyzer template"]
+C --> E["Review data-plane actions and resources"]
+F["Required recovery paths"] --> E
+D --> G["Reconcile and scope policy"]
+E --> G
+G --> H{"Tests cover required behavior?"}
+H -->|Yes| I["Replace broad role policy"]
+H -->|No| G
+class A,F inputData
+class B,C storage
+class H decision
+class I output

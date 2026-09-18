@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Compute once; distribute the published artifact many times
+accDescr: Transaction writes remain on the primary. A daily reporting job reads a replica and publishes immutable S3 files that CloudFront serves repeatedly.
+ Vote[Voting API] -->|transaction writes| P[RDS primary]
+ P -->|asynchronous replication| R[Read replica]
+ R -->|daily analytical query| Job[Report generation]
+ Job -->|one versioned edition| S3[S3 report files]
+ S3 -->|cache fill| CF[CloudFront edge caches]
+ CF -->|millions of downloads| Readers[Global readers]
+class Vote inputData
+class P,R,S3 storage
+class Readers output

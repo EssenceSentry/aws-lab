@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: A health gate separates each rolling patch batch
+accDescr: A small batch is drained, receives approved patches and required reboots, and returns only after validation. A failed health check stops rollout while the remaining healthy fleet serves customers.
+B[Select a small patch batch<br/>Other instances keep serving]:::inputData --> D[Drain application traffic]:::process
+D --> P[Install approved patches<br/>Reboot when required]:::process
+P --> H{Application healthy?}:::decision
+H -->|Yes| R[Return batch to service<br/>Then select the next batch]:::output
+H -->|No| S[Stop rollout<br/>Investigate or recover batch]:::warning

@@ -1,0 +1,64 @@
+{
+  "question_id": "055",
+  "base_record_sha256": "10b97a26ad2fe15fab9a508f89b2d56f47a21ae816cce4689afc7de509732815",
+  "record": {
+    "id": "055",
+    "exam_domain": "Design for New Solutions",
+    "question": "A software company wants to version and repeatedly deploy its AWS networking, application and database infrastructure across development and production. Shared network and data resources must have lifecycles independent of application releases. Engineers need to review infrastructure changes and identify the deployed template revision. Public applications also require a CDN that caches static content near global users.\n\nWhich approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Elastic Beanstalk application versions as the record of all infrastructure changes and Global Accelerator for content caching. Configure shared network resources manually."
+      },
+      {
+        "id": "2",
+        "text": "Use Elastic Beanstalk application versions and CloudFront distributions. Keep shared networking and databases outside the versioned infrastructure definition and recreate them manually for each environment."
+      },
+      {
+        "id": "3",
+        "text": "Use version-controlled CloudFormation templates for the resource stacks and Global Accelerator as the service that caches static objects at edge locations."
+      },
+      {
+        "id": "4",
+        "text": "Use version-controlled CloudFormation templates with separate stacks for shared and application resources. Review change sets, record the template revision on deployments, and define CloudFront distributions for content delivery."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Choose <<4>>. CloudFormation templates describe resources and their dependencies, making consistent environments reproducible. Separate stacks allow shared resources and applications to evolve independently. Version control and deployment metadata identify the intended configuration, while change sets support review before updates. CloudFront supplies the required edge caching.\n\n<<1>> leaves shared infrastructure outside version control and treats Global Accelerator as a cache. <<2>> uses a suitable CDN but still requires manual reconstruction of resources that the company wants to reproduce from code. <<3>> models infrastructure correctly, but Global Accelerator routes network traffic to regional endpoints; it does not provide CloudFront-style object caching.\n\nElastic Beanstalk can use versioned configuration files and CloudFormation resources, so it is incorrect to claim that it cannot express infrastructure as code. The proposed Beanstalk choices fail because of their incomplete resource definitions. Reapplying an older template is also not a database-data rollback: review resource replacements, retention policies and state migration before reversing an infrastructure change.\n\nAWS documentation (checked September 18, 2026): [CloudFormation templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html), [CloudFront content delivery](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html), [Beanstalk configuration files](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions.html), [Global Accelerator endpoints](https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/055.mmd",
+  "diagram_alt": "Versioned definitions create independent shared and application stacks; CloudFront separately caches content from application origins.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "Versioned templates support repeatable resource provisioning and tracking infrastructure changes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront caches and delivers web content at edge locations and fetches cache misses from origins."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Beanstalk supports YAML or JSON configuration files and additional CloudFormation resources."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard accelerator endpoints are ALBs, NLBs, EC2 instances or Elastic IP addresses, not S3 website endpoints."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced giveaway CloudWatch-as-CDN distractors with Global Accelerator and incomplete Beanstalk infrastructure definitions.",
+    "Explicitly corrected the inherited false claim that Beanstalk cannot manage infrastructure as code.",
+    "Added shared-resource lifecycle and revision tracking constraints while preserving correct option 4."
+  ],
+  "review_status": "authored"
+}

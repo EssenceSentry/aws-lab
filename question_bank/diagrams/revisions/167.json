@@ -1,0 +1,47 @@
+{
+  "question_id": "167",
+  "base_record_sha256": "d440f15f75ddd34aa236e7f7abc07befe3744f44007768d99b14f150226a3ac1",
+  "record": {
+    "id": "167",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A mobile game's backend exposes REST APIs and stores small player-session records on a central file server. Traffic varies sharply, and each backend operation is short-lived and stateless once session state is externalized. The company wants to retain the REST contract, use managed per-client API keys and usage plans for metering and throttling, and authenticate players separately. It also wants to avoid managing application servers and reduce session lookup latency.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the backend on EC2 behind a Network Load Balancer and move session records to Aurora. Implement client metering and throttling in the application."
+      },
+      {
+        "id": "2",
+        "text": "Run the backend in Lambda behind an ALB and store sessions in DynamoDB. Use ALB listener rules as the managed per-client usage-plan system."
+      },
+      {
+        "id": "3",
+        "text": "Expose a REST API through API Gateway with usage plans and a suitable authorizer, invoke Lambda for game logic, and store keyed session records in DynamoDB with capacity configured for the traffic profile."
+      },
+      {
+        "id": "4",
+        "text": "Replace the REST API with an AppSync GraphQL API, invoke Lambda for game logic, and store player sessions in DynamoDB."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. API Gateway REST APIs provide the requested API-key and usage-plan features while a separate authorizer enforces player identity and access. Lambda fits the specified short-lived stateless operations, and keyed DynamoDB records replace the shared file server for session access. Size capacity and concurrency for peaks; DynamoDB on-demand mode or correctly provisioned capacity with scaling can be appropriate.\n\n<<1>> retains application-server administration and custom implementation of the API-management features.\n\n<<2>> correctly uses a supported ALB-to-Lambda integration, but ALB listener rules do not provide API Gateway's managed usage plans and API-key metering.\n\n<<4>> changes the client-facing contract from REST to GraphQL, violating the compatibility requirement.\n\nAPI keys identify API clients for usage management; they are not player authentication credentials. Usage-plan throttles and quotas are best effort, and they should not be treated as a strict security or spending boundary.\n\nAWS documentation (checked September 18, 2026): [API Gateway usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/167.mmd",
+  "diagram_alt": "API Gateway handles client usage plans and player authorization as separate controls before Lambda reads or updates session state.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html",
+      "checked_on": "2026-09-18",
+      "supports": "REST API usage plans support client keys and best-effort quotas, but API keys are not authentication or authorization controls."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Added explicit managed usage-plan requirements to distinguish ALB from API Gateway, while retaining the REST and serverless-session migration focus."
+  ],
+  "review_status": "authored"
+}

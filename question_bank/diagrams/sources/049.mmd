@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Continuous replication prepares the standby for failover
+accDescr: During normal operation the primary serves requests and replicates continuously to a standby, which RDS promotes after failure.
+subgraph H["Healthy operation"]
+ U["Application reads and writes"] --> P[("Oracle primary in AZ A")]
+ P -->|"continuous synchronous replication"| S[("Standby in AZ B")]
+end
+F["Primary or AZ failure"] --> R["RDS promotes existing standby"]
+S --> R
+R --> D["Existing endpoint DNS maps to new writer"]
+D --> C["Application reconnects and resumes"]

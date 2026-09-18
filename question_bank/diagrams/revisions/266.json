@@ -1,0 +1,47 @@
+{
+  "question_id": "266",
+  "base_record_sha256": "0a5a9a75b41f73fbb37927655b30719a981006dd84c83b8e15b58c0f4b749dda",
+  "record": {
+    "id": "266",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company uses Storage Gateway Volume Gateway to expose block volumes to on-premises iSCSI initiators. It must authenticate both the initiator and the gateway target and reduce the risk of replaying a captured authentication exchange. The application must retain its iSCSI block interface. Encryption of the network transport is handled as a separate control.\n\nWhich configuration meets the authentication requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure mutual CHAP on both the Volume Gateway target and the iSCSI initiator, using the required distinct protected secrets for each authentication direction."
+      },
+      {
+        "id": "2",
+        "text": "Encrypt the gateway connection to AWS while leaving the local iSCSI initiator-to-target connection without authentication."
+      },
+      {
+        "id": "3",
+        "text": "Replace Volume Gateway with Tape Gateway and expose a virtual tape library, relying on the tape interface alone to authenticate clients."
+      },
+      {
+        "id": "4",
+        "text": "Configure a CHAP username for an NFS export while retaining the application's existing iSCSI volume connection unchanged."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Volume Gateway supports mutual CHAP, so each side authenticates the other. Both the gateway configuration and the initiator configuration must agree on the authentication identities and secrets.\n\n<<2>> protects a different network leg and leaves the required local initiator authentication absent.\n\n<<3>> changes the storage interface and workload model. A virtual tape interface does not itself supply the specified authentication configuration.\n\n<<4>> applies an iSCSI authentication mechanism to the wrong protocol and does not configure the actual connection.\n\nCHAP challenge-response authentication should not be described as encryption of the storage payload or complete protection against every attack on an established session. Protect secrets and the local network path separately. Mutual CHAP uses different secrets for authenticating the initiator and the target.\n\nOfficial AWS references (checked September 18, 2026): [Volume Gateway mutual CHAP](https://docs.aws.amazon.com/storagegateway/latest/vgw/ConfiguringiSCSIClientInitiatorCHAP.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/266.diagram.json",
+  "diagram_alt": "A protection matrix separates mutual iSCSI identity verification and authentication playback resistance from payload encryption.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/ConfiguringiSCSIClientInitiatorCHAP.html",
+      "checked_on": "2026-09-18",
+      "supports": "Mutual authentication, both-side configuration and distinct secrets for initiator and target."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced blanket packet-replay prevention claim with precise authentication scope and an explicit separate transport-encryption control."
+  ],
+  "review_status": "authored"
+}

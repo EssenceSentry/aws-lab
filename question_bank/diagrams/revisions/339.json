@@ -1,0 +1,57 @@
+{
+  "question_id": "339",
+  "base_record_sha256": "7e42172663826edd84ff854e2214e66b34d3a49179bffb8970ba964bfa3f4a8d",
+  "record": {
+    "id": "339",
+    "exam_domain": "Design for New Solutions",
+    "question": "A Regional API Gateway REST API invokes a Lambda function that queries Aurora MySQL. During bursts, the function opens a new database connection on every invocation, leaving many connections idle after queries finish. Queries use short transactions, and the team can avoid session features that force connection pinning. It must reduce connection setup overhead and protect the database's connection capacity.\n\nWhich TWO changes address the problem? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure provisioned concurrency for the Lambda function so more execution environments are initialized before the burst."
+      },
+      {
+        "id": "2",
+        "text": "Change API Gateway to an edge-optimized endpoint and raise its request-rate limit."
+      },
+      {
+        "id": "3",
+        "text": "Initialize and reuse the database client or bounded connection pool outside the Lambda handler, with keep-alive and recovery from stale connections."
+      },
+      {
+        "id": "4",
+        "text": "Increase the Lambda reserved concurrency limit and memory allocation to allow more invocations to connect simultaneously."
+      },
+      {
+        "id": "5",
+        "text": "Create an RDS Proxy for the Aurora cluster and configure the function to connect through the proxy endpoint with appropriate authentication and network access."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "Options <<3>> and <<5>> address different scopes of reuse. Reusing a client outside the handler avoids opening an unnecessary new connection for each invocation handled by the same execution environment. RDS Proxy pools backend database connections across clients and controls how many connections reach Aurora, reducing connection churn and idle-connection pressure during bursts.\n\nOption <<1>> addresses initialization latency, not database connection pooling. Option <<2>> changes the API entry point and permits more incoming load without addressing database connections. Option <<4>> can increase simultaneous connection demand; more Lambda memory does not itself provide a shared database pool.\n\nExecution-environment reuse is not guaranteed, and a cached connection can become stale, so reconnect safely. A local pool is not shared across Lambda environments. Proxy multiplexing is constrained by transactions and session pinning; configure limits, monitor pinning, and bound client-side pool sizes. Pooling does not create unlimited database processing capacity.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/lambda/latest/dg/best-practices.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/339.mmd",
+  "diagram_alt": "Reuse within one Lambda environment reduces setup, and a shared RDS Proxy pool limits backend connections across environments.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html",
+      "checked_on": "2026-09-18",
+      "supports": "Initialize connections outside the handler, use keep-alive, account for idle connection expiry and downstream limits."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS Proxy connection pooling, connection limits and session-pinning considerations."
+    }
+  ],
+  "editorial_notes": [
+    "Clarified per-invocation connection churn and the complementary scopes of local reuse and proxy pooling. Preserved keys 3 and 5."
+  ],
+  "review_status": "authored"
+}

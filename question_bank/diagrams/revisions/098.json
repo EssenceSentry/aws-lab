@@ -1,0 +1,58 @@
+{
+  "question_id": "098",
+  "base_record_sha256": "4e6f39492d42459fdb8556a587e8c6d4b37e55316ab339a43dd75ba65858b4da",
+  "record": {
+    "id": "098",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses a provisioned Amazon Redshift cluster encrypted with AWS KMS. Its disaster recovery policy requires encrypted snapshot copies in a second AWS Region more than 500 miles away. The destination must use a customer managed KMS key, and the team will configure the workflow through the CLI. The recovery objective permits restoring a new cluster from the latest copied snapshot.\n\nWhich solution meets these requirements with the least ongoing operational effort?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Locate the Redshift-managed snapshot objects in an S3 bucket and enable S3 Cross-Region Replication to a bucket encrypted with the destination KMS key."
+      },
+      {
+        "id": "2",
+        "text": "Create a snapshot copy grant in the destination Region for its customer managed KMS key. Enable Redshift cross-Region snapshot copy on the source cluster with that grant and configure snapshot retention."
+      },
+      {
+        "id": "3",
+        "text": "Keep cross-Region snapshot copy disabled. Schedule a Lambda function to call CopyClusterSnapshot on each new automated snapshot, and retain the resulting manual snapshots as the disaster recovery copies."
+      },
+      {
+        "id": "4",
+        "text": "Enable cross-Region snapshot copy and specify the destination customer managed KMS key, but omit the destination snapshot copy grant because the source cluster is already encrypted."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Redshift's managed cross-Region snapshot-copy feature continuously handles eligible snapshot copies after configuration. For a destination customer managed KMS key, the snapshot copy grant authorizes use of that key. The copied snapshot is encrypted in the destination Region and can be used to restore a new cluster.\n\n<<1>> assumes that Redshift-managed snapshots are customer-controlled S3 objects to which an ordinary bucket replication rule can be attached. Use the Redshift snapshot-copy feature instead.\n\n<<3>> preserves automated snapshots as manual snapshots in the same Region. CopyClusterSnapshot does not perform the required cross-Region copy, so those copies do not meet the geographic separation requirement.\n\n<<4>> omits the grant required by the specified destination key choice. Source encryption does not grant permission to use a separate destination customer managed key.\n\nSnapshot copying is a backup-and-restore DR strategy, not an already running failover cluster. Set retention, monitor copy completion, and test restore times against the recovery objectives. A snapshot copy grant is not required when the destination uses a Region-owned key, which is why this scenario explicitly specifies a customer managed key.\n\nAWS documentation (checked September 18, 2026): [Redshift encrypted snapshot copies](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-db-encryption.html); [Redshift cross-Region snapshot copy](https://docs.aws.amazon.com/redshift/latest/mgmt/cross-region-snapshot-copy.html). [CopyClusterSnapshot API](https://docs.aws.amazon.com/redshift/latest/APIReference/API_CopyClusterSnapshot.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/098.mmd",
+  "diagram_alt": "The destination copy grant authorizes its KMS key, while the copied snapshot remains a backup that must be restored for recovery.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-db-encryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cross-Region copies re-encrypt snapshots with destination key material, and a destination customer managed KMS key requires a snapshot copy grant."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/cross-region-snapshot-copy.html",
+      "checked_on": "2026-09-18",
+      "supports": "Redshift can automatically copy snapshots to one destination Region with configured retention for later cluster restoration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/APIReference/API_CopyClusterSnapshot.html",
+      "checked_on": "2026-09-18",
+      "supports": "CopyClusterSnapshot converts an automated snapshot to a manual snapshot and has no destination Region parameter."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Corrected the blanket claim that every encrypted cross-Region copy needs a grant by explicitly requiring a destination customer managed key. Distinguished managed snapshot DR from immediate failover.",
+    "Root replaced a claimed custom cross-Region copy workflow with a concrete wrong-API distractor after reviewing CopyClusterSnapshot API parameters."
+  ],
+  "review_status": "authored"
+}

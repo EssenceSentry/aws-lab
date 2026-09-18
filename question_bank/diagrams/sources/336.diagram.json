@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "What each discovery layer establishes",
+  "columns": [
+    "Evidence",
+    "Where it comes from",
+    "Decision it supports"
+  ],
+  "rows": [
+    [
+      "VM allocation",
+      "Hyper-V inventory",
+      "Server scope and configuration"
+    ],
+    [
+      "Measured CPU and memory",
+      "Performance collection over time",
+      "Initial EC2 sizing"
+    ],
+    [
+      "Connections and processes",
+      "Authorized remote guest OS access",
+      "Application dependency groups"
+    ],
+    [
+      "Target Region and pricing",
+      "Assessment scenario assumptions",
+      "Comparable cost estimates"
+    ]
+  ],
+  "footnote": "A static inventory cannot substitute for usage history or observed dependencies. Validate collection coverage before accepting recommendations.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

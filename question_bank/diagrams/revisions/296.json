@@ -1,0 +1,52 @@
+{
+  "question_id": "296",
+  "base_record_sha256": "f79b1740b59bf8bc45a8f58ec6379642dabaf7f93810128ca1b37e4a541ee63f",
+  "record": {
+    "id": "296",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company deploys infrastructure through CloudFormation and CodePipeline. A newly acquired team currently provisions resources with Python scripts. Its developers want to define future infrastructure using TypeScript or Python, reusable abstractions, loops, and conditionals. The company requires the resulting resources to remain managed through CloudFormation stacks in its deployment pipeline.\n\nWhich approach best meets both teams' requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Continue hand-authoring CloudFormation templates and move the resource-provisioning Python scripts into EC2 user data so they execute when instances boot."
+      },
+      {
+        "id": "2",
+        "text": "Run the existing Python SDK scripts in CodeBuild and have them create and update resources directly, bypassing CloudFormation stack management."
+      },
+      {
+        "id": "3",
+        "text": "Continue creating every new resource with Python scripts and manually import supported resources into CloudFormation stacks after each deployment."
+      },
+      {
+        "id": "4",
+        "text": "Define infrastructure with AWS CDK constructs in TypeScript or Python. Use a CodeBuild stage in CodePipeline to synthesize and deploy the resulting CloudFormation stacks with appropriate roles and bootstrapped environments."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. CDK supplies the requested programming-language authoring model while synthesizing the CloudFormation templates and deployment assets used by the existing governance model. The pipeline can build, validate, synthesize, review, and deploy those stacks.\n\n<<1>> moves provisioning side effects into instance startup. It neither provides the desired infrastructure authoring model nor reliably places those side effects under stack management.\n\n<<2>> preserves Python authoring but abandons the required CloudFormation control over resource lifecycle.\n\n<<3>> can help adopt supported existing resources, but makes manual import a recurring deployment step and does not solve the requested ongoing authoring workflow.\n\nCDK does not bypass CloudFormation semantics or automatically convert arbitrary SDK provisioning scripts into constructs. Refactor the infrastructure intent into CDK code, bootstrap target environments, and scope deployment roles. CloudFormation itself supports repetition with Fn::ForEach and AWS::LanguageExtensions. The reason to choose CDK is familiar general-purpose code and reusable constructs, not a claim that templates cannot express iteration.\n\nAWS documentation (checked September 18, 2026): [CDK synthesis and deployment](https://docs.aws.amazon.com/cdk/v2/guide/deploy.html); [CloudFormation Fn::ForEach](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-foreach.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/296.mmd",
+  "diagram_alt": "General-purpose CDK code becomes a CloudFormation deployment artifact rather than a separate imperative resource manager.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cdk/v2/guide/deploy.html",
+      "checked_on": "2026-09-18",
+      "supports": "CDK applications synthesize CloudFormation templates and assets; deployment still uses CloudFormation and requires bootstrapping and suitable execution permissions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-foreach.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFormation supports collection expansion with Fn::ForEach under AWS::LanguageExtensions; CDK is distinguished by its programming-language authoring model, not an absence of template repetition."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Kept the distinction between authoring and deployment, acknowledged current Fn::ForEach support, and replaced an unspecified third-party alternative with direct SDK provisioning that fails the explicit stack-management requirement."
+  ],
+  "review_status": "authored"
+}

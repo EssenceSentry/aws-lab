@@ -1,0 +1,7 @@
+flowchart TB
+accTitle: Finish the object write before acknowledging queued work
+accDescr: The SQS event source mapping invokes a Lambda worker, which retrieves and processes one article. A durable S3 result allows acknowledgement, while failure returns the job to retry or dead-letter handling.
+Q[(SQS article URL)]:::storage --> L[Lambda worker<br/>Fetch and analyze article]:::process
+L --> S[(S3 result object<br/>Stable job key)]:::storage
+S --> A[Return successful processing<br/>Mapping deletes message]:::output
+L -->|Processing or write failure| R[Retry after visibility timeout<br/>Then DLQ if retry limit reached]:::warning

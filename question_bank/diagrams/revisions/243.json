@@ -1,0 +1,57 @@
+{
+  "question_id": "243",
+  "base_record_sha256": "27752611d4f30248617fd34bbea75cb35a18874ce2daa06c877892083bcc556b",
+  "record": {
+    "id": "243",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company reaches a VPC in us-east-1 through one Direct Connect connection and a private virtual interface attached directly to its virtual private gateway. It is adding a nonoverlapping VPC in us-west-1. Both VPCs need private connectivity to the data center, and the design must tolerate failure of one Direct Connect connection or location. A second diverse circuit and customer router can be provisioned.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create diverse Direct Connect connections and attach each private VIF directly to both VPC virtual private gateways."
+      },
+      {
+        "id": "2",
+        "text": "Create a transit gateway in each Region and attach a private VIF from each diverse Direct Connect connection directly to both transit gateways."
+      },
+      {
+        "id": "3",
+        "text": "Retain the existing private VIF and create a public VIF on the second diverse connection to route private addresses in the us-west-1 VPC."
+      },
+      {
+        "id": "4",
+        "text": "Create a Direct Connect gateway and associate each VPC virtual private gateway with it. Create private VIFs to that gateway on connections at separate locations, validate redundant routing, and retire the old direct-to-VGW VIF after cutover."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The Direct Connect gateway provides the association point for virtual private gateways in different Regions. Private VIFs on diverse physical connections provide redundant on-premises paths to those VPCs. Configure customer-side BGP, route preferences and failover testing as well.\n\n<<1>> tries to attach one private VIF directly to multiple virtual private gateways. <<2>> uses the wrong VIF and attachment path: a transit-gateway design uses transit VIFs through a Direct Connect gateway. <<3>> uses a public VIF for private VPC routing.\n\nA gateway association does not create physical redundancy. Separate locations, customer equipment and diverse paths address different failure modes. Do not infer general VPC-to-VPC transit from these gateway associations.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/directconnect/latest/UserGuide/virtualgateways.html\nhttps://docs.aws.amazon.com/directconnect/latest/UserGuide/disaster-recovery-resiliency.html\nhttps://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/243.mmd",
+  "diagram_alt": "Location-diverse private VIFs connect the data center to virtual private gateways in two Regions through a Direct Connect gateway.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/virtualgateways.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Direct Connect gateway connects private VIFs to nonoverlapping VPCs through regional virtual private gateway associations and does not supply VPC-to-VPC transit."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/disaster-recovery-resiliency.html",
+      "checked_on": "2026-09-18",
+      "supports": "Location-diverse connections and equipment provide resilience against connection, device and location failures."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html",
+      "checked_on": "2026-09-18",
+      "supports": "Private, public and transit VIFs have different routing purposes; transit VIFs reach transit gateways through Direct Connect gateways."
+    }
+  ],
+  "editorial_notes": [
+    "Added distinct Direct Connect locations and customer equipment for the stated failure tolerance, and replaced destructive delete-first sequencing with validated cutover."
+  ],
+  "review_status": "authored"
+}

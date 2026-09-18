@@ -1,0 +1,56 @@
+{
+  "question_id": "071",
+  "base_record_sha256": "306ca670bb2e9c604480813486ef8156c1a9e44c0d527122f5b6e4fde372f67c",
+  "record": {
+    "id": "071",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company hosts several HTTPS applications for unrelated domain names. Each domain already has a valid certificate, and the company must retain those certificates without reissuing them as a combined certificate. All supported clients send Server Name Indication (SNI). The company wants to serve the applications through one load balancer.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach a wildcard certificate for one of the domains and use it to authenticate all unrelated domain names."
+      },
+      {
+        "id": "2",
+        "text": "Edit the Subject Alternative Name entries of one existing certificate to include the other domains without requesting a new certificate."
+      },
+      {
+        "id": "3",
+        "text": "Create one CloudFront distribution and attach each existing certificate as a separate viewer certificate for that distribution."
+      },
+      {
+        "id": "4",
+        "text": "Import the certificates into ACM as needed and add them to the HTTPS listener certificate list of an Application Load Balancer. Use SNI certificate selection and host-based listener rules for the applications."
+      },
+      {
+        "id": "5",
+        "text": "Attach the existing certificates to a Gateway Load Balancer and configure hostname-based TLS termination."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> lets one ALB HTTPS listener present different certificates for different SNI hostnames. After TLS is established, host-based listener rules can route HTTP requests to the corresponding target groups. Certificate selection and application routing are related but distinct steps.\n\n<<1>> fails because a wildcard covers a defined domain namespace, not unrelated domains. <<2>> would invalidate the certificate’s signature; changing its covered names requires a newly issued certificate. <<3>> incorrectly assumes that one CloudFront distribution accepts multiple viewer certificates. <<5>> assigns application TLS termination and hostname routing to Gateway Load Balancer, whose purpose is transparent network appliance insertion.\n\nKeep imported certificates renewed and ensure every certificate covers its intended hostname. A default ALB certificate handles clients without a matching SNI certificate; it does not make an unrelated hostname valid.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/elasticloadbalancing/latest/application/https-listener-certificates.html\nhttps://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/071.mmd",
+  "diagram_alt": "A sequence separates certificate selection during TLS from hostname routing after TLS is established.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/https-listener-certificates.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB certificate lists, SNI selection, wildcard scope, default certificates and renewal."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html",
+      "checked_on": "2026-09-18",
+      "supports": "A distribution viewer certificate configuration selects one certificate."
+    }
+  ],
+  "editorial_notes": [
+    "Removed irrelevant SEO framing and preserved the requirement to reuse unrelated-domain certificates."
+  ],
+  "review_status": "authored"
+}

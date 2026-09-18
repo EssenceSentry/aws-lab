@@ -1,0 +1,57 @@
+{
+  "question_id": "094",
+  "base_record_sha256": "0276686f461c3a3296a4c4f2ba161c228caea028f8cbdc1513de28918d744bca",
+  "record": {
+    "id": "094",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A flight-information website serves users worldwide from one AWS Region. Static assets are in S3, the web tier uses an EC2 Auto Scaling group, and flight data is stored in Amazon RDS. The scale-out threshold is 90% CPU, and a new flight-data version is published every 10 minutes. The application may reuse results within a version but must show the new version after publication.\n\nPage loads average 7 seconds. Measurements attribute most delay to distant static-asset downloads and repeated identical database queries, while web-tier CPU remains low. The company wants to move toward a 3-second page-load target with limited additional cost. Which TWO changes most directly address the measured delays? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Cache repeated database-query results in ElastiCache. Include the flight-data version in cache keys or invalidate entries when a new version is published."
+      },
+      {
+        "id": "2",
+        "text": "Lower the web-tier CPU target so that the Auto Scaling group adds more EC2 instances even though the existing instances have spare CPU."
+      },
+      {
+        "id": "3",
+        "text": "Use CloudFront to cache and deliver versioned static assets from S3 at edge locations near users."
+      },
+      {
+        "id": "4",
+        "text": "Deploy a complete application and database stack in every Region where the company has users, and operate global replication and traffic routing."
+      },
+      {
+        "id": "5",
+        "text": "Move RDS to a larger instance class while continuing to execute every identical flight-data query for every request."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<3>> are correct. Reusing query results removes repeated database work, while version-aware keys or invalidation preserve the publication boundary. CloudFront addresses the separate delay caused by distant static-content delivery. These focused changes target the two measured bottlenecks without multiplying the entire stack.\n\n<<2>> adds web compute to a tier that is not CPU constrained, leaving the costly downloads and repeated queries largely unchanged.\n\n<<4>> could reduce distance to regional backends but introduces substantially more infrastructure, replication, and operational cost than the targeted optimizations.\n\n<<5>> may improve individual database operations, but continues doing redundant work and does not address static-asset distance. The measurements support caching before a broad capacity upgrade.\n\nA cache TTL alone can allow an old result to survive a data publication. Align invalidation or cache versioning with the actual freshness requirement, then measure end-to-end page loads to verify the target rather than assuming a guaranteed latency.\n\nAWS documentation (checked September 18, 2026): [Cache-aside and expiration](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html); [CloudFront content delivery](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/094.mmd",
+  "diagram_alt": "Edge caching shortens static downloads and versioned query caching avoids redundant database work without hiding a newly published dataset.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache hits avoid database reads, misses populate the cache, and TTL or write handling is needed to limit stale results."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront uses edge locations to cache and deliver web content nearer viewers."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 3. Retained the 90% scaling threshold and added measured low CPU with query and static-delivery bottlenecks. Made freshness explicit and avoided a guaranteed three-second performance claim."
+  ],
+  "review_status": "authored"
+}

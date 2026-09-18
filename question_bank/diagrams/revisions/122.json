@@ -1,0 +1,52 @@
+{
+  "question_id": "122",
+  "base_record_sha256": "19ebdc1a0521337e754ba109f74e232eb614b35a5fd2e60ab2d7419f7d614fb2",
+  "record": {
+    "id": "122",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company hires a third-party auditing SaaS provider that operates from its own AWS account and serves many customers. The provider needs a defined set of read-only API operations in the company’s account. The company prohibits shared long-term credentials and wants to prevent the provider from accidentally using its role for another customer.\n\nWhich access configuration should the company use?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a cross-account role trusted by the provider and require its customer-specific external ID. Attach AdministratorAccess to cover any audit request."
+      },
+      {
+        "id": "2",
+        "text": "Create a least-privilege IAM user and give its access key and secret key to the provider for recurring audits."
+      },
+      {
+        "id": "3",
+        "text": "Create a least-privilege audit role that trusts the provider’s designated AWS principal and requires the provider-generated external ID for this customer. Have the provider call STS AssumeRole."
+      },
+      {
+        "id": "4",
+        "text": "Create a least-privilege role with a wildcard principal and require the external ID as the sole condition for assuming it."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> combines temporary credentials, narrowly scoped permissions and a trust condition binding the request to the correct customer. The provider must also authorize its calling principal to assume the role. The external ID addresses the confused-deputy risk when one service operates for multiple customers.\n\n<<1>> grants far more access than the audit requires. <<2>> distributes persistent credentials and violates the stated constraint. <<4>> treats the external ID as a secret password while leaving the trusted principal unrestricted. External IDs are not secrets and do not replace principal restrictions.\n\nKeep the trust policy and permissions policy conceptually separate: trust controls who can obtain a session, while permissions control what that session may do.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html\nhttps://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/122.mmd",
+  "diagram_alt": "A policy gate requires the correct principal and customer external ID before granting a scoped temporary session.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html",
+      "checked_on": "2026-09-18",
+      "supports": "Third-party roles, customer-specific provider-generated external IDs and least privilege."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "checked_on": "2026-09-18",
+      "supports": "AssumeRole returns temporary credentials and cross-account access requires caller authorization and target trust."
+    }
+  ],
+  "editorial_notes": [
+    "Added a genuine confused-deputy requirement and replaced a duplicate unrestricted-user distractor with external-ID-only trust."
+  ],
+  "review_status": "authored"
+}

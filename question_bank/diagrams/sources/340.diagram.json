@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "A weekly export contains different kinds of evidence",
+  "columns": [
+    "CSV field family",
+    "Meaning",
+    "Interpretation"
+  ],
+  "rows": [
+    [
+      "Average memory used",
+      "Observed during lookback",
+      "Measurement, not a target"
+    ],
+    [
+      "Current memory setting",
+      "Configured allocation",
+      "Baseline for comparison"
+    ],
+    [
+      "Recommended memory",
+      "Modeled alternative",
+      "Validate performance before use"
+    ],
+    [
+      "Estimated monthly savings",
+      "Cost comparison estimate",
+      "Not guaranteed future savings"
+    ]
+  ],
+  "footnote": "Weekly is the delivery schedule; the recommendation lookback is a separate period. Confirm asynchronous export completion.",
+  "emphasis_rows": [
+    2,
+    3
+  ]
+}

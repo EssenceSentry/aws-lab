@@ -1,0 +1,19 @@
+sequenceDiagram
+accTitle: One-way refresh becomes a controlled cutover
+accDescr: The on-premises share remains authoritative during incremental copies, then a final copy follows a write freeze before FSx accepts writes.
+participant S as On-premises SMB
+participant D as DataSync
+participant F as FSx for Windows
+participant C as AWS clients
+S->>D: Initial 1 TB copy
+D->>F: Files and supported ACLs
+loop Daily while source owns writes
+S->>D: New and changed files
+D->>F: Incremental task
+C->>F: Read latest completed copy
+end
+Note over S,F: Freeze source writes for final transfer
+S->>D: Final changes
+D->>F: Transfer and verify
+Note over F,C: Validate, then switch write ownership
+C->>F: Read and write after cutover

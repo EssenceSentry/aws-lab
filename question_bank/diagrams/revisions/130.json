@@ -1,0 +1,53 @@
+{
+  "question_id": "130",
+  "base_record_sha256": "36b619e9ab5350155deb7c72db85ccdbe8b021f9d0225f77e495bcda8f53b577",
+  "record": {
+    "id": "130",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses CloudFormation to deploy EC2 application instances and a DynamoDB table. The application must read and update that table using the AWS SDK. The template and instance configuration must not contain long-term AWS access keys.\n\nWhich template configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an IAM user and an access key resource with DynamoDB permissions. Pass the access key and secret access key to the instances through user data."
+      },
+      {
+        "id": "2",
+        "text": "Create a role with DynamoDB permissions and store its ARN in Systems Manager Parameter Store. Set each instance's IamInstanceProfile property to that role ARN."
+      },
+      {
+        "id": "3",
+        "text": "Accept an IAM user's access key and secret access key as NoEcho template parameters and write their values into the application configuration through user data."
+      },
+      {
+        "id": "4",
+        "text": "Create an IAM role trusted by the EC2 service with permissions scoped to the table. Create an IAM instance profile containing that role and reference the profile from each instance's IamInstanceProfile property."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The EC2 trust policy allows the service to use the role, the role policy authorizes the required DynamoDB actions, and the instance profile associates the role with the instance. The SDK retrieves and refreshes temporary role credentials through instance metadata.\n\n<<1>> provisions long-term credentials and distributes them in user data. <<2>> creates configuration containing a role ARN but never creates the required instance profile; a role ARN is not a valid substitute for that profile. <<3>> hides parameter values in some CloudFormation displays but still stores long-term credentials on the instance.\n\nA role, an instance profile and the SDK credential provider have separate jobs: define permissions, attach the role to compute, and obtain temporary credentials. Restrict table and index ARNs and DynamoDB actions to those the application needs.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-instanceprofile.html\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/130.mmd",
+  "diagram_alt": "CloudFormation attaches a role through an instance profile, enabling SDK requests with temporary credentials.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-instanceprofile.html",
+      "checked_on": "2026-09-18",
+      "supports": "An instance profile contains a role and Ref returns the profile name."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 applications retrieve and refresh temporary role credentials through instance metadata."
+    }
+  ],
+  "editorial_notes": [
+    "Removed unrelated auditing service detail and distinguished role ARN from instance profile name.",
+    "Made both credential secrecy and lifecycle requirements explicit."
+  ],
+  "review_status": "authored"
+}

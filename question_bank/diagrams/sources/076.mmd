@@ -1,0 +1,20 @@
+stateDiagram-v2
+accTitle: A replica is only part of Regional recovery
+accDescr: The secondary receives asynchronous storage replication before failure. Recovery must promote it, reconnect application clients and redirect traffic before service is restored.
+[*] --> Replicating
+Replicating: Primary writes, secondary receives changes
+Replicating --> Detect: Primary Region unavailable
+Detect: Detect outage and evaluate replica lag
+Detect --> Promote
+Promote: Fail over to prepared secondary
+Promote --> Reconnect
+Reconnect: Reconnect application to writable database
+Reconnect --> Verify
+Verify: Redirect traffic and verify service
+Verify --> [*]
+note right of Detect
+ RPO depends on lag at failure
+end note
+note right of Verify
+ RTO includes the entire recovery path
+end note

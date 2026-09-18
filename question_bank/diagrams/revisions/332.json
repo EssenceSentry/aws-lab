@@ -1,0 +1,62 @@
+{
+  "question_id": "332",
+  "base_record_sha256": "be18c1bb470d0a1a1e7809bfd0bf0d40a1aa30d49894a8fdb04a9e2beced525d",
+  "record": {
+    "id": "332",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses AWS Organizations with all features enabled. It has a tested CloudFormation template for a standard VPC in two approved Regions. The network team must deploy the template to all member accounts and automatically deploy it when new accounts join the organization. It wants to avoid maintaining execution roles separately in every account.\n\nWhich TWO actions meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Activate trusted access between CloudFormation StackSets and AWS Organizations from the management account."
+      },
+      {
+        "id": "2",
+        "text": "Activate trusted access for AWS Service Catalog and share a portfolio with the organization, without configuring StackSets."
+      },
+      {
+        "id": "3",
+        "text": "Create a StackSet in the management account using service-managed permissions. Target the organization root and the two Regions, deploy the initial stack instances, and enable automatic deployment."
+      },
+      {
+        "id": "4",
+        "text": "Create a self-managed StackSet with a fixed list of account IDs. Enable drift detection to add new organization accounts to the deployment."
+      },
+      {
+        "id": "5",
+        "text": "Publish the VPC template as a Service Catalog product and grant all member accounts access to launch it on demand."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "3"
+    ],
+    "explanation": {
+      "text": "Options <<1>> and <<3>> combine the required organization trust with the correct deployment model. Service-managed StackSets use the Organizations integration to create the necessary roles in member accounts. Deploying to the root covers its member accounts, and automatic deployment responds when accounts enter the targeted organization or OUs. Specify the Regions as part of the deployment.\n\nOption <<2>> establishes a different service's integration and does not deploy this StackSet. Option <<4>> uses a static account list and misinterprets drift detection: drift identifies configuration differences, not newly joined accounts to provision. Option <<5>> makes a standard template available for users to request, but sharing a product does not automatically provision it everywhere.\n\nChoose the retain-or-delete behavior for accounts that leave the target scope. Service-managed StackSets target member accounts; the organization management account is not automatically provisioned through this mechanism. A registered delegated administrator can also manage service-managed StackSets once trusted access is enabled.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-activate-trusted-access.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-associate-stackset-with-org.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/332.mmd",
+  "diagram_alt": "Account membership events drive automatic stack deployment and the configured removal behavior.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-activate-trusted-access.html",
+      "checked_on": "2026-09-18",
+      "supports": "Trusted access and all-features prerequisites, role creation, management and delegated-administrator roles."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html",
+      "checked_on": "2026-09-18",
+      "supports": "Automatic deployment on membership changes and retain/delete behavior."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-associate-stackset-with-org.html",
+      "checked_on": "2026-09-18",
+      "supports": "Root targeting, Region selection, initial stack instances, and exclusion of the management account from service-managed deployment."
+    }
+  ],
+  "editorial_notes": [
+    "Specified initial deployment, root targeting and Regions separately from automatic deployment. Preserved keys 1 and 3."
+  ],
+  "review_status": "authored"
+}

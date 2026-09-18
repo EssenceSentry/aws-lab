@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Rotate the database credential and refresh its consumers
+accDescr: Scheduled rotation changes both the MySQL credential and the stored secret, while the application retrieves the current secret through its instance role instead of relying on a deployment-time copy.
+A["60-day rotation schedule"] --> B["Rotation workflow"]
+B --> C["MySQL application user"]
+B --> D["Secrets Manager current version"]
+E["Application with instance role"] -->|Retrieve and refresh| D
+E -->|Connect using current credential| C
+F["Deployment-time password copy"] -.-> G["Becomes stale after rotation"]
+class A inputData
+class B decision
+class C,D storage
+class E output
+class F,G warning

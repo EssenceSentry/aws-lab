@@ -1,0 +1,57 @@
+{
+  "question_id": "177",
+  "base_record_sha256": "aa631021d6c3fd1b6d5e143797bffba727fb2a428596f221bcc2ef0963c9dbed",
+  "record": {
+    "id": "177",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company must connect its on-premises headquarters privately to VPCs in several US Regions. The VPC CIDRs do not overlap. Traffic must use dedicated connectivity, remain available after a Direct Connect location fails, and avoid a separate physical connection for every Region. The requirement is headquarters-to-VPC access, not transit between VPCs.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a LAG with two Direct Connect connections at one location. Connect private VIFs to a Direct Connect gateway and associate a virtual private gateway from each VPC."
+      },
+      {
+        "id": "2",
+        "text": "Connect a Transit Gateway in each Region to headquarters through redundant internet-based Site-to-Site VPN tunnels, and configure routes for the VPCs."
+      },
+      {
+        "id": "3",
+        "text": "Use redundant customer devices and Direct Connect connections at two diverse locations. Connect private VIFs to a Direct Connect gateway, associate each VPC's virtual private gateway, and configure redundant BGP routes."
+      },
+      {
+        "id": "4",
+        "text": "Connect redundant Direct Connect circuits directly to one VPC. Peer that VPC with the other regional VPCs and route their headquarters traffic through the peered VPC's connection."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A Direct Connect gateway can associate virtual private gateways in multiple Regions, avoiding a physical circuit per Region. Private VIFs provide the relevant VPC connectivity. Diverse physical locations and customer devices remove the single-location failure present in a one-location design, provided routing and capacity support failover.\n\n<<1>> aggregates connections but leaves a shared location dependency. Multiple links in one LAG do not satisfy the stated location-failure requirement.\n\n<<2>> provides a valid managed network pattern, but its internet-based VPN paths do not meet the dedicated-connectivity constraint.\n\n<<4>> assumes unsupported edge-to-edge routing. A peered VPC cannot use its peer's Direct Connect connection to reach the corporate network.\n\nSeparate logical reachability from physical resilience. A Direct Connect gateway is global and supports the multi-Region associations, but does not make a single physical circuit redundant or establish an automatic VPC transit mesh. A Transit Gateway association would use a transit VIF, rather than this private-VIF-to-VGW design.\n\nAWS documentation (checked September 18, 2026): [Direct Connect gateways](https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways-intro.html); [Direct Connect redundancy](https://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html); [VPC peering routing limits](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/177.mmd",
+  "diagram_alt": "Two diverse Direct Connect locations protect the physical connection while one logical gateway associates VPCs across Regions.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Private VIFs and VGW associations connect on-premises networks to VPCs in multiple Regions, while TGW associations use transit VIFs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/toolkit-classic.html",
+      "checked_on": "2026-09-18",
+      "supports": "Redundant connections or a VPN backup require appropriate routing and failover, and diverse Direct Connect locations provide stronger physical resilience."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html",
+      "checked_on": "2026-09-18",
+      "supports": "Peering cannot transit a peer VPC to use that peer's Direct Connect connection to an on-premises network."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Added the physical diversity required by the availability constraint, removed an implied full-mesh transit guarantee, and changed the LAG distractor to a valid configuration that fails location resilience."
+  ],
+  "review_status": "authored"
+}

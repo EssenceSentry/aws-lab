@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Resolve an attribute, then bind the subscription
+accDescr: A declared queue provides its ARN to an SNS subscription endpoint. A separate queue policy authorizes actual message delivery.
+Q[WorkQueue resource<br/>AWS::SQS::Queue]:::inputData --> G[GetAtt WorkQueue.Arn]:::decision
+G -->|ARN value| S[Subscription<br/>Protocol: sqs]:::output
+T[EventTopic<br/>AWS::SNS::Topic]:::inputData -->|Subscription property| S
+S -->|Targets| B[(WorkQueue)]:::storage
+P[Queue policy<br/>SNS SendMessage from topic]:::decision -. authorizes delivery .-> B

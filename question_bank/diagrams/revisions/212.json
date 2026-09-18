@@ -1,0 +1,52 @@
+{
+  "question_id": "212",
+  "base_record_sha256": "5f1061d759df3fbf6e584977e507a72e4fe7ee2f89d73193377fd95bcf12e7ae",
+  "record": {
+    "id": "212",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "Employees already authenticate to a corporate SAML 2.0 identity provider. A company wants them to access assigned AWS accounts through one managed workforce portal with centrally maintained permission assignments and no separate IAM users. It also wants CLI access without distributing long-lived access keys. The company wants the least custom federation infrastructure.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Build a custom federation broker and account-selection portal, maintain role mappings in a custom database, and use STS to generate temporary sessions after corporate sign-in."
+      },
+      {
+        "id": "2",
+        "text": "Configure IAM Identity Center with the corporate SAML identity provider, provision users and groups, and assign permission sets to the required accounts. Use the AWS access portal and supported CLI sign-in flow."
+      },
+      {
+        "id": "3",
+        "text": "Create an IAM user in every required AWS account for each employee, synchronize corporate passwords to those users, and issue access keys for CLI use."
+      },
+      {
+        "id": "4",
+        "text": "Configure separate direct IAM SAML federation relationships and role assignments in every account, and maintain a custom portal and CLI credential tool to coordinate access."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. IAM Identity Center connects the existing identity provider to a managed access portal and centralized account permissions. Users and groups must be provisioned, through SCIM or an appropriate manual process, before assigning account access.\n\n<<1>> can use temporary credentials securely, but adds a custom broker, portal, and authorization mapping service.\n\n<<3>> creates the duplicate identities and long-lived credentials the company excludes.\n\n<<4>> is a valid federation architecture, but requires per-account configuration and custom access tooling instead of the requested managed central experience.\n\nAuthentication and authorization are separate: the identity provider validates the employee, while account assignments and permission sets determine AWS access. Direct IAM SAML federation uses AssumeRoleWithSAML; AssumeRoleWithWebIdentity accepts web-identity tokens rather than SAML assertions. Users do not first obtain STS credentials and submit those credentials to Identity Center.\n\nOfficial AWS references (checked September 18, 2026): [Identity Center external identities](https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html). [Direct SAML federation](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/212.mmd",
+  "diagram_alt": "Identity Center combines corporate authentication with provisioned group assignments to grant temporary account-role access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html",
+      "checked_on": "2026-09-18",
+      "supports": "SAML sign-in, SCIM/manual provisioning, central access and temporary CLI credentials"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html",
+      "checked_on": "2026-09-18",
+      "supports": "STS API for SAML assertions"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced AppFlow and SAML-to-web-identity misuse with valid federation alternatives that require more custom operations, while teaching the API distinction."
+  ],
+  "review_status": "authored"
+}

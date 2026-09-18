@@ -1,0 +1,53 @@
+{
+  "question_id": "105",
+  "base_record_sha256": "1f9a1206b00711ac08254c9d2a370884ac27770c6964f882337a3876ceaabd46",
+  "record": {
+    "id": "105",
+    "exam_domain": "Design for New Solutions",
+    "question": "A supermarket is launching an online store on EC2 and Amazon RDS for MySQL. The application must restore service automatically after the loss of one Availability Zone, without waiting for that zone to recover or for an operator to promote a database replica. Web instances are interchangeable, and clients can retry connections during a database failover.\n\nWhich architecture meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy an ALB and an EC2 Auto Scaling group across three Availability Zones. Use a Single-AZ RDS primary and an asynchronous read replica in another Availability Zone."
+      },
+      {
+        "id": "2",
+        "text": "Deploy an ALB across two Availability Zones and restrict its EC2 Auto Scaling group to one Availability Zone. Use an RDS Multi-AZ DB instance deployment."
+      },
+      {
+        "id": "3",
+        "text": "Deploy an ALB and an EC2 Auto Scaling group across three Availability Zones. Use a Single-AZ RDS DB instance covered by a Reserved DB Instance reservation."
+      },
+      {
+        "id": "4",
+        "text": "Deploy an ALB and an EC2 Auto Scaling group across three Availability Zones. Use an RDS Multi-AZ DB instance deployment with a synchronous standby in another Availability Zone."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Distributing the ALB and web group across Availability Zones protects the web tier. An RDS Multi-AZ DB instance maintains a synchronous standby in another Availability Zone and provides managed failover for supported failures.\n\n<<1>> uses a read replica for read scaling or recovery, but an ordinary RDS MySQL read replica is not the managed automatic failover standby of a Multi-AZ DB instance deployment.\n\n<<2>> protects the database but places all web capacity in one failure domain.\n\n<<3>> changes billing. A reservation does not create a standby or improve the deployment's availability.\n\nMulti-AZ does not mean uninterrupted connections: applications must reconnect to the database endpoint after failover. The standby in this DB instance deployment does not serve read queries; RDS Multi-AZ DB clusters have different reader capabilities.\n\nOfficial AWS references (checked September 18, 2026): [RDS Multi-AZ DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html). [RDS read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/105.mmd",
+  "diagram_alt": "RDS promotes a standby and updates the endpoint during failover; application retry and reconnection are still required.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "Synchronous standby, failover, and absence of read serving on the standby"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous replication and read-replica promotion behavior"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Replaced absolute 24/7 wording with an AZ failure and automatic failover objective; clarified Multi-AZ DB instance versus cluster behavior.",
+    "Root retained a valid two-AZ ALB while making the distractor failure the single-AZ web capacity."
+  ],
+  "review_status": "authored"
+}

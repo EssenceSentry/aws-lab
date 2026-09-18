@@ -1,0 +1,13 @@
+stateDiagram-v2
+accTitle: Recovery is not yet readiness for failback
+accDescr: After an outage the standby serves writes. When primary infrastructure returns, the standby continues serving until application and replicated data readiness are verified.
+[*] --> PrimaryServing
+PrimaryServing --> StandbyServing: Primary unhealthy, standby ready
+StandbyServing --> PrimaryRecovering: Primary infrastructure returns
+PrimaryRecovering --> CatchingUp: Application restored
+CatchingUp --> ReadyToReturn: Required data and app checks pass
+ReadyToReturn --> PrimaryServing: Primary health enabled, DNS failback
+note right of CatchingUp
+Standby continues serving
+Wait for replication and reconciliation
+end note

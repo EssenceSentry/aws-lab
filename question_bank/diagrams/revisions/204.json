@@ -1,0 +1,67 @@
+{
+  "question_id": "204",
+  "base_record_sha256": "e3a59f09cdc7e58202dd2726f1c7ea95aad6d470fe168c366969ae7e4526f7b8",
+  "record": {
+    "id": "204",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A photography company wants to retain its queue-and-worker processing model while moving to AWS. Large photos already arrive in S3. Processing is idempotent, can resume after interruption, and should normally begin within five minutes of upload. After successful processing, the originals and outputs must be retained for seven years and are almost never read. Restore requests can wait up to 48 hours. The company wants to minimize worker and archive costs.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Put S3 object keys in SQS and process them with diversified Spot workers in an Auto Scaling group. Scale on backlog per worker, acknowledge jobs after durable output commits, and use completion tags with lifecycle rules to archive eligible objects in S3 Glacier Deep Archive."
+      },
+      {
+        "id": "2",
+        "text": "Use SQS with an On-Demand worker fleet fixed at peak size and retain all originals and outputs in S3 Standard-IA for the full seven years."
+      },
+      {
+        "id": "3",
+        "text": "Use SQS and autoscaled Spot workers, but immediately transition newly uploaded originals to S3 Glacier Deep Archive before workers read them."
+      },
+      {
+        "id": "4",
+        "text": "Publish jobs directly to every worker through SNS subscriptions, have each worker process every delivered job, and keep the full worker fleet running during idle periods."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. SQS decouples arrivals from retryable workers, Spot reduces the cost of interruptible compute, and a completion condition prevents archival before processing finishes. Long retention and a 48-hour restore allowance make Deep Archive a suitable storage class to evaluate.\n\n<<2>> can process and retain data, but pays for idle peak compute and an immediate-access storage class that the archive does not require.\n\n<<3>> makes the processing path wait for restoration of its own inputs, conflicting with the queue-latency goal.\n\n<<4>> uses broadcast delivery where competing workers are needed and retains idle compute. SNS can deliver job notifications, including through SQS subscriptions; it is not inherently unsuitable for processing systems.\n\nUse object references, not large photos, in queue messages. Set visibility timeouts, retry/dead-letter handling, idempotent commits, and graceful scale-in behavior. Backlog per worker reflects processing capacity better than raw depth for target tracking. Archive transitions are asynchronous, with request, retrieval, and minimum-duration costs.\n\nOfficial AWS references (checked September 18, 2026): [Spot worker suitability](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html). [Archive retrieval choices](https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html). [SQS processing and retries](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html). [Queue-based worker scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html). [Archive transition behavior](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/204.mmd",
+  "diagram_alt": "Durable job completion precedes acknowledgement and archival, while failed attempts return to the processing queue.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
+      "checked_on": "2026-09-18",
+      "supports": "Fault-tolerant workloads, flexible capacity and interruption handling"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html",
+      "checked_on": "2026-09-18",
+      "supports": "Deep Archive retrieval windows and class-specific retrieval options"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "checked_on": "2026-09-18",
+      "supports": "Visibility expiry, explicit deletion and duplicate-delivery handling"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Backlog per instance, queue latency and worker scale-in handling"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Tag-filtered asynchronous transitions, retrieval and minimum-duration considerations"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced raw queue-depth target tracking with backlog per worker, made interruption and restore tolerance explicit, and removed false claims about SNS and CloudWatch termination capability."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,47 @@
+{
+  "question_id": "102",
+  "base_record_sha256": "59bacfb6bb4c8fd531d2a4628416dedbe826b4c06d70ea504c3fd340e5fe629b",
+  "record": {
+    "id": "102",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company is moving a stateful web application to AWS. It will use an Application Load Balancer (ALB), Amazon EC2, and an Aurora MySQL DB cluster. Session data has been moved to a shared durable store so any web instance can serve a request. Most database traffic consists of read-only queries, and load testing confirms that one appropriately sized writer can handle peak writes.\n\nWhich design lets the web tier and database read capacity scale with demand?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place the web instances in an Auto Scaling group behind the ALB. Enable Aurora Auto Scaling and send all reads and writes to the cluster writer endpoint."
+      },
+      {
+        "id": "2",
+        "text": "Place the web instances in an Auto Scaling group behind the ALB. Add Aurora Replicas and configure Aurora Auto Scaling to increase the number of writer instances as write traffic rises."
+      },
+      {
+        "id": "3",
+        "text": "Place the web instances in an Auto Scaling group behind the ALB. Configure Aurora Auto Scaling for Aurora Replicas, route read-only connections to the reader endpoint, and route writes to the writer endpoint."
+      },
+      {
+        "id": "4",
+        "text": "Place a fixed number of web instances behind the ALB with sticky sessions. Configure Aurora Auto Scaling for Aurora Replicas and route read-only connections to the reader endpoint."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. EC2 Auto Scaling adjusts web capacity, while Aurora Auto Scaling adjusts the number of Aurora Replicas. The application must direct read-only work to the reader endpoint to use that capacity and keep writes on the writer endpoint. Shared session storage allows requests to move between web instances safely.\n\n<<1>> creates readers but bypasses them by directing all traffic to the writer.\n\n<<2>> misidentifies the scaling target. Aurora Auto Scaling adds or removes reader instances; it does not add writers to this Aurora MySQL cluster.\n\n<<4>> scales database reads but leaves web capacity fixed. ALB stickiness provides routing affinity, not additional capacity or durable session storage.\n\nReader scaling also depends on connection behavior: the reader endpoint balances new connections, not individual SQL queries. Pools and scaling policies need to be tested against the workload.\n\nOfficial AWS references (checked September 18, 2026): [Aurora Auto Scaling](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/102.mmd",
+  "diagram_alt": "Web Auto Scaling and Aurora reader scaling are independent; writes continue to use the writer.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Auto Scaling targets Aurora Replicas and new readers are available through the reader endpoint"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Made read-heavy load and tested writer capacity explicit; externalized session state so sticky routing is not mistaken for session durability."
+  ],
+  "review_status": "authored"
+}

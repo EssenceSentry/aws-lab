@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Recovery uses a snapshot completed before the outage
+accDescr: Stored-volume writes are local. Completed cloud snapshots survive the site outage and become an EBS volume in the recovery instance's AZ.
+subgraph Before[Before the site outage]
+ L[(Local stored volume)]:::storage -->|Asynchronous backup| S[(Completed EBS snapshot)]:::storage
+end
+L -.-> X[Site unavailable<br/>Unsent writes unavailable]:::warning
+subgraph Recovery[AWS recovery Availability Zone]
+ E[(New EBS volume)]:::storage -->|Attach and mount| C[EC2 recovery instance]:::output
+end
+S -->|Restore completed point| E

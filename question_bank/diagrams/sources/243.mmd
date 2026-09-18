@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Physical diversity and global gateway reach
+accDescr: Two location-diverse Direct Connect paths reach a shared Direct Connect gateway, which associates with regional virtual private gateways.
+DC[Data center]:::inputData
+DC --> R1[Router A + DX location A]
+DC --> R2[Router B + DX location B]
+R1 -->|private VIF A| DXG[Direct Connect gateway]
+R2 -->|private VIF B| DXG
+DXG --> VGW1[VGW in us-east-1]
+DXG --> VGW2[VGW in us-west-1]
+VGW1 --> V1[VPC east]:::output
+VGW2 --> V2[VPC west]:::output

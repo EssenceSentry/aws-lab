@@ -1,0 +1,58 @@
+{
+  "question_id": "301",
+  "base_record_sha256": "18cf2340bf5d8e222f88dd4adb14457412e7511b171d82f86a38a67d5edaf1a7",
+  "record": {
+    "id": "301",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An education company runs application servers on EC2 and in its data center. Each server writes structured JSON logs with a level field. Operations needs an alert within minutes when an error-count metric reaches at least 20 during a five-minute period. Log delivery is prompt and monitored. The company wants centralized logs and minimal custom processing code.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Collect logs with the CloudWatch agent and run an hourly Logs Insights query that sends an SNS notification when the previous hour contains errors."
+      },
+      {
+        "id": "2",
+        "text": "Collect host CPU metrics with the CloudWatch agent and notify an SNS topic when average CPU utilization exceeds 80 percent."
+      },
+      {
+        "id": "3",
+        "text": "Collect logs in CloudWatch Logs and write a subscription Lambda function to parse errors, maintain counts, publish a custom metric, and trigger an SNS-backed alarm."
+      },
+      {
+        "id": "4",
+        "text": "Collect logs in a Standard CloudWatch Logs log group with the CloudWatch agent. Use a metric filter for ERROR events and an alarm on a five-minute Sum of at least 20, with an SNS action."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The agent centralizes both sets of logs. A filter that matches the structured level field and contributes a value of 1 converts matching events into an error-count metric. The alarm evaluates the Sum over the specified period and sends the configured SNS notification when it enters ALARM.\n\n<<1>> retains centralized logs but its hourly schedule cannot meet the requested notification latency.\n\n<<2>> measures resource utilization, not application errors. Error counts can rise while CPU remains low, or CPU can rise without an error.\n\n<<3>> can implement the behavior, but adds parsing, aggregation, and publishing code that a native metric filter avoids for this simple predicate.\n\nUse a Standard log group because metric filters are not supported in every log class. Filters apply to newly ingested events and do not backfill historical logs. Configure missing-data handling and separately monitor log-delivery health: a silent agent is not proof that the application is healthy. The alarm evaluates the reported metric over its five-minute period. Delayed log delivery affects detection, and metric filters can occasionally deliver duplicates; this operational signal is not an exactly-once event ledger. An SNS alarm action normally follows a state change rather than sending a fresh message for every additional error.\n\nAWS documentation (checked September 18, 2026): [CloudWatch agent on on-premises servers](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Agent-on-premise.html); [CloudWatch Logs metric filters](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html); [CloudWatch alarm behavior](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/301.mmd",
+  "diagram_alt": "Each matching error adds one to the metric, and the five-minute sum—not CPU or an hourly query—controls the notification.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Agent-on-premise.html",
+      "checked_on": "2026-09-18",
+      "supports": "The unified agent can ship logs from on-premises hosts using configured AWS access and a destination Region."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html",
+      "checked_on": "2026-09-18",
+      "supports": "Metric filters turn matching newly ingested log events in Standard log groups into numerical CloudWatch metrics; they do not process historical events retroactively."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html",
+      "checked_on": "2026-09-18",
+      "supports": "Metric alarms evaluate a statistic over configured periods and can notify SNS when the alarm changes state; current CloudWatch also has other alarm types."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Made the threshold and ingestion window explicit. Replaced unrelated service distractors with valid monitoring approaches that fail latency, measurement, or custom-code constraints. Avoided claiming that current CloudWatch supports only metric-based alarms.",
+    "Root review clarified the metric aggregation period and occasional duplicate delivery documented by CloudWatch, avoiding an unsupported exact ingestion-window claim."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "304",
+  "base_record_sha256": "8f1c9a0fbb302864297518ac68991510fe49884fad38a964f5f61b6fe6696951",
+  "record": {
+    "id": "304",
+    "exam_domain": "Design for New Solutions",
+    "question": "IoT devices upload small files to an S3 bucket every five minutes. A nightly Python job on EC2 reads the files, writes derived rows to RDS, and deletes successfully processed inputs. Each file is independent and takes seconds to process within Lambda resource limits. RDS can handle the expected processing rate with bounded concurrency.\n\nThe company wants processing to begin soon after each upload with minimal server administration and few code changes. Which approach should it use?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep the EC2 job running continuously and poll S3 every minute for files that have not yet been processed."
+      },
+      {
+        "id": "2",
+        "text": "Configure CloudTrail S3 data-event logging, route matching PutObject API records through EventBridge, and invoke the Python processing code in Lambda."
+      },
+      {
+        "id": "3",
+        "text": "Schedule a Lambda function every minute to list the entire bucket and discover inputs, then run the Python processing code for each discovered file."
+      },
+      {
+        "id": "4",
+        "text": "Configure ObjectCreated notifications for the input prefix to invoke Lambda, and adapt the Python code to process the event object and delete it only after the RDS transaction succeeds."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Direct S3 object-created notifications provide the needed trigger without a permanently running poller or API-audit pipeline. The existing Python processing logic can run per object in Lambda, subject to the stated runtime and resource fit.\n\n<<1>> shortens the delay but retains instance administration and polling.\n\n<<2>> can route audited API activity, but adds CloudTrail data-event configuration and cost for a trigger S3 can provide directly. EventBridge also supports native S3 events; CloudTrail is not required for every S3-to-EventBridge design.\n\n<<3>> removes the EC2 host but repeatedly scans the bucket and introduces discovery and coordination work that a per-object notification avoids.\n\nS3 notifications are delivered at least once and can be delayed or arrive out of order. Use a stable object identity and idempotent database writes so a retry cannot double-count an input. Commit the RDS transaction before deleting the source object, retain failed inputs, and monitor failed invocations. Configure Lambda network access to RDS, limit concurrency to protect database connections, and use an input prefix that excludes any output objects. These controls make event-driven processing reliable without assuming exactly-once delivery.\n\nAWS documentation (checked September 18, 2026): [S3 event notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html); [S3 events in EventBridge](https://docs.aws.amazon.com/eventbridge/latest/ref/events-ref-s3.html); [S3 CloudTrail event coverage](https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudtrail-logging-s3-info.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/304.mmd",
+  "diagram_alt": "The database commit is the gate for deleting a source object, allowing safe retries of duplicate or failed object events.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 can invoke Lambda for object-created notifications, delivered at least once with variable latency; processing must tolerate duplicate delivery and avoid recursive trigger loops."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/eventbridge/latest/ref/events-ref-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "EventBridge can route S3 API events delivered through CloudTrail as well as supported direct S3 events; these sources have distinct event schemas."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudtrail-logging-s3-info.html",
+      "checked_on": "2026-09-18",
+      "supports": "Bucket policy and access-control changes are management events, while PutObject and PutObjectAcl are object data events that require explicit data-event logging."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Made per-file Lambda compatibility and database capacity explicit. Replaced unrelated IoT services with viable polling and audit-event alternatives, and corrected delivery semantics and transaction ordering."
+  ],
+  "review_status": "authored"
+}

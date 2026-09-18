@@ -1,0 +1,62 @@
+{
+  "question_id": "232",
+  "base_record_sha256": "3b0243ff3cb286dc170afda64e4f53f0ba5182aaf78ff85111b47ef306eaf941",
+  "record": {
+    "id": "232",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A trading application uses a supported RDS for MySQL DB instance with a Multi-AZ standby. The company needs recovery from accidental data corruption within the same AWS Region, with an RPO of at most 10 minutes and an RTO below 2 hours. Recovery points must remain available for 14 days, and the team will monitor recovery-point freshness and validate the complete restore procedure in drills.\n\nWhich TWO alternative managed backup approaches can support this recovery plan? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Retain hourly RDS snapshots for 14 days and disable transaction-log-based point-in-time recovery."
+      },
+      {
+        "id": "2",
+        "text": "Enable native RDS automated backups with a 14-day retention period and use point-in-time recovery to restore to a time before corruption."
+      },
+      {
+        "id": "3",
+        "text": "Export RDS snapshots to S3 in Parquet format every hour and treat the exports as directly restorable RDS point-in-time backups."
+      },
+      {
+        "id": "4",
+        "text": "Rely exclusively on the synchronous Multi-AZ standby, with no historical backups or point-in-time recovery."
+      },
+      {
+        "id": "5",
+        "text": "Assign the supported DB instance to an AWS Backup plan with continuous backups for point-in-time recovery and a 14-day retention period."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<5>> are correct as alternative ways to manage continuous recovery protection. Native RDS automated backups combine backups and transaction logs for point-in-time restoration. AWS Backup continuous protection provides a managed PITR option for the supported RDS DB instance. Restore to a clean time in the retention window, then validate and reconnect the application.\n\n<<1>> can lose nearly an hour of transactions between snapshots, exceeding the 10-minute RPO.\n\n<<3>> produces an analytics export, not a native restorable snapshot or a transaction-log recovery chain. Parquet export cannot be supplied directly to RDS point-in-time restore.\n\n<<4>> improves availability during infrastructure failure, but replicated corruption is present on the standby too. A historical recovery point is needed.\n\nNeither service name guarantees the numeric objectives. Monitor the latest restorable time, retain enough history to precede corruption, and measure provisioning, restoration, validation, and application cutover together. The objectives here concern an in-Region recovery. AWS Backup copies of RDS continuous recovery points become snapshot copies without the source transaction-log history, so a copied recovery point must not be assumed to preserve continuous cross-Region PITR.\n\nAWS documentation (checked September 18, 2026): [RDS point-in-time recovery](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html); [AWS Backup continuous protection](https://docs.aws.amazon.com/aws-backup/latest/devguide/point-in-time-recovery.html); [RDS snapshot exports](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/232.diagram.json",
+  "diagram_alt": "Continuous backup history can recover to a clean point before corruption, while a current standby can contain the same corrupt changes.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html",
+      "checked_on": "2026-09-18",
+      "supports": "Automated backups and transaction logs support point-in-time recovery to a new DB instance within the retention period; monitor LatestRestorableTime and validate restoration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/point-in-time-recovery.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported RDS DB instances support continuous backups for PITR; RDS continuous-backup copies are snapshot copies without transaction-log history."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html",
+      "checked_on": "2026-09-18",
+      "supports": "Snapshot exports contain Parquet data for analytics, not native restorable RDS snapshots or a PITR transaction-log chain."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2 and 5 as explicitly alternative approaches. Specified a supported RDS DB instance and same-Region corruption recovery, avoiding an unsupported assumption that copied AWS Backup recovery points retain continuous PITR. Numeric objectives remain monitored and tested."
+  ],
+  "review_status": "authored"
+}

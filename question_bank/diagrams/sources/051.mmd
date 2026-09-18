@@ -1,0 +1,20 @@
+flowchart TB
+accTitle: Every stateful tier needs a recovery path
+accDescr: An ALB routes to application instances in two AZs, while RDS uses a synchronous cross-AZ standby and CloudFront serves static assets.
+U["Global users"] --> C["CloudFront: static assets"]
+U --> L["ALB"]
+subgraph A["Availability Zone A"]
+ E1["Application instance"]
+ D1[("RDS primary")]
+end
+subgraph B["Availability Zone B"]
+ E2["Application instance"]
+ D2[("RDS standby")]
+end
+L --> E1
+L --> E2
+E1 --> D1
+E2 --> D1
+D1 -->|"synchronous replication"| D2
+G["Auto Scaling group"] -.->|"replace / scale"| E1
+G -.->|"replace / scale"| E2

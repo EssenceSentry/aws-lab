@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Private connectivity and an explicit reject-alert path
+accDescr: Departmental VPCs peer privately with the application VPC. Rejected network traffic is logged, forwarded across accounts, processed, and published as a security notification.
+D[Three departmental VPCs]:::external -->|Private peering, routes and rules| A[Central application VPC]:::process
+A -.->|Network REJECT metadata| L[CloudWatch Logs]:::storage
+subgraph SEC[Security account]
+K[Kinesis destination]:::process --> P[Process source address and rejection]:::process
+P --> S[SNS security notification]:::output
+end
+L -->|Cross-account subscription| K

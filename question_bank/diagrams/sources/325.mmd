@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: Readiness must precede DNS cutover
+accDescr: Primary failure starts recovery orchestration, which fences old writes, prepares the database and compute, then gates DNS cutover on a successful write test.
+H["Application health failure"]:::inputData --> N["CloudWatch alarm → SNS"]
+N --> F["Recovery workflow
+fence primary writes"]
+F --> D["Promote PostgreSQL replica"]:::storage
+F --> C["Scale secondary EC2 group"]
+D --> V{"Database and app
+pass write test?"}:::decision
+C --> V
+V -->|Yes| R["Update DNS
+serve recovered application"]:::output
+V -->|No| X["Retry or escalate
+keep cutover blocked"]:::warning
+T["30-minute RTO includes
+detection through client recovery"]:::inputData -.-> R

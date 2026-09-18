@@ -1,0 +1,52 @@
+{
+  "question_id": "255",
+  "base_record_sha256": "588652421476beab002541739c5c79b850c5c315497a2b1d0ed89e53b0d2a45a",
+  "record": {
+    "id": "255",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A QA team uses approved CloudFormation templates to create temporary EC2 and Auto Scaling test environments in several Regions. Only its manager can currently provision them. The company wants team members to launch the approved configurations themselves without receiving general EC2, Auto Scaling or CloudFormation write access.\n\nWhich approach best meets this requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Allow every team member to assume the manager's existing broad provisioning role, and instruct them to use only templates stored in an approved S3 folder."
+      },
+      {
+        "id": "2",
+        "text": "Publish the templates as Service Catalog products in authorized portfolios and Regions. Apply product launch constraints using a scoped launch role, and give QA members portfolio access plus the minimum end-user permissions."
+      },
+      {
+        "id": "3",
+        "text": "Grant QA members broad EC2 and Systems Manager permissions and distribute an Automation runbook, relying on instructions to prevent direct use of the underlying APIs."
+      },
+      {
+        "id": "4",
+        "text": "Grant QA members CloudFormation read-only access and distribute a CLI script that calls CreateStack, relying on the script to supply the manager's missing permissions."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Service Catalog exposes approved products while its launch role supplies the underlying provisioning permissions. Portfolio access, end-user permissions and launch constraints work together; the role is assumed by the service for the approved product lifecycle.\n\n<<1>> retains broad underlying access and relies on a procedural restriction. <<3>> similarly permits direct resource changes outside the governed path. <<4>> cannot make an unauthorized CreateStack call succeed merely by placing it in a script.\n\nEnforce restrictions with IAM and service configuration, not instructions to use only a console. Users need the appropriate product lifecycle permissions and any necessary read access, while the launch role needs the permissions required by the template. Scope template parameters and lifecycle permissions, and arrange cleanup for temporary environments.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html\nhttps://docs.aws.amazon.com/servicecatalog/latest/adminguide/what-is_concepts.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/255.mmd",
+  "diagram_alt": "QA members receive product-level authority while a service-assumed launch role supplies the resource provisioning permissions.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html",
+      "checked_on": "2026-09-18",
+      "supports": "Launch constraints assign the role Service Catalog assumes for product lifecycle operations, reducing end-user underlying-service permissions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/what-is_concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Portfolios grant access to products and constraints control product configuration and provisioning."
+    }
+  ],
+  "editorial_notes": [
+    "Removed the false claim that a shared role can never isolate users and the false console-only security boundary; distractors now fail because their actual permissions remain too broad or insufficient."
+  ],
+  "review_status": "authored"
+}

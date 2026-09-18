@@ -1,0 +1,47 @@
+{
+  "question_id": "082",
+  "base_record_sha256": "b7c4d5d5e1c0909e517beea7631e7b99c826951c8765c52b4114144b3ac1ac1e",
+  "record": {
+    "id": "082",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company serves https://www.example.com through Amazon CloudFront. The distribution uses an Application Load Balancer in eu-west-1 as its custom origin. The company requires trusted TLS for both the viewer connection and the connection from CloudFront to the ALB, and wants HTTP viewer requests redirected to HTTPS.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Install trusted third-party certificates on CloudFront and the ALB. Redirect viewers to HTTPS, and configure the CloudFront origin protocol policy as HTTP Only."
+      },
+      {
+        "id": "2",
+        "text": "Request ACM certificates for both CloudFront and the ALB in eu-west-1. Redirect viewers to HTTPS, and configure the origin protocol policy as HTTPS Only."
+      },
+      {
+        "id": "3",
+        "text": "Request the viewer ACM certificate in us-east-1 and an ALB ACM certificate in eu-west-1, with names matching the respective TLS hostnames. Configure the ALB HTTPS listener, redirect viewers to HTTPS, and use HTTPS Only for the origin."
+      },
+      {
+        "id": "4",
+        "text": "Use the default CloudFront certificate for www.example.com and an ACM certificate on the ALB. Redirect viewers to HTTPS, and configure the origin protocol policy as HTTPS Only."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. There are two independent TLS connections. CloudFront uses an ACM viewer certificate from us-east-1 for the custom viewer hostname. The ALB uses a certificate in its own Region. The origin certificate must match the hostname CloudFront uses for TLS validation, and the origin protocol policy must require HTTPS.\n\n<<1>> can use valid third-party certificates, but HTTP Only leaves the CloudFront-to-origin connection unencrypted.\n\n<<2>> places the viewer ACM certificate in the wrong Region. The ALB certificate belongs in eu-west-1, but the CloudFront viewer certificate belongs in us-east-1.\n\n<<4>> does not provide a certificate for the custom viewer hostname. The default CloudFront certificate covers the distribution's cloudfront.net hostname.\n\nA secure viewer connection alone does not establish secure transport to the origin.\n\nAWS documentation (checked September 18, 2026): [CloudFront HTTPS certificate requirements](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/082.diagram.json",
+  "diagram_alt": "The viewer and origin connections use separate certificates and protocol settings.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "Viewer ACM certificates are in us-east-1, ELB origin certificates are in the origin Region, and trusted third-party certificates are supported."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced the ambiguous third-party-certificate distractor with a valid certificate setup that fails origin encryption."
+  ],
+  "review_status": "authored"
+}

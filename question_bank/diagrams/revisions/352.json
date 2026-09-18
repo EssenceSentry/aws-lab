@@ -1,0 +1,62 @@
+{
+  "question_id": "352",
+  "base_record_sha256": "7110f6a75f8d3c4c77ad7c504a1e9ec8de76307a94ef98f1afefbd5553620280",
+  "record": {
+    "id": "352",
+    "exam_domain": "Design for New Solutions",
+    "question": "A REST API uses API Gateway and Lambda to access an RDS for MySQL DB instance. During peaks, database CPU and connection counts rise sharply. Tracing shows repeated reads of the same reference data and frequent creation of database connections. These reads can tolerate a short, defined period of staleness. Lambda memory and CPU are adequate, and individual uncached queries have already been tuned.\n\nWhich two changes address the measured bottlenecks? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Double Lambda memory and explicitly close the database connection after every query, without changing the database access pattern."
+      },
+      {
+        "id": "2",
+        "text": "Add an ElastiCache cache-aside layer for the repeated reads. Set an appropriate TTL and invalidate or refresh affected entries when the application writes data."
+      },
+      {
+        "id": "3",
+        "text": "Place RDS Proxy between Lambda and MySQL, configure its connection pool and authentication, and use the proxy endpoint for database access."
+      },
+      {
+        "id": "4",
+        "text": "Increase the Lambda timeout and reserved concurrency so that more invocations can wait for or open database connections simultaneously."
+      },
+      {
+        "id": "5",
+        "text": "Convert the database to a traditional Multi-AZ DB instance deployment with one standby and direct read queries to that standby."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<2>> reduces repeated query work: cache hits return data without executing the query in MySQL. TTL and write-handling rules must match the permitted staleness.\n\n<<3>> reduces connection-management overhead by reusing pooled database connections across application clients. Pool limits should protect the database, and workloads that pin sessions can reduce pooling efficiency. RDS Proxy does not cache query results or create unlimited database capacity.\n\n<<1>> addresses a Lambda resource limit that measurements do not show and increases connection churn by closing connections after every query.\n\n<<4>> permits more outstanding database work without removing the bottleneck and can worsen overload.\n\n<<5>> improves availability, but the standby in a traditional Multi-AZ DB instance deployment cannot serve reads. A read replica or a Multi-AZ DB cluster is a different design.\n\nUse caching to avoid work and pooling to reuse connections; the mechanisms are complementary.\n\nOfficial AWS references (checked September 18, 2026): [Caching strategies](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html). [RDS Proxy connections](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-connections.html). [Multi-AZ DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/352.mmd",
+  "diagram_alt": "A cache hit avoids database work entirely, while a cache miss uses a pooled RDS Proxy connection before updating the cache.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache-aside reads fetch misses from the backing store; TTL bounds how long entries remain cached."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-connections.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS Proxy pools backend connections with configurable limits; session pinning can reduce reuse."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "A single Multi-AZ standby provides failover and cannot serve read traffic."
+    }
+  ],
+  "editorial_notes": [
+    "Separated query reduction from connection pooling; specified the non-readable single-standby Multi-AZ deployment to avoid conflating it with a Multi-AZ DB cluster."
+  ],
+  "review_status": "authored"
+}

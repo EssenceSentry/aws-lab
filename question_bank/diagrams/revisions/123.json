@@ -1,0 +1,53 @@
+{
+  "question_id": "123",
+  "base_record_sha256": "4cce83e6c715a05725ea63a64b2dc57cd73e89882686a7a72121d06fb8820e41",
+  "record": {
+    "id": "123",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An external audit team uses an established IAM role in its own AWS account. It needs read-only configuration access to selected resources in each of 30 company accounts for a six-week review. The company wants to reuse the auditor’s existing identity and avoid creating local users or long-term access keys.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Provide the auditor with the sign-in credentials of existing company administrators and ask the auditor to perform only read operations."
+      },
+      {
+        "id": "2",
+        "text": "Create a company directory account for every auditor and build a new federation integration for the review."
+      },
+      {
+        "id": "3",
+        "text": "Create one IAM user with read-only permissions in the company management account and give its access keys to the auditor as access to all member accounts."
+      },
+      {
+        "id": "4",
+        "text": "Create an audit role in each target account with scoped read-only permissions and a trust policy for the auditor’s designated role. Authorize the auditor to assume those roles and remove access when the review ends."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> places the authorization in the accounts that own the resources. The auditor retains its existing identity and assumes a separate temporary role session for each target account. Scope permissions to the necessary configuration APIs and use identifiable sessions for auditability.\n\n<<1>> shares privileged identities and grants write capabilities even if the auditor promises not to use them. <<2>> can be a valid federation approach, but it duplicates an identity integration and does not meet the requirement to reuse the existing external role. <<3>> introduces long-term keys and assumes that a management-account user automatically gains resource access in member accounts.\n\nCross-account trust does not grant the caller permission to assume a role by itself; both accounts must authorize the relationship. At the end of an engagement, prevent new sessions and address already issued sessions according to the required revocation timing.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/123.mmd",
+  "diagram_alt": "Role ownership stays in each audited account while the auditor reuses one external identity.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "checked_on": "2026-09-18",
+      "supports": "Target role trust and source caller permissions are both required for cross-account assumption."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html",
+      "checked_on": "2026-09-18",
+      "supports": "Third-party access through target-account roles avoids sharing persistent credentials."
+    }
+  ],
+  "editorial_notes": [
+    "Clarified that federation is not inherently insecure; it is unnecessary for this existing-role requirement.",
+    "Removed the misconception that a management account identity automatically has member-resource access."
+  ],
+  "review_status": "authored"
+}

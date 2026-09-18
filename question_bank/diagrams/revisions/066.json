@@ -1,0 +1,53 @@
+{
+  "question_id": "066",
+  "base_record_sha256": "ca920551ce369a15a3fd92da463d987475ceb8b749cf86f24cc0efa99e58a8e4",
+  "record": {
+    "id": "066",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company deploys an application with AWS CloudFormation. Each release creates a new AMI and updates the version of the EC2 launch template used by an existing Auto Scaling group. The deployment must replace the group’s running instances in controlled batches while keeping enough healthy instances behind the load balancer. The group has capacity headroom for replacements, and new instances can signal application readiness.\n\nWhich template change enables this behavior during a stack update?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a CloudFormation change set for the new launch template version. Rely on the change set to replace every running instance after execution."
+      },
+      {
+        "id": "2",
+        "text": "Add a DeletionPolicy to the launch template and set MinSuccessfulInstancesPercent to 50 on that policy."
+      },
+      {
+        "id": "3",
+        "text": "Add an UpdatePolicy with AutoScalingRollingUpdate to the Auto Scaling group. Configure batch size, minimum instances in service, and readiness signals with an appropriate timeout."
+      },
+      {
+        "id": "4",
+        "text": "Create a second CloudFormation stack for every release and switch DNS to its load balancer after deployment."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> directs CloudFormation to roll the existing Auto Scaling group’s instances when the referenced launch template version changes. MinInstancesInService and MaxBatchSize control capacity during replacement. WaitOnResourceSignals and PauseTime allow the deployment to wait for an application-level readiness signal. Configure that signal only after initialization and relevant health checks pass.\n\n<<1>> previews and applies resource changes but does not itself define how existing instances are replaced. <<2>> confuses deletion behavior with update behavior; DeletionPolicy is not a rolling-deployment policy. <<4>> describes a possible blue/green architecture, but does not enable rolling replacement in the existing group as required.\n\nA rolling policy is not an unconditional zero-downtime guarantee. Adequate spare capacity, load-balancer health checks, connection draining, and meaningful readiness signals remain necessary.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatepolicy.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ec2-auto-scaling.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/066.mmd",
+  "diagram_alt": "A state transition diagram shows that each replacement batch must satisfy readiness before the next batch begins.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatepolicy.html",
+      "checked_on": "2026-09-18",
+      "supports": "AutoScalingRollingUpdate controls batch sizes, minimum service capacity, signals and pause timeout."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ec2-auto-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Example connects launch template version updates to rolling update policies."
+    }
+  ],
+  "editorial_notes": [
+    "Modernized launch configuration to an explicitly versioned launch template.",
+    "Made capacity headroom and application readiness explicit; no unconditional zero-downtime claim."
+  ],
+  "review_status": "authored"
+}

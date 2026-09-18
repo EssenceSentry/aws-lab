@@ -1,0 +1,16 @@
+flowchart TB
+accTitle: Tunnel redundancy versus site redundancy
+accDescr: Each customer gateway has two tunnels, but only the second independent site removes the first site's common failure domain.
+subgraph DC1[Data center 1]
+ C1[Customer gateway 1<br/>Internet link 1]:::warning
+end
+subgraph DC2[Data center 2]
+ C2[Customer gateway 2<br/>Internet link 2]:::inputData
+end
+C1 -->|Tunnel 1| V[Existing virtual private gateway]:::decision
+C1 -->|Tunnel 2| V
+C2 -->|Tunnel 3| V
+C2 -->|Tunnel 4| V
+V --> A[VPC applications]:::output
+D[Dependencies reachable<br/>through either site]:::storage --- C1
+D --- C2

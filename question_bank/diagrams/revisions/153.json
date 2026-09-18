@@ -1,0 +1,57 @@
+{
+  "question_id": "153",
+  "base_record_sha256": "fcc04edcf43963f985bdb78899f396674b503456c02dd1e269e5aceffc309b3c",
+  "record": {
+    "id": "153",
+    "exam_domain": "Design for New Solutions",
+    "question": "A newspaper publisher is migrating its searchable archive to AWS. Scanned page images must remain durable and available for immediate viewing, including old pages. The expiring commercial OCR license will not be renewed. The publisher wants managed text extraction and search, and its dynamic website and search tier must tolerate an Availability Zone failure.\n\nWhich architecture meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run a multi-AZ web fleet behind an ALB, but store the only online image copy and search index on an EBS-backed server in one Availability Zone. Restore snapshots manually after a zone failure."
+      },
+      {
+        "id": "2",
+        "text": "Store page images in S3 and serve them through CloudFront. Use Textract to extract text, index the text and image keys in a properly sized multi-AZ OpenSearch domain, and run the dynamic website in a multi-AZ Beanstalk environment."
+      },
+      {
+        "id": "3",
+        "text": "Use Textract, a multi-AZ OpenSearch domain, and a multi-AZ web fleet. Move all images older than three months to S3 Glacier Deep Archive and restore each image only after a visitor requests it."
+      },
+      {
+        "id": "4",
+        "text": "Store images in S3, use CloudFront and a multi-AZ web and search tier, and renew the commercial OCR license to keep running the existing software in EC2."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Textract turns document images into text that can be indexed, OpenSearch answers text queries, and S3 retains the original image addressed by each search result. CloudFront delivers those images, while correctly configured multi-AZ web and search tiers address the availability requirement.\n\n<<1>> leaves serving dependencies in one Availability Zone. EBS is durable block storage, but this deployment's snapshots do not provide an immediately available serving tier after a zone failure.\n\n<<3>> chooses archival storage requiring restoration, violating immediate viewing of older pages. This limitation concerns Deep Archive, not every S3 Glacier storage class.\n\n<<4>> retains the licensed component the company must replace.\n\nConfigure OpenSearch replica shards, placement, and capacity appropriately; a managed domain is not automatically highly available in every configuration. Evaluate OCR quality on representative historical pages and manage extraction retries and indexing explicitly.\n\nOfficial AWS references (checked September 18, 2026): [Textract text extraction](https://docs.aws.amazon.com/textract/latest/dg/what-is.html). [OpenSearch multi-AZ domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html). [S3 storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/153.mmd",
+  "diagram_alt": "Textract produces searchable text; OpenSearch returns image keys, and S3 with CloudFront serves the original pages.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Document text recognition and search-index use cases"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html",
+      "checked_on": "2026-09-18",
+      "supports": "Replica, placement, and capacity requirements for AZ resilience"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard multi-AZ storage and Deep Archive restoration versus immediate retrieval"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Encoded the OCR-to-index data path, made immediate viewing explicit, and removed false generalizations about EBS durability, search autoscaling, and all Glacier classes."
+  ],
+  "review_status": "authored"
+}

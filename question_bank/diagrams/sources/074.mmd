@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Three independent HPC performance mechanisms
+accDescr: A single-AZ cluster placement group reduces network distance. EFA accelerates inter-node MPI communication. All nodes access a shared parallel FSx for Lustre filesystem.
+subgraph AZ[One Availability Zone]
+ subgraph PG[Cluster placement group: nearby compute]
+  A[MPI node A<br/>EFA]:::inputData <-->|MPI via libfabric| B[MPI node B<br/>EFA]:::inputData
+  B <-->|EFA transport| C[More MPI nodes<br/>EFA]:::inputData
+ end
+ A -->|Parallel file I/O| F[(FSx for Lustre)]:::storage
+ B --> F
+ C --> F
+end
+F -.-> CP[Checkpoint and recovery plan]:::output

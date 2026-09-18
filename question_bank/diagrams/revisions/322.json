@@ -1,0 +1,52 @@
+{
+  "question_id": "322",
+  "base_record_sha256": "4c2faf9c0d811c21f38094676bfb6ad5fd8083bf637b26aaef65ff3045efc134",
+  "record": {
+    "id": "322",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is an existing AWS Application Discovery Service customer completing an ongoing migration assessment. Its on-premises Linux and Windows servers have little documentation. The company needs an inventory, utilization history, running-process information, and network dependencies to build a total cost of ownership model before migrating workloads.\n\nWhich approach gathers the required inputs with the least custom development?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Define the applications in AWS Serverless Application Model templates. Use the templates to infer the existing servers' utilization and dependencies."
+      },
+      {
+        "id": "2",
+        "text": "Import a spreadsheet of server names and allocated CPU and memory into AWS Migration Hub. Use this static inventory as the utilization and dependency history."
+      },
+      {
+        "id": "3",
+        "text": "Install AWS Transform MGN replication agents and launch the servers on EC2. Collect production metrics after cutover to build the initial migration assessment."
+      },
+      {
+        "id": "4",
+        "text": "Install AWS Application Discovery Agents on the servers. Collect utilization, process, and connection data, then export the results for dependency analysis and cost modeling."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> collects the evidence the assessment needs before migration. Application Discovery Agents gather server configuration, performance history, running processes, and network connections. Exported observations can inform application grouping, instance sizing, and a cost model; collecting data is distinct from computing a complete business TCO.\n\nOption <<1>> describes intended serverless resources rather than measuring existing servers. Option <<2>> supplies a useful inventory but cannot create utilization history or observed dependencies that were never collected. Option <<3>> begins server replication and delays the assessment until after migration, reversing the required sequence.\n\nThe existing-customer premise matters. AWS Application Discovery Service closed to new customers on November 7, 2025. AWS recommends AWS Transform for new discovery projects; existing customers can complete ongoing projects.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/application-discovery/latest/userguide/what-is-appdiscovery.html\nhttps://docs.aws.amazon.com/application-discovery/latest/userguide/application-discovery-service-availability-change.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/322.mmd",
+  "diagram_alt": "Agents collect observed utilization and dependencies before those observations are used for costing and migration planning.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/what-is-appdiscovery.html",
+      "checked_on": "2026-09-18",
+      "supports": "Agent-collected utilization, process and network data can be exported for cost models and dependencies."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/application-discovery-service-availability-change.html",
+      "checked_on": "2026-09-18",
+      "supports": "New-customer closure occurred November 7, 2025, with existing-customer continuity and Transform guidance."
+    }
+  ],
+  "editorial_notes": [
+    "Corrected inherited October 7 closure date to November 7, 2025 from the dedicated current availability page. Retained existing-customer eligibility and key 4."
+  ],
+  "review_status": "authored"
+}

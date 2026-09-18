@@ -1,0 +1,17 @@
+sequenceDiagram
+accTitle: Patch one cohort while the other serves
+accDescr: Cohort B remains available while A is patched, B begins only after A passes the health gate.
+participant R as Rollout runbook
+participant A as Cohort A
+participant B as Cohort B
+R->>A: Install approved patches and reboot
+Note over B: Serves traffic
+A-->>R: Patch completion
+R->>A: Application health check
+alt Healthy
+R->>B: Install approved patches and reboot
+Note over A: Serves traffic
+else Unhealthy or timed out
+R->>R: Stop rollout
+Note over B: Remains available
+end

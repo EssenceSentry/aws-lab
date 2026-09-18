@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Observations become assessment inputs
+accDescr: Discovery agents capture three kinds of evidence before migration, which feed separate sizing and dependency analyses.
+S["Linux and Windows servers"]:::inputData
+S --> A["Application Discovery Agents"]
+A --> U["Utilization history"]:::inputData
+A --> P["Processes and connections"]:::inputData
+A --> I["Server configuration"]:::inputData
+U --> C["Sizing and TCO model"]:::output
+I --> C
+P --> G["Application dependency groups"]:::output
+G --> M["Migration plan"]:::output
+C --> M

@@ -1,0 +1,61 @@
+{
+  "question_id": "356",
+  "base_record_sha256": "5b4de58d2bab1ed24c8d615a36db29227ccc7bf9726239cba647a207a04858f7",
+  "record": {
+    "id": "356",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company connects an on-premises router to AWS through a 200 Mbps hosted Direct Connect connection. A transit virtual interface connects to a Direct Connect gateway associated with a transit gateway. The BGP session is established, the associations are available, and VPC and transit-gateway forwarding routes are correct. However, the on-premises router receives no advertisement for the required VPC CIDR. That CIDR is absent from the Direct Connect gateway association's allowed-prefix list.\n\nWhich change addresses the missing route advertisement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable VPC attachment propagation into the transit-gateway route table and leave the Direct Connect gateway allowed-prefix list unchanged, relying on propagation to advertise the VPC CIDR over BGP."
+      },
+      {
+        "id": "2",
+        "text": "Add the required CIDR, or an appropriate nonoverlapping aggregate, to the allowed prefixes for the Direct Connect gateway association with the transit gateway."
+      },
+      {
+        "id": "3",
+        "text": "Upgrade the hosted connection to 500 Mbps because transit virtual interfaces require at least that bandwidth, leaving the prefix configuration unchanged."
+      },
+      {
+        "id": "4",
+        "text": "Replace the hosted connection with a MACsec-capable dedicated connection and require encryption, leaving the gateway association and prefixes unchanged."
+      },
+      {
+        "id": "5",
+        "text": "Rotate the BGP authentication key on both ends of the established session, leaving the gateway association and prefixes unchanged."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. For a transit-gateway association, Direct Connect advertises the prefixes explicitly configured in the allowed-prefix list. It does not automatically advertise every VPC route from the transit-gateway route table. An aggregate must be appropriate for the intended destinations and must not overlap allowed prefixes of other transit gateways on the same Direct Connect gateway.\n\n<<1>> affects forwarding within the transit gateway but does not populate the separate advertisement list.\n\n<<3>> relies on an obsolete bandwidth restriction. Current documentation permits transit virtual interfaces on dedicated or hosted connections of any speed.\n\n<<4>> changes link encryption and infrastructure, not the missing BGP prefix. Direct Connect MACsec is not configured directly on a hosted connection.\n\n<<5>> changes session authentication. The session is already established, and rekeying does not originate the missing route.\n\nDo not apply virtual-private-gateway semantics here: with a virtual private gateway, the allowed list filters VPC CIDRs; with a transit gateway, the configured prefixes themselves are advertised.\n\nOfficial AWS references (checked September 18, 2026): [Direct Connect allowed prefixes](https://docs.aws.amazon.com/directconnect/latest/UserGuide/allowed-to-prefixes.html). [Direct Connect virtual interfaces](https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html). [Direct Connect MACsec](https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/356.diagram.json",
+  "diagram_alt": "Direct Connect allowed prefixes originate advertisements for a transit-gateway association, unlike their filtering role for a virtual private gateway.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/allowed-to-prefixes.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transit-gateway association prefixes are explicitly advertised, unlike virtual-private-gateway CIDR filtering."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transit VIFs support dedicated and hosted connections of any speed; BGP authentication is separate."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html",
+      "checked_on": "2026-09-18",
+      "supports": "MACsec provides link encryption on supported connections and is not supported directly on hosted connections."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the repaired answer and current 200 Mbps support; specified a live BGP session and missing allowed prefix to isolate the cause."
+  ],
+  "review_status": "authored"
+}

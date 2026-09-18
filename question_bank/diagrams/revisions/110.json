@@ -1,0 +1,57 @@
+{
+  "question_id": "110",
+  "base_record_sha256": "a4f4bd54135e5a9ae4bf26d8cef1d9c397ff2dd144a2948ba8cb9ac35af7b76e",
+  "record": {
+    "id": "110",
+    "exam_domain": "Design for New Solutions",
+    "question": "A broadcaster expects a short burst of millions of visits to a voting website. Viewers sign in with supported social identity providers and may cast one vote per contest. The company will retain its dynamic EC2 web application. It can acknowledge a vote as accepted for processing before the vote is tallied, but acknowledged votes must be durably queued and repeated delivery must not count a vote twice. Final totals are published after all accepted work has been reconciled.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Cognito social sign-in, CloudFront, an ALB, and web Auto Scaling. Write each vote synchronously to a fixed-capacity database, and acknowledge the vote even when the write times out to avoid slow responses."
+      },
+      {
+        "id": "2",
+        "text": "Use Cognito social sign-in, CloudFront, an ALB, and web Auto Scaling. Acknowledge votes after storing them in web-instance memory, then periodically flush the votes to DynamoDB."
+      },
+      {
+        "id": "3",
+        "text": "Use Cognito social sign-in, CloudFront, an ALB, and web Auto Scaling. Place votes in an SQS standard queue and have workers increment a DynamoDB counter unconditionally for every delivered message."
+      },
+      {
+        "id": "4",
+        "text": "Use Cognito social sign-in, CloudFront, an ALB, and web Auto Scaling. Acknowledge votes only after successful SQS submission. Have workers conditionally create a DynamoDB vote record keyed by contest and voter, and tally accepted records after processing completes."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Cognito supports social identity federation, while SQS decouples bursty acceptance from processing. A condition that prevents replacing an existing contest-and-voter record makes retries and repeated votes harmless to the count. The tally is derived from accepted unique records after processing and failed-message reconciliation.\n\n<<1>> can acknowledge a vote that was never committed. Synchronous persistence can be valid when sized and handled correctly, but acknowledging failed writes violates this requirement.\n\n<<2>> loses acknowledged votes if an instance fails before flushing memory.\n\n<<3>> ignores SQS standard queues' at-least-once delivery. Unconditional increments can count a retry twice.\n\nThe queue does not enforce the business rule of one vote per person or contest. Authenticate and authorize submissions, derive voter identity on the server, design DynamoDB keys to distribute load, and load-test queue consumers and service quotas before the event.\n\nOfficial AWS references (checked September 18, 2026): [Cognito identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-provider.html). [SQS delivery semantics](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html). [DynamoDB conditional writes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/110.mmd",
+  "diagram_alt": "Successful queue submission permits acknowledgment, while a conditional DynamoDB record prevents duplicate counting.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-provider.html",
+      "checked_on": "2026-09-18",
+      "supports": "Social identity provider sign-in"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html",
+      "checked_on": "2026-09-18",
+      "supports": "Redundant message storage and potential repeated delivery"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html",
+      "checked_on": "2026-09-18",
+      "supports": "attribute_not_exists prevents replacement of an existing keyed item"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added durable acknowledgment, an explicit one-vote rule, idempotent persistence, and reconciliation before final totals instead of implying that SQS alone prevents duplicate votes."
+  ],
+  "review_status": "authored"
+}

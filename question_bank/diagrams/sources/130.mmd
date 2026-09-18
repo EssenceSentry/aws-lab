@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: A role is attached through an instance profile
+accDescr: CloudFormation creates the role and its profile, then EC2 exposes temporary credentials for SDK requests to the permitted DynamoDB table.
+subgraph C[CloudFormation resources]
+R[IAM role<br/>EC2 trust + table permissions]:::inputData --> P[Instance profile<br/>Contains the role]:::inputData
+P -->|IamInstanceProfile| E[EC2 application instance]:::inputData
+end
+E --> M[Instance metadata<br/>Temporary role credentials]:::inputData
+M --> S[AWS SDK credential provider]:::decision
+S -->|Signed read / update| D[(Authorized DynamoDB table)]:::storage

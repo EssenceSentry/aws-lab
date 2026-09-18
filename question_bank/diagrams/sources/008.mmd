@@ -1,0 +1,15 @@
+sequenceDiagram
+accTitle: Collect evidence and delegate access separately
+accDescr: CloudTrail writes selected events to a protected log bucket. The external auditor assumes a limited role before reading that evidence.
+participant AWS as AWS resource activity
+participant CT as CloudTrail
+participant S3 as Audit log bucket
+participant Auditor
+participant STS
+AWS->>CT: Management and selected data events
+CT->>S3: Retained audit logs
+Auditor->>STS: AssumeRole with external ID
+Note over STS: Trust policy verifies firm and external ID
+STS-->>Auditor: Temporary audit-role credentials
+Auditor->>S3: Read permitted log objects
+S3-->>Auditor: Audit evidence

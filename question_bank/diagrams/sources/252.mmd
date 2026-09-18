@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Engine conversion and data replication converge
+accDescr: SQL Server schema is converted and validated separately from full-load and ongoing row changes before the MySQL target is used.
+SQL[SQL Server Always On]:::inputData
+SQL -->|schema and code| SCT[SCT assessment and conversion]
+SCT --> FIX[Resolve findings and test]
+FIX --> MYSQL[RDS for MySQL target]:::storage
+SQL -->|rows and transaction changes| DMS[DMS full load + CDC]
+DMS --> MYSQL
+MYSQL --> GATE{Caught up and reconciled?}:::decision
+GATE -->|yes, source writes stopped| APP[Switch application]:::output
+GATE -->|no| HOLD[Continue migration]:::warning

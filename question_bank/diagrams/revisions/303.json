@@ -1,0 +1,62 @@
+{
+  "question_id": "303",
+  "base_record_sha256": "c23918eadc2855faaa50893fc9fab54f4341244231cd08215a545edfffd0c910",
+  "record": {
+    "id": "303",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company has legacy S3 buckets containing sensitive objects. Some applications previously used object ACLs, but their authorized access has now been migrated to policies. The company must prevent accidental public access, receive prompt alerts about access-control changes, and automatically restore its approved configuration after unauthorized drift.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Schedule an hourly Lambda scan of bucket and object ACLs, remove public grants when found, and notify the security team after each scan."
+      },
+      {
+        "id": "2",
+        "text": "Invoke Lambda after every ObjectCreated notification to make the new object private, and rely on that function as the sole protection against public access."
+      },
+      {
+        "id": "3",
+        "text": "Enable all four Block Public Access settings and Bucket owner enforced, protect those settings from unauthorized changes, and route relevant CloudTrail events through EventBridge to SNS and scoped remediation."
+      },
+      {
+        "id": "4",
+        "text": "Encrypt objects with SSE-KMS and run Macie sensitive-data classification jobs, relying on encryption and classification alone to prevent public authorization."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Preventive S3 controls address public authorization before a reactive workflow runs. Bucket owner enforced disables ACL authorization, while Block Public Access restricts public ACL and policy paths. Protect the configuration itself, then audit relevant changes and use narrowly scoped automation to restore the approved state and notify security.\n\n<<1>> leaves an exposure interval between scans and omits the preventive controls.\n\n<<2>> runs after object creation and does not cover later bucket-policy or access-control changes. Event delivery also is not synchronous with the write.\n\n<<4>> confuses encryption and data classification with the requested authorization controls. Those are useful additional capabilities, but the proposed design does not enforce the approved public-access settings.\n\nEnable CloudTrail management events for bucket-level changes and selected S3 data events for relevant object operations such as PutObjectAcl. Match actual CloudTrail event names and schemas in EventBridge, and test both rejected attempts and successful drift. Block Public Access does not erase existing ACL entries; Bucket owner enforced disables their authorization effect. Verify legacy compatibility before the transition. Event-driven remediation is asynchronous, so it complements prevention and protected change permissions instead of guaranteeing zero exposure on its own.\n\nAWS documentation (checked September 18, 2026): [S3 Block Public Access](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html); [S3 Object Ownership](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html); [S3 CloudTrail event coverage](https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudtrail-logging-s3-info.html); [S3 events in EventBridge](https://docs.aws.amazon.com/eventbridge/latest/ref/events-ref-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/303.mmd",
+  "diagram_alt": "Public-access prevention applies on the authorization path, while an asynchronous audit and remediation path detects and repairs configuration drift.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+      "checked_on": "2026-09-18",
+      "supports": "The four Block Public Access settings prevent or restrict public ACL and policy access, with the most restrictive applicable settings taking effect."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html",
+      "checked_on": "2026-09-18",
+      "supports": "Bucket owner enforced disables ACL authorization and gives the bucket owner ownership of objects; existing ACL-based permissions should be migrated to policies first."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/cloudtrail-logging-s3-info.html",
+      "checked_on": "2026-09-18",
+      "supports": "Bucket policy and access-control changes are management events, while PutObject and PutObjectAcl are object data events that require explicit data-event logging."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/eventbridge/latest/ref/events-ref-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "EventBridge can route S3 API events delivered through CloudTrail as well as supported direct S3 events; these sources have distinct event schemas."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Specified that legacy ACL permissions have already migrated so Bucket owner enforced is feasible. Distinguished preventive controls from asynchronous remediation and included object data-event coverage explicitly."
+  ],
+  "review_status": "authored"
+}

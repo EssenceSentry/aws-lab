@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Retire a daily table only after the archive is complete
+accDescr: New writes move to the prepared next-day table, while the prior table is exported and checked for late writes before deletion.
+P[Prepare next daily table]:::process --> N[(New daily table receives writes)]:::storage
+P --> O[(Prior daily table)]:::storage
+O --> E[Export required raw data to S3]:::process
+E --> C{Export verified and late writes reconciled?}:::decision
+C -->|No| K[Retain table and complete archive]:::warning
+K --> E
+C -->|Yes| D[Delete retired daily table]:::output
+B[Reserve the continuously used capacity baseline]:::reference -.-> N

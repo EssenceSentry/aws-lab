@@ -1,0 +1,57 @@
+{
+  "question_id": "330",
+  "base_record_sha256": "b8cf1efadd5ab21619b37550c62f3943114b02e66ef4814572730f9dbf63ab74",
+  "record": {
+    "id": "330",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An AWS Organizations management account pays the consolidated bill for hundreds of member accounts. A weekly analytics job uses tagged EC2 resources across the organization and writes results to a tagged Redshift cluster. The company applies expenseUnit=analytics to its attributable resources. Finance needs an organization-wide report of the direct charges associated with that tag; it allocates shared and untagged charges separately.\n\nWhich approach supplies the required billing data?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Activate the expenseUnit user-defined cost allocation tag in the management account. Export organization-wide Cost and Usage Report data to S3, then query line items whose expenseUnit value is analytics."
+      },
+      {
+        "id": "2",
+        "text": "Activate the expenseUnit tag and create a Cost and Usage Report in the analytics member account. Treat that report as the consolidated organization report."
+      },
+      {
+        "id": "3",
+        "text": "Activate the tag only in the accounting member account and export that account's Cost and Usage Report. Use the common tag value to include other accounts automatically."
+      },
+      {
+        "id": "4",
+        "text": "Create a tag-based AWS Resource Group in the management account. Export the consolidated Cost and Usage Report without activating expenseUnit as a cost allocation tag."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> combines organization billing scope with billing-tag activation. Activate the tag key expenseUnit, then filter its values in CUR or CUR 2.0 data. The management-account export can supply consolidated member-account costs for the applicable billing period.\n\nOption <<2>> scopes the report to the analytics member account rather than all participating accounts. Option <<3>> has the same scope problem; a shared tag value does not expand a member account's report. Option <<4>> groups resources operationally but does not replace activation of the tag for billing reports.\n\nApply the tag to each relevant taggable resource and verify its appearance in the export before relying on the report. Tagging does not allocate every charge: shared resources, untagged usage, credits, and commitment discounts require the finance team's agreed cost basis and allocation rules. The requested direct-charge report is only one component of full chargeback.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html\nhttps://docs.aws.amazon.com/cur/latest/userguide/cur-consolidated-billing.html\nhttps://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/330.mmd",
+  "diagram_alt": "The tag key must be activated for billing, and untagged or shared charges remain outside the direct tagged-cost report.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html",
+      "checked_on": "2026-09-18",
+      "supports": "Activate a user-defined tag key for billing reports, separately from tagging resources."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/cur-consolidated-billing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Member account reports contain only that member account cost and usage."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html",
+      "checked_on": "2026-09-18",
+      "supports": "CUR 2.0 detailed billing data supports user-defined resource tags."
+    }
+  ],
+  "editorial_notes": [
+    "Scoped precision to attributable direct charges, distinguished tag key activation from value filtering, and preserved key 1."
+  ],
+  "review_status": "authored"
+}

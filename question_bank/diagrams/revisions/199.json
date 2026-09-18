@@ -1,0 +1,58 @@
+{
+  "question_id": "199",
+  "base_record_sha256": "13599bc47937f32fb78a637a0e87abad8ffa2866faa55c454e792e7823a16a1d",
+  "record": {
+    "id": "199",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A VPC contains EC2 clients, an AWS Managed Microsoft AD directory for private.example.com, and a Kinesis interface endpoint with private DNS enabled. VPC DNS support and DNS hostnames are enabled. The company wants clients to keep using AmazonProvidedDNS and resolve both the AWS private endpoint name and the AD namespace through centrally managed VPC configuration, without per-client split-DNS settings.\n\nWhich actions should the solutions architect take? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Route 53 Resolver outbound endpoint with reachable endpoint IPs and security rules for DNS forwarding, while retaining AmazonProvidedDNS as the client resolver."
+      },
+      {
+        "id": "2",
+        "text": "Create a Resolver FORWARD rule for private.example.com using that outbound endpoint and the two directory DNS IPs as targets. Associate the rule with the client VPC."
+      },
+      {
+        "id": "3",
+        "text": "Create a Resolver inbound endpoint instead of an outbound endpoint to send the clients' AD queries to the directory DNS servers."
+      },
+      {
+        "id": "4",
+        "text": "Configure each EC2 client with separate local resolver rules that send AD queries to the directory and other queries to AmazonProvidedDNS."
+      },
+      {
+        "id": "5",
+        "text": "Create a Directory Service conditional forwarder that sends private.example.com queries from the AD DNS servers back to AmazonProvidedDNS, without a VPC Resolver forwarding rule."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<2>> are correct. Clients send queries to AmazonProvidedDNS. The domain-specific Resolver rule forwards AD queries through the outbound endpoint to the directory DNS servers, while AWS private endpoint names continue to use normal VPC DNS resolution. Permit both UDP and TCP DNS traffic along the forwarding path.\n\n<<3>> reverses the direction: inbound endpoints accept queries entering the VPC Resolver from other networks. <<4>> can implement client-side split DNS, but violates the central-management requirement. <<5>> forwards in the wrong direction and does not teach AmazonProvidedDNS where the AD namespace is authoritative; it can also create a forwarding loop in a combined configuration.\n\nA Resolver rule references an outbound endpoint and is associated with a VPC; it is not a conditional-forwarder object stored inside that endpoint. Keep the private DNS and VPC DNS settings enabled for AWS service endpoint resolution.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-forwarding-outbound-queries.html\nhttps://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/199.mmd",
+  "diagram_alt": "A domain-specific outbound rule preserves normal AWS private-name resolution while routing the AD namespace to its DNS servers.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-forwarding-outbound-queries.html",
+      "checked_on": "2026-09-18",
+      "supports": "Outbound endpoints and VPC-associated forwarding rules direct namespace-specific queries to reachable DNS targets."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html",
+      "checked_on": "2026-09-18",
+      "supports": "Interface endpoint private DNS preserves service-name resolution through enabled VPC DNS."
+    }
+  ],
+  "editorial_notes": [
+    "Added a central-management constraint so per-client split DNS is a valid mechanism but the wrong design for this requirement.",
+    "Replaced the vague endpoint-contained-forwarder distractor with a concrete wrong-direction Directory Service configuration."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,18 @@
+stateDiagram-v2
+accTitle: The production alias controls the release
+accDescr: A built and validated version receives a canary share through the alias. Alarms roll back, successful observation moves all traffic to the new version.
+state "Build and test v2" as Build
+state "Alias: 100% v1" as Old
+state "Pre-traffic validation" as Validate
+state "Alias: 90% v1 / 10% v2" as Canary
+state "Alias: 100% v2" as New
+Build --> Validate: Publish v2
+Old --> Validate: Retain v1 as rollback target
+Validate --> Canary: Validation succeeds
+Validate --> Old: Validation fails
+Canary --> Old: Alarm or failed validation
+Canary --> New: Observation interval succeeds
+note right of Canary
+ API Gateway invokes the alias.
+ Percentages illustrate a canary policy.
+end note

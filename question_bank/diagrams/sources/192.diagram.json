@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Allowed keys are not the same as required tags",
+  "columns": [
+    "Request tags",
+    "Keys all in allowed set?",
+    "Both valid required tags?"
+  ],
+  "rows": [
+    [
+      "Owner=team-a; CostCenter=42",
+      "Yes",
+      "Yes"
+    ],
+    [
+      "Owner=team-a only",
+      "Yes",
+      "No, CostCenter missing"
+    ],
+    [
+      "No tags",
+      "Can match ForAllValues alone",
+      "No, both missing"
+    ],
+    [
+      "Owner empty; CostCenter=42",
+      "Yes",
+      "No, Owner value invalid"
+    ]
+  ],
+  "footnote": "Use per-key presence and value checks. This table evaluates the tag conditions, not the full IAM permission decision.",
+  "emphasis_rows": [
+    0
+  ]
+}

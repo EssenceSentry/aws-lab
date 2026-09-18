@@ -1,0 +1,54 @@
+{
+  "question_id": "043",
+  "base_record_sha256": "b95dfe0b4f5f07c9271afeea8aac28b060c0e018378c8cfc75057915d562c8a3",
+  "record": {
+    "id": "043",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A manufacturer has 500 sensors that each publish a small telemetry record every 10 seconds. Records require a short stateless enrichment before delivery to an S3 data lake. No device or application needs to subscribe to the telemetry topics. Under normal operation, records should arrive in S3 within 20 minutes.\n\nWhich design minimizes ingestion overhead and avoids managing processing servers?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Publish through the AWS IoT Core message broker. Start a Step Functions Standard workflow for every record to invoke a Lambda enrichment function and write one S3 object."
+      },
+      {
+        "id": "2",
+        "text": "Publish to AWS IoT Core Basic Ingest topics. Route records to Amazon Data Firehose, use a Lambda transformation, and configure short transformation buffering with a 300-second S3 delivery buffer."
+      },
+      {
+        "id": "3",
+        "text": "Route each record from AWS IoT Core into a Timestream database. Schedule Lambda queries to read unprocessed records, enrich them, track progress and write batches to S3."
+      },
+      {
+        "id": "4",
+        "text": "Route records from AWS IoT Core Basic Ingest to Kinesis Data Streams. Run an EC2 Auto Scaling group to enrich records, manage stream checkpoints and upload S3 objects."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Choose <<2>>. Basic Ingest routes published messages directly to the rules engine, bypassing broker messaging charges when publish/subscribe fan-out is unnecessary. It still uses authenticated IoT connections. Firehose manages buffering and S3 delivery, and invokes Lambda on batches for enrichment. Transformation buffering, function time and destination buffering all contribute to arrival latency; a 300-second delivery interval leaves room within the stated 20-minute normal-operation target.\n\n<<1>> is technically possible, but per-record Standard workflows and individual S3 writes add avoidable orchestration and request overhead for this simple task. <<3>> introduces a staging database plus checkpoint and polling logic without a time-series query requirement. <<4>> adds servers and stream-consumer management that the question explicitly seeks to avoid.\n\nBuffer intervals are delivery hints, not a hard end-to-end deadline during failures or retries. Monitor delivery freshness and transformation errors. Use the IoT broker instead when other subscribers need the messages.\n\nAWS documentation (checked September 18, 2026): [IoT Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html), [Firehose transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/043.mmd",
+  "diagram_alt": "Two distinct Firehose buffers and enrichment time contribute to the S3 delivery latency budget.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html",
+      "checked_on": "2026-09-18",
+      "supports": "Basic Ingest bypasses the publish/subscribe broker and its messaging charges while using existing IoT connections."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html",
+      "checked_on": "2026-09-18",
+      "supports": "Firehose buffers batches for Lambda transformation and separately buffers delivery to the destination."
+    }
+  ],
+  "editorial_notes": [
+    "Corrected the inherited claim that Basic Ingest removes persistent connections.",
+    "Resolved inconsistent 300-versus-900-second explanation and distinguished transformation buffering from destination buffering.",
+    "Removed the claim that Step Functions is inherently slow or only suitable for long-running workflows."
+  ],
+  "review_status": "authored"
+}

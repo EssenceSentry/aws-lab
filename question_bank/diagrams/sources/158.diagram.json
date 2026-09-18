@@ -1,0 +1,26 @@
+{
+  "type": "table",
+  "title": "Place interruption risk according to node responsibility",
+  "columns": [
+    "EMR role",
+    "Responsibility and purchasing choice here"
+  ],
+  "rows": [
+    [
+      "Primary",
+      "Cluster coordination: On-Demand"
+    ],
+    [
+      "Core",
+      "HDFS blocks and compute: On-Demand"
+    ],
+    [
+      "Task",
+      "Retryable compute without HDFS blocks: Spot"
+    ]
+  ],
+  "footnote": "Use release-appropriate node labels to keep critical application masters on stable capacity. On-Demand can still fail.",
+  "emphasis_rows": [
+    2
+  ]
+}

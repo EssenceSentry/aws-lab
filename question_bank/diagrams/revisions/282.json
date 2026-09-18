@@ -1,0 +1,57 @@
+{
+  "question_id": "282",
+  "base_record_sha256": "93ac6487a23bca805bec6f552002ceefa661711f7629129801b22739bf065461",
+  "record": {
+    "id": "282",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company is building a JSON API with indexed key-based access and small records. Users in two AWS Regions must read and write locally, and the API must remain usable if either Region fails. The application accepts cross-Region eventual consistency and a nonzero replication RPO, and has a tested conflict-handling strategy. Load tests define the peak traffic, including all traffic moving to one Region after failure.\n\nWhich design meets these requirements with managed scaling and no container-host administration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run Lambda APIs and a Multi-AZ Amazon DocumentDB cluster in one Region, and route all global users to that Region."
+      },
+      {
+        "id": "2",
+        "text": "Run APIs in both Regions backed by separate S3 buckets with one-way replication, and perform all record updates against the primary bucket."
+      },
+      {
+        "id": "3",
+        "text": "Run ECS services on Fargate behind regional ALBs in both Regions. Use on-demand DynamoDB MREC global tables and Route 53 latency alias records with target health evaluation. Configure scaling and tested compute and database headroom for regional failover."
+      },
+      {
+        "id": "4",
+        "text": "Run Fargate APIs in both Regions with an Aurora global database, directing writes to the primary Region and using the secondary only for reads without promotion or write forwarding."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Regional Fargate services remove container-host management, and DynamoDB global-table replicas accept reads and writes in each Region. MREC asynchronously replicates changes and resolves concurrent item updates using last-writer-wins semantics, which the stated application contract accepts. Health-aware DNS can redirect new resolutions toward the healthy regional endpoint.\n\n<<1>> handles an Availability Zone failure but leaves the application dependent on one Region.\n\n<<2>> retains a single write Region and does not provide the required indexed record access and local writes in both Regions.\n\n<<4>> provides regional read capacity, but its stated write path depends on the primary Region and lacks the failover procedure needed to restore writes.\n\nAuto scaling is not instant spare capacity. Validate Fargate quotas, startup time, and survivor capacity, plus DynamoDB warm throughput and limits. DNS caching and client retry behavior also affect recovery. MREC does not promise zero data loss or globally strong reads.\n\nOfficial AWS references (checked September 18, 2026): [Global table consistency modes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html). [DynamoDB scaling properties](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html). [Health-aware ALB alias records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/282.mmd",
+  "diagram_alt": "Two complete regional read/write paths share asynchronous replication, with capacity and DNS behavior remaining explicit recovery constraints.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html",
+      "checked_on": "2026-09-18",
+      "supports": "MREC asynchronous replication, regional writes and conflict resolution"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html",
+      "checked_on": "2026-09-18",
+      "supports": "On-demand growth has warm-throughput and quota considerations"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Alias routing and evaluate-target-health configuration"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Specified MREC consistency and accepted RPO, removed unconditional instant-scaling claims, and required tested capacity in the surviving Region."
+  ],
+  "review_status": "authored"
+}

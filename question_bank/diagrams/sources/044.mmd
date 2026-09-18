@@ -1,0 +1,17 @@
+sequenceDiagram
+accTitle: Authenticate, authorize, then transfer directly
+accDescr: Cognito authenticates a user, the API checks object access, and a presigned URL delegates a direct S3 download.
+participant U as Client
+participant C as Cognito
+participant A as API Gateway + Lambda
+participant D as DynamoDB metadata
+participant S as Private S3 bucket
+U->>C: Sign in
+C-->>U: User token
+U->>A: Request object with token
+A->>A: Validate token
+A->>D: Check object ownership or entitlement
+D-->>A: Authorized object key
+A-->>U: Short-lived presigned GET URL
+U->>S: HTTPS GET using signed URL
+S-->>U: Object bytes

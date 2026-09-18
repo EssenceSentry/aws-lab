@@ -1,0 +1,52 @@
+{
+  "question_id": "067",
+  "base_record_sha256": "cf2d6c708e08256bc2d08ef213e332be9dc343f6a32f20129f16001ffbaa7aec",
+  "record": {
+    "id": "067",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company hosts an internal application on EC2 instances with private IP addresses. Employees need access from both the corporate office and home internet connections. Access must require the corporate identity provider, and the application must not expose a public endpoint.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Site-to-Site VPN from the office router to the VPC and allow application traffic only from the office network."
+      },
+      {
+        "id": "2",
+        "text": "Create an AWS Direct Connect connection from the office to the VPC and configure office workstations to use it."
+      },
+      {
+        "id": "3",
+        "text": "Create an AWS Client VPN endpoint with federated authentication. Associate target subnets, configure application network routes and group authorization rules, and allow the Client VPN security group to access the private application."
+      },
+      {
+        "id": "4",
+        "text": "Create an internet-facing Application Load Balancer with a public TLS certificate and forward requests to the application without configuring user authentication."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> provides authenticated remote access from individual employee devices. Client VPN authentication establishes identity; authorization rules, routes and security groups then restrict access to the private application. Users at home and in the office can use the client connection.\n\n<<1>> connects the office network but provides no access path for employees on home internet. <<2>> has the same location limitation and does not authenticate remote employees. <<4>> exposes a public application endpoint, and a server TLS certificate alone does not establish employee identity.\n\nAuthentication and network reachability are separate checks. A successful VPN connection is insufficient unless authorization rules, endpoint routes and application security groups also allow the requested destination.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpn/latest/clientvpn-admin/client-authorization.html\nhttps://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-getting-started.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/067.mmd",
+  "diagram_alt": "Employee identity is checked before group authorization, route reachability and application security group access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/client-authorization.html",
+      "checked_on": "2026-09-18",
+      "supports": "Client VPN security groups and authorization rules restrict access, including IdP groups."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-getting-started.html",
+      "checked_on": "2026-09-18",
+      "supports": "Target network association, routing and authorization are required for private resource access."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced an inaccurate public-subnet exposure argument with explicit private endpoint and employee identity requirements."
+  ],
+  "review_status": "authored"
+}

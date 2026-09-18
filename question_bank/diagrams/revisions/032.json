@@ -1,0 +1,52 @@
+{
+  "question_id": "032",
+  "base_record_sha256": "df094baa75b6c9aac74fe08faefcd18f96afe3c81af9d72e726473c62bce2750",
+  "record": {
+    "id": "032",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company manages Ubuntu EC2 instances in development, test, and production using an existing Systems Manager Patch Manager workflow. Each environment has its own approved patch baseline. A security update must be installed in development and test now, but production must remain unchanged until application testing succeeds. All instances are managed nodes.\n\nWhich approach meets these requirements with the least custom administration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Tag instances by environment and operating system. Maintain separate shell scripts that implement package approval, installation, reboot handling, and compliance reporting for each environment."
+      },
+      {
+        "id": "2",
+        "text": "Tag every Ubuntu instance with the same PatchGroup value. Register the development baseline for that group and run AWS-RunPatchBaseline with Install against all Ubuntu instances."
+      },
+      {
+        "id": "3",
+        "text": "Assign distinct PatchGroup values for each environment and register the appropriate Ubuntu baseline for each. Run AWS-RunPatchBaseline with Install only for development and test targets. Review compliance and application tests before approving and targeting production."
+      },
+      {
+        "id": "4",
+        "text": "Create one nightly maintenance window targeting every Ubuntu instance. Use the production baseline for the whole fleet and install its approved patches in every environment before reviewing test results."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Correct: <<3>>. Environment-specific patch groups map nodes to the right baseline. Explicitly targeting only development and test controls which instances receive the current installation. After successful testing, update production approval as required and run a separately targeted installation.\n\n<<1>> can implement the workflow but recreates capabilities already supplied by Patch Manager.\n\n<<2>> discards the environment boundary and targets production along with nonproduction nodes. Different environment baselines cannot be selected by a shared Ubuntu-only group value.\n\n<<4>> has a schedule but lacks the required staged approval and separate baseline selection. Maintenance windows are useful when paired with correct targets and tasks.\n\nThe operating system determines a compatible baseline; environment determines approval and rollout timing. Patch-group tags can use PatchGroup or Patch Group, and a node belongs to one group. Current Quick Setup patch policies provide another managed approach and do not use patch groups.\n\nOfficial AWS references (checked 2026-09-18):\n[Patch groups and baseline selection](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-patch-groups.html)\n[Quick Setup patch policies](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-policies.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/032.mmd",
+  "diagram_alt": "Baseline selection and explicit target selection preserve the production boundary until tests pass.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-patch-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported tag keys, one group per node, environment-specific baseline associations"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-policies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Current patch policies select baselines without patch groups"
+    }
+  ],
+  "editorial_notes": [
+    "Explicitly retained an existing patch-group workflow and the production gate. Removed unsupported automatic patching assertions and categorical dismissal of Maintenance Windows. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

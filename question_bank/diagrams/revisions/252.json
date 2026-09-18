@@ -1,0 +1,52 @@
+{
+  "question_id": "252",
+  "base_record_sha256": "44c0044872263fb28483f5bf6b962bd6cef4021053ce5562e923135fb0a1259f",
+  "record": {
+    "id": "252",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company will migrate a supported on-premises SQL Server Always On database to RDS for MySQL. It has approved the engine change and necessary application changes, prefers managed AWS services, and needs the source to remain writable until a short final cutover.\n\nWhich migration plan is most appropriate?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Upload a native SQL Server backup to S3 and use Glue to restore that binary backup directly as an RDS for MySQL database."
+      },
+      {
+        "id": "2",
+        "text": "Copy a SQL Server backup to S3 with DataSync and execute SQL Server BULK INSERT on RDS for MySQL to restore all schema and data."
+      },
+      {
+        "id": "3",
+        "text": "Assess and convert the schema with AWS SCT, resolve unsupported objects and test the application, then use DMS full load plus change data capture into RDS for MySQL. Validate and complete a controlled cutover."
+      },
+      {
+        "id": "4",
+        "text": "Configure DataSync to replicate the live SQL Server database files directly into the RDS for MySQL instance, then promote the copied files as the MySQL database."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Heterogeneous migration requires both engine-compatible schema and a data transfer path. SCT assists with schema conversion and identifies work that must be completed manually; DMS can load data and capture ongoing changes while the source remains in use.\n\n<<1>> treats an engine-specific binary backup as a MySQL restore format. <<2>> combines file transfer with a SQL Server command that does not restore a SQL Server database into MySQL. <<4>> treats a managed database endpoint as a filesystem destination and omits engine conversion and database-aware change capture.\n\nFor an Always On source, configure the supported DMS source topology, listener, permissions and replication prerequisites. Test source failover, data types and application semantics. Stop writes for cutover, let changes catch up and reconcile the target. Schema conversion and CDC do not guarantee that every stored procedure or SQL behavior works unchanged.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.SQLServer.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/252.mmd",
+  "diagram_alt": "Schema compatibility and database-aware data replication are separate tasks that must both be validated before cutover.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCT supports SQL Server-to-MySQL schema conversion and identifies objects that need manual conversion."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.SQLServer.html",
+      "checked_on": "2026-09-18",
+      "supports": "DMS supports SQL Server source full-load and ongoing replication with specific Always On listener, replica and CDC prerequisites."
+    }
+  ],
+  "editorial_notes": [
+    "Kept the heterogeneous target but added explicit approval of application changes and short-cutover requirements; removed the inaccurate BULK INSERT explanation."
+  ],
+  "review_status": "authored"
+}

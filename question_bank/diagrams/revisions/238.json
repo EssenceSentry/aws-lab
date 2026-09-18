@@ -1,0 +1,52 @@
+{
+  "question_id": "238",
+  "base_record_sha256": "fb1ff573c2a1b6579d9f025c10e556ed06c13e51fff2bd68197c388c0daeef5e",
+  "record": {
+    "id": "238",
+    "exam_domain": "Design for New Solutions",
+    "question": "A retailer runs a dynamic e-commerce site in its data center. Its HTTPS origin is publicly reachable through a resolvable DNS name. Most bandwidth serves cacheable product photos and videos, while checkout and account pages are personalized. A global promotion starts in a few days, but an application migration to AWS will take three months.\n\nWhich change can reduce origin traffic quickly while retaining the existing application?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Move the site's authoritative DNS to Route 53 and keep all browser requests pointed directly at the existing data-center servers."
+      },
+      {
+        "id": "2",
+        "text": "Copy the website files to an S3 website endpoint and retire the data-center application, relying on the static website endpoint to execute checkout and account operations."
+      },
+      {
+        "id": "3",
+        "text": "Complete the planned application and database migration to AWS, then introduce weighted DNS routing before starting the promotion."
+      },
+      {
+        "id": "4",
+        "text": "Configure CloudFront with the existing HTTPS server as a custom origin. Cache product media, configure personalized paths to bypass caching and forward required request data, and point the public site hostname to the distribution."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. CloudFront can use an on-premises HTTPS server as a custom origin, so cached product media can be served from edge locations before the application migration. Separate cache behaviors let dynamic requests continue to reach the existing application with the cookies, headers, and other request data it needs.\n\n<<1>> can improve DNS operations, but DNS hosting does not cache product media or remove those HTTP requests from the data-center servers.\n\n<<2>> can host static assets, but an S3 website endpoint cannot execute the retailer's dynamic checkout and account application.\n\n<<3>> misses the stated deadline because it depends on finishing the three-month migration.\n\nUse the origin DNS name rather than the public hostname that will point to CloudFront, to avoid a routing loop. Configure origin TLS, permitted methods, and caching rules for the actual paths. Personalized responses should not enter a shared cache unless the cache key and policy intentionally isolate them. CloudFront still sends cache misses and dynamic requests to the origin, so this design offloads cacheable traffic without eliminating origin capacity needs. Moving authoritative DNS to Route 53 is optional.\n\nAWS documentation (checked September 18, 2026): [CloudFront custom HTTP origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html); [CloudFront cache hits and origin fetches](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/238.mmd",
+  "diagram_alt": "Media cache hits avoid the data center, while cache misses and uncached personalized operations retain the existing origin.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html",
+      "checked_on": "2026-09-18",
+      "supports": "A publicly reachable HTTP or HTTPS server outside AWS can be a custom origin using its resolvable DNS name, origin port, and protocol."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront serves cached objects from edge locations and fetches missing content from configured origins, including S3 and HTTP servers."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Replaced invalid Transit Gateway/App Runner and CloudFront Functions/DNS combinations, required reachable HTTPS origin details, and removed the implication that moving DNS to AWS is necessary."
+  ],
+  "review_status": "authored"
+}

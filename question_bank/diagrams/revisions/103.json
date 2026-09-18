@@ -1,0 +1,52 @@
+{
+  "question_id": "103",
+  "base_record_sha256": "980681676261fc2c19317827e9d54cc9d5f1d1424271f63849c9f386354bc2b4",
+  "record": {
+    "id": "103",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company has an on-premises data center in Texas and nonoverlapping VPCs in us-east-1 and us-west-2. It already has an AWS Direct Connect connection with sufficient bandwidth and wants both VPCs reachable over that dedicated connection. Connection redundancy is handled by a separate project. The company does not require routing between the VPCs.\n\nWhich solution meets the requirement with the least additional connectivity infrastructure?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Provision a separate Direct Connect connection for each AWS Region and attach each connection to that Region's virtual private gateway."
+      },
+      {
+        "id": "2",
+        "text": "Create a private virtual interface on the existing connection to a Direct Connect gateway. Associate a virtual private gateway from each VPC with the Direct Connect gateway and configure the required routes."
+      },
+      {
+        "id": "3",
+        "text": "Connect the existing private virtual interface directly to the us-east-1 VPC. Peer that VPC with the us-west-2 VPC and use the peering connection to forward on-premises traffic."
+      },
+      {
+        "id": "4",
+        "text": "Create an internet-based Site-to-Site VPN from the data center to each VPC and use these tunnels for all application traffic."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. A Direct Connect gateway can associate with virtual private gateways for VPCs in different Regions. A private virtual interface connects the existing Direct Connect connection to that gateway, allowing reuse of the dedicated connection. Route advertisements, allowed prefixes, and VPC routes must agree.\n\n<<1>> can provide connectivity, but requires additional connections when the existing connection has sufficient capacity.\n\n<<3>> relies on edge-to-edge routing that VPC peering does not provide. Peering does not let the second VPC transit the first VPC's Direct Connect attachment.\n\n<<4>> provides encrypted connectivity but uses the internet rather than the required dedicated path.\n\nA Direct Connect gateway is a routing construct, not a physical circuit. It does not itself add connection redundancy, encrypt traffic, or enable transit between its associated VPCs.\n\nOfficial AWS references (checked September 18, 2026): [Direct Connect gateway associations](https://docs.aws.amazon.com/directconnect/latest/UserGuide/virtualgateways.html). [VPC peering limitations](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/103.mmd",
+  "diagram_alt": "A Direct Connect gateway fans one private VIF out to virtual private gateways in two Regions without providing VPC-to-VPC transit.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/virtualgateways.html",
+      "checked_on": "2026-09-18",
+      "supports": "Private VIF to Direct Connect gateway, cross-Region virtual private gateway associations, nonoverlapping CIDRs, and no VPC transit"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html",
+      "checked_on": "2026-09-18",
+      "supports": "Peering does not support edge-to-edge routing through another VPC connection"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added the existing physical connection and separated redundancy scope; removed implication that a Direct Connect gateway alone provisions dedicated bandwidth."
+  ],
+  "review_status": "authored"
+}

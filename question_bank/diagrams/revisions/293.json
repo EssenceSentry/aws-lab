@@ -1,0 +1,52 @@
+{
+  "question_id": "293",
+  "base_record_sha256": "fb4f259aea85c42535a9097636d0bfd6f6b2f3941741b1ed85f58e70d46c369a",
+  "record": {
+    "id": "293",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A public web portal receives abusive requests from a small, verified set of source CIDR ranges. Clients currently connect directly to public EC2 instances, so those source addresses are visible at the subnet boundary. The team must quickly block those ranges at that boundary while preserving HTTPS access for other Internet clients. No application or topology change is required.\n\nWhich control meets this requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add inbound network ACL deny entries for the abusive CIDR ranges with lower rule numbers than the general HTTPS allow entries, preserving the other required inbound and outbound rules."
+      },
+      {
+        "id": "2",
+        "text": "Move the web instances into private subnets and remove all public ingress without adding an Internet-facing frontend."
+      },
+      {
+        "id": "3",
+        "text": "Add routes for the abusive source CIDR ranges to the web-subnet route table and configure the Internet gateway to reject those source addresses."
+      },
+      {
+        "id": "4",
+        "text": "Add explicit deny rules for the abusive CIDR ranges to the existing EC2 security group while retaining its public HTTPS allow rule."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Network ACLs support explicit subnet-level deny entries and evaluate rules in ascending numeric order, stopping at the first match. Put the narrow deny rules before the broader HTTPS allow so the known abusive addresses are rejected while other clients retain access.\n\n<<2>> removes legitimate public access as well as the unwanted traffic because this design adds no public frontend.\n\n<<3>> confuses routing with source-address filtering. A route table selects a next hop for destination traffic, and an Internet gateway does not provide the proposed source-CIDR deny rules.\n\n<<4>> requests a security-group feature that does not exist. Security groups contain allow rules, so a narrow rule cannot override a broad HTTPS allow with an explicit deny.\n\nPreserve required outbound response rules because ACLs are stateless. Review the number and order of entries and test a blocked source alongside a legitimate client. This answer depends on direct client-source visibility at the subnet boundary. If traffic instead reaches the instances through CloudFront or an application proxy, filtering the original HTTP client may require controls at that frontend rather than matching the proxy's network address.\n\nAWS documentation (checked September 18, 2026): [Network ACL rule evaluation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html); [Security group allow rules](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/293.mmd",
+  "diagram_alt": "A low-numbered deny wins before the broad HTTPS allow because ACL evaluation stops at the first matching rule.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html",
+      "checked_on": "2026-09-18",
+      "supports": "Subnet ACLs support explicit allow and deny rules, use the first matching rule in numeric order, and require return-traffic rules because they are stateless."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security groups support allow rules but no explicit deny rules, and permissions from associated groups are combined."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added direct source-address visibility and the required subnet boundary, so a NACL recommendation does not accidentally match only a CDN or proxy address. Rule ordering and legitimate return traffic are explicit."
+  ],
+  "review_status": "authored"
+}

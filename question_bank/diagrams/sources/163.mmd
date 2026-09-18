@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Authenticate roaming devices before private ERP access
+accDescr: An employee's VPN client establishes an authenticated tunnel to AWS Client VPN. Authorization and routing then permit access to the ERP inside private subnets.
+U[Roaming employee laptop]:::external -->|TLS VPN tunnel| V[AWS Client VPN endpoint]:::process
+I[Employee identity provider]:::external -.->|Authentication| V
+V --> A{Network access authorized?}:::decision
+A -->|No| X[Reject connection to ERP network]:::error
+subgraph P[Private VPC application network]
+R[Routes and security groups]:::process --> E[ERP private endpoint]:::output
+end
+A -->|Yes| R

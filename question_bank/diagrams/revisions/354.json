@@ -1,0 +1,52 @@
+{
+  "question_id": "354",
+  "base_record_sha256": "36236711cac50d3773d1a4b90f9658471c851dc8e0e51dface1fb8fe6c0023b2",
+  "record": {
+    "id": "354",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company owns a transit gateway in its network account. Existing production VPCs use this gateway. A staging account frequently creates and deletes VPCs and needs broad IP connectivity to approved production networks. The staging team must manage its own VPC attachments without requesting manual acceptance each time. The network team will retain control of transit-gateway route tables and has approved an automatic routing policy for staging attachments.\n\nWhich design meets these requirements with the fewest additional network components?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Share the existing transit gateway with the staging account through AWS RAM and enable automatic acceptance of shared attachments. Grant staging permission to manage its own VPC attachments and VPC routes, while the network account implements the approved transit-gateway routing policy."
+      },
+      {
+        "id": "2",
+        "text": "Create a transit gateway in the staging account, peer it with the production transit gateway, and have the network team accept the peering and maintain routes across both gateways."
+      },
+      {
+        "id": "3",
+        "text": "Publish each approved production application through a separate PrivateLink endpoint service and create interface endpoints in each staging VPC instead of routed connectivity."
+      },
+      {
+        "id": "4",
+        "text": "Route staging traffic through an on-premises hub over dedicated connectivity and return it to the production VPCs through the existing transit gateway."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. RAM allows the staging account to attach its own VPCs to the existing transit gateway. Automatic acceptance removes the recurring attachment-approval step. The owner must still configure appropriate transit-gateway associations, propagation, and routes, and staging must configure its VPC routes and security controls.\n\n<<2>> can connect the networks but adds a gateway, peering, and route-management work when one shared gateway is sufficient.\n\n<<3>> is suitable for exposing selected services privately. It does not provide the requested broad routed IP connectivity between networks.\n\n<<4>> can be part of a hybrid network, but adds a circuit and an on-premises dependency to an AWS-to-AWS path that the existing gateway can provide.\n\nSharing a transit gateway does not delegate its route tables: recipient accounts cannot modify the owner's transit-gateway route tables, associations, or propagation settings.\n\nOfficial AWS references (checked September 18, 2026): [Shared transit gateways](https://docs.aws.amazon.com/vpc/latest/tgw/working-with-transit-gateways.html). [Accept a shared attachment](https://docs.aws.amazon.com/vpc/latest/tgw/acccept-tgw-attach.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/354.mmd",
+  "diagram_alt": "The staging account creates its own attachments, while automatic acceptance and transit-gateway route policy remain owner-controlled.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/tgw/working-with-transit-gateways.html",
+      "checked_on": "2026-09-18",
+      "supports": "Recipients can create VPC attachments but cannot modify the owner transit-gateway route tables, associations, or propagations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/tgw/acccept-tgw-attach.html",
+      "checked_on": "2026-09-18",
+      "supports": "Auto accept shared attachments eliminates manual acceptance for shared VPC attachments."
+    }
+  ],
+  "editorial_notes": [
+    "Explicitly retained transit-gateway route control with the owner; automatic attachment acceptance alone is not complete routing configuration."
+  ],
+  "review_status": "authored"
+}

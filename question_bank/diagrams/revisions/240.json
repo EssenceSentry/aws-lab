@@ -1,0 +1,77 @@
+{
+  "question_id": "240",
+  "base_record_sha256": "e945355162eec6b2ba86262eeac818189ab56d1c0b09ac09ed1f2958f44d499a",
+  "record": {
+    "id": "240",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations with all features enabled and one member account per project. Every EC2 instance has a Name tag, but some lack the required Project tag. AWS Config records EC2 instances in the relevant accounts and Regions. The company wants a central AWS Config compliance view and a guardrail that prevents new untagged launches by member-account users, ordinary IAM roles, and member-account root users, even when local administrators grant broad IAM permissions.\n\nWhich controls should the company implement? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Amazon Inspector vulnerability assessments as the required-Project-tag inventory across the organization."
+      },
+      {
+        "id": "2",
+        "text": "Deploy the AWS Config required-tags rule in each relevant account and Region, scope it to EC2 instances, and set Project as a required tag key."
+      },
+      {
+        "id": "3",
+        "text": "Attach an SCP to the applicable organization root or OU that denies ec2:RunInstances when the required Project tag is absent from the instance tags in the request."
+      },
+      {
+        "id": "4",
+        "text": "Attach a tag-enforcement IAM policy only to the developer roles currently known in each project account, and allow local administrators to manage those policies."
+      },
+      {
+        "id": "5",
+        "text": "Enable the Security Hub resource tagging standard with requiredTagKeys left at its default value, and use its EC2 tagging findings to identify missing Project tags."
+      },
+      {
+        "id": "6",
+        "text": "Create an organization AWS Config aggregator in the central account to view the member accounts and Regions and query required-tags compliance."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3",
+      "6"
+    ],
+    "explanation": {
+      "text": "<<2>>, <<3>>, and <<6>> are correct. Config evaluates existing recorded EC2 instances against the specific Project requirement. The SCP denies noncompliant launch requests for covered member-account principals, regardless of broad local IAM allows. The aggregator brings the resulting resource and compliance data into a central read-only view.\n\n<<1>> uses a vulnerability-management service as though it were the required-tag compliance rule.\n\n<<4>> covers only selected roles and leaves the controls under local administration. It does not establish the required organization-level limit for all covered member-account principals, including root.\n\n<<5>> is a configuration error, not a lack of tagging support in Security Hub. Its tagging controls can require specific keys, but the default checks whether any tag exists. These instances already have Name, so that setting does not detect missing Project. It also does not supply the requested Config aggregation.\n\nScope the launch denial to the EC2 instance resource and use tag-on-create request conditions, including exact tag-key handling where required. The caller still needs normal launch and CreateTags permissions. SCPs do not grant permissions and do not cover management-account principals or service-linked roles. Config detects existing noncompliance but does not block creation, and an aggregator does not deploy the rules. Preventing later tag removal would require an additional guardrail beyond this launch requirement.\n\nAWS documentation (checked September 18, 2026): [AWS Config required-tags rule](https://docs.aws.amazon.com/config/latest/developerguide/required-tags.html); [EC2 tag-on-create IAM conditions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html); [Organization service control policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html); [AWS Config organization aggregation](https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html); [Security Hub resource tagging standard](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-tagging.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/240.mmd",
+  "diagram_alt": "The SCP blocks missing tags at launch, while Config rules evaluate recorded instances and the aggregator centralizes their compliance results.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/required-tags.html",
+      "checked_on": "2026-09-18",
+      "supports": "The required-tags managed rule evaluates supported recorded resources, including EC2 instances, for specified tag keys; it detects rather than prevents creation."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html",
+      "checked_on": "2026-09-18",
+      "supports": "RequestTag and TagKeys conditions on resource-creation actions constrain tags supplied at creation, and tagging on creation also requires appropriate CreateTags authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCPs constrain member-account users and roles, including member root users, without granting permissions; management-account principals and service-linked roles are outside their scope."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Config aggregator provides a read-only multi-account, multi-Region view of recorded resource configurations and rule compliance; it does not deploy the rules."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/standards-tagging.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security Hub resource tagging controls can check specified requiredTagKeys, including EC2 instance tags; when the parameter is absent, the default checks for any tag."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2, 3 and 6. Added organization-level coverage and Config-view constraints to distinguish role-local IAM controls. Corrected the inherited claim that Security Hub cannot evaluate tags: its configured requiredTagKeys can, but the stated default accepts the already-present Name tag."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "017",
+  "base_record_sha256": "9734eff06d5140ac78f88e4a3b1656ef3560c42c48c0f240582e309fc961d4ef",
+  "record": {
+    "id": "017",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A sports website stores match statistics and votes in an existing RDS MySQL Multi-AZ DB instance deployment. It publishes the same statistical report files to all readers once each day. Published versions are immutable, and users may see the latest daily edition. Report downloads are expected to grow from 10 million to 30 million per event. Voting remains on the existing uncached application API.\n\nWhich report-serving design best limits database load and provides durable, low-latency global delivery?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add RDS read replicas and generate each report on demand for every download. Run a daily cleanup query on the reporting tables."
+      },
+      {
+        "id": "2",
+        "text": "Cache query results in ElastiCache and have the application render each download from the cache. Keep the generated report files only in application memory."
+      },
+      {
+        "id": "3",
+        "text": "Generate the daily reports from a read replica and store versioned files in S3. Serve the files through CloudFront and refresh the daily-edition reference according to the publication schedule."
+      },
+      {
+        "id": "4",
+        "text": "Copy all source rows to DynamoDB every day and query them for every report request. Delete and recreate the reporting table after each daily publication."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> computes each edition once and serves many downloads from durable objects and edge caches. A read replica isolates the report-generation queries from primary writes; S3 retains the published files independently of the application.\n\n<<1>> repeats database and rendering work for identical downloads and provides no edge distribution. <<2>> can reduce database reads but retains application rendering and lacks durable report artifacts and global delivery. <<4>> introduces another serving database and repeated report queries when the requested output is an immutable daily file. DynamoDB itself is durable; its durability is not the issue.\n\nCache lifetime must match publication semantics. Versioned file URLs let immutable editions remain cached; update the daily-edition reference with a suitable TTL or invalidation. Do not cache vote submission requests as report content.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/017.mmd",
+  "diagram_alt": "Transactional writes and daily report generation are separate from the high-volume artifact-download path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Read replicas offload business-reporting queries from the primary."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Longer cache lifetimes reduce origin load; freshness is controlled through cache policies and headers."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 stores report objects independently of database and application instances."
+    }
+  ],
+  "editorial_notes": [
+    "Clarified daily immutability and separated voting traffic, resolving the original mismatch between cached reports and live writes. Removed false claims that RDS or DynamoDB lacks durability. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

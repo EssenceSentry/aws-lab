@@ -1,0 +1,52 @@
+{
+  "question_id": "097",
+  "base_record_sha256": "8907d57c45acbe9c7ed7566f143cacd82bd243590db0aab3285bb5cb2f8bae55",
+  "record": {
+    "id": "097",
+    "exam_domain": "Design for New Solutions",
+    "question": "A security team must identify S3 objects containing personally identifiable information and determine which identities retrieved those objects during the previous month. The objects have not changed during the audit period, use supported text and document formats, and can be read and decrypted by the team. An organization trail has already retained S3 GetObject data events for all relevant buckets throughout the audit period.\n\nWhich approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Athena to search the S3 object-key inventory for names associated with PII, and use CloudWatch request-count metrics to identify the users who downloaded matching objects."
+      },
+      {
+        "id": "2",
+        "text": "Run Amazon Macie sensitive-data discovery jobs with suitable managed and custom identifiers over the relevant objects. Correlate the identified bucket and object keys with retained CloudTrail GetObject data events to investigate access identities and times."
+      },
+      {
+        "id": "3",
+        "text": "Use GuardDuty threat findings to classify all PII in the objects, and use the findings as a complete record of every object retrieval."
+      },
+      {
+        "id": "4",
+        "text": "Run Amazon Macie sensitive-data discovery jobs, and use only CloudTrail management-event history to find each GetObject request."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Macie discovers sensitive content in eligible S3 objects, while CloudTrail data events provide the object-level API audit evidence. Correlating bucket and key information joins the content finding to recorded retrievals, including the request identity and time. Review discovery coverage and failed analyses rather than assuming every object was successfully inspected.\n\n<<1>> infers content from filenames, which cannot establish whether an object contains PII. Aggregate request metrics do not supply a per-request identity history.\n\n<<3>> treats threat detection as both content classification and a complete audit ledger. GuardDuty findings do not replace either Macie discovery or retained object-level events.\n\n<<4>> selects the wrong CloudTrail event category. GetObject is an S3 data event, not a management event available through standard management-event history.\n\nEnabling data-event logging today cannot reconstruct last month's unrecorded requests. The retained logging prerequisite is therefore essential. Discovery is also subject to Macie's supported formats, storage classes, object coverage, and analysis limits.\n\nAWS documentation (checked September 18, 2026): [Macie discovery coverage](https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html); [CloudTrail data events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/097.mmd",
+  "diagram_alt": "Sensitive-content discovery and historical API logging supply different evidence that must be correlated by object identity.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html",
+      "checked_on": "2026-09-18",
+      "supports": "Macie inspects supported S3 object formats and storage classes for sensitive data, subject to analysis limits and permissions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 object APIs such as GetObject are data events and are not collected by default with management-event history."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added the prerequisite that S3 data events existed during the audit period, and bounded Macie coverage to supported and successfully analyzed objects."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Remove the local upload buffer and copy job
+accDescr: The old flow has a server-local landing area and a later copy operation, while Transfer Family sends authenticated SFTP uploads directly into S3.
+P[Partner SFTP workflow]:::inputData
+P -->|Current path| EC2[Single EC2 server<br/>Local upload files]:::storage
+EC2 --> CRON[Scheduled copy job]:::process
+P -->|Managed replacement| TF[Transfer Family<br/>Authenticated partner]:::process
+CRON --> S3[(S3 data lake)]:::storage
+TF -->|Scoped partner prefix| S3

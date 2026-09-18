@@ -1,0 +1,7 @@
+flowchart TB
+accTitle: The allowlist works only when direct egress is blocked
+accDescr: Workload clients must use a forward proxy. The proxy permits approved update hosts and denies other hosts, while a separate control blocks direct workload internet access.
+W[EC2 update client<br/>Explicit proxy configuration]:::inputData --> P{Forward proxy<br/>Approved hostname?}:::decision
+P -->|Yes| V[Vendor update host<br/>Controlled proxy egress]:::output
+P -->|No| D[Connection denied]:::warning
+W -. direct connection attempt .-> X[No workload Internet bypass]:::warning

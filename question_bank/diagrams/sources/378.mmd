@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Evaluate the requested access point network origin
+accDescr: An organization SCP blocks member-account creation requests for non-VPC access points before they reach resource creation, while VPC-origin requests still require IAM permission.
+Q["Member-account CreateAccessPoint"]:::inputData --> V{"Requested network origin = VPC?"}:::decision
+V -->|"No: SCP explicit deny"| X["Access denied, no access point"]:::warning
+V -->|"Yes"| I{"Other IAM checks allow?"}:::decision
+I -->|"Yes"| A["Create VPC-origin access point"]:::output
+I -->|"No"| X

@@ -1,0 +1,13 @@
+sequenceDiagram
+accTitle: Rotation must change and test the database credential
+accDescr: The rotation Lambda creates a pending secret, applies its password to the database, tests it, and only then promotes that secret version to current.
+participant S as Secrets Manager
+participant L as Rotation Lambda
+participant D as MySQL user
+S->>L: Start scheduled rotation
+L->>S: Create random AWSPENDING version
+L->>D: Apply pending password
+L->>D: Test login with pending credential
+D-->>L: Authentication succeeds
+L->>S: Move AWSCURRENT to tested version
+Note over S,D: Initial user provisioning precedes rotation

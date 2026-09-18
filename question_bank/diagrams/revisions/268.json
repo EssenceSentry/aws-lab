@@ -1,0 +1,57 @@
+{
+  "question_id": "268",
+  "base_record_sha256": "fc9fbb9ffa3ce0b4d69650a4c53ae4fee93ac2fc568b838b9b8f0b97e7b37ef6",
+  "record": {
+    "id": "268",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company has a central VPC directly peered with three application VPCs in other AWS accounts in the same Region. The CIDRs do not overlap, and private routes between these VPCs already work. Remote employees need authenticated access through AWS Client VPN, with Availability Zone redundancy. The company wants one managed remote-access endpoint and minimal changes to the existing peering topology.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a separate Client VPN endpoint in each application account, associate redundant target networks for each, and require employees to select the endpoint for the desired application."
+      },
+      {
+        "id": "2",
+        "text": "Create one Client VPN endpoint in the central VPC's Region and associate central-VPC subnets in two Availability Zones. Configure authentication, destination authorization and equivalent endpoint routes through each association to the directly peered VPCs. Permit the traffic in the VPC routes and security rules, and configure VPN clients on employee devices."
+      },
+      {
+        "id": "3",
+        "text": "Replace the existing VPC peering topology with a Transit Gateway hub and create a separate VPN appliance fleet before enabling remote employee access."
+      },
+      {
+        "id": "4",
+        "text": "Create one Client VPN endpoint and associate only a single central-VPC subnet. Configure all destination routes and authorization rules but omit a second Availability Zone association."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. A Client VPN endpoint can give users access to its associated VPC and directly peered VPCs. Two target-network associations in different Availability Zones provide the required association redundancy while retaining the existing network topology.\n\n<<1>> can provide access, but violates the one-endpoint objective and adds duplicated endpoint configuration and charges.\n\n<<3>> introduces a network redesign and appliance operation that the existing direct peering does not require.\n\n<<4>> supplies connectivity but omits the requested Availability Zone redundancy.\n\nAuthentication, authorization, endpoint routes and VPC security controls are separate requirements. Keep equivalent destinations reachable through every associated subnet, use nonoverlapping client addressing, and validate return traffic. A working VPC route does not itself grant Client VPN authorization. This design relies on direct peers; VPC peering does not create arbitrary transitive routing through other peers.\n\nOfficial AWS references (checked September 18, 2026): [Client VPN peered VPC scenario](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/how-it-works.html#scenario). [Target-network requirements](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-target.html). [Endpoint routes](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-routes.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/268.mmd",
+  "diagram_alt": "One Client VPN endpoint uses two target-network associations and equivalent authorized routes to existing directly peered application VPCs.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/how-it-works.html#scenario",
+      "checked_on": "2026-09-18",
+      "supports": "Endpoint, target association, peered-VPC route, authorization and security rule configuration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-target.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multiple associated subnets must use one VPC and distinct AZs; two subnets recommended for AZ redundancy."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-routes.html",
+      "checked_on": "2026-09-18",
+      "supports": "Destination routing is separately configured from authorization."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced ambiguous endpoint placement and workstation-versus-data-center distractors with direct peering, route/authorization and two-AZ association requirements."
+  ],
+  "review_status": "authored"
+}

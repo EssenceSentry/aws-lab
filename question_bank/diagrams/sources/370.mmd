@@ -1,0 +1,13 @@
+sequenceDiagram
+accTitle: Exchange a workflow identity token for temporary deployment credentials
+accDescr: The approved GitHub job requests an OIDC token. STS checks the registered provider and deployment-role trust conditions before returning a temporary role session used for S3 deployment.
+participant G as GitHub job
+participant O as GitHub OIDC
+participant S as AWS STS
+participant B as S3
+G->>O: Request workflow identity token
+O-->>G: Signed token with audience and subject
+G->>S: AssumeRoleWithWebIdentity
+S->>S: Verify provider, audience and allowed subject
+S-->>G: Temporary deployment-role credentials
+G->>B: Authorized deployment operation

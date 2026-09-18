@@ -1,0 +1,53 @@
+{
+  "question_id": "132",
+  "base_record_sha256": "46675b89f4e0797bb3fb29e42b726804ba562ede9a8da9d63688cb2d4f54908b",
+  "record": {
+    "id": "132",
+    "exam_domain": "Design for New Solutions",
+    "question": "A photography contest uses a CloudFormation stack with an S3 bucket for submitted images and an RDS database for entry metadata. The contest runs for one month each year. The company will delete the application stack during the idle period. It must preserve the original bucket and retain restorable database data without paying for idle database compute. The deployment template can accept the retained bucket and a DB snapshot as inputs for the next contest.\n\nWhich deletion policies should the solutions architect configure?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Set DeletionPolicy to Retain on the S3 bucket and Snapshot on the RDS database."
+      },
+      {
+        "id": "2",
+        "text": "Set DeletionPolicy to Snapshot on both the S3 bucket and the RDS database."
+      },
+      {
+        "id": "3",
+        "text": "Set DeletionPolicy to Retain on both the S3 bucket and the RDS database."
+      },
+      {
+        "id": "4",
+        "text": "Enable Cross-Region Replication for the S3 bucket and leave its deletion policy as Delete. Set DeletionPolicy to Snapshot on the RDS database."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Retain leaves the original bucket and objects available after stack deletion. Snapshot preserves database data before the RDS instance is deleted, avoiding idle instance compute while keeping a recovery artifact. Storage charges still apply.\n\n<<2>> requests a snapshot operation that CloudFormation does not support for S3 buckets. <<3>> preserves the running database as well as its data, contrary to the cost requirement. <<4>> creates a separate copy but does not establish the required lifecycle for the original bucket. In particular, CloudFormation cannot delete a nonempty S3 bucket automatically; leaving Delete is not a dependable retention strategy.\n\nRetained resources leave the deleted stack's management scope. A later stack must reference or deliberately import the retained bucket rather than try to create another bucket with the same name. Database reuse requires an explicit restore, such as a DB resource configured with DBSnapshotIdentifier, followed by validation before the next contest.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-rds-dbinstance.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/132.mmd",
+  "diagram_alt": "The image bucket persists directly, while database data survives in a snapshot that must be restored for the next contest.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html",
+      "checked_on": "2026-09-18",
+      "supports": "Retain and Snapshot lifecycle behavior, supported snapshot resource types, and nonempty S3 deletion failure."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-rds-dbinstance.html",
+      "checked_on": "2026-09-18",
+      "supports": "DBSnapshotIdentifier creates a DB instance from an existing snapshot."
+    }
+  ],
+  "editorial_notes": [
+    "Corrected the claim that CloudFormation deletes nonempty S3 buckets automatically.",
+    "Made the future template reuse path explicit so Retain does not imply automatic adoption by a new stack."
+  ],
+  "review_status": "authored"
+}

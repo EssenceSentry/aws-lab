@@ -1,0 +1,52 @@
+{
+  "question_id": "024",
+  "base_record_sha256": "a51b8cf8aa6a5c7190b7287bd5ac66e4537735511ddb01abf7a56de775a9e1f0",
+  "record": {
+    "id": "024",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A research organization has 50 AWS accounts, each with a VPC. A central DNS team owns one Route 53 private hosted zone that all of these VPCs must resolve. The team wants to retain the single zone and use direct VPC associations without deploying DNS forwarding infrastructure. Application connectivity is managed separately.\n\nWhich configuration meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "In the zone-owning account, authorize each cross-account VPC association. In each VPC-owning account, associate the VPC with the zone. Enable DNS support and DNS hostnames in the participating VPCs."
+      },
+      {
+        "id": "2",
+        "text": "Peer every VPC with the central VPC and enable DNS resolution over peering. Associate the private hosted zone only with the central VPC."
+      },
+      {
+        "id": "3",
+        "text": "Create a private hosted zone with the same name in every account. Copy the central zone's name server records into those zones instead of associating the VPCs with the central zone."
+      },
+      {
+        "id": "4",
+        "text": "Authorize and complete the cross-account VPC associations. Disable DNS support in the participating VPCs so that private queries use the central zone exclusively."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Correct: <<1>>. Direct cross-account association is a two-party operation: the hosted-zone owner authorizes a specified VPC, then the VPC owner associates it. Both VPC DNS attributes must be enabled. The temporary association authorization can be removed afterward without removing the association.\n\n<<2>> is incorrect because peering alone does not associate the peer VPC with the private hosted zone. Peering DNS options do not share all private hosted-zone records.\n\n<<3>> creates separate zones; copying name server records does not establish the requested association or synchronize records.\n\n<<4>> disables the resolver capability needed for this pattern.\n\nDNS visibility and packet connectivity are separate requirements. Associating a zone does not create routes or security-group permissions. Route 53 Profiles offer another sharing approach, but the question explicitly requires direct associations.\n\nOfficial AWS references (checked 2026-09-18):\n[Cross-account private-zone association](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html)\n[Private hosted-zone considerations](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-considerations.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/024.mmd",
+  "diagram_alt": "Zone-owner authorization and VPC-owner association precede private record resolution.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Zone-owner authorization followed by VPC-owner association"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-considerations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Both VPC DNS attributes must be enabled"
+    }
+  ],
+  "editorial_notes": [
+    "Specified direct associations to avoid an ambiguous comparison with current Route 53 Profiles. Replaced invalid RAM/Direct Connect descriptions. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

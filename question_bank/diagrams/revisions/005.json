@@ -1,0 +1,47 @@
+{
+  "question_id": "005",
+  "base_record_sha256": "6c454cf40e1f1e11c8c28fc0d59aaf41dbec30a8dbed90bea556b4422e34f734",
+  "record": {
+    "id": "005",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A web application runs on EC2 instances in private subnets across two Availability Zones behind an internet-facing ALB. Each private subnet routes outbound internet traffic through a NAT instance in its own AZ. Login works, but a server-side request to a map provider fails for about half of page loads.\n\nRequests fail only from one AZ. Its NAT instance is stopped; the application instances are healthy, and route-table and network ACL configurations are otherwise correct. The company wants to restore access and reduce NAT maintenance.\n\nWhich solution best addresses the failure?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add outbound network ACL rules for the map provider’s addresses and restrict future network ACL changes with IAM policies."
+      },
+      {
+        "id": "2",
+        "text": "Enable ALB cross-zone load balancing so every server-side request to the map provider uses the healthy AZ’s NAT instance."
+      },
+      {
+        "id": "3",
+        "text": "Increase the stopped NAT instance’s instance size and retain one manually managed NAT instance per AZ."
+      },
+      {
+        "id": "4",
+        "text": "Replace the NAT instances with a public zonal NAT gateway in each AZ. Route each private subnet to its same-AZ gateway, and route the gateways’ public subnets to an internet gateway."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> repairs the confirmed outbound failure and replaces self-managed instances with AWS-managed NAT gateways. A zonal gateway in each AZ avoids making one AZ’s egress depend on another AZ.\n\n<<1>> changes a control already verified as correct. <<2>> confuses inbound ALB distribution with outbound routing: an application instance uses its subnet route table for the map call. <<3>> does not establish a capacity problem and retains the maintenance and failover burden.\n\nA 50% failure rate alone would not prove a NAT outage; the stopped instance and AZ-specific tests supply the decisive evidence. NAT gateways need correct routing and do not make external providers highly available.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/005.mmd",
+  "diagram_alt": "Both applications pass inbound health checks, while the stopped NAT path isolates outbound failure to one AZ.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html",
+      "checked_on": "2026-09-18",
+      "supports": "NAT gateway management, per-AZ redundancy, zone-independent deployment, and migration routing."
+    }
+  ],
+  "editorial_notes": [
+    "Added discriminating operational evidence rather than treating 50% failures as proof. Specified a zonal NAT gateway per AZ and removed cross-AZ ambiguity. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

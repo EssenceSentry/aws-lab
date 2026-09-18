@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: A public download can use a private S3 origin
+accDescr: Anonymous viewers request the package through CloudFront. Cache hits return immediately, while misses cause a signed OAC fetch from the private S3 REST origin.
+U[Anonymous HTTPS download]:::inputData --> C{CloudFront cache hit?}:::decision
+C -->|Hit| R[Return release package]:::output
+C -->|Miss| O[OAC-signed origin request]:::process
+O --> B[(Private S3 REST origin<br/>5 GB release object)]:::storage
+B --> F[Fill edge cache]:::process
+F --> R

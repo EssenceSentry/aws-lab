@@ -1,0 +1,14 @@
+sequenceDiagram
+accTitle: Local writes replicate asynchronously
+accDescr: A local write is acknowledged before another Region necessarily sees it, after replication the remote read returns the event.
+participant A as API in Region A
+participant DA as Replica A
+participant DB as Replica B
+participant B as API in Region B
+A->>DA: Write unique event E
+DA-->>A: Write succeeds
+B->>DB: Read event E immediately
+DB-->>B: E may not yet be visible
+DA-->>DB: Managed asynchronous replication
+B->>DB: Read event E later
+DB-->>B: Event E

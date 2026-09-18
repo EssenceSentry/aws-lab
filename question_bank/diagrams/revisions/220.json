@@ -1,0 +1,47 @@
+{
+  "question_id": "220",
+  "base_record_sha256": "89e6e7b7e827a5aa4a0872bf57ac0575b6df7691bfb6a3a07a9de67e5be4bbb6",
+  "record": {
+    "id": "220",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A logistics company will let a third-party SaaS service access selected resources through AWS APIs. The vendor serves many unrelated customers from the same AWS account. Access must use temporary credentials and least-privilege permissions, and the company must prevent another vendor customer from causing the vendor to assume the logistics company's role on that customer's behalf.\n\nWhich configuration best addresses these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Invite vendor operators into the company’s workforce access portal and rely on interactive human sign-in for every automated SaaS task."
+      },
+      {
+        "id": "2",
+        "text": "Create a least-privilege IAM user in the company account and provide its long-lived access keys to the vendor for all API calls."
+      },
+      {
+        "id": "3",
+        "text": "Create a least-privilege IAM role that trusts the vendor’s designated principal, but allow AssumeRole without a customer-specific external ID condition."
+      },
+      {
+        "id": "4",
+        "text": "Have the vendor assign a unique external ID for this customer. Create a least-privilege role that trusts the vendor’s designated principal and requires that sts:ExternalId value. The vendor includes the role ARN and matching external ID in AssumeRole requests."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The trusted principal identifies who may assume the role, the external ID binds the vendor's request to this customer context, and the role's permissions limit what the resulting temporary credentials can do. This addresses the multi-tenant confused-deputy risk described in the stem.\n\n<<1>> provides a workforce access pattern rather than the required unattended service integration.\n\n<<2>> violates the temporary-credential requirement and creates a distributed long-lived secret.\n\n<<3>> supplies temporary least-privilege access, but omits the customer-context check that prevents the trusted vendor from being misdirected by another customer. Its absence does not mean every AWS account can assume the role.\n\nThe vendor must manage uniqueness and choose the correct customer ID for each request. An external ID is not a secret or a replacement for a restricted trust principal. Test that missing and incorrect external IDs are rejected. Different Organizations do not prevent properly configured role assumption.\n\nOfficial AWS references (checked September 18, 2026): [Third-party roles and external IDs](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/220.mmd",
+  "diagram_alt": "ExternalId adds a customer-context check to principal trust, while the separate permission policy bounds the issued role credentials.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html",
+      "checked_on": "2026-09-18",
+      "supports": "Vendor-generated customer context, confused-deputy protection, temporary access and non-secret external IDs"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Explicitly established a multi-tenant vendor and corrected the false claim that omitting ExternalId lets arbitrary accounts assume a principal-restricted role; removed irrelevant Detective detail."
+  ],
+  "review_status": "authored"
+}

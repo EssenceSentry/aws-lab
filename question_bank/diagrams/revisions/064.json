@@ -1,0 +1,51 @@
+{
+  "question_id": "064",
+  "base_record_sha256": "73cca97fe97f23f819ac65384bc465622be9175b3d5d408de29aab632a97a2c1",
+  "record": {
+    "id": "064",
+    "exam_domain": "Design for New Solutions",
+    "question": "VPC A (172.16.0.0/16) has separate peering connections to VPC B and VPC C, as shown. Both peer VPCs use 10.0.0.0/16. Instances in VPC A must initiate connections to 10.0.0.77 in VPC B and to every other required address in VPC C, including 10.0.0.88. Address 10.0.0.77 is not used in VPC C. Security groups and network ACLs already permit the required traffic.\n\nWhich route configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add two routes for 10.0.0.0/16 to the VPC A subnet route table, one for each peering connection. Use network ACLs to choose which peer receives each destination."
+      },
+      {
+        "id": "2",
+        "text": "Enable automatic route propagation on both VPC peering connections so VPC A learns which addresses belong to each peer."
+      },
+      {
+        "id": "3",
+        "text": "Add a 10.0.0.0/24 route through the peering connection to VPC B and a 10.0.0.0/16 route through the connection to VPC C. Add return routes to VPC A in both peers."
+      },
+      {
+        "id": "4",
+        "text": "Add a 10.0.0.77/32 route through the peering connection to VPC B and a 10.0.0.0/16 route through the connection to VPC C. Add return routes to 172.16.0.0/16 in the relevant subnet route tables of both peers."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> uses longest-prefix matching. Traffic to 10.0.0.77 matches both routes, but the /32 route is more specific and selects VPC B. Traffic to 10.0.0.88 matches only the /16 route and selects VPC C. Each peer also needs a return route through its own peering connection to VPC A.\n\n<<1>> cannot use duplicate destination routes and network ACLs as a peer-selection mechanism. ACLs allow or deny packets; they do not select route targets. <<2>> assumes a route-propagation feature that VPC peering does not provide. <<3>> sends the entire 10.0.0.0/24 subnet, including 10.0.0.88, to VPC B.\n\nThe overlapping networks are in two separate peers of A, not two endpoints of one B-to-C peering connection. The narrow exception works because A needs a disjoint set of destination addresses; it cannot distinguish two different hosts with the same destination IP.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpc/latest/peering/peering-configurations-partial-access.html",
+      "images": []
+    },
+    "question_images": [
+      "images/fd8e8771444b721274e99cbdc5e1ed5af339cebc.png"
+    ]
+  },
+  "diagram_source": "sources/064.diagram.json",
+  "diagram_alt": "A routing comparison shows why a /32 exception sends only 10.0.0.77 to B while other addresses go to C.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/peering-configurations-partial-access.html",
+      "checked_on": "2026-09-18",
+      "supports": "Longest-prefix routing from a central VPC to peers with overlapping CIDRs, including a /32 host exception."
+    }
+  ],
+  "editorial_notes": [
+    "Retained the essential original question_images unchanged.",
+    "Explanation graphic is answer-only; the stem image remains neutral topology."
+  ],
+  "review_status": "authored"
+}

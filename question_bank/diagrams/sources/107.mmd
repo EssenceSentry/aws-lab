@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: A deployment attachment enables runtime credentials
+accDescr: CloudFormation creates a role and profile and attaches the profile to EC2, while the application obtains temporary credentials at runtime.
+CF["CloudFormation deployment"] --> ROLE["IAM role: EC2 trust and table permissions"]
+ROLE -->|Contained in| PROF["Instance profile"]
+PROF -->|IamInstanceProfile property| EC2["EC2 application instance"]
+EC2 -->|SDK credential provider| META["Instance metadata"]
+META -->|Rotating temporary credentials| APP["Application SDK"]
+APP -->|Signed allowed requests| DB[("DynamoDB table")]
+class CF inputData
+class DB storage
+class APP output

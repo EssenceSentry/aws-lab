@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: Modernization follows validated component boundaries
+accDescr: WebSphere moves to scalable EC2 while schema conversion and data replication feed Aurora, and tested JMS changes feed an ActiveMQ broker.
+subgraph Source["On premises"]
+W["WebSphere"]:::inputData
+D["Db2 LUW"]:::storage
+Q["IBM MQ"]:::inputData
+end
+W --> E["ALB and multi-AZ EC2 group"]:::output
+D --> S["SCT schema conversion"]
+D --> M["DMS data migration"]
+S --> A["Aurora PostgreSQL"]:::storage
+M --> A
+Q --> C["Validated JMS client changes"]
+C --> B["Amazon MQ for ActiveMQ"]:::output
+E --> A
+E --> B

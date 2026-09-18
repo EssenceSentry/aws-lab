@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Backup transport must survive the primary connection failure
+accDescr: The data center reaches each of ten virtual private gateways by primary Direct Connect and an independent Internet VPN path. A physical Direct Connect failure leaves the Internet path available for BGP failover.
+D[Data-center router]:::inputData -->|Preferred BGP route| X[Direct Connect<br/>Primary physical connection]:::process
+D -->|Backup after primary failure| I[Independent Internet link<br/>Site-to-Site VPN]:::process
+X --> G[Virtual private gateway<br/>One per VPC, ten VPCs]:::process
+I --> G
+G --> V[VPC private networks]:::output

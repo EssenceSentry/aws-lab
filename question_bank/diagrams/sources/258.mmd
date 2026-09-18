@@ -1,0 +1,15 @@
+stateDiagram-v2
+accTitle: Installing a new key is not the same as revoking the old key
+accDescr: The guest authorization state changes from old-key access through a tested overlap to new-key-only access, using Systems Manager as an independent recovery path.
+[*] --> OldAuthorized
+OldAuthorized: Former public key is authorized
+OldAuthorized --> BothAuthorized: Install replacement public key
+BothAuthorized: Both keys can authenticate
+BothAuthorized --> Tested: Verify replacement login
+Tested --> NewOnly: Remove former public key
+NewOnly: Only replacement key is authorized
+NewOnly --> Verified: Confirm former key is rejected
+Verified --> [*]
+note right of BothAuthorized
+Old access still works here
+end note

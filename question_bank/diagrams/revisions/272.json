@@ -1,0 +1,62 @@
+{
+  "question_id": "272",
+  "base_record_sha256": "cbc624f72aba0ddaf07aed0f4532c2be694fb51120011d0d75adb03833c80237",
+  "record": {
+    "id": "272",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An analytics company serves reports through CloudFront at analytics.example.com. Its existing authorization mechanism correctly restricts access. Each report is identical for all users entitled to that report, and the cache key already separates report variants. The company must require HTTPS from viewers and improve cache reuse while meeting each report's freshness limit.\n\nWhich changes should the solutions architect make? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach an ACM certificate covering analytics.example.com, requested or imported in us-east-1, and configure the viewer protocol policy to require HTTPS or redirect HTTP to HTTPS."
+      },
+      {
+        "id": "2",
+        "text": "Set origin Cache-Control max-age or s-maxage values to the longest duration allowed by each report's freshness requirement, and configure the cache policy TTL bounds to permit those durations."
+      },
+      {
+        "id": "3",
+        "text": "Move report-generation code to a Lambda@Edge origin-request function while retaining the current cache-expiration settings."
+      },
+      {
+        "id": "4",
+        "text": "Set the cache policy minimum, default, and maximum TTL values to zero for every report."
+      },
+      {
+        "id": "5",
+        "text": "Configure HTTPS between CloudFront and the origin while continuing to allow HTTP between viewers and CloudFront."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. CloudFront's custom hostname needs a matching viewer certificate, and ACM viewer certificates must be in us-east-1. The viewer protocol policy enforces the viewer-facing HTTPS requirement.\n\n<<2>> is correct. A suitable freshness lifetime allows repeated requests to reuse cached content. Origin cache headers operate within the distribution's TTL settings. Use s-maxage when shared-cache and browser lifetimes should differ.\n\n<<3>> changes where generation runs, but leaves the cache lifetime and viewer transport requirement unresolved.\n\n<<4>> disables caching and therefore reduces reuse.\n\n<<5>> encrypts a different connection. Origin HTTPS alone does not require viewer HTTPS.\n\nAuthorization, cache-key correctness, transport encryption, and freshness are separate controls. Longer TTLs are useful only when the content remains safe to share and fresh enough for the business.\n\nOfficial AWS references (checked September 18, 2026): [CloudFront certificate requirements](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html). [Requiring viewer HTTPS](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html). [CloudFront cache expiration](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/272.diagram.json",
+  "diagram_alt": "The table separates viewer transport, authorization and cache identity, freshness, and origin transport.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "ACM Region and hostname coverage for viewer certificates"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
+      "checked_on": "2026-09-18",
+      "supports": "Viewer protocol policy determines whether HTTP viewers are rejected or redirected"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Origin cache directives and cache-policy TTL bounds control reuse"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 2. Made authorization and shared-content eligibility explicit and replaced fictional cache plugins and certificate storage with plausible configuration choices."
+  ],
+  "review_status": "authored"
+}

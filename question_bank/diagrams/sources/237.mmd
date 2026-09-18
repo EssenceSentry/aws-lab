@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Submission acceptance and grading completion happen at different times
+accDescr: The API acknowledges only after SQS accepts a submission. Bounded Lambda workers persist results to DynamoDB, while the mobile client separately downloads cached images through CloudFront from S3.
+M[Mobile client]:::inputData --> A[Submission API]:::process
+A -->|Durable enqueue| Q[(SQS submissions)]:::storage
+Q -.->|Acceptance receipt via API| M
+Q --> W[Lambda workers<br/>Bounded concurrency]:::process
+W --> D[(DynamoDB results<br/>Idempotent submission IDs)]:::storage
+M --> C[CloudFront image cache]:::process
+C -->|Cache miss| S[(S3 exam images)]:::storage

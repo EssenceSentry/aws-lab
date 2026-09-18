@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Two distinct compliance controls
+accDescr: Patch Manager installs approved updates while Config detects disallowed AMIs without blocking instance launches.
+D[Developer launch] --> E[Running EC2 instance]
+P[Approved patch baseline] --> I[Scheduled Install]
+I -->|Apply updates| E
+E -->|AMI ID| C[Config approved AMI rule]
+C -->|NON_COMPLIANT change| V[EventBridge]
+V --> S[SNS notification]
+E -->|Installed patch state| R[Patch compliance report]
+class D,P inputData
+class C decision
+class S,R output

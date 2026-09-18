@@ -1,0 +1,13 @@
+sequenceDiagram
+accTitle: Resolve privately, then connect through existing routes
+accDescr: The application resolves a private hosted-zone record through its VPC resolver, then connects using separately authorized private routing.
+participant A as Application VPC
+participant R as VPC Resolver
+participant Z as Associated private zone
+participant D as Database VPC
+A->>R: Query database.internal.example.com
+R->>Z: Match associated private zone
+Z-->>R: A record: private IPv4
+R-->>A: Private address
+A->>D: Database connection over peering
+Note over A,D: Routes and security rules checked separately

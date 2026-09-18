@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "A UDP data plane still needs non-UDP health checks",
+  "columns": [
+    "Traffic path",
+    "Protocol",
+    "Required rule treatment"
+  ],
+  "rows": [
+    [
+      "Player to NLB to target",
+      "Custom UDP listener and target ports",
+      "Permit approved application traffic"
+    ],
+    [
+      "NLB to health-check endpoint",
+      "TCP, HTTP or HTTPS",
+      "Permit the configured check path"
+    ],
+    [
+      "Target and NLB return traffic",
+      "Matching protocol and return ports",
+      "Explicit outbound/inbound ACL allowances"
+    ],
+    [
+      "Other unnecessary subnet traffic",
+      "Outside the required paths",
+      "Deny according to network policy"
+    ]
+  ],
+  "footnote": "Network ACLs are stateless. Blocking every non-UDP packet can break the health checks that keep UDP targets in service.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "question_id": "013",
+  "base_record_sha256": "9ed58f75920078b9c66ef53aeb68d28ae192f1707f52fe7fa78b53416c25759e",
+  "record": {
+    "id": "013",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A research company uses IAM Identity Center for its scientists. Each scientist has a centrally managed, unique userNameID attribute and owns the matching prefix in a shared S3 bucket. Scientists must list and access only their own objects. Administrators want one reusable permission set rather than per-scientist access infrastructure. They also need monthly reports of object API access attributable to individual scientists.\n\nWhich actions meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure Identity Center attributes for access control. In the permission set, scope object actions to the ${aws:PrincipalTag/userNameID} prefix and scope s3:ListBucket separately with an s3:prefix condition. Prevent scientists from modifying the trusted attribute."
+      },
+      {
+        "id": "2",
+        "text": "Enable S3 Object Lock in Governance mode and use AWS Config resource history as the record of scientists’ GetObject and PutObject requests."
+      },
+      {
+        "id": "3",
+        "text": "Enable CloudTrail S3 data events for the research bucket, retain the logs in a protected bucket, and query them monthly with Athena. Preserve the identity and session information needed to map requests to scientists."
+      },
+      {
+        "id": "4",
+        "text": "Create and maintain a separate S3 access point and access policy for each scientist. Use the access-point name as the only identity field in the monthly audit report."
+      },
+      {
+        "id": "5",
+        "text": "Enable only CloudTrail management events for the bucket and query those logs with Athena to report every object download and upload."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "3"
+    ],
+    "explanation": {
+      "text": "Select <<1>> and <<3>>. Identity Center passes trusted attributes into role sessions; the permission set uses that value to restrict each session to its own prefix. Bucket listing and object access need separate policy statements. CloudTrail data events capture object API activity, which Athena can query directly from log files in S3.\n\n<<2>> confuses retention and configuration history with authorization and data-access auditing. <<4>> violates the shared-policy operating requirement and an access-point name alone does not identify the scientist who made a request. <<5>> omits the S3 data events required for object operations.\n\nThe attribute must be unique, validated, and protected against user modification. Retain reliable session-to-person attribution; a shared assumed-role ARN alone does not distinguish all people using that role.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/singlesignon/latest/userguide/abac.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_variables.html\nhttps://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html\nhttps://docs.aws.amazon.com/athena/latest/ug/cloudtrail-logs.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/013.diagram.json",
+  "diagram_alt": "Concrete request examples distinguish object-key authorization from bucket-listing conditions and missing-attribute behavior.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/abac.html",
+      "checked_on": "2026-09-18",
+      "supports": "Identity Center supplies trusted user attributes to AWS sessions for ABAC."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_variables.html",
+      "checked_on": "2026-09-18",
+      "supports": "Principal-tag variables in object prefixes and separate s3:ListBucket prefix conditions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html",
+      "checked_on": "2026-09-18",
+      "supports": "Object operations require S3 data events."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/cloudtrail-logs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Athena queries CloudTrail logs stored in S3."
+    }
+  ],
+  "editorial_notes": [
+    "Added the reusable permission-set requirement so access-point isolation is not an equally valid answer. Removed the invented EMRFS logging destination. Answer IDs unchanged."
+  ],
+  "review_status": "authored"
+}

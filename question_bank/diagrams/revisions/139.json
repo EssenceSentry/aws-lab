@@ -1,0 +1,63 @@
+{
+  "question_id": "139",
+  "base_record_sha256": "09dd515859d9bbd289aa01f1489fa814b3fc4c853431ec4c28d1376c2062d7a0",
+  "record": {
+    "id": "139",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company's EC2-hosted identity broker has private connectivity to an on-premises LDAP directory. Each user may access only the S3 bucket assigned by a trusted server-side mapping. The broker uses an EC2 role, and long-lived AWS access keys are prohibited. Clients must receive temporary AWS credentials for direct S3 access. No bucket policy independently grants broader access to the sessions, and applicable permissions boundaries and SCPs permit the intended access.\n\nWhich actions should the company implement? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Allow the client to submit a bucket name and role ARN, and have the broker issue a role session before validating the LDAP login."
+      },
+      {
+        "id": "2",
+        "text": "Authenticate the user against LDAP over a protected connection, then retrieve the authorized bucket from the trusted server-side mapping."
+      },
+      {
+        "id": "3",
+        "text": "Pass the authenticated user's LDAP username and password to STS as the credentials that authorize the AssumeRole request."
+      },
+      {
+        "id": "4",
+        "text": "Permit the broker's EC2 role to assume a role that trusts it. For the authenticated user, pass a session policy restricted to the mapped bucket and return the access key, secret key and session token."
+      },
+      {
+        "id": "5",
+        "text": "Use a Direct Connect gateway to authenticate the LDAP user and generate the temporary S3 access credentials."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<4>> are correct. The broker must first establish the user's identity and authorized resource scope. It then uses its own AWS identity to request a permitted role session. The session policy restricts the role's permissions to the mapped bucket and the required actions.\n\n<<1>> trusts client-selected privileges and grants access before authentication. <<3>> confuses directory credentials with AWS API signing credentials; an LDAP password does not authorize AssumeRole. <<5>> assigns identity and credential-issuance duties to a connectivity service. A Direct Connect gateway performs neither function.\n\nIn this scenario, effective role-session permissions are limited by both the role policy and the session policy. A session policy cannot add a permission missing from the role. ListBucket uses the bucket ARN, while object operations use object ARNs. The explicit exclusion of broader resource-based session grants matters because those grants can change the policy-evaluation analysis.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/139.mmd",
+  "diagram_alt": "A trusted identity-to-bucket mapping scopes the session policy, whose intersection with the role policy permits bucket A but not bucket B.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "checked_on": "2026-09-18",
+      "supports": "AssumeRole requires authorized AWS caller credentials and returns a session restricted by the role and session policies."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html",
+      "checked_on": "2026-09-18",
+      "supports": "Resource-based grants to session principals require separate analysis in IAM policy evaluation."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html",
+      "checked_on": "2026-09-18",
+      "supports": "API requests with temporary credentials require the access key, secret key and session token."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the earlier repair and all stable answer IDs, while making the stem and options more concise.",
+    "Kept the resource-based grant qualification needed for the policy-intersection teaching model."
+  ],
+  "review_status": "authored"
+}

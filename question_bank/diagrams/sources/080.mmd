@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Pending work drives worker capacity
+accDescr: S3 stores objects while SQS stores work references. A feedback loop divides visible backlog by active workers and adjusts the fleet toward a latency-derived target.
+S[(S3 images and results)]:::storage <-->|Read input, write output| W[Auto Scaling workers]:::output
+Q[(SQS object keys)]:::storage -->|Claim job, acknowledge success| W
+Q -.->|Visible backlog| M[Backlog / in-service workers]:::decision
+W -.->|Worker count| M
+T[Target = acceptable delay<br/>/ average job time]:::inputData --> M
+M -.->|Adjust desired capacity| W
+Q -->|Repeated failures| D[(Dead-letter queue<br/>Investigate and redrive)]:::warning

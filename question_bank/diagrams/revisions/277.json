@@ -1,0 +1,47 @@
+{
+  "question_id": "277",
+  "base_record_sha256": "f48721df74d0bdc34a09f9ab71f6043419b46c85216a8f93af7394c4024e40f7",
+  "record": {
+    "id": "277",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company runs production Linux containers on Amazon ECS with AWS Fargate. Developers must test the same container images on existing on-premises Linux servers while using the same ECS control plane and deployment tooling. The servers run a supported operating system, and development tasks do not require an AWS load balancer. The company does not want to buy new hardware or introduce a Kubernetes control plane.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Purchase AWS Outposts capacity and run the development ECS workloads on EC2 instances provisioned on the Outposts hardware."
+      },
+      {
+        "id": "2",
+        "text": "Register the existing servers as ECS Anywhere external instances using the required ECS and Systems Manager agents. Use EXTERNAL task configurations for development and compatible Fargate configurations for production."
+      },
+      {
+        "id": "3",
+        "text": "Deploy Amazon EKS on Outposts for development and migrate production orchestration to Amazon EKS on Fargate."
+      },
+      {
+        "id": "4",
+        "text": "Deploy Amazon EKS Anywhere on the existing servers and manage development with Kubernetes manifests independently of ECS."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. ECS Anywhere registers supported customer-managed servers with ECS and runs tasks using the EXTERNAL launch type. This preserves the ECS management model and reuses existing hardware.\n\n<<1>> adds hardware that the company explicitly wants to avoid.\n\n<<3>> adds both Outposts hardware and a different orchestrator.\n\n<<4>> reuses hardware, but introduces Kubernetes and does not manage those workloads through ECS.\n\nContainer-image portability does not mean task definitions can move unchanged. External tasks support bridge, host, or none networking, whereas Fargate uses awsvpc. Maintain suitable launch, networking, resource, and service settings for each environment. ECS Anywhere also leaves server operating-system and agent maintenance with the customer; it is not on-premises Fargate.\n\nOfficial AWS references (checked September 18, 2026): [ECS Anywhere capabilities and limits](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/277.diagram.json",
+  "diagram_alt": "A compatibility table separates reusable application artifacts from environment-specific runtime and host responsibilities.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html",
+      "checked_on": "2026-09-18",
+      "supports": "Existing external hosts, EXTERNAL launch type, supported network modes and customer-managed agents"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Specified ECS rather than ambiguous Fargate orchestration, supported Linux hosts, and explicit per-environment configuration instead of one-click migration."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,52 @@
+{
+  "question_id": "363",
+  "base_record_sha256": "d25cc2c15bb680d253ed50fcad97b92d97bfb021d268a1ecdecf9362835f0623",
+  "record": {
+    "id": "363",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A banking application runs on EC2 with Aurora PostgreSQL in one Region. Its disaster recovery targets are an RPO below one minute and an RTO of 15 minutes. Recovery drills have shown that its preconfigured EC2 recovery, database promotion, application checks, and routing changes finish within 12 minutes when continuous replication is healthy.\n\nWhich design minimizes idle application compute in the recovery Region while preserving this tested recovery approach?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep DRS replication staging and an Aurora Global Database secondary ready in the recovery Region, with networking, permissions, quotas, and recovery templates prepared. Launch application recovery instances, fail over the database, validate the stack, and then enable the Route 53 failover destination."
+      },
+      {
+        "id": "2",
+        "text": "Run a full duplicate application fleet in the recovery Region at production capacity and keep both regional application fleets active throughout normal operation."
+      },
+      {
+        "id": "3",
+        "text": "Keep a reduced application fleet continuously running in the recovery Region alongside the replicated database, then expand that fleet during recovery."
+      },
+      {
+        "id": "4",
+        "text": "Copy hourly EC2 and Aurora snapshots to the recovery Region and create the complete recovery environment only after the primary Region fails."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The pilot-light application tier avoids continuously running the recovery application fleet while keeping its replicated state and prerequisites ready. The Aurora secondary supplies the separate database recovery path. The supplied drill result establishes that this workload's launch-and-validate sequence fits the RTO; the service names alone would not establish that result.\n\n<<2>> offers more immediately available application capacity but retains the largest idle or duplicate compute footprint for the stated objective.\n\n<<3>> is a valid warm-standby strategy and can reduce recovery time further, but keeps application instances running when the tested pilot-light approach already meets the target.\n\n<<4>> cannot support a sub-minute RPO with hourly recovery points and adds substantial provisioning and restore work to the outage.\n\nMonitor both DRS replication health and Aurora replication lag. Their typical behavior supports this design but is not an absolute per-incident promise. Recover application capacity and establish a writable, healthy database before publishing the recovery destination as ready for traffic. Include secrets, certificates, KMS access, external dependencies and rollback in drills. Retest after meaningful changes to boot time, data volume or recovery capacity; CloudFormation templates are useful only when the associated prerequisites and timing have been validated.\n\nAWS documentation (checked September 18, 2026): [Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html); [Elastic Disaster Recovery objectives](https://docs.aws.amazon.com/drs/latest/userguide/CloudEndure-Concepts.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/363.mmd",
+  "diagram_alt": "Continuous replication prepares the recovery state, but client traffic moves only after application launch, database failover, and health validation.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora asynchronously replicates to secondary Regions with typical sub-second latency and supports coordinated regional failover; support varies by engine version and Region."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/drs/latest/userguide/CloudEndure-Concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "DRS continuously replicates blocks into a staging area; achievable RPO and RTO depend on workload write rate, network capacity, recovery instance performance and boot time."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Reframed cost as idle application compute and added a measured 12-minute full recovery drill to distinguish a defensible pilot-light design from a service-level RTO guarantee. Warm standby remains technically valid but retains more application capacity."
+  ],
+  "review_status": "authored"
+}

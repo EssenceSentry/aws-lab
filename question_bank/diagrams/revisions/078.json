@@ -1,0 +1,57 @@
+{
+  "question_id": "078",
+  "base_record_sha256": "2b69e8aa215d414d8444ff2b0e9bb367b2fe1bd2d15ce121fb2bc1141329cef6",
+  "record": {
+    "id": "078",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs a CRM application on RDS for MySQL. Scheduled reporting queries cause latency spikes on the transactional primary. The reports tolerate short replication delays and produce small status summaries for an external operations system. That system accepts standard Amazon SNS email notifications and can confirm the subscription. The company wants minimal changes to its transactional data model.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the reporting queries against RDS read replicas. Publish each status summary to an SNS standard topic with a confirmed email subscription for the operations system."
+      },
+      {
+        "id": "2",
+        "text": "Move the transactional CRM database to Redshift, run reports through Spectrum, and publish each summary to an SNS email subscription."
+      },
+      {
+        "id": "3",
+        "text": "Move the transactional CRM database to Redshift and send each summary to an SQS queue with the operations system’s email address as the queue consumer."
+      },
+      {
+        "id": "4",
+        "text": "Run the reporting queries against RDS read replicas and configure an SQS queue to deliver the summaries directly to the operations system’s email address."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> offloads lag-tolerant reporting from the RDS primary and uses SNS’s supported email subscription protocol. The subscription must be confirmed before delivery. This is suitable for the small operational notifications explicitly accepted by the receiving system.\n\n<<2>> changes the transactional database architecture unnecessarily; Redshift is an analytical warehouse, and Spectrum queries external S3 data rather than serving as a drop-in CRM engine. <<3>> adds that migration and assumes SQS can deliver directly to an email address. <<4>> chooses the correct read-scaling mechanism but still lacks an email-delivery consumer for SQS.\n\nRead replicas are asynchronous, so reports must tolerate lag and use the replica endpoint. SNS email is not a general-purpose customized email or attachment service; the scenario’s receiving system and message format must support its notification behavior.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nhttps://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html\nhttps://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-data-files.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/078.mmd",
+  "diagram_alt": "A separate read path protects transaction capacity while SNS handles the supported email delivery path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Read replicas can offload reporting queries and use asynchronous replication."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard-topic email subscriptions require confirmation and have notification-oriented limitations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-data-files.html",
+      "checked_on": "2026-09-18",
+      "supports": "Spectrum queries supported external files in S3."
+    }
+  ],
+  "editorial_notes": [
+    "Made replica lag tolerance and SNS-compatible small notifications explicit."
+  ],
+  "review_status": "authored"
+}

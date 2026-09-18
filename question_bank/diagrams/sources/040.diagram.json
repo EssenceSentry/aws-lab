@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Quota usage measures vCPUs, not task count",
+  "columns": [
+    "Quantity",
+    "Illustrative value",
+    "Role in alarm"
+  ],
+  "rows": [
+    [
+      "Running tasks",
+      "40 tasks",
+      "Sizes can differ; insufficient alone"
+    ],
+    [
+      "Allocated On-Demand vCPUs",
+      "80 vCPUs",
+      "AWS/Usage ResourceCount = m1"
+    ],
+    [
+      "Applicable quota",
+      "100 vCPUs",
+      "SERVICE_QUOTA(m1)"
+    ],
+    [
+      "Usage percentage",
+      "80 / 100 x 100 = 80%",
+      "Above 75%: alarm and SNS"
+    ]
+  ],
+  "footnote": "Illustrative values only. Select the correct account, Region and capacity class.",
+  "emphasis_rows": [
+    1,
+    3
+  ]
+}

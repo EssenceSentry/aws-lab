@@ -1,0 +1,62 @@
+{
+  "question_id": "334",
+  "base_record_sha256": "db9c15a1efe12115b706b5e3311709cb36b6933169dc7a0fff5f5da12ec42806",
+  "record": {
+    "id": "334",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company has PROD, DEV, and UAT OUs in AWS Organizations. AWS Config detects security groups that expose ports outside an approved list to the internet and sends alerts. In PROD member accounts, designated critical security groups must remain unchanged by application teams, even when those teams have administrator IAM permissions. A protected security-team role must retain controlled maintenance access.\n\nWhich solution provides the required preventive control?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach an automatic Config remediation action that removes unrestricted ingress after the Config rule reports noncompliance."
+      },
+      {
+        "id": "2",
+        "text": "Attach a tested SCP to PROD that denies application principals all relevant mutation APIs for the designated groups, including rule creation, revocation, modification and group deletion. Protect any classification tags and the security-role exception from application-team changes."
+      },
+      {
+        "id": "3",
+        "text": "Attach an SCP to PROD that denies ec2:AuthorizeSecurityGroupIngress when aws:SourceIp matches 0.0.0.0/0, using this condition to identify the CIDR being added to a rule."
+      },
+      {
+        "id": "4",
+        "text": "Subscribe a Lambda function to the Config alert topic and have it restore the previous security-group rules after each unauthorized change."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Option <<2>> places an authorization guardrail above member-account administrator permissions. A matching explicit SCP deny blocks the attempted API call. The control must cover all relevant mutation paths and use supported action, resource, and condition combinations. If protected tags identify the groups, prevent application teams from changing those tags. Protect the exception role's trust and permissions as well.\n\nOption <<1>> detects and remediates after a change, and its port-exposure test does not cover every forbidden modification. Option <<3>> tests the API caller's public source IP, not the CIDR supplied in a security-group rule; it also omits many mutation APIs. Option <<4>> is corrective automation, leaving a period when the unauthorized configuration exists.\n\nKeep Config as a detective supplement. The managed rule permits public ingress on configured authorized ports, so it does not classify every 0.0.0.0/0 rule as noncompliant. SCPs constrain member-account principals, including administrators, but do not grant permissions or constrain service-linked roles.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nhttps://docs.aws.amazon.com/service-authorization/latest/reference/list_ec2.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html\nhttps://docs.aws.amazon.com/config/latest/developerguide/vpc-sg-open-only-to-authorized-ports.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/334.mmd",
+  "diagram_alt": "The SCP can reject a mutation before it occurs; Config and remediation evaluate the configuration afterward.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCP deny constraints on member-account administrators, no permission grants, and service-linked-role exclusion."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/service-authorization/latest/reference/list_ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Action-specific EC2 resource and condition support for security-group mutations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html",
+      "checked_on": "2026-09-18",
+      "supports": "aws:SourceIp is the requester address, not a security-group rule field."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/vpc-sg-open-only-to-authorized-ports.html",
+      "checked_on": "2026-09-18",
+      "supports": "The rule checks public ingress against an authorized-port list."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved key 2 while covering mutation, tag and exception-role bypass paths. Corrected Config rule meaning and the SourceIp distractor."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,18 @@
+sequenceDiagram
+accTitle: Temporary credentials still need item-level authorization
+accDescr: Social sign-in supplies a token, Cognito issues scoped credentials, and DynamoDB evaluates the caller identity against the requested partition key.
+participant M as Mobile app
+participant I as Social identity provider
+participant C as Cognito identity pool
+participant D as DynamoDB authorization
+M->>I: Sign in
+I-->>M: Identity token
+M->>C: Exchange token
+C-->>M: Temporary role credentials
+M->>D: GetItem for user U
+D->>D: Allowed action and LeadingKeys matches identity?
+alt Own user key
+D-->>M: Preferences
+else Another user key
+D-->>M: Access denied
+end

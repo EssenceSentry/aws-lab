@@ -1,0 +1,23 @@
+sequenceDiagram
+accTitle: Publish a complete version, then discover it without caching
+accDescr: A publisher stores and verifies a complete tile version before updating the latest manifest. A client retrieves the uncached manifest and fetches only tiles pinned to its version through CloudFront.
+participant P as Publisher
+participant S as Private S3 origin
+participant E as CloudFront
+participant C as Client
+P->>S: Write all tiles under version v2
+P->>S: Verify complete tile set
+P->>S: Update latest manifest to v2
+C->>E: Refresh latest manifest
+E->>S: Fetch manifest, cache TTLs are zero
+S-->>E: Manifest identifies v2
+E-->>C: Manifest, browser no-store
+C->>C: Pin v2 for this view
+C->>E: Request v2 tile URLs
+alt Tile is cached
+E-->>C: Cached immutable v2 tile
+else Cache miss
+E->>S: Signed OAC request for v2 tile
+S-->>E: v2 tile
+E-->>C: Return and cache immutable tile
+end

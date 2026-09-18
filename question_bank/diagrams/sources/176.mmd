@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Coverage, confidentiality, and log integrity are separate controls
+accDescr: Regional management events and global-service events enter one multi-Region trail. Restricted KMS-encrypted logs and signed digests are stored, then a validation process verifies the log history.
+R[Management events<br/>All enabled Regions]:::inputData --> T[Multi-Region CloudTrail]:::process
+G[Global-service events<br/>Including IAM]:::inputData --> T
+T -->|Log files and signed digests| B[(Restricted S3 audit bucket)]:::storage
+K[Customer managed KMS key<br/>Authorized log decryption]:::reference -.-> B
+B --> V[Run log-file integrity validation]:::process
+V --> C{Digest chain and logs match?}:::decision
+C -->|Yes| O[Verified log history]:::output
+C -->|No| X[Investigate altered or missing evidence]:::warning

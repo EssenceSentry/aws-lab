@@ -1,0 +1,7 @@
+flowchart TB
+accTitle: Managed MQTT ingestion still has separate identity and storage steps
+accDescr: Devices connect to a configured IoT Core custom domain using TLS and device authorization. A rule maps key attributes and uses its role to write DynamoDB, with failures routed for recovery.
+D[Sensors<br/>Stable message IDs and retry buffer]:::inputData -->|MQTT over TLS, matching SNI| I[IoT Core custom domain<br/>Server identity and device policies]:::process
+I --> R[IoT rule<br/>Map table key attributes]:::process
+R -->|Authorized rule role| T[(DynamoDB items)]:::storage
+R -->|Action failure| E[Error action<br/>Retain and investigate failed writes]:::warning

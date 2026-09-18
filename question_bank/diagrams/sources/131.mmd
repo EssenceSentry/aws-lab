@@ -1,0 +1,12 @@
+stateDiagram-v2
+accTitle: Mobile credentials have a bounded lifetime
+accDescr: A trusted backend authenticates and authorizes the user before issuing a scoped session. Expired sessions cannot continue to access S3.
+[*] --> Unauthenticated
+Unauthenticated --> Authorizing: Sign in to backend
+Authorizing --> ActiveSession: Identity and prefix approved
+Authorizing --> Unauthenticated: Authentication or access denied
+note right of ActiveSession: Direct S3 requests within scope
+ActiveSession --> Authorizing: Request a new session before expiry
+ActiveSession --> Expired: Credential expiration reached
+Expired --> Authorizing: Revalidate identity and access
+note right of Expired: S3 rejects expired credentials

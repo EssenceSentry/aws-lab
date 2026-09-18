@@ -1,0 +1,57 @@
+{
+  "question_id": "104",
+  "base_record_sha256": "cf21cbd0a6b7c34cac73c5dc2811e51c31dd75d42a2a56c9c70718a4e24dfcad",
+  "record": {
+    "id": "104",
+    "exam_domain": "Design for New Solutions",
+    "question": "A retailer is migrating a LAMP application to AWS after DDoS, SQL injection, and SSH password attacks. The team has fixed vulnerable SQL code and prepared patched EC2 images with the Systems Manager Agent. The new design must tolerate an Availability Zone failure, filter malicious HTTP requests, and provide administrative access without inbound SSH ports. The company has approved AWS Shield Advanced and an eligible support plan for specialist DDoS response assistance.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy an ALB and an EC2 Auto Scaling group across Availability Zones with an RDS Multi-AZ database. Use CloudFront with AWS WAF rules and Shield Advanced protection. Configure Session Manager permissions and endpoint connectivity, and remove inbound SSH access."
+      },
+      {
+        "id": "2",
+        "text": "Deploy an ALB and an EC2 Auto Scaling group across Availability Zones with an RDS Multi-AZ database. Use CloudFront, AWS WAF, and Shield Advanced, and administer the instances through an internet-facing SSH bastion."
+      },
+      {
+        "id": "3",
+        "text": "Deploy an ALB and an EC2 Auto Scaling group across Availability Zones with an RDS Multi-AZ database. Use CloudFront and Shield Standard without AWS WAF, and use Session Manager for administration."
+      },
+      {
+        "id": "4",
+        "text": "Deploy an ALB and an EC2 Auto Scaling group across Availability Zones with a Single-AZ RDS database. Use CloudFront, AWS WAF, Shield Advanced, and Session Manager."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The design addresses independent failure and attack surfaces: multiple Availability Zones protect the web tier, RDS Multi-AZ provides database failover, WAF filters HTTP requests, and Shield Advanced supplies the approved DDoS protection and response capabilities. Session Manager removes the need to expose inbound SSH ports when its agent, IAM, and network prerequisites are configured.\n\n<<2>> retains an inbound SSH administration path, contrary to the requirement.\n\n<<3>> omits the application-layer request filtering and the explicitly required Shield Advanced response assistance. Shield Standard does not replace a WAF web ACL.\n\n<<4>> leaves the database vulnerable to an Availability Zone outage.\n\nThese controls complement secure code and patching. WAF does not prove an application free of SQL injection, and Multi-AZ failover still requires application reconnection and retry handling.\n\nOfficial AWS references (checked September 18, 2026): [Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html). [Layered DDoS mitigation](https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/mitigation-techniques.html). [RDS Multi-AZ DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/104.mmd",
+  "diagram_alt": "Edge filtering, multi-AZ resilience, and a separate Session Manager path address distinct attack and availability risks.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "IAM-controlled administration without inbound SSH ports or bastion hosts"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/mitigation-techniques.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront, WAF, Shield Advanced and support-plan requirements for specialist response"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "Synchronous standby for availability and failover"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Made the no-inbound-SSH requirement and justification for Shield Advanced explicit, rather than implying that every website requires the subscription."
+  ],
+  "review_status": "authored"
+}

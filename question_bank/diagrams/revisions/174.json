@@ -1,0 +1,52 @@
+{
+  "question_id": "174",
+  "base_record_sha256": "f0aa18d824b222b9e6fb71f34844ad222016abe4fb6d9bdc0fe8a92f0640f66a",
+  "record": {
+    "id": "174",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company has separate AWS accounts for finance, engineering, and human resources. Local administrators manage IAM permissions in each account. Central security needs to prohibit selected AWS services for particular departments, and those restrictions must also apply to the root users of the member accounts. The company wants policy inheritance by department without custom enforcement scripts.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Group accounts into Organizations OUs and distribute an IAM policy to each current administrator role. Allow local administrators to manage the role policies."
+      },
+      {
+        "id": "2",
+        "text": "Create a cross-account administration role in every account and have central security use those roles to audit service usage after resources are created."
+      },
+      {
+        "id": "3",
+        "text": "Federate employee sign-in through an identity provider and assign restricted permissions only to the federated employee roles."
+      },
+      {
+        "id": "4",
+        "text": "Use AWS Organizations with all features enabled, group accounts into departmental OUs, and attach SCPs that restrict the selected services for those member accounts."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. OU-attached SCPs provide centrally inherited limits on the permissions available to affected member-account principals, including their root users for actions within SCP scope. Local administrators cannot override an applicable SCP deny by adding a broader IAM allow.\n\n<<1>> restricts selected roles, can be changed by the described local administrators, and does not constrain the account root user through an identity policy.\n\n<<2>> enables administration and auditing but does not itself impose the required preventive service boundary.\n\n<<3>> controls one sign-in path while leaving other principals and root outside that role policy.\n\nSCPs set limits; normal IAM or resource-policy permissions are still needed to grant access. They do not restrict principals in the Organizations management account or service-linked roles. Keep workloads in member accounts and test restrictions before broad OU deployment.\n\nAWS documentation (checked September 18, 2026): [SCP scope and exceptions](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html); [SCP evaluation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/174.mmd",
+  "diagram_alt": "A departmental SCP creates an inherited service restriction that broader local permissions cannot override.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCPs restrict member-account users and roles including root, do not grant permissions, and do not restrict management-account principals or service-linked roles."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "Applicable explicit denies override allows, while permission availability depends on the organization hierarchy."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Removed unrelated Proton context and clarified member-account root coverage, SCP non-grant behavior, and service-linked-role and management-account exceptions."
+  ],
+  "review_status": "authored"
+}

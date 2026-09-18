@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Latency chooses, health constrains",
+  "columns": [
+    "Deployment state",
+    "DNS selection behavior"
+  ],
+  "rows": [
+    [
+      "Both regional ALBs healthy",
+      "Use the Region with lower estimated latency"
+    ],
+    [
+      "Only one regional ALB healthy",
+      "Use the remaining healthy Region"
+    ],
+    [
+      "Neither regional ALB healthy",
+      "Fallback may return an unhealthy record"
+    ],
+    [
+      "A client has a cached answer",
+      "It can keep using that answer until cache refresh"
+    ]
+  ],
+  "footnote": "Target health must represent application readiness, not merely an open listener.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

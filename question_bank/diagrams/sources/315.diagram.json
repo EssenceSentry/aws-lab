@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Read the OAC bucket policy as four constraints",
+  "columns": [
+    "Policy element",
+    "Value or scope",
+    "What it controls"
+  ],
+  "rows": [
+    [
+      "Principal",
+      "cloudfront.amazonaws.com",
+      "AWS service making the request"
+    ],
+    [
+      "Action",
+      "s3:GetObject",
+      "Object reads"
+    ],
+    [
+      "Resource",
+      "Bucket object ARNs",
+      "Which document objects"
+    ],
+    [
+      "Condition",
+      "Exact distribution SourceArn",
+      "Which distribution may use the grant"
+    ]
+  ],
+  "footnote": "The distribution ID is not the Principal. Remove other viewer read grants; OAC does not replace viewer authorization.",
+  "emphasis_rows": [
+    3
+  ]
+}

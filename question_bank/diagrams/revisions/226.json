@@ -1,0 +1,61 @@
+{
+  "question_id": "226",
+  "base_record_sha256": "4e8bbb7432ec8f0b9f93dc04de58c1f463d9a34c546b74e96b59aa00b1f148b2",
+  "record": {
+    "id": "226",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A WordPress site uses an RDS for MySQL Multi-AZ DB instance deployment. Profiling identifies repeated read-only queries as the source of database CPU pressure. Storage IOPS, writes, and the web tier have spare capacity. The team can change read routing and caching, but cannot shard the schema or increase the primary instance size. The affected reads tolerate bounded staleness.\n\nWhich changes directly reduce the primary's read-query work? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase provisioned storage IOPS without changing query execution or routing."
+      },
+      {
+        "id": "2",
+        "text": "Shard the schema across independently writable databases and route requests by shard."
+      },
+      {
+        "id": "3",
+        "text": "Create MySQL read replicas and route eligible reads to their endpoints, retaining primary routing for writes and freshness-sensitive reads."
+      },
+      {
+        "id": "4",
+        "text": "Integrate ElastiCache with a cache-aside strategy for reusable query results, including expiration and invalidation rules."
+      },
+      {
+        "id": "5",
+        "text": "Cache static media in CloudFront and enlarge the web-server fleet without changing database access."
+      },
+      {
+        "id": "6",
+        "text": "Upgrade the primary database to a larger instance class while keeping all queries on it."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<4>> are correct. Read replicas move eligible query execution to separate database compute. A cache avoids repeated database execution when a valid cached result is available. Both require changes in the application path, as the stem permits.\n\n<<1>> adds capacity for a resource that is not saturated and leaves the diagnosed CPU work unchanged.\n\n<<2>> violates the explicit no-sharding constraint.\n\n<<5>> improves media delivery and web capacity, neither of which is the diagnosed bottleneck.\n\n<<6>> could provide more CPU in another scenario, but violates the instance-size constraint.\n\nThe standby of a conventional Multi-AZ DB instance deployment provides failover, not a read endpoint. Do not generalize this to Multi-AZ DB clusters. MySQL read replicas replicate asynchronously, and cached values can become stale, so route operations requiring current data to the writer and enforce the application's staleness policy. Merely creating replicas or a cache does not redirect existing queries.\n\nAWS documentation (checked September 18, 2026): [RDS read replicas and standbys](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html); [ElastiCache caching strategies](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/226.mmd",
+  "diagram_alt": "Cache hits avoid database work, replica reads offload eligible queries, and writes and current reads still use the primary.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "MySQL read replicas serve separately routed reads using asynchronous replication; a conventional Multi-AZ DB-instance standby cannot serve reads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache-aside reads return reusable cached values on hits and query the data store on misses, requiring expiration and consistency management."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 3 and 4 and the previously repaired bottleneck constraints. Made Select TWO explicit and retained the distinction between a conventional Multi-AZ standby and readable replicas."
+  ],
+  "review_status": "authored"
+}

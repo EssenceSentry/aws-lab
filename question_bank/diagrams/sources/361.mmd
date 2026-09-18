@@ -1,0 +1,6 @@
+flowchart TB
+accTitle: Separate routing targets create independent scaling boundaries
+accDescr: ALB path rules route browsing and checkout to separate ECS services, each with its own target group, demand metric and scaling policy.
+C[CloudFront request behaviors]:::inputData --> A[ALB path rules]:::decision
+A -->|Browsing paths| B[Browsing ECS service<br/>Own target group<br/>Scale on browsing demand]:::process
+A -->|Checkout paths| K[Checkout ECS service<br/>Own target group<br/>Scale on checkout demand]:::process

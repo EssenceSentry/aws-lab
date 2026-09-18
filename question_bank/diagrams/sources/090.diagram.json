@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Canary routing through the stream consumer alias",
+  "columns": [
+    "Deployment stage",
+    "Original version",
+    "New version"
+  ],
+  "rows": [
+    [
+      "Before rollout",
+      "100%",
+      "0%"
+    ],
+    [
+      "First five minutes",
+      "About 90%",
+      "About 10%"
+    ],
+    [
+      "Healthy after five minutes",
+      "0%",
+      "100%"
+    ],
+    [
+      "Rollback alarm triggers rollback",
+      "100%",
+      "0%"
+    ]
+  ],
+  "footnote": "The event source mapping must target the alias. Weights apply probabilistically to invocations, which can contain batches of records.",
+  "emphasis_rows": [
+    1
+  ]
+}

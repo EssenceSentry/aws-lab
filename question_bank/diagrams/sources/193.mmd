@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: A snapshot schedule and a consistency procedure are separate
+accDescr: A scheduled DLM operation invokes the validated cluster preparation procedure. Snapshot initiation is followed by resuming I/O, and backup success still requires completion and recovery verification.
+S[DLM schedule]:::inputData --> P{Validated pre script<br/>Cluster preparation succeeds?}:::decision
+P -->|No| F[Fail backup attempt<br/>Alert and recover safely]:::warning
+P -->|Yes| I[Initiate required EBS snapshots]:::storage
+I --> R[Post script<br/>Resume normal I/O]:::output
+R --> C[Check snapshot completion<br/>and Oracle log coverage]:::decision
+C --> T[Verify recovery with restore tests]:::output

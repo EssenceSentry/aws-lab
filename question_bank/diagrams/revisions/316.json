@@ -1,0 +1,67 @@
+{
+  "question_id": "316",
+  "base_record_sha256": "4c9bbe3a1fe66d33e52eca4451d39062375efbfd00cd427fab8aeeec23b4f68f",
+  "record": {
+    "id": "316",
+    "exam_domain": "Design for New Solutions",
+    "question": "An insurer must send an authenticated client an individual financial file through a time-limited HTTPS download link. Either direct S3 delivery or CloudFront delivery is acceptable. The business accepts that the issued link is a bearer credential and can be used by anyone who obtains it before it expires. Public access and other unintended download grants must be removed.\n\nWhich TWO designs independently meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Issue a CloudFront signed cookie after login, but keep the S3 object publicly readable so that users can choose either download endpoint."
+      },
+      {
+        "id": "2",
+        "text": "Issue a CloudFront signed URL after login and enable field-level encryption, but keep the S3 object publicly readable for origin requests."
+      },
+      {
+        "id": "3",
+        "text": "Keep the S3 object private. After authorizing the client, have a backend with scoped read permission issue a short-lived S3 presigned GET URL, and remove the old public and CloudFront download paths."
+      },
+      {
+        "id": "4",
+        "text": "Keep the S3 object private and use OAC for CloudFront origin requests. Allow any viewer to download from the distribution without a signed URL, signed cookie or application authorization."
+      },
+      {
+        "id": "5",
+        "text": "Keep the S3 object private and use a distribution-scoped OAC grant. Require CloudFront signed URLs for the file, issue one after authorizing the client, and remove direct viewer read grants."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<5>> are two alternative complete designs. In the S3 design, the request uses the presigner’s scoped authority for the permitted operation. In the CloudFront design, the distribution validates the viewer’s signed URL while OAC protects the separate origin connection.\n\n<<1>> and <<2>> leave a public S3 bypass. Signed cookies can be a valid CloudFront access mechanism, but they do not revoke an independent S3 grant. Field-level encryption also does not close that bypass.\n\n<<4>> protects the origin but leaves the viewer side unrestricted.\n\nBoth valid designs need server-side entitlement checks before issuing links and careful handling of bearer URLs. Expiration does not erase files already downloaded. An S3 URL signed with temporary credentials expires no later than those credentials. A client’s geographic location does not itself require moving the bucket or establish that client’s identity.\n\nOfficial AWS references (checked September 18, 2026): [CloudFront signed URLs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html). [S3 presigned downloads](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html). [Presigned URL boundaries](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html). [Private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/316.diagram.json",
+  "diagram_alt": "Two alternative private-download paths compare where viewer authorization and origin protection are enforced.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html",
+      "checked_on": "2026-09-18",
+      "supports": "Application authorizes the recipient; trusted key groups validate signed URL policies before content delivery."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html",
+      "checked_on": "2026-09-18",
+      "supports": "Presigned URLs authorize time-limited object downloads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+      "checked_on": "2026-09-18",
+      "supports": "URLs are bearer tokens and expire no later than temporary signing credentials."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC signing, service principal, distribution SourceArn, REST endpoints and SSE-KMS key authorization."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 3 and 5. Explicitly asks for alternative designs, removes unnecessary California bucket relocation, and replaces the impossible non-transferable signed-URL promise with bearer-link requirements."
+  ],
+  "review_status": "authored"
+}

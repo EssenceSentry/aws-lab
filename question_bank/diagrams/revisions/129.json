@@ -1,0 +1,53 @@
+{
+  "question_id": "129",
+  "base_record_sha256": "b1b285962ac2c8af64230f77194a5a55dcf600c24c30cf5f62fd845a6a863563",
+  "record": {
+    "id": "129",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A blogging platform stores public articles in a private S3 bucket. Articles change frequently during their first three months and become immutable after editorial approval, usually by month six. Under normal origin availability, edits to mutable articles must appear within five minutes. Approved articles should be eligible for a full day of edge caching. The platform wants one managed delivery configuration.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Duplicate each article into two buckets and create a CloudFront distribution for each bucket. Set both distributions to cache every article for 24 hours."
+      },
+      {
+        "id": "2",
+        "text": "Use one CloudFront distribution with a minimum TTL of 0 and a default and maximum TTL of 24 hours. Omit origin cache headers because the zero minimum TTL prevents caching."
+      },
+      {
+        "id": "3",
+        "text": "Create separate CloudFront distributions for different geographic groups. Configure both distributions with a fixed 24-hour TTL for every article."
+      },
+      {
+        "id": "4",
+        "text": "Use one CloudFront distribution with origin access control for the private bucket. Set minimum TTL to 0 and maximum TTL to 24 hours. Publish Cache-Control: max-age=300 for mutable articles and max-age=86400 for approved articles, with versioned URLs or invalidations for urgent corrections."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Origin cache headers express each article's freshness requirement, while the CloudFront cache policy bounds the allowed TTL. With a zero minimum and a 24-hour maximum, max-age=300 permits five minutes of caching and max-age=86400 permits a day. Origin access control restricts access to the private S3 origin.\n\n<<1>> duplicates storage and delivery configuration but retains the wrong TTL for mutable content. <<2>> misinterprets minimum TTL: zero permits a short TTL but does not force every request to reach the origin. Without cache headers, the default TTL still applies. <<3>> changes geographic coverage without meeting the five-minute update requirement.\n\nAn upload-month prefix can organize content, but age alone does not change cache settings. The publisher must update headers when an article changes state. Changing origin metadata does not immediately purge cached responses; use invalidation or a new versioned URL when needed. TTL is a freshness limit, not a promise that an object remains resident at the edge.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/129.diagram.json",
+  "diagram_alt": "CloudFront applies five-minute or one-day TTLs from origin headers, while a missing header uses the one-day default despite a zero minimum.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Origin max-age is constrained by cache-policy TTLs, zero minimum does not disable caching, and objects may be evicted early."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Origin access control restricts a private S3 origin to CloudFront."
+    }
+  ],
+  "editorial_notes": [
+    "Repaired the false minimum-TTL-zero claim and replaced unsupported age-based automatic cache behavior with explicit publisher-managed headers.",
+    "Added measurable freshness and single-configuration constraints to remove ambiguity between otherwise workable distribution topologies."
+  ],
+  "review_status": "authored"
+}

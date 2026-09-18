@@ -1,0 +1,57 @@
+{
+  "question_id": "001",
+  "base_record_sha256": "937b8ec9773c4f8851070b54573bf4768b422daab8c818868e8e53495204e295",
+  "record": {
+    "id": "001",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A retailer runs an Amazon ECS service on AWS Fargate behind an Application Load Balancer (ALB) in eu-west-1. Amazon CloudFront serves the website at a custom domain in a Route 53 public hosted zone. The retailer requires DNS response authentication for validating resolvers and TLS encryption on both the viewer-to-CloudFront and CloudFront-to-ALB connections.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable DNSSEC signing and publish the delegation signer (DS) record in the parent zone. Attach an ACM certificate from us-east-1 to CloudFront and an ACM certificate from eu-west-1 to the ALB. Require HTTPS from viewers and use an HTTPS-only origin protocol policy."
+      },
+      {
+        "id": "2",
+        "text": "Enable DNSSEC signing and publish the DS record in the parent zone. Attach an ACM certificate from eu-west-1 to both CloudFront and the ALB. Require HTTPS from viewers and use an HTTPS-only origin protocol policy."
+      },
+      {
+        "id": "3",
+        "text": "Enable DNSSEC signing and publish the DS record in the parent zone. Attach appropriately located certificates to CloudFront and the ALB. Require HTTPS from viewers, but use HTTP-only for the origin connection."
+      },
+      {
+        "id": "4",
+        "text": "Enable DNSSEC signing without publishing a DS record in the parent zone. Attach appropriately located certificates to CloudFront and the ALB. Require HTTPS from viewers and use an HTTPS-only origin protocol policy."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> meets all three requirements. DNSSEC needs a chain of trust from the parent zone, while TLS separately protects each connection. CloudFront requires its ACM viewer certificate in us-east-1; the ALB certificate belongs in the ALB Region.\n\n<<2>> places the viewer certificate in the wrong Region. <<3>> leaves the CloudFront-to-origin connection unencrypted even though viewers use HTTPS. <<4>> signs the zone without establishing the parent-to-child trust chain.\n\nTreat DNS authenticity and transport encryption as separate controls. DNSSEC does not encrypt DNS responses, and signing helps clients only when their resolver validates the chain. Certificates must also cover the names used on their respective connections.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec-enable-signing.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/001.mmd",
+  "diagram_alt": "DNS trust links are distinct from the viewer and origin TLS legs, each with its own certificate location.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec.html",
+      "checked_on": "2026-09-18",
+      "supports": "Route 53 DNSSEC signing and parent-zone support."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "Separate viewer and origin TLS certificates and the us-east-1 viewer-certificate requirement."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec-enable-signing.html",
+      "checked_on": "2026-09-18",
+      "supports": "The DS record in the parent zone establishes the DNSSEC trust chain."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced obsolete and ambiguous third-party DNS distractors with specific missing controls. Removed the unbounded claim that one configuration prevents all man-in-the-middle attacks. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

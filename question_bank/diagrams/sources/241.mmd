@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Two migration paths preserve different assets
+accDescr: Virtual-machine images become EC2 AMIs through import, while SMB files and permissions move through DataSync to FSx.
+subgraph SOURCE[On premises]
+  VM[VMware guest image]:::inputData
+  SMB[SMB files and ACLs]:::inputData
+end
+VM --> IMPORT[VM Import / Export]
+IMPORT --> AMI[Imported AMI]:::storage
+AMI --> EC2[EC2 application servers]:::output
+SMB --> SYNC[DataSync]
+SYNC --> FSX[FSx for Windows]:::storage
+EC2 -->|SMB access after cutover| FSX

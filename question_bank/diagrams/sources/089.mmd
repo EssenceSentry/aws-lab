@@ -1,0 +1,18 @@
+sequenceDiagram
+    accTitle: Cache-aside keeps authority in the existing database
+    accDescr: The AWS application checks ElastiCache for an article. On a miss it reads the on-premises database and fills the cache. Comments continue to be written to the authoritative database.
+    participant A as AWS web application
+    participant C as ElastiCache Multi-AZ
+    participant D as On-premises database
+    A->>C: Look up article
+    alt Valid cache entry
+        C-->>A: Cached article
+    else Cache miss
+        C-->>A: Not found or expired
+        A->>D: Read article across hybrid link
+        D-->>A: Authoritative article
+        A->>C: Cache article with expiration
+    end
+    Note over A,C: Invalidate entries when articles change
+    A->>D: Persist new comment
+    D-->>A: Write confirmation

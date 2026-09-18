@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: An applicable explicit deny overrides broad allows
+accDescr: A developer request against a protected production instance is denied even if another attached policy allows EC2 operations. Requests outside this deny still need normal policy evaluation.
+R[Developer session<br/>Stop or terminate request]:::inputData --> T{Target has protected<br/>production tag?}:::decision
+T -->|Yes| D[Explicit deny applies]:::warning
+A[Overlapping EC2 allow]:::inputData -. cannot override .-> D
+D --> X[Request denied]:::output
+T -->|No| E[Evaluate remaining policies<br/>No automatic allow]:::decision
+P[Protect tags, role access<br/>and policy administration]:::warning -. prevents bypass .-> T

@@ -1,0 +1,67 @@
+{
+  "question_id": "318",
+  "base_record_sha256": "6d62114c8c0b913ebae87e9d266b83162003ac32ae8e7b8e3e57a87a4b72127e",
+  "record": {
+    "id": "318",
+    "exam_domain": "Design for New Solutions",
+    "question": "A content management system uses CloudFront with an ALB as its only configured origin and the default cache behavior. Dynamic pages work, but requests for /assets/logo.png return 404. Application logs show those requests reaching the ALB, where the file does not exist. The object exists as assets/logo.png in a private S3 bucket. An OAC and a distribution-scoped bucket policy have already been prepared, but the S3 bucket is not an origin in the distribution.\n\nWhich TWO configuration changes correct the routing? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add the S3 bucket REST endpoint as a second origin and associate the prepared signing OAC with that origin."
+      },
+      {
+        "id": "2",
+        "text": "Add an ALB path rule whose target group registers the S3 bucket ARN as its target."
+      },
+      {
+        "id": "3",
+        "text": "Replace CloudFront with Global Accelerator and register the S3 bucket as a standard accelerator endpoint."
+      },
+      {
+        "id": "4",
+        "text": "Add a cache behavior for /assets/* that selects the S3 origin, leaving the default behavior mapped to the ALB."
+      },
+      {
+        "id": "5",
+        "text": "Add an ALB header rule that redirects /assets/* requests to unsigned direct S3 object URLs."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<4>> are correct. An origin defines where CloudFront can fetch content; a cache behavior selects that origin for matching requests. The /assets/* behavior sends the existing object key to S3, while the default behavior continues to serve dynamic paths through the ALB.\n\n<<2>> is invalid because an S3 bucket ARN is not an ALB target type. The issue is not merely a missing S3 permission on an otherwise valid ALB-to-bucket target group.\n\n<<3>> does not provide the required CDN path routing and uses an unsupported standard accelerator endpoint type.\n\n<<5>> directs the viewer around CloudFront and fails against the private bucket.\n\nA bucket policy or OAC resource alone does not create an origin or route requests to it. Verify behavior order and case-sensitive paths, wait for the configuration deployment, and invalidate a cached error or let its error TTL expire before retesting.\n\nOfficial AWS references (checked September 18, 2026): [Cache behavior routing](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesCacheBehavior.html). [Private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html). [ALB target types](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html). [Cached error expiry](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/custom-error-pages-expiration.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/318.mmd",
+  "diagram_alt": "CloudFront path selection routes assets to a new S3 origin and all other paths to the existing ALB.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesCacheBehavior.html",
+      "checked_on": "2026-09-18",
+      "supports": "First matching path selects behavior and its origin; default behavior is last."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC signing, service principal, distribution SourceArn, REST endpoints and SSE-KMS key authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB target groups use instance, IP or Lambda targets, not S3 bucket ARNs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/custom-error-pages-expiration.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront can cache origin 404 responses until their error TTL expires."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 4. Located the 404 in observed ALB logs, made origin absence explicit, and corrected the false idea that ALB can directly register an S3 bucket."
+  ],
+  "review_status": "authored"
+}

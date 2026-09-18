@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Measured concurrency-scaling credit budget",
+  "columns": [
+    "Daily measure",
+    "Cluster-minutes",
+    "Meaning"
+  ],
+  "rows": [
+    [
+      "Credits earned",
+      "60",
+      "Main cluster runs all day"
+    ],
+    [
+      "Audit burst consumption",
+      "40",
+      "One extra cluster for 40 minutes"
+    ],
+    [
+      "Remaining daily margin",
+      "20",
+      "60 minus 40"
+    ],
+    [
+      "Usage beyond available credits",
+      "0",
+      "Under this measured scenario"
+    ]
+  ],
+  "footnote": "Credits must already be available. Consumption sums across concurrent scaling clusters; eligible queries and WLM configuration are prerequisites.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

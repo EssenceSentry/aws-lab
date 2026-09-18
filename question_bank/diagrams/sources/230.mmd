@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Contact-center routing and conversational fulfillment cooperate
+accDescr: Connect receives the call and invokes Lex to understand intent and collect details. The flow either completes an authorized backend action or routes the caller and context to an agent.
+C[Customer phone call]:::inputData --> N[Amazon Connect flow]:::process
+N --> L[Lex V2<br/>Intent and required slots]:::process
+L --> D{Supported self-service task?}:::decision
+D -->|Yes, caller authorized| B[Backend fulfillment]:::process
+B --> R[Response to caller]:::output
+D -->|Agent needed| A[Connect queue and agent<br/>Transfer context]:::output

@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Turn matching log events into a count before evaluating a threshold
+accDescr: JSON logs from EC2 and on-premises servers enter CloudWatch Logs. The filter adds one only for ERROR events, and the five-minute sum drives an alarm and SNS notification.
+L[EC2 and on-premises JSON logs]:::inputData --> A[CloudWatch agent<br/>Standard log group]:::process
+A --> F[Metric filter<br/>ERROR contributes 1]:::process
+F --> S[Five-minute metric Sum]:::process
+S --> T{Count at least 20?}:::decision
+T -->|Alarm state change| N[SNS notification]:::output
+T -->|No| O[Continue evaluating]:::reference

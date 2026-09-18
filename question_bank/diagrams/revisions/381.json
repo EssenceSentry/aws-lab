@@ -1,0 +1,57 @@
+{
+  "question_id": "381",
+  "base_record_sha256": "a310cc2b2b7c6b46eabcbcc96739011f75cf470b4812a89d8157c4330af45a87",
+  "record": {
+    "id": "381",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company creates a VPC with primary IPv4 CIDR 10.232.18.0/24. EC2 instances must resolve records in a Route 53 private hosted zone. Instances assigned public IPv4 addresses must also receive AWS public DNS hostnames. The VPC currently uses a DHCP option set that points to an old custom DNS server with no forwarding for the private zone.\n\nWhich two changes meet these requirements using the native VPC resolver? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Associate the private hosted zone with the VPC and set both enableDnsSupport and enableDnsHostnames to true."
+      },
+      {
+        "id": "2",
+        "text": "Associate the private hosted zone with the VPC and change the VPC instance tenancy to dedicated."
+      },
+      {
+        "id": "3",
+        "text": "Associate the private hosted zone with the VPC and enable Network Address Usage metrics."
+      },
+      {
+        "id": "4",
+        "text": "Associate a DHCP option set whose domain-name-servers value is AmazonProvidedDNS and ensure the instances obtain the updated DHCP settings."
+      },
+      {
+        "id": "5",
+        "text": "Associate a DHCP option set whose domain-name-servers value is 10.232.18.98 and ensure the instances obtain the updated DHCP settings."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "Options <<1>> and <<4>> configure the DNS service and direct instances to use it. Associate the private hosted zone with the VPC and enable both DNS attributes. enableDnsSupport enables Amazon DNS resolution; enableDnsHostnames, together with DNS support and a public IPv4 address, permits AWS public DNS hostnames. Private hosted-zone use also requires both attributes.\n\nThe DHCP domain-name-servers value AmazonProvidedDNS points clients at the native Route 53 Resolver. For this VPC, its VPC-relative IPv4 address is 10.232.18.2, the primary network address plus two; the link-local address 169.254.169.253 is also available. Replacing the explicitly unsuitable custom resolver is necessary here, and existing instances must obtain the changed settings.\n\nOption <<2>> changes hardware tenancy rather than DNS behavior. Option <<3>> measures network address utilization rather than enabling DNS resolution or hostnames. Option <<5>> supplies an arbitrary address within the VPC, not the native resolver. A DHCP DNS value does not create a DNS server at that address.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html\nhttps://docs.aws.amazon.com/vpc/latest/userguide/VPC_DHCP_Options.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/381.mmd",
+  "diagram_alt": "The VPC resolver is the network address plus two, and both DNS attributes, hosted-zone association, and the client resolver settings have distinct roles.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Resolver addresses, both VPC DNS attributes, private hosted zones and public IPv4 hostname prerequisites."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_DHCP_Options.html",
+      "checked_on": "2026-09-18",
+      "supports": "DHCP option sets configure instance DNS servers."
+    }
+  ],
+  "editorial_notes": [
+    "Added the existing unsuitable DHCP configuration so changing it is a necessary second action. Preserved the two-answer key 1 and 4."
+  ],
+  "review_status": "authored"
+}

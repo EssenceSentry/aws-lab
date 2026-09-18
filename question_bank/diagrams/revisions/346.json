@@ -1,0 +1,52 @@
+{
+  "question_id": "346",
+  "base_record_sha256": "13b1b752c74fe683b51f00bcbaa6723c7ec48c8d12fcde3822a997091ba7cc2d",
+  "record": {
+    "id": "346",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations with a separate member account for each of 10 departments. Finance must centrally administer a monthly cost budget for each department. Each department must receive email when its actual cost exceeds a threshold and a scheduled monthly email showing its budget and spending. Department recipients must receive only their own budget information. Finance also needs interactive cost analysis.\n\nWhich solution meets these requirements with the least custom development?",
+    "options": [
+      {
+        "id": "1",
+        "text": "In the management account, create an AWS Budget for each department with a linked-account filter and department-specific alert recipients. Create a separate monthly AWS Budgets Report for each department. Use Cost Explorer for interactive analysis."
+      },
+      {
+        "id": "2",
+        "text": "Create a Cost and Usage Report in every member account. Deploy Lambda functions to calculate thresholds, publish SNS alerts, and compose and email monthly departmental summaries. Use Cost Explorer for interactive analysis."
+      },
+      {
+        "id": "3",
+        "text": "Activate department cost allocation tags, export cost data centrally, and develop Lambda functions to calculate budgets and email alerts and monthly summaries for each tag value. Use Athena for interactive analysis."
+      },
+      {
+        "id": "4",
+        "text": "Create AWS Budgets and SNS alerts separately in each member account. Save a monthly Cost Explorer report in each account and instruct department recipients to open the saved report each month."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. A management-account budget can filter a department's linked account. Budget notifications handle threshold alerts, while a separately configured Budgets Report provides scheduled email delivery. Separate reports and recipient lists keep the departmental summaries distinct. Cost Explorer supports interactive investigation.\n\n<<2>> can implement the requirements, but duplicates data pipelines and custom alerting and reporting code across accounts.\n\n<<3>> can support allocation that crosses account boundaries, but account ownership already provides the required departmental boundary. The custom reporting code adds unnecessary maintenance.\n\n<<4>> supports account-local alerts and manual analysis, but saving a Cost Explorer report does not configure the required scheduled budget email. It also distributes administration across accounts.\n\nA budget report summarizes tracked budgets; it is not an itemized invoice. Cost data and budget alerts update periodically and are not a real-time spending cap.\n\nOfficial AWS references (checked September 18, 2026): [Budget filters](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create-filters.html). [AWS Budgets Reports](https://docs.aws.amazon.com/cost-management/latest/userguide/reporting-cost-budget.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/346.diagram.json",
+  "diagram_alt": "Threshold-based budget notifications and calendar-based budget reports serve distinct requirements for each linked account.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create-filters.html",
+      "checked_on": "2026-09-18",
+      "supports": "Management-account budgets support linked-account filters, which are unsupported within member accounts."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/reporting-cost-budget.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reports email selected existing budgets on daily, weekly, or monthly schedules."
+    }
+  ],
+  "editorial_notes": [
+    "Clarified that monthly reporting means a budget/spend summary, not itemized invoices; separated threshold notifications from scheduled reports."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Separate transaction load from reporting and delivery
+accDescr: CRM writes remain on the primary. An asynchronous replica serves reports, whose small summaries go through an SNS confirmed email subscription.
+C[CRM transactions]:::inputData --> P[(RDS MySQL primary)]:::storage
+P -->|Asynchronous replication| R[(Read replica)]:::storage
+J[Reporting job]:::inputData -->|Read queries| R
+J -->|Small status summary| N[SNS standard topic]:::output
+N -->|Confirmed email subscription| E[Operations system]:::output

@@ -1,0 +1,57 @@
+{
+  "question_id": "283",
+  "base_record_sha256": "32d44a4dc66640cc6d0b79244d19aff3eb3eda2e17dad2fb1c7391d60aaeb0c8",
+  "record": {
+    "id": "283",
+    "exam_domain": "Design for New Solutions",
+    "question": "Account A owns a Route 53 private hosted zone used for application database names. Account B owns a VPC containing EC2 clients and an RDS database. The clients can reach the database through its native endpoint, but cannot resolve the custom names in Account A's zone. The VPC uses the Amazon-provided resolver and has DNS support and DNS hostnames enabled. Account A must remain the sole owner of the zone and its records.\n\nWhich actions provide the VPC access to the existing zone? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create VPC peering and configure the clients to send queries directly to the Amazon-provided resolver address of Account A's VPC."
+      },
+      {
+        "id": "2",
+        "text": "Copy the database IP addresses into hosts files on every EC2 client and update them manually when they change."
+      },
+      {
+        "id": "3",
+        "text": "Using Account A credentials, call CreateVPCAssociationAuthorization for the private hosted zone and Account B's VPC."
+      },
+      {
+        "id": "4",
+        "text": "Create a separate private hosted zone in Account B and manually copy the records from Account A."
+      },
+      {
+        "id": "5",
+        "text": "Using Account B credentials, call AssociateVPCWithHostedZone for its VPC and the authorized zone. After association succeeds, have Account A delete the association authorization."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The hosted-zone owner first authorizes the specific cross-account VPC association.\n\n<<5>> is correct. The VPC owner then creates the association. The zone owner can remove the unused authorization afterward without removing the completed association.\n\n<<1>> does not establish private-zone visibility. The Amazon-provided resolver in a peer VPC is not a general DNS-forwarding target; explicit zone association is the direct solution here.\n\n<<2>> bypasses centrally maintained DNS and produces brittle mappings when database addresses change.\n\n<<4>> creates a second independently maintained zone, contrary to the ownership and maintenance requirement.\n\nPrivate DNS visibility and network connectivity are separate. This association makes the names resolvable from the VPC; it does not create routes, security-group permissions, or database authentication.\n\nOfficial AWS references (checked September 18, 2026): [Cross-account private-zone association](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html). [VPC peering limitations](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/283.mmd",
+  "diagram_alt": "The zone owner authorizes, the VPC owner associates, and deletion of the authorization does not delete the association.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Zone-owner authorization, VPC-owner association and safe authorization removal"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html",
+      "checked_on": "2026-09-18",
+      "supports": "The Amazon DNS server in a peer VPC cannot be queried directly"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 3 and 5. Corrected the actor for deleting association authorization to Account A, and separated DNS visibility from already-validated database connectivity."
+  ],
+  "review_status": "authored"
+}

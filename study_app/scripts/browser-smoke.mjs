@@ -176,7 +176,7 @@ try {
   await page.getByRole("button", { name: "Check answer" }).click();
   await page.reload();
   await page.getByRole("heading", { name: "You’ve got it." }).waitFor();
-  assert.match(await page.locator(".answer-explanation > .rich-text").innerText(), /Correct option: A\./);
+  assert.match(await page.locator(".answer-explanation > .rich-text").innerText(), /Correct: A\./);
   assert.equal(await page.locator('.answer-option:has(input[value="2"]) .option-letter').innerText(), "A");
   assert.doesNotMatch(await page.locator(".answer-explanation").innerText(), /<<\d+>>/);
   const beforeShare = await state();
@@ -199,7 +199,7 @@ try {
     assert.equal(payload.text, preview);
     assert.doesNotMatch(payload.text, /<<\d+>>/);
     if (part === "Question") assert.doesNotMatch(payload.text, /Correct answer|Explanation/);
-    else assert.match(payload.text, /Correct option: A\./);
+    else assert.match(payload.text, /Correct: A\./);
     if (part !== "Answer") assert(payload.text.includes(markedQuestion.question));
     else assert(!payload.text.includes(markedQuestion.question));
   }
@@ -214,7 +214,7 @@ try {
   assert.equal(await page.getByRole("button", { name: "Share text", exact: true }).count(), 0);
   await page.getByRole("button", { name: "Copy text", exact: true }).click();
   await page.getByRole("button", { name: "Copied", exact: true }).waitFor();
-  assert.match(await page.evaluate(() => navigator.clipboard.readText()), /Correct option: A\./);
+  assert.match(await page.evaluate(() => navigator.clipboard.readText()), /Correct: A\./);
   await page.getByRole("button", { name: "Close dialog" }).click();
   assert.deepEqual(await state(), beforeShare, "Sharing does not change answers or grading");
   console.log("PASS text-only native share payloads for question/answer/both, cancel handling and clipboard fallback");
@@ -224,16 +224,13 @@ try {
   await page.getByRole("button", { name: "Done", exact: true }).click();
   console.log("PASS one-tap random practice, no immediate repeats, saved grading, guide overlay before/after answering and shuffled references after reload");
 
-  for (const [id, expected] of [
-    ["010", "Select F, D and the corrected C."],
-    ["221", "full S3 permissions (option E)"],
-    ["084", "1. Set up a web identity federation"],
-    ["136", "1. Delete\n2. Retain\n3. Snapshot"],
-  ]) {
+  for (const id of ["010", "221", "084", "136"]) {
     const question = bank.find((q) => q.id === id);
     const progress = freshProgress();
     progress.active = createSession([question], progress, { title: "Reference regression", domain: "all", pool: "all", count: 1, timed: false, minutes: 1, feedback: "immediate", quick: true });
     const order = question.options.map((o) => o.id).reverse();
+    // Check current prose; fixed historical reference patterns have unit coverage.
+    const expected = question.explanation.text.split("\n\n")[0].replace(/<<(\d+)>>/g, (_, choice) => String.fromCharCode(65 + order.indexOf(choice)));
     progress.active.optionOrders[id] = order;
     await seed(progress);
     for (const choice of question.correct_option_ids) await page.locator('input[value="' + choice + '"]').check();
@@ -248,6 +245,38 @@ try {
     await page.getByRole("button", { name: "Done", exact: true }).click();
   }
   console.log("PASS repaired choice references and preserved procedure numbers with shuffled options after reload");
+
+  for (const id of ["134", "141"]) {
+    const question = bank.find((q) => q.id === id);
+    const progress = freshProgress();
+    progress.active = createSession([question], progress, { title: "Explanation formatting", domain: "all", pool: "all", count: 1, timed: false, minutes: 1, feedback: "immediate", quick: true });
+    await seed(progress);
+    if (id === "134") {
+      const fragment = JSON.parse(await page.locator(".question-body pre").innerText());
+      assert.deepEqual(fragment.EventTopic.Properties.Subscription[0].Endpoint["Fn::GetAtt"], ["WorkQueue", "Arn"]);
+      await shot("mobile-question-code-fragment");
+    }
+    assert.equal(await page.locator(".answer-explanation").count(), 0, "Teaching image and explanation stay hidden before grading");
+    for (const choice of question.correct_option_ids) await page.locator('input[value="' + choice + '"]').check();
+    await page.getByRole("button", { name: "Check answer" }).click();
+    const explanation = page.locator(".answer-explanation > .rich-text");
+    if (id === "141") {
+      const citation = explanation.getByRole("link", { name: "ECS task networking", exact: true });
+      assert.equal(await citation.getAttribute("href"), "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking-awsvpc.html");
+      assert.equal(await citation.getAttribute("rel"), "noopener noreferrer");
+      assert.equal(await explanation.locator("code").first().innerText(), "awsvpc");
+      assert.doesNotMatch(await explanation.innerText(), /\[ECS task networking\]\(|`awsvpc`/);
+      await citation.scrollIntoViewIfNeeded();
+      await shot("mobile-explanation-citations");
+    }
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, "Formatted Q" + id + " overflow at " + width);
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole("button", { name: "Done", exact: true }).click();
+  }
+  console.log("PASS question JSON fragments, titled documentation links, inline code and mobile explanation layout");
 
   await navigate("Guide");
   await page.getByRole("heading", { name: "Your field guide" }).waitFor();

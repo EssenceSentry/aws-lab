@@ -1,0 +1,57 @@
+{
+  "question_id": "218",
+  "base_record_sha256": "7669514673e0a8e3cf2341505e2621933b9069db965317d583c5270912d25411",
+  "record": {
+    "id": "218",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company will close three data centers and rehost about 500 physical Windows and Linux servers in AWS Regions. Their operating systems and disk layouts are supported by MGN, and the existing encrypted network paths have sufficient replication capacity. A landing-zone team has provisioned the destination accounts, regional VPCs, and isolated staging and test subnets. The migration team needs centralized visibility across accounts, continuous replication, application tests, and short planned cutovers with minimal custom tooling.\n\nWhich approach should it use?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use AWS Transform MGN with its global view across the participating accounts. Install a Replication Agent on each source server, configure replication and launch settings, validate application waves, and perform planned cutovers into the prepared environments."
+      },
+      {
+        "id": "2",
+        "text": "Use S3 File Gateway to copy application directories and then manually rebuild the operating systems, application installations, services, and configuration on new EC2 instances."
+      },
+      {
+        "id": "3",
+        "text": "Install AWS Outposts in the existing data centers and move the applications onto that on-premises AWS infrastructure as their permanent destination."
+      },
+      {
+        "id": "4",
+        "text": "Convert the physical servers into VM images and use VM Import/Export as the supported bulk path for those physical-to-virtual images, then manually coordinate testing and final changes."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. MGN supports agent-based rehosting of eligible physical servers, and global view provides cross-account visibility and migration actions. Application-wave testing and final write coordination remain part of the migration plan.\n\n<<2>> moves files but leaves server reconstruction and state synchronization to a custom process.\n\n<<3>> keeps AWS infrastructure on premises, conflicting with the goal of closing the data centers.\n\n<<4>> relies on an unsupported import path: VM Import/Export does not support VMs created by physical-to-virtual conversion. This is more than a question of manual overhead.\n\nMGN source replication and EC2 launch configuration do not, by themselves, establish the entire multi-account network architecture. The prepared accounts and regional networks are explicit prerequisites here. Verify service permissions, endpoints, quotas, disk support, and application dependencies; broad platform support does not guarantee every application will run unchanged.\n\nOfficial AWS references (checked September 18, 2026): [MGN global view](https://docs.aws.amazon.com/mgn/latest/ug/global-view.html). [Supported rehosting workflow](https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html). [VM import exclusions](https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/218.diagram.json",
+  "diagram_alt": "Landing-zone provisioning, migration coordination, replicated server state, and application acceptance are separate responsibilities.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/global-view.html",
+      "checked_on": "2026-09-18",
+      "supports": "Management and actions across Organizations member accounts"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html",
+      "checked_on": "2026-09-18",
+      "supports": "Physical-server migration and application/wave lifecycle"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html",
+      "checked_on": "2026-09-18",
+      "supports": "Physical-to-virtual converted VMs are not supported"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced unsupported implicit staging-account/launch-account separation and automatic Region-to-Region VPC cloning with explicit prepared landing-zone prerequisites. Corrected the physical-to-virtual import exclusion and removed compatibility guarantees."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,16 @@
+sequenceDiagram
+accTitle: Understanding a request precedes authorized business fulfillment
+accDescr: Connect and Lex gather the caller intent and missing fields, then a Lambda fulfillment path invokes a business API that enforces caller authorization before returning a result.
+participant C as Caller
+participant L as Connect and Lex
+participant F as Lambda fulfillment
+participant B as Business API
+C->>L: Spoken request
+L-->>C: Ask for required details
+C->>L: Supply missing information
+L->>F: Intent and collected fields
+F->>B: Request with caller identity context
+B->>B: Enforce authentication and authorization
+B-->>F: Authorized result or denial
+F-->>L: Fulfillment response
+L-->>C: Spoken result or next step

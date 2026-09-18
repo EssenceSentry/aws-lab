@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Multiple Windows clients share one managed file namespace
+accDescr: CMS instances in three AZs use the same SMB path. FSx for Windows maintains active and standby file servers across two AZs and authenticates users through Active Directory.
+W[Windows CMS fleet<br/>Instances in AZ A, B and C]:::inputData -->|Same SMB path| F[FSx file-system endpoint]:::process
+F --> A[Active file server<br/>Preferred AZ]:::process
+A -->|Synchronous replication| B[Standby file server<br/>Different AZ]:::process
+D[Active Directory<br/>Identity and Windows ACLs]:::external -.-> F
+B -.->|Automatic failover| F

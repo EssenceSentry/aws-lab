@@ -1,0 +1,53 @@
+{
+  "question_id": "059",
+  "base_record_sha256": "7ceaf761f1ffed08fe87c2366a47fbddd5d96c35690264dee7ddc7206ade96e5",
+  "record": {
+    "id": "059",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A weather agency publishes sensor readings to AWS IoT Core. An IoT rule writes the readings to DynamoDB. Monitoring shows that no new rows have arrived, but the cause is unknown. Fleet connectivity indexing and AWS IoT logging are enabled. The agency also runs Device Defender security audits.\n\nWhich investigation is most likely to identify where the data path is failing?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Rerun the Device Defender policy audit and treat a successful audit as proof that all devices are connected and all DynamoDB writes are succeeding."
+      },
+      {
+        "id": "2",
+        "text": "Migrate the sensors to AWS IoT SiteWise and use its asset hierarchy to replace the existing ingestion path before examining connection or rule logs."
+      },
+      {
+        "id": "3",
+        "text": "Query fleet connectivity status and correlate device, authentication and publish events with IoT rule logs. For connected publishers, inspect rule matching, action IAM permissions and DynamoDB errors."
+      },
+      {
+        "id": "4",
+        "text": "Increase DynamoDB write capacity immediately and restart every sensor, assuming that a lack of rows proves that the table is throttling writes."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Choose <<3>>. Trace the path in stages: device connectivity, authentication and authorization, message publication, rule execution, and the destination write. Configured fleet indexing helps find disconnected devices. IoT logs record message progress through the broker and rules engine. A device can be connected and publishing while its rule fails because of SQL matching, action permissions or a DynamoDB error.\n\n<<1>> confuses a security configuration audit with proof of end-to-end delivery. <<2>> changes the architecture without establishing the fault and introduces an industrial asset service that is not required for this diagnosis. <<4>> makes an unsupported assumption: absent rows can result from many upstream failures, not only insufficient table capacity. Restarting devices can also obscure evidence.\n\nUse the last confirmed successful stage to narrow the search. Correlate client IDs, timestamps and rule actions, and inspect the actual destination error before changing capacity or permissions. Connectivity status can lag and is not proof of data delivery; current logs and service metrics provide the supporting evidence.\n\nAWS documentation (checked September 18, 2026): [IoT connectivity indexing](https://docs.aws.amazon.com/iot/latest/developerguide/managing-index.html), [IoT message logs](https://docs.aws.amazon.com/iot/latest/developerguide/cloud-watch-logs.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/059.mmd",
+  "diagram_alt": "A diagnostic decision tree distinguishes disconnection, publication failure, rule failure and DynamoDB write failure.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/iot/latest/developerguide/managing-index.html",
+      "checked_on": "2026-09-18",
+      "supports": "Connectivity indexing must be enabled to query connection status and disconnect details."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/iot/latest/developerguide/cloud-watch-logs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Enabled IoT logging records message progress through the broker and rules engine in CloudWatch Logs."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced retired IoT 1-Click and incorrect certificate-registration choices with plausible but premature troubleshooting actions.",
+    "Removed the blanket assertion that Device Defender cannot help with connectivity; the explanation now limits what a successful audit proves."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,68 @@
+{
+  "question_id": "188",
+  "base_record_sha256": "be6d52afba2f07484340faa0a8b1aeaae3d0b404fad0024e07df099688257c6b",
+  "record": {
+    "id": "188",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "Developers need broad administration of workload services, including EC2, S3, Lambda and RDS, plus organizations:DescribeOrganization. They should not receive general IAM or Organizations administration. The company is choosing an AWS managed policy as an initial baseline and will later replace it with narrower task-specific permissions.\n\nWhich policy is the closest fit among these choices?",
+    "options": [
+      {
+        "id": "1",
+        "text": "PowerUserAccess."
+      },
+      {
+        "id": "2",
+        "text": "AdministratorAccess."
+      },
+      {
+        "id": "3",
+        "text": "SystemAdministrator."
+      },
+      {
+        "id": "4",
+        "text": "ReadOnlyAccess."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The current PowerUserAccess policy provides broad workload permissions while excluding general IAM, Organizations and account administration from its main allow statement. Separate statements permit selected exceptions, including organizations:DescribeOrganization and DescribeEffectivePolicy.\n\n<<2>> grants full administration, exceeding the intended baseline. <<3>> provides a different job-function action set and does not include the required Organizations description permission. <<4>> does not permit developers to create or configure the workload resources.\n\nPowerUserAccess is broad, not exact least privilege. Its NotAction allow statement is also not an explicit deny of the excluded services. Additional policies can supply permissions unless another applicable control denies them. Review the current managed-policy document and separately scope any required role-passing access.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/aws-managed-policy/latest/reference/PowerUserAccess.html\nhttps://docs.aws.amazon.com/aws-managed-policy/latest/reference/SystemAdministrator.html\nhttps://docs.aws.amazon.com/aws-managed-policy/latest/reference/AdministratorAccess.html\nhttps://docs.aws.amazon.com/aws-managed-policy/latest/reference/ReadOnlyAccess.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/188.diagram.json",
+  "diagram_alt": "The required workload-write and Organizations-read combination distinguishes PowerUserAccess from administrator, job-function and read-only alternatives.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/aws-managed-policy/latest/reference/PowerUserAccess.html",
+      "checked_on": "2026-09-18",
+      "supports": "Current PowerUserAccess exclusions and explicit Organizations/account/IAM exceptions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-managed-policy/latest/reference/SystemAdministrator.html",
+      "checked_on": "2026-09-18",
+      "supports": "SystemAdministrator has a distinct service action list without the required Organizations permission."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AdministratorAccess.html",
+      "checked_on": "2026-09-18",
+      "supports": "AdministratorAccess grants full AWS service and resource access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-managed-policy/latest/reference/ReadOnlyAccess.html",
+      "checked_on": "2026-09-18",
+      "supports": "ReadOnlyAccess is a read-only policy baseline."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html",
+      "checked_on": "2026-09-18",
+      "supports": "An Allow with NotAction does not itself deny excluded actions."
+    }
+  ],
+  "editorial_notes": [
+    "Removed the misleading exact-least-privilege framing and replaced duplicate administrator-role choices with parallel managed-policy choices.",
+    "Verified current PowerUserAccess and SystemAdministrator policy documents, including their February 2026 revisions."
+  ],
+  "review_status": "authored"
+}

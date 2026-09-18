@@ -1,0 +1,47 @@
+{
+  "question_id": "148",
+  "base_record_sha256": "ed6e980d1626443af07824d12b043c4c84e3489fb095cea379c307a7748630d3",
+  "record": {
+    "id": "148",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company deploys a stateless web application several times per hour. It uses Elastic Beanstalk and can keep two fully provisioned environments. Session state and the database are external to both environments, and application versions are backward compatible. The company wants to validate a release before switching production traffic and retain the previous running version for rollback without recreating instances.\n\nWhich deployment process meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy the new version to the production environment with All at once. If it fails, redeploy the previous application bundle to the same instances."
+      },
+      {
+        "id": "2",
+        "text": "Deploy and validate the new version in the second environment. Swap the environments' CNAMEs, retain the old environment through the rollback and DNS-drain period, and swap back if necessary."
+      },
+      {
+        "id": "3",
+        "text": "Deploy and validate the new version in the second environment. Swap the environments' CNAMEs and immediately terminate the old environment to reduce cost."
+      },
+      {
+        "id": "4",
+        "text": "Build a new AMI, replace all instances in the production Auto Scaling group, and rebuild the previous fleet from its AMI when rollback is required."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. A Beanstalk blue/green deployment keeps two independent environments. The new environment can be tested before a CNAME swap, and the previous running environment remains available for a reverse swap during the rollback window.\n\n<<1>> changes the live fleet before isolation testing and requires redeployment to restore it.\n\n<<3>> removes the rollback environment and can disrupt clients still using cached DNS answers.\n\n<<4>> requires instance recreation during rollback, contrary to the stated objective.\n\nA CNAME swap changes routing; it is not an instantaneous update of every client's DNS cache or active connection. Keep both environments healthy while traffic drains. Shared database changes must remain compatible with both versions, because swapping URLs does not roll back data or schema changes.\n\nOfficial AWS references (checked September 18, 2026): [Beanstalk blue/green deployment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/148.mmd",
+  "diagram_alt": "The production name can switch between two live environments; keeping the old fleet enables rollback and DNS draining.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html",
+      "checked_on": "2026-09-18",
+      "supports": "Separate environment validation, CNAME swap, independent database lifecycle and DNS propagation precautions"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added hot rollback capacity and DNS-drain requirements; removed false claims that Lightsail is unsuitable for production or that all AMI-based rollbacks are inherently slow."
+  ],
+  "review_status": "authored"
+}

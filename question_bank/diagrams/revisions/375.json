@@ -1,0 +1,72 @@
+{
+  "question_id": "375",
+  "base_record_sha256": "1ac6c01da5b0647dded282296edbb31f0b2f1e4d4c5bce0b215f960edddf8246",
+  "record": {
+    "id": "375",
+    "exam_domain": "Design for New Solutions",
+    "question": "A media service runs ECS tasks on an EC2 Auto Scaling group. Content releases have known start and end times. Measurements show that its predictive policy repeatedly launches spare capacity hours too early. Tested instance and task warm-up times are available. Frequently retrieved S3 objects remain hot throughout each month.\n\nAll traffic currently using the NAT gateway is to S3 in the same Region; other dependencies already have private paths. The company wants to remove avoidable charges without adding self-managed network servers or sacrificing required service capacity. Which actions should it take? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Associate an S3 gateway endpoint with the task-subnet route tables, validate endpoint policies and access, and remove the NAT gateway after confirming it has no remaining required traffic."
+      },
+      {
+        "id": "2",
+        "text": "Replace the NAT gateway with a single self-managed NAT instance using an On-Demand Capacity Reservation, while retaining the existing S3 routing path."
+      },
+      {
+        "id": "3",
+        "text": "Move half the required peak capacity to Spot instances without interruption handling, replacement capacity, or an On-Demand fallback."
+      },
+      {
+        "id": "4",
+        "text": "Move all hot S3 objects to Intelligent-Tiering and assume that objects retrieved every day will immediately enter its cheaper infrequent-access tier."
+      },
+      {
+        "id": "5",
+        "text": "Replace the oversized predictive schedule with release-driven scheduled scaling that includes measured warm-up and safe scale-in, coordinates ECS task capacity, and retains dynamic scaling as a safety net."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<5>> address the two measured waste sources. A gateway endpoint removes NAT processing from the same-Region S3 path without an endpoint charge. Release-driven capacity changes can shorten unnecessary early scale-out while making instances and tasks ready before demand arrives.\n\n<<2>> adds the self-managed network server excluded by the requirement. An On-Demand Capacity Reservation does not itself discount the instance price or supply managed NAT resilience.\n\n<<3>> makes required capacity depend on interruptible resources without the safeguards needed to preserve availability. Spot can be part of a resilient design, but the proposed unprotected allocation does not establish one.\n\n<<4>> assumes a tier transition that the access pattern does not support. Intelligent-Tiering keeps frequently accessed objects in its frequent-access tier; it does not immediately discount every object simply because it is enabled.\n\nValidate that the endpoint route and policies cover every required S3 bucket before deleting NAT. For compute, schedule from measured boot, image-pull and application warm-up time, then drain safely after the release peak. Scaling EC2 instances alone does not increase the ECS service's desired task count. Keep scaling bounds and dynamic policies consistent, and verify actual savings after the change. Scheduled scaling is appropriate because the release timing is known and the current early capacity is measured as unnecessary, not because predictive scaling is inherently more expensive.\n\nAWS documentation (checked September 18, 2026): [S3 gateway endpoint routing](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html); [Scheduled EC2 capacity changes](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html); [ECS service scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html); [S3 Intelligent-Tiering access patterns](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html); [On-Demand Capacity Reservation pricing](https://aws.amazon.com/ec2/pricing/on-demand/).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/375.diagram.json",
+  "diagram_alt": "Two measured waste sources have separate remedies: route same-Region S3 traffic through a gateway endpoint and time instance and task warm-up to known content releases.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Same-Region VPC traffic can reach S3 through route-table associations to a gateway endpoint without NAT or endpoint charges; the route does not by itself restrict all alternate access paths."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Scheduled actions adjust desired/minimum/maximum capacity at known times and can operate with dynamic scaling policies, subject to configured bounds."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Each ECS service can scale its desired task count using its own demand metrics; service scaling is distinct from EC2 cluster capacity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+      "checked_on": "2026-09-18",
+      "supports": "Objects remain in frequent access while accessed regularly; automatic movement to infrequent access requires 30 consecutive days without qualifying access and has monitoring considerations."
+    },
+    {
+      "url": "https://aws.amazon.com/ec2/pricing/on-demand/",
+      "checked_on": "2026-09-18",
+      "supports": "On-Demand Capacity Reservations are priced at equivalent On-Demand rates and charge for unused reserved capacity; the reservation itself is not a price discount."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 5. Added evidence of premature predictive scale-out, measured warm-up, hot-object access and no remaining NAT dependencies. Removed the implication that changing scaling policy alone guarantees savings or that a gateway endpoint replaces arbitrary Internet access."
+  ],
+  "review_status": "authored"
+}

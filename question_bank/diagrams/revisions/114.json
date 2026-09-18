@@ -1,0 +1,57 @@
+{
+  "question_id": "114",
+  "base_record_sha256": "5fcc5df4d1a9c68dc48860f949ec838ebbbe2ec91c6381806a0903fa18ca0c69",
+  "record": {
+    "id": "114",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company is building an API-driven document service. Its application already authenticates customers and authorizes access to each tenant's documents. Every committed document version must remain retrievable. A rollback must make an older version current without deleting intervening versions. Customers must not receive long-lived AWS credentials or plaintext encryption master keys.\n\nWhich storage and access design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store documents in an unversioned private S3 bucket with SSE-KMS. Enable S3 server access logging and use the access logs to reconstruct overwritten document contents during a rollback."
+      },
+      {
+        "id": "2",
+        "text": "Store documents in a private versioned S3 bucket with SSE-KMS. After authorization, issue short-lived presigned URLs from a scoped application role. Roll back by copying a selected older version to the same key to create a new current version, and retain noncurrent versions."
+      },
+      {
+        "id": "3",
+        "text": "Store documents in a private versioned S3 bucket with SSE-KMS. Issue short-lived presigned URLs. Roll back by permanently deleting every version newer than the requested version."
+      },
+      {
+        "id": "4",
+        "text": "Store documents in a private versioned S3 bucket with client-side encryption. Distribute the shared plaintext master key and long-lived IAM access keys to authorized customers so they can perform uploads and rollbacks directly."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Versioning preserves successive object versions, while copying a selected version to the same object key creates a new current version without erasing later historical versions. SSE-KMS keeps master-key material within the managed encryption boundary, and presigned URLs provide scoped, expiring access using the application role's permissions.\n\n<<1>> confuses request logs with content history. Access logs do not contain the complete overwritten document bodies.\n\n<<3>> makes the old content current by destroying required history.\n\n<<4>> violates the explicit credential and key-distribution restrictions.\n\nAuthorize the tenant, object, operation, and any requested version before signing. Presigned URLs are bearer access and can expire earlier when the signing credentials expire. Use retention controls that prevent required versions from being deleted, and do not configure lifecycle expiration of history that must remain retrievable.\n\nOfficial AWS references (checked September 18, 2026): [Restore an earlier S3 version](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RestoringPreviousVersions.html). [S3 presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html). [S3 SSE-KMS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/114.mmd",
+  "diagram_alt": "Copying an older S3 version to the same key adds a new current version while preserving intervening history.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RestoringPreviousVersions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Copying an older version creates a new current version while retaining history"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html",
+      "checked_on": "2026-09-18",
+      "supports": "Permission-dependent expiring access and temporary-credential lifetime"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "Server-side KMS encryption and authorization requirements"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2 and previous versioning repair. Clarified retention obligations and presigned URL authorization without promising that versioning alone prevents deletion."
+  ],
+  "review_status": "authored"
+}

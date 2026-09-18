@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Preserve the VM through image conversion
+accDescr: A supported VM image is staged in S3 and converted into an AMI before EC2 validation. Copying only application files omits the complete installed system.
+A["Shutdown and export VM"] --> B["OVA or supported disk image"]
+B --> C["S3 staging"]
+C --> D["VM Import/Export"]
+D --> E["AMI: launch and validate"]
+class A,B inputData
+class C storage
+class D decision
+class E output

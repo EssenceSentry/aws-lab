@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Isolate one account from discount sharing
+accDescr: The management account disables discount sharing for the business-unit account while other accounts remain in the shared billing discount pool.
+M[Management account Billing preferences]:::process -->|Sharing off| B[Business-unit account]:::storage
+M -->|Sharing remains on| P[Other enabled member accounts]:::process
+R[Business-unit RI commitment]:::inputData -->|Eligible owner usage only| B
+P <--> D[Shared discount pool for other accounts]:::storage
+N[Organization membership is unchanged]:::reference -.-> B

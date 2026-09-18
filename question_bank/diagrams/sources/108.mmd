@@ -1,0 +1,15 @@
+sequenceDiagram
+accTitle: Two TLS sessions and two certificate locations
+accDescr: CloudFront terminates the viewer session using a us-east-1 certificate, then creates a distinct origin session to the ALB using its regional certificate.
+participant V as Viewer
+participant CF as CloudFront
+participant ALB as ALB in eu-west-1
+V->>CF: TLS to shop.example.com
+Note over CF: Viewer certificate in ACM us-east-1
+CF-->>V: Certificate covers shop.example.com
+Note over CF: Viewer TLS terminates here
+CF->>ALB: New TLS connection to origin.example.com
+Note over ALB: Origin certificate in ACM eu-west-1
+ALB-->>CF: Trusted certificate covers origin.example.com
+Note over V,CF: Viewer policy is HTTPS Only
+Note over CF,ALB: Origin policy is HTTPS Only

@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Route the API and database operations separately
+accDescr: Latency DNS chooses a Regional API, European reads use a local asynchronous replica, and every write reaches the US primary.
+C["Client DNS lookup"]:::inputData --> D{"Latency routing"}:::decision
+D --> EU["Europe API + Lambda"]
+D --> US["US API + Lambda"]
+EU -->|"95% reads"| R[("Europe read replica")]:::storage
+EU -->|"5% writes"| P[("US primary")]:::storage
+US --> P
+P -.->|"Asynchronous replication"| R

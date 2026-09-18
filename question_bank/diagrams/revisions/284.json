@@ -1,0 +1,52 @@
+{
+  "question_id": "284",
+  "base_record_sha256": "3d3a63655f6160051e49e0916131e095e204ac5d087efad477eff7a43f4684cf",
+  "record": {
+    "id": "284",
+    "exam_domain": "Design for New Solutions",
+    "question": "A serverless application accepts jobs through an API Gateway REST API, returns an immediate acknowledgment, and runs background Lambda workers. Workers average 4.5 minutes, mostly waiting for an on-premises MySQL database. A controlled benchmark with the same workload on RDS for MySQL in the AWS Region sharply reduces that wait. DynamoDB operations are already fast. Repeated read-only API requests are also cacheable, and a cost model shows that an appropriately sized API cache would save more than it costs.\n\nWhich change best reduces the measured latency and cost?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Provision Direct Connect for the existing database and set every Lambda function to the minimum memory allocation without further benchmarking."
+      },
+      {
+        "id": "2",
+        "text": "Add a DynamoDB read cache and increase Lambda timeouts while leaving all MySQL calls unchanged."
+      },
+      {
+        "id": "3",
+        "text": "Set Lambda timeouts below the observed database response time so workers stop incurring charges sooner, and retry failed jobs immediately."
+      },
+      {
+        "id": "4",
+        "text": "Migrate MySQL to the benchmarked RDS configuration in the same Region, cache eligible REST API reads with correct cache keys, and benchmark Lambda memory settings and timeout margins after migration."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. It addresses the measured database wait with the tested placement change and avoids repeated backend work for safely cacheable reads. Retuning Lambda afterward accounts for the changed workload rather than carrying forward an obsolete configuration.\n\n<<1>> adds connectivity expense without evidence that it removes the bottleneck. Minimum memory is not necessarily minimum cost because memory also controls CPU allocation and can affect duration.\n\n<<2>> optimizes a component that is not slow and leaves the MySQL delay intact.\n\n<<3>> turns successful work into repeated failures. A shorter timeout limits a failed invocation but does not make the database complete sooner.\n\nChoose memory using measured total execution cost and performance, and set timeouts with an appropriate margin. REST API caching is billed separately and must respect response variants, authorization, and freshness. The background-job design avoids holding a synchronous API response open for the entire worker runtime.\n\nOfficial AWS references (checked September 18, 2026): [Lambda memory and performance](https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html). [REST API cache settings](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/284.diagram.json",
+  "diagram_alt": "Each observed cost or latency component maps to a specific intervention, while unrelated caching and arbitrary timeouts do not address the measured wait.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+      "checked_on": "2026-09-18",
+      "supports": "CPU allocation scales with memory and should be selected using workload measurements"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache TTL, key selection, backend-request reduction and separate cache charges"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added asynchronous job acknowledgment, measured MySQL wait, a controlled RDS benchmark and cache economics. Removed the claim that blindly lowering memory or timeouts reduces cost."
+  ],
+  "review_status": "authored"
+}

@@ -59,12 +59,14 @@ corrected question bank remains the single source of truth.
 
 ## Content and option references
 
-`question_bank/` contains the corrected `questions.jsonl`, its 166 referenced
+`question_bank/` contains the revised `questions.jsonl`, 392 referenced
 SHA-1-named images, `aws_service_decision_guide.md`, and `aws_question_index.md`.
-The corrected v2 content is the active baseline; intermediate revision files
-and unused images have been removed. Some corrected questions are adapted
-scenarios, as identified in their explanations. Existing pre-revision progress
-is not imported into this baseline.
+Each of the 391 questions has a new teaching diagram in its explanation;
+the essential question-stem image is also retained. Editable diagram code,
+editorial revisions, official-source evidence, and review records live in
+[`question_bank/diagrams/`](../question_bank/diagrams/README.md). Historical
+images can remain in the source folder; the build copies only referenced
+images. The original question and option identities are preserved.
 
 Question IDs are strings from `001` through `391`, assigned once in bank order.
 The guide, index, sharing, and progress use these same IDs; shuffling never

@@ -1,0 +1,52 @@
+{
+  "question_id": "262",
+  "base_record_sha256": "552739dbfbc4cd545a1208b9212664e6098d5437886c012d31f7f7697a4face4",
+  "record": {
+    "id": "262",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs an HTTPS application behind ALBs in US and European Regions. Its existing data layer already supports the regional deployment. Clients must connect through the Route 53 hosted-zone apex, example.com, using a stable set of public IP addresses. Traffic should enter the AWS global network and be routed to regional ALBs according to endpoint health and the accelerator configuration.\n\nWhich managed design meets these requirements with the least network-appliance administration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Transit Gateway connecting the regional VPCs and publish its attachment IP addresses as the public apex endpoint for internet clients."
+      },
+      {
+        "id": "2",
+        "text": "Create a standard Global Accelerator with regional ALB endpoints, then create a CNAME record at example.com pointing to the accelerator DNS name."
+      },
+      {
+        "id": "3",
+        "text": "Create a standard Global Accelerator with an endpoint group in each application Region and register the regional ALBs. Create a Route 53 A alias at example.com targeting the accelerator."
+      },
+      {
+        "id": "4",
+        "text": "Create a standard Global Accelerator with regional ALB endpoints, then configure a Route 53 Resolver inbound endpoint to publish the accelerator as the authoritative public apex record."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A standard accelerator provides static public entry IP addresses and accepts ALBs as regional endpoints. A Route 53 alias can target the accelerator at the hosted-zone apex.\n\n<<1>> uses a VPC routing hub as though it were a public application accelerator. Transit Gateway attachment addresses are not a replacement for this managed internet entry point.\n\n<<2>> chooses the appropriate traffic service but an invalid record type at the zone apex. CNAME records are suitable for eligible non-apex names.\n\n<<4>> confuses recursive DNS access with authoritative public DNS records. An inbound Resolver endpoint serves queries into VPC DNS; it does not publish this apex alias.\n\nConfigure listeners, endpoint groups, health behavior and application capacity in each Region. An accelerator does not replicate application data or guarantee zero interruption. If no healthy endpoints remain, its documented fail-open behavior matters. S3 object access and database replication remain separate design concerns.\n\nOfficial AWS references (checked September 18, 2026): [Custom accelerator domains](https://docs.aws.amazon.com/global-accelerator/latest/dg/dns-addressing-custom-domains.mapping-your-custom-domain.html). [Standard accelerator endpoints](https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/262.mmd",
+  "diagram_alt": "An apex alias resolves to Global Accelerator, which distributes traffic to regional ALB endpoints; data replication is outside this traffic path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/dns-addressing-custom-domains.mapping-your-custom-domain.html",
+      "checked_on": "2026-09-18",
+      "supports": "Route 53 alias works at apex and subdomain."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB endpoints, static public addresses, endpoint groups and all-unhealthy fail-open qualification."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Removed unrelated Kubernetes, cryptocurrency and S3 MRAP material; stated the stable-IP/global-entry objective and actual Route 53 public DNS ownership."
+  ],
+  "review_status": "authored"
+}

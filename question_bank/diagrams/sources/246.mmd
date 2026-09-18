@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: One private database path, two DynamoDB paths
+accDescr: A VPC-connected Lambda function reaches Neptune privately and can reach DynamoDB either through a gateway endpoint or through NAT egress.
+subgraph VPC[Customer VPC]
+  L[Lambda, private subnet]:::inputData
+  N[Neptune query endpoint]:::storage
+  GW[DynamoDB gateway endpoint]
+  NAT[Public NAT + internet gateway]
+  L -->|database port, SG allowed| N
+  L -->|route to service prefix list| GW
+  L -->|alternative IPv4 egress| NAT
+end
+GW --> DDB[DynamoDB]:::storage
+NAT --> DDB

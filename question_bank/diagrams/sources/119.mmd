@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Bind a federated identity to an S3 prefix
+accDescr: A trusted SAML identity provider supplies employee 42 as a protected role-session tag, which scopes both listing and object access to that employee prefix.
+AD["Employee authenticates with Active Directory"] --> IDP["Trusted SAML identity provider"]
+IDP -->|Signed identity: employee 42| STS["STS temporary role session"]
+STS --> TAG["Protected employee tag: 42"]
+TAG --> L["ListBucket: prefix home/42/*"]
+TAG --> O["Get and Put: object ARN home/42/*"]
+L --> S[("S3 home/42/")]
+O --> S
+TAG -.-> N["Other employee prefixes not authorized"]
+class AD,IDP inputData
+class TAG decision
+class S storage
+class N warning

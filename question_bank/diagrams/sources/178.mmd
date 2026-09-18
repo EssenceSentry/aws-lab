@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Direct cross-account requests require both accounts to authorize access
+accDescr: The caller keeps its existing identity. Caller identity permissions and the target resource policy both authorize the operation, while Config separately evaluates policy configuration.
+subgraph CALL[Caller account]
+P[Existing caller credentials]:::inputData --> I[Identity policy allows operation]:::reference
+end
+subgraph OWNER[Resource account]
+R[Bucket, key or domain policy<br/>Allows approved external principal]:::reference
+C[AWS Config managed or custom check]:::process -.->|Evaluate configuration| R
+end
+I --> A{Both sides allow<br/>No applicable explicit deny?}:::decision
+R --> A
+A -->|Yes| O[Supported cross-account operation]:::output
+A -->|No| X[Access denied]:::error

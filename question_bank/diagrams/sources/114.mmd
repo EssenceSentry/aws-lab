@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Rollback adds a version instead of removing history
+accDescr: Copying version one to the same key creates version four as current, while versions one, two, and three remain available.
+subgraph Before["Before rollback: one object key"]
+ V1["v1: original content"] --> V2["v2: edit"]
+ V2 --> V3["v3: current"]
+end
+V1 -->|Copy selected version to same key| V4["v4: new current, content from v1"]
+V3 -.->|Remains in history| V4
+class V1,V2,V3 storage
+class V4 output

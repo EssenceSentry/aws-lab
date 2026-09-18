@@ -1,0 +1,62 @@
+{
+  "question_id": "388",
+  "base_record_sha256": "9183a0413f60bb82048a1219e1805e0018e8dfabaa4834b9e5be9edc973dccb0",
+  "record": {
+    "id": "388",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company must protect EBS-backed EC2 instances, EFS file systems, and RDS DB instances. It needs centralized backup status, daily, weekly, and monthly schedules with different retention periods, and automatic copies to a second Region. Copies should start through the managed workflow once recovery points are ready; the company will monitor copy lag rather than assume instant completion. The selected resources and Regions support native cross-Region copy, and the required vault and KMS permissions are available.\n\nWhich solution provides these controls and prompt failure notifications with the least operational overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run a scheduled EC2 script that creates AMIs, dumps the databases, copies EFS files, uploads the output to a second Region, and sends failure emails through SES."
+      },
+      {
+        "id": "2",
+        "text": "Use Data Lifecycle Manager policies for every EC2, EFS, and RDS resource. Monitor backup failures and successful restores with a custom Lambda notification function."
+      },
+      {
+        "id": "3",
+        "text": "Use AWS Backup plans for the schedules, but implement every cross-Region copy with custom Lambda code. Notify only on backup failure and successful restore events."
+      },
+      {
+        "id": "4",
+        "text": "Use AWS Backup plans with resource assignments, scheduled retention rules, and native cross-Region copy actions. Monitor backup and copy jobs centrally and send SNS alerts for unsuccessful job states through supported notifications."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> uses one managed policy and monitoring framework across the supported resource types. Configure each schedule's retention, assign the resources, and set copy actions and destination retention for the second Region. Use documented SNS or EventBridge integrations to alert on relevant unsuccessful backup and copy events, and monitor copy completion and lag separately.\n\nA completed source backup does not establish that the destination recovery point is available. Cross-Region copy is asynchronous and can fail independently. The copy workflow, destination permissions, and restore testing remain part of validating recoverability. Successful restore events are useful operational signals but are not failure alerts.\n\nOption <<1>> requires custom scheduling, backup consistency handling, retention, transfer, and notifications for three platforms. Option <<2>> extends Data Lifecycle Manager beyond its EBS snapshot and EBS-backed AMI scope; it does not provide the requested EFS and RDS backup coverage. Option <<3>> uses AWS Backup for part of the task but rebuilds native copy automation and leaves copy failures out of its notification design. Native copy actions and job monitoring avoid that unnecessary custom maintenance.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html\nhttps://docs.aws.amazon.com/aws-backup/latest/devguide/recov-point-create-a-copy.html\nhttps://docs.aws.amazon.com/aws-backup/latest/devguide/backup-notifications.html\nhttps://docs.aws.amazon.com/ebs/latest/userguide/snapshot-lifecycle.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/388.mmd",
+  "diagram_alt": "Backup and cross-Region copy are separate jobs, with independent failure alerts and destination completion tracked only after the copy succeeds.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html",
+      "checked_on": "2026-09-18",
+      "supports": "Central backup plans, resource coverage, schedules, retention, monitoring and copy capabilities."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/recov-point-create-a-copy.html",
+      "checked_on": "2026-09-18",
+      "supports": "Scheduled cross-Region copy behavior, prerequisites and asynchronous processing."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/backup-notifications.html",
+      "checked_on": "2026-09-18",
+      "supports": "Documented SNS events distinguish backup, copy and restore success or failure."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-lifecycle.html",
+      "checked_on": "2026-09-18",
+      "supports": "Data Lifecycle Manager scope is EBS snapshots and EBS-backed AMIs."
+    }
+  ],
+  "editorial_notes": [
+    "Removed irrelevant processor architecture, made native resource/Region support explicit, and separated backup completion from asynchronous copy completion and failure monitoring. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

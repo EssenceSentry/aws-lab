@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Keep employee identities in the corporate directory
+accDescr: Corporate employee identities remain in on-premises AD. Two-way trust connects the managed cloud directory, which supports Windows domain workloads and Identity Center workforce assignments.
+U[Employee corporate identity]:::inputData --> A[On-premises Active Directory]:::external
+A <-->|Two-way trust| M[AWS Managed Microsoft AD]:::process
+M -->|Domain membership| W[Windows workloads in AWS]:::storage
+M -->|Directory integration| I[IAM Identity Center]:::process
+I -->|Assigned permissions| P[AWS access portal]:::output

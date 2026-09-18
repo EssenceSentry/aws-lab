@@ -1,0 +1,52 @@
+{
+  "question_id": "207",
+  "base_record_sha256": "d48102b1c628a3ec1d631881a1bd7ad44ff1a75a5c6dda16a830e085cb1c9687",
+  "record": {
+    "id": "207",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "Data scientists need to launch SageMaker AI notebook instances only when needed, using self-service provisioning without configuring AWS infrastructure. Every notebook storage volume must use an approved KMS key, and users should choose only from approved sizes. Scientists must not need broad provisioning permissions or a locally maintained script. The company wants the least custom portal code and ongoing administration.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Build an S3 frontend, API Gateway API, Lambda provisioning service, request database, and status polling UI that create approved notebook configurations."
+      },
+      {
+        "id": "2",
+        "text": "Publish a raw CloudFormation template in a shared S3 bucket and grant scientists broad permissions to edit the template and create SageMaker notebook resources directly."
+      },
+      {
+        "id": "3",
+        "text": "Publish an approved CloudFormation product in a Service Catalog portfolio. Fix KmsKeyId and the execution role, map friendly size choices to approved types, and use a least-privilege launch role and constraints. Return the notebook name or ARN and an authenticated console link."
+      },
+      {
+        "id": "4",
+        "text": "Pre-provision the largest approved notebook instance for every scientist, leave all instances running, and distribute their console links."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A Service Catalog product presents approved configuration choices and delegates provisioning through a launch role. The template sets the notebook volume's KMS key rather than asking each scientist to configure encryption.\n\n<<1>> can enforce the configuration, but requires a custom self-service application and provisioning lifecycle that Service Catalog already supplies.\n\n<<2>> exposes the infrastructure details and grants a path to bypass the approved configuration.\n\n<<4>> avoids a portal but creates idle maximum-size capacity rather than the requested on-demand, cost-conscious provisioning.\n\nThe launch role needs the relevant provisioning, KMS, and role-passing permissions; notebook runtime access uses the configured execution role. Limit direct creation paths when the product is mandatory. `AWS::SageMaker::NotebookInstance` returns an ARN through Ref and a notebook name through documented attributes, not a `Url` attribute. Notebook access still requires authorization; a presigned access URL is temporary, not a permanent product output.\n\nOfficial AWS references (checked September 18, 2026): [Service Catalog launch constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html). [Notebook resource contract](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-sagemaker-notebookinstance.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/207.mmd",
+  "diagram_alt": "A constrained product separates scientist choices from the role that provisions an approved encrypted notebook.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html",
+      "checked_on": "2026-09-18",
+      "supports": "Delegated launch role and limited end-user provisioning permissions"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-sagemaker-notebookinstance.html",
+      "checked_on": "2026-09-18",
+      "supports": "KmsKeyId, RoleArn and supported return attributes"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3 and the previous nonexistent-Url-attribute repair. Replaced the unrelated Proton workflow with a valid but wasteful pre-provisioning alternative."
+  ],
+  "review_status": "authored"
+}

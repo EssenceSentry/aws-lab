@@ -1,0 +1,57 @@
+{
+  "question_id": "031",
+  "base_record_sha256": "4e24950deab135d36779e98b7fcec30408dd38009aa13624dcce770b2954e17d",
+  "record": {
+    "id": "031",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company runs Amazon EKS on EC2 and an RDS for MySQL database. Its steady compute usage will continue for at least a year, but node families and Regions may change. Additional batch workers can tolerate Spot interruptions. Planned sales events temporarily increase database write demand, and tested vertical resizing fits an allowed maintenance window. The database team has selected an eligible Reserved DB Instance offering for its steady usage.\n\nWhich purchasing and scaling strategy best reduces costs while meeting these constraints?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Cover measured baseline EC2 usage with a Compute Savings Plan and run eligible burst workers on diversified Spot capacity. Purchase the selected RDS reservation for baseline usage and schedule tested database resizing for events."
+      },
+      {
+        "id": "2",
+        "text": "Cover baseline EC2 usage with an EC2 Instance Savings Plan tied to one family and Region. Run all burst workers On-Demand and keep the database sized for the largest event throughout the year."
+      },
+      {
+        "id": "3",
+        "text": "Cover baseline EC2 usage with a Compute Savings Plan and use On-Demand Capacity Reservations for every burst. Add RDS read replicas to increase the primary database's write capacity."
+      },
+      {
+        "id": "4",
+        "text": "Use Standard EC2 Reserved Instances for baseline usage and Dedicated Instances for bursts. Purchase the selected RDS reservation and rely on it to increase database capacity automatically."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Correct: <<1>>. Compute Savings Plans preserve discount flexibility across EC2 families and Regions. Spot suits interruptible batch bursts, while the reservation covers eligible steady RDS usage and explicit resizing supplies temporary capacity.\n\n<<2>> limits discount flexibility and pays for non-interruptible burst capacity and peak database sizing when those tradeoffs are unnecessary here. EC2 Instance Savings Plans can offer deeper discounts when their narrower scope fits.\n\n<<3>> confuses capacity assurance with discounted burst pricing. Read replicas scale reads; they do not add write capacity to the primary.\n\n<<4>> adds dedicated-tenancy costs without a stated requirement. An RDS reservation is a billing benefit, not a scaling instruction.\n\nCommit only to sustained eligible usage. RDS MySQL reservation size flexibility is limited to eligible configurations within the same family and Region; extra normalized capacity may remain On-Demand. Spot availability and interruption handling still require design. This selects among the stated strategies, not a universal cheapest configuration.\n\nOfficial AWS references (checked 2026-09-18):\n[Savings Plans types](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)\n[Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html)\n[RDS Reserved DB Instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/031.diagram.json",
+  "diagram_alt": "Baseline discounts, interruptible burst pricing, and database capacity changes solve different parts of the cost problem.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compute versus EC2 Instance Savings Plan flexibility"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+      "checked_on": "2026-09-18",
+      "supports": "Discounted spare capacity can be interrupted and is separate from Savings Plans"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reservations are billing discounts with limited size flexibility"
+    }
+  ],
+  "editorial_notes": [
+    "Removed the unsupported unconditional cheapest pricing assertion and All Upfront preference. Added family/Region flexibility, interruptible bursts and write-load constraints. RDS reservation selection is an explicit input rather than a claim that no other database commitment products exist. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

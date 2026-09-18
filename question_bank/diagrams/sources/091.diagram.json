@@ -1,0 +1,33 @@
+{
+  "type": "table",
+  "title": "Four settings close different public-access paths",
+  "columns": [
+    "Setting",
+    "Control point",
+    "Effect"
+  ],
+  "rows": [
+    [
+      "BlockPublicAcls",
+      "New public ACL operations",
+      "Reject the operation"
+    ],
+    [
+      "IgnorePublicAcls",
+      "Public ACL grants",
+      "Ignore the public grant"
+    ],
+    [
+      "BlockPublicPolicy",
+      "New public resource policies",
+      "Reject the policy"
+    ],
+    [
+      "RestrictPublicBuckets",
+      "Access under a public policy",
+      "Restrict public and cross-account access"
+    ]
+  ],
+  "footnote": "Enable all four. Existing ACL and policy documents remain stored and should also be repaired.",
+  "emphasis_rows": []
+}

@@ -1,0 +1,16 @@
+stateDiagram-v2
+accTitle: Backup completion precedes independent copy completion
+accDescr: A completed source backup starts a separate cross-Region copy job. Either job can fail and trigger an alert, and only a completed copy establishes a destination recovery point.
+[*] --> BackupRunning
+state "Source backup running" as BackupRunning
+state "Source recovery point ready" as SourceReady
+state "Cross-Region copy running" as CopyRunning
+state "Destination recovery point ready" as DestinationReady
+state "Notify unsuccessful job" as Alert
+BackupRunning --> SourceReady: Backup completed
+BackupRunning --> Alert: Backup unsuccessful
+SourceReady --> CopyRunning: Native copy action
+CopyRunning --> DestinationReady: Copy completed
+CopyRunning --> Alert: Copy unsuccessful
+DestinationReady --> [*]
+Alert --> [*]

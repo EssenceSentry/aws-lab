@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Accelerate the upload and API entry paths separately
+accDescr: PDF bytes use the S3 acceleration endpoint, while job-submission requests use the edge-optimized API, and both still reach backend resources in us-east-1.
+A["Distant client"] --> B["S3 acceleration endpoint"]
+A --> C["Edge-optimized REST API"]
+B --> D["us-east-1 S3 objects"]
+C --> E["us-east-1 job dispatcher"]
+D --> F["Regional OCR processing"]
+E --> F
+class A inputData
+class B,C decision
+class D storage
+class E,F output

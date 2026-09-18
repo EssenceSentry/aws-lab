@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Archive transitions and deletion protection are independent controls
+accDescr: A document version is retained in S3 Standard for its first 90 days and then in Deep Archive. Five-year Object Lock protection spans both storage states, and permanent cleanup is eligible only after retention ends.
+U[Upload document version<br/>Set five-year retain-until date]:::inputData --> H[S3 Standard<br/>Frequent reads]:::storage
+H -->|Day 90 lifecycle transition| A[S3 Glacier Deep Archive<br/>Rare restores]:::storage
+L[Object Lock compliance retention<br/>Protects this version in either class]:::process -.-> H
+L -.-> A
+A -->|Retain-until date reached| E[Version eligible for cleanup<br/>Apply lifecycle expiration rules]:::output

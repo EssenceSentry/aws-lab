@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: WorkSpaces checks the streaming source network
+accDescr: New streaming sessions from approved office public egress ranges are eligible for connection, while other source ranges are denied. Desktop login authentication is still required.
+A["New streaming connection"] --> B{"Source public IP allowed?"}
+B -->|Office CIDR| C["Continue desktop login"]
+B -->|Other CIDR| D["Deny streaming connection"]
+C --> E["User authentication still required"]
+class A inputData
+class B decision
+class C,E output
+class D warning

@@ -1,0 +1,57 @@
+{
+  "question_id": "267",
+  "base_record_sha256": "f218e74fb70de6a4eacecac52c3fb1f26265ba6ea064b159fe2a6edc2616229c",
+  "record": {
+    "id": "267",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company stores CloudFormation templates in a private GitHub repository. It needs an automated pipeline that deploys each candidate into an isolated test environment, runs integration tests against the provisioned resources, and blocks production promotion when testing fails. Temporary test stacks must be cleaned up, and the team wants native source and deployment integrations.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a GitHub connection in CodePipeline, then use a CodeDeploy action to execute a CloudFormation change set. Run CodeBuild integration tests after that action."
+      },
+      {
+        "id": "2",
+        "text": "Use a GitHub connection in CodePipeline and run CloudFormation template validation in CodeBuild. Treat successful syntax validation as sufficient evidence and promote without deploying a test stack."
+      },
+      {
+        "id": "3",
+        "text": "Use an authorized GitHub connection as the CodePipeline source. Use CloudFormation actions to create and execute a change set for an isolated test stack, then CodeBuild to run integration tests. Gate promotion on success and configure cleanup for both successful and failed runs."
+      },
+      {
+        "id": "4",
+        "text": "Use a GitHub connection in CodePipeline and execute the change set against production first. Run the integration tests there and rely on a later rollback when tests fail."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. CodePipeline coordinates the stages, CloudFormation provisions the candidate resources, and CodeBuild executes tests against those resources. Passing the test stage becomes a prerequisite for production promotion.\n\n<<1>> chooses the wrong deployment action. CloudFormation actions execute CloudFormation change sets; CodeDeploy manages supported application deployment targets.\n\n<<2>> validates the template without testing deployed behavior, so it misses the stated integration requirement.\n\n<<4>> exposes production to the unverified change before the test gate.\n\nUse restricted pipeline and deployment roles, isolated test data, explicit test assertions and failure cleanup. A change set previews intended resource changes but does not prove deployment success or application correctness. A cleanup stage reachable only after success is insufficient for failed runs. The pipeline reduces avoidable errors; it does not guarantee that a passing test suite detects every production defect.\n\nOfficial AWS references (checked September 18, 2026): [CloudFormation pipeline actions](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CloudFormation.html). [Test and production stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-basic-walkthrough.html). [GitHub connections](https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-github.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/267.mmd",
+  "diagram_alt": "An infrastructure testing workflow gates production on integration tests and includes cleanup paths for provisioning and test failures.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CloudFormation.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFormation action modes create, execute and delete stacks and change sets."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-basic-walkthrough.html",
+      "checked_on": "2026-09-18",
+      "supports": "Separate test stack and controlled production promotion workflow."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-github.html",
+      "checked_on": "2026-09-18",
+      "supports": "Native authorized GitHub source integration."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Made isolation, real integration tests, promotion gate and failure cleanup explicit; replaced speculative Lambda-duration and CodeArtifact objections."
+  ],
+  "review_status": "authored"
+}

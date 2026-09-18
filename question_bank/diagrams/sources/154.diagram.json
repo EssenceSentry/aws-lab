@@ -1,0 +1,32 @@
+{
+  "type": "table",
+  "title": "Match the control to the attack signal",
+  "columns": [
+    "Requirement",
+    "Control and observation point"
+  ],
+  "rows": [
+    [
+      "Network or transport flood mitigation",
+      "Shield Advanced protects eligible public resources."
+    ],
+    [
+      "Notify responders about detected events",
+      "Shield metrics feed CloudWatch alarms and SNS."
+    ],
+    [
+      "Inspect SQL injection and malicious scripts",
+      "WAF rules inspect HTTP request components."
+    ],
+    [
+      "Restrict outbound external domains",
+      "Network Firewall controls a different traffic path."
+    ]
+  ],
+  "footnote": "HTTP request counts do not represent every network-layer packet flood.",
+  "emphasis_rows": [
+    0,
+    1,
+    2
+  ]
+}

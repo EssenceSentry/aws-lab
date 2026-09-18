@@ -1,0 +1,63 @@
+{
+  "question_id": "192",
+  "base_record_sha256": "444d65354d9df25ac6dc8ccf19bb5f340a28b70101668b7858cbe9db0972046e",
+  "record": {
+    "id": "192",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations and wants to reject EC2 instance and EBS volume creation in member accounts unless both Owner and CostCenter request tags are present with approved, nonempty values. Users already have the necessary create and tag-on-create permissions. The control must apply centrally to the relevant supported creation APIs, including launches performed directly rather than through templates.\n\nWhich approach meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use only an IAM Allow condition with ForAllValues:StringEquals on aws:TagKeys containing Owner and CostCenter, treating that condition as proof that both keys and values exist."
+      },
+      {
+        "id": "2",
+        "text": "Use an AWS Config required-tags rule and notifications to synchronously reject noncompliant resource-creation API requests."
+      },
+      {
+        "id": "3",
+        "text": "Attach an SCP to the applicable OUs with separate Deny conditions for each missing required aws:RequestTag key and for invalid values. Scope the supported EC2 actions and resource types correctly, and test all launch paths."
+      },
+      {
+        "id": "4",
+        "text": "Run Systems Manager Automation after resource creation to add missing tags and treat successful remediation as equivalent to rejecting untagged creation."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A centrally applied explicit deny can reject a supported creation request when either required tag is missing or invalid. Use separate deny statements for the per-key absence checks so one missing key is sufficient to trigger rejection, and validate values separately.\n\n<<1>> checks whether supplied keys belong to the permitted key set. A subset, and even an empty request context without another presence check, can satisfy ForAllValues; that does not prove all mandatory keys exist or their values are valid. <<2>> evaluates recorded configurations after creation rather than acting as a synchronous admission gate. <<4>> also repairs resources after the prohibited untagged state already exists.\n\nRunInstances authorizes multiple resource types, so apply request-tag tests to the intended taggable resources without accidentally denying unrelated launch resources. Tagging during creation also needs CreateTags authorization. SCPs do not grant those permissions, and protection of tags after creation is a separate policy concern.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-single-vs-multi-valued-context-keys.html\nhttps://docs.aws.amazon.com/en_gb/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html\nhttps://docs.aws.amazon.com/service-authorization/latest/reference/list_ec2.html\nhttps://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/192.diagram.json",
+  "diagram_alt": "A key-set restriction accepts subsets and does not validate values, while the required-tag rule must reject every missing or invalid key.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-single-vs-multi-valued-context-keys.html",
+      "checked_on": "2026-09-18",
+      "supports": "ForAllValues checks every supplied value and can match an empty request context."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/en_gb/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html",
+      "checked_on": "2026-09-18",
+      "supports": "RequestTag presence and value checks differ from TagKeys allowed-set checks and tag-on-create needs CreateTags authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/service-authorization/latest/reference/list_ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 creation actions involve specific resource types and supported request-tag condition keys."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCP explicit denies constrain member-account principal actions."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the repaired SCP answer and made the ForAllValues subset and empty-set counterexamples visible.",
+    "Separated creation-time enforcement, tag-on-create authorization and later tag protection."
+  ],
+  "review_status": "authored"
+}

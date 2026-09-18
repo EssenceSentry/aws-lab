@@ -1,0 +1,19 @@
+sequenceDiagram
+accTitle: A NAT idle timeout breaks a reused TCP connection
+accDescr: A connection that is idle beyond 350 seconds expires and receives a reset on reuse. Keepalive traffic before the timeout prevents expiration from inactivity.
+participant C as Private EC2 client
+participant N as NAT gateway
+participant S as External service
+C->>N: TCP application request
+N->>S: Forward request
+S-->>C: Response through NAT
+alt No traffic for more than 350 seconds
+Note over N: Idle connection expires
+C->>N: Reuse old connection
+N-->>C: TCP RST
+else Keepalive starts before 350 seconds
+C->>N: TCP keepalive probe
+N->>S: Forward probe
+S-->>C: Response through NAT
+Note over C,S: Connection remains active while probes continue
+end

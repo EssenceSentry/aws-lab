@@ -1,0 +1,52 @@
+{
+  "question_id": "383",
+  "base_record_sha256": "ed9d59d6ca9d92055edc13feeb0381cfc1b7faa0833bfeafcb405c49e8e9b481",
+  "record": {
+    "id": "383",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company operates a provisioned Redshift RA3 cluster with reserved-node pricing. Its normal read and write workload meets performance targets. A new audit workload causes short bursts of concurrent queries to queue, although the queries run quickly when executed individually. The cluster and audit queries meet concurrency-scaling eligibility requirements. A trial shows that one additional cluster needs 40 minutes per day, and the main cluster earns 60 minutes of credits daily with sufficient credits already available.\n\nWhich change handles the audit bursts with the least added infrastructure and compute cost?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Move the existing ETL jobs to a persistent EMR cluster and keep the audit queries in the same Redshift queue."
+      },
+      {
+        "id": "2",
+        "text": "Enable automatic concurrency scaling for the audit workload-management queue and monitor its usage against the available credits."
+      },
+      {
+        "id": "3",
+        "text": "Create an EC2 Auto Scaling group and register its instances as additional Redshift compute nodes during each audit burst."
+      },
+      {
+        "id": "4",
+        "text": "Copy the warehouse into RDS for PostgreSQL and move the audit queries to that separately maintained database."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Option <<2>> supplies transient query capacity when the configured WLM queue needs it. Eligible queries can run on concurrency-scaling clusters while the main cluster continues its other work. Under the measured assumptions, 40 cluster-minutes fit within the 60 minutes earned per day, with no usage beyond the available credits. Monitor aggregate cluster-seconds: two simultaneous clusters consume credits twice as fast, and excess usage is billed.\n\nThe important diagnosis is concurrency pressure, not simply high CPU. Concurrency scaling does not split one slow query across an arbitrary number of extra clusters. Query eligibility and WLM configuration matter, and credits must have been earned before use.\n\nOption <<1>> adds another persistent platform and targets ETL rather than the identified audit queue pressure. Option <<3>> treats a managed Redshift cluster like an EC2 Auto Scaling group; arbitrary EC2 instances cannot be registered as its nodes. Option <<4>> adds data replication, another database, and query migration when Redshift already supports the required burst capacity. Reserved-node pricing reduces the baseline bill but does not itself add concurrency capacity.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/redshift/latest/dg/concurrency-scaling.html\nhttps://aws.amazon.com/redshift/pricing/",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/383.diagram.json",
+  "diagram_alt": "One scaling cluster for forty minutes consumes forty of the sixty daily credit minutes, leaving twenty minutes of headroom.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/concurrency-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "WLM concurrency-scaling behavior and query and cluster eligibility."
+    },
+    {
+      "url": "https://aws.amazon.com/redshift/pricing/",
+      "checked_on": "2026-09-18",
+      "supports": "Credit accrual, consumption across scaling clusters and excess usage billing."
+    }
+  ],
+  "editorial_notes": [
+    "Made short query bursts and eligibility explicit, distinguished concurrency from single-query execution time, and added a checkable credit budget. Key 2 unchanged."
+  ],
+  "review_status": "authored"
+}

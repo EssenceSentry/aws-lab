@@ -1,0 +1,48 @@
+{
+  "question_id": "048",
+  "base_record_sha256": "322ba2267bea58154a8b2f82b985dac5aae824c25dd557444059270bea375208",
+  "record": {
+    "id": "048",
+    "exam_domain": "Design for New Solutions",
+    "question": "An online retailer must recover its three-tier application in a second AWS Region more than 250 miles from the primary site. The recovery time objective is 5 minutes and the recovery point objective is 1 hour. Recovery exercises show that restoring the database or provisioning the complete application tier takes longer than 5 minutes. A running reduced-capacity stack can promote its replica, scale out and switch traffic within the target.\n\nWhich strategy meets the objectives at the lowest ongoing cost among these options?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Copy hourly backups to the recovery Region. After a disaster, provision the stack with CloudFormation and restore the latest backup."
+      },
+      {
+        "id": "2",
+        "text": "Keep only a small database replica running in the recovery Region. After a disaster, resize it and provision the web tier, application tier and load balancers."
+      },
+      {
+        "id": "3",
+        "text": "Keep a complete reduced-capacity application stack and a continuously replicated database in the recovery Region. Automate and regularly test promotion, scale-out and traffic switching."
+      },
+      {
+        "id": "4",
+        "text": "Keep a complete application stack with full production capacity running idle in the recovery Region, with a continuously replicated standby database."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Choose <<3>>. Warm standby keeps all required tiers deployed and running at reduced capacity. The stated recovery tests establish that promotion, scaling and traffic switching fit the five-minute objective. Monitor replication lag to verify the one-hour data-loss objective as well.\n\n<<1>> requires infrastructure creation and database restore, which the measured recovery times exclude. <<2>> is a pilot-light approach; its missing application infrastructure and database resizing also exceed the measured budget. <<4>> is full-capacity hot standby and can meet the objectives, but pays for capacity that the validated warm-standby design does not need to keep running. It is not active-active because the second Region is idle.\n\nRTO measures time to restore the required service level. RPO measures acceptable lost data, not restart time. Strategy names do not guarantee numerical objectives: include detection, promotion, DNS or traffic propagation, scaling and application validation in recovery exercises. Select a Region pair that independently satisfies the geographic requirement.\n\nAWS documentation (checked September 18, 2026): [Recovery strategy selection](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/048.diagram.json",
+  "diagram_alt": "A comparison shows which recovery tasks remain for each strategy and why tested warm standby avoids both slow provisioning and full idle capacity.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_planning_for_recovery_disaster_recovery.html",
+      "checked_on": "2026-09-18",
+      "supports": "Warm standby keeps a complete reduced-capacity environment running; recovery objectives must be validated."
+    }
+  ],
+  "editorial_notes": [
+    "Added workload-specific recovery-test results so a five-minute RTO is supported by evidence instead of a guaranteed property of warm standby.",
+    "Corrected the full-capacity passive alternative to hot standby rather than active-active."
+  ],
+  "review_status": "authored"
+}

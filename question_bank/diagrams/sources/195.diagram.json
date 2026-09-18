@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "The WAN fits the deltas, not the initial warehouse",
+  "columns": [
+    "Transfer constraint",
+    "Ideal calculation",
+    "Implication"
+  ],
+  "rows": [
+    [
+      "60-TB full copy at 50 Mbps",
+      "9,600,000 seconds = 111.1 days",
+      "Exceeds 30-day deadline"
+    ],
+    [
+      "30 days at 50 Mbps",
+      "16.2 TB maximum before overhead",
+      "Cannot carry the 60-TB seed"
+    ],
+    [
+      "50-GB daily changes at 50 Mbps",
+      "2.22 hours per day before overhead",
+      "Leaves bandwidth for catch-up"
+    ],
+    [
+      "Validated Terminal bulk phase",
+      "8 days of the 30-day window",
+      "22 days remain for catch-up and cutover"
+    ]
+  ],
+  "footnote": "Decimal TB/GB and Mbps. Divide bulk bits by 50,000,000 bits/s. Measured overhead and CDC apply time still matter.",
+  "emphasis_rows": [
+    2,
+    3
+  ]
+}

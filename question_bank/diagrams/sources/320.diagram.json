@@ -1,0 +1,32 @@
+{
+  "type": "table",
+  "title": "Three questions need three kinds of evidence",
+  "columns": [
+    "Planning question",
+    "Evidence source",
+    "Review before deciding"
+  ],
+  "rows": [
+    [
+      "What runs and communicates?",
+      "Transform discovery and owner validation",
+      "Missing hosts, collection gaps and business cycles"
+    ],
+    [
+      "Can the organization operate it?",
+      "Cloud Readiness Assessment and CAF",
+      "Skills, governance, security and operations"
+    ],
+    [
+      "What would migration cost?",
+      "Transform assessment scenarios",
+      "Sizing, Region, pricing, licenses and omitted costs"
+    ]
+  ],
+  "footnote": "Combine the evidence before approving migration waves. A tool-generated estimate is not a guaranteed bill.",
+  "emphasis_rows": [
+    0,
+    1,
+    2
+  ]
+}

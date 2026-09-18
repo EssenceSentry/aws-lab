@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Allowed prefixes have gateway-specific meaning",
+  "columns": [
+    "Association type",
+    "Meaning of allowed prefixes"
+  ],
+  "rows": [
+    [
+      "Transit gateway",
+      "Advertise exactly the configured prefixes"
+    ],
+    [
+      "Virtual private gateway",
+      "Filter which associated VPC CIDRs may be advertised"
+    ],
+    [
+      "Transit-gateway route table",
+      "Controls forwarding, not the DX advertisement list"
+    ],
+    [
+      "Connection bandwidth",
+      "Capacity, not the presence of a BGP prefix"
+    ]
+  ],
+  "footnote": "For this transit-gateway association, add the missing destination to the explicit advertisement list.",
+  "emphasis_rows": [
+    0
+  ]
+}

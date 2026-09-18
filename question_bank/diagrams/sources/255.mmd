@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Product access is separate from provisioning privilege
+accDescr: QA users can request approved products while Service Catalog assumes the launch role that creates their resources.
+QA[QA user, limited end-user access]:::inputData --> PORT[Authorized portfolio and product]
+PORT --> PARAM{Approved parameters?}:::decision
+PARAM -->|yes| SC[Service Catalog]
+SC -->|assumes launch role| ROLE[Scoped provisioning permissions]
+ROLE --> CF[CloudFormation product stack]
+CF --> ENV[Temporary test environment]:::output
+QA -. direct resource writes denied .-> NO[EC2 and Auto Scaling APIs]:::warning

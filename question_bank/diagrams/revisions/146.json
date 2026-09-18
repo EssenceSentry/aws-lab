@@ -1,0 +1,57 @@
+{
+  "question_id": "146",
+  "base_record_sha256": "d5c53c5e61d6615e33b95d827b1c7aec841e10563b1dc7bf42f6ef607fd1fc20",
+  "record": {
+    "id": "146",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company receives activity-tracker events from thousands of devices. Dashboards need per-team event-time window aggregates, with updates normally visible within seconds. Events can arrive late, so processing must maintain window state and apply an explicit late-event policy. Raw events must also be retained in S3, and transformed data must reach Redshift within several minutes. The company prefers managed stream processing.\n\nWhich design best meets these different latency requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Write events to S3, calculate the aggregates with an hourly EMR job, and serve the dashboard from the last completed hourly result."
+      },
+      {
+        "id": "2",
+        "text": "Ingest events into Kinesis Data Streams. Use Managed Service for Apache Flink for event-time windows and publish live aggregates to DynamoDB behind the dashboard API. Independently retain raw events in S3 and load transformed S3 microbatches into Redshift."
+      },
+      {
+        "id": "3",
+        "text": "Deliver events to S3 in five-minute batches and use completed batches as the sole source for both dashboard calculations and Redshift loads."
+      },
+      {
+        "id": "4",
+        "text": "Consume Kinesis records with a stateless function that increments one running total per team in DynamoDB. Ignore event timestamps and use the total as the event-time window result."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The live path maintains state and interprets event time, while the storage and warehouse paths can tolerate longer buffering. Flink supports event-time processing with timestamp assignment and watermark strategies; the application must also define window emission and handling of late events.\n\n<<1>> limits dashboard freshness to an hourly result.\n\n<<3>> imposes at least the stated batch delay before its dashboard source is available.\n\n<<4>> calculates an arrival-order running total rather than the requested event-time windows.\n\nThis design supports a low-latency target; it does not guarantee every result within a fixed number of seconds. Validate watermark delay, late-event behavior, backpressure, sink capacity, and idempotent aggregate updates under load. Archive only older S3 objects that no longer require immediate access, and deduplicate warehouse loads when processing can repeat.\n\nOfficial AWS references (checked September 18, 2026): [Flink event-time practices](https://docs.aws.amazon.com/managed-flink/latest/java/best-practices.html). [Buffered data delivery](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html). [Redshift loads from S3](https://docs.aws.amazon.com/redshift/latest/dg/t_Loading-data-from-S3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/146.mmd",
+  "diagram_alt": "Event-time state drives the live dashboard, while S3 and Redshift use an independent buffered history path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/managed-flink/latest/java/best-practices.html",
+      "checked_on": "2026-09-18",
+      "supports": "Timestamp assignment, watermarks, idle sources, late events and window behavior"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 buffering and Redshift delivery through S3 COPY"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/t_Loading-data-from-S3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Separate microbatch loading path"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2 and current Flink-based repair. Separated live event-time semantics from buffered persistence, and avoided presenting a latency target as a service guarantee."
+  ],
+  "review_status": "authored"
+}

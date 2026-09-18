@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Latency preference is constrained by endpoint health
+accDescr: Route 53 returns a latency-selected healthy regional ALB. If the preferred Region is unhealthy, a healthy alternate is selected for new DNS answers.
+Q[Public DNS query]:::inputData --> R[Route 53 latency records]:::process
+H1[Region A ALB health]:::inputData -.-> R
+H2[Region B ALB health]:::inputData -.-> R
+R --> C{Lowest-latency candidate healthy?}:::decision
+C -->|Yes| A[Return candidate ALB address]:::output
+C -->|No, other Region healthy| B[Return alternate ALB address]:::output
+N[Cached answers and existing connections may persist]:::warning -.-> Q

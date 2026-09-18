@@ -1,0 +1,58 @@
+{
+  "question_id": "187",
+  "base_record_sha256": "22466b0c933cee85b540cb36260365bb7bb0577cfe829ce5eaff28337b8b05d1",
+  "record": {
+    "id": "187",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Control Tower to govern member accounts. The security team needs one place to manage compliance findings from supported services across those accounts and selected Regions. It also requires preventive controls and automated responses to a defined set of findings.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Designate a security member account as Security Hub CSPM delegated administrator. Use central configuration policies for the intended accounts and OUs in the home and linked Regions, aggregate findings, enable the required Control Tower controls, and configure EventBridge response workflows."
+      },
+      {
+        "id": "2",
+        "text": "Deploy Amazon Detective across the member accounts with StackSets and use its investigation graphs as the sole mechanism for preventive controls, compliance management and remediation."
+      },
+      {
+        "id": "3",
+        "text": "Collect organization-wide management events in CloudTrail Lake and use SQL queries alone to enforce preventive controls and remediate all security findings."
+      },
+      {
+        "id": "4",
+        "text": "Enable GuardDuty in each account and export its findings to a central S3 bucket, relying on the export to configure compliance standards and remediate findings."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Security Hub CSPM supplies central posture and findings management, with explicit configuration policies defining account and Region coverage. Control Tower supplies the selected preventive and detective controls, and configured EventBridge targets perform the required responses. These are distinct responsibilities.\n\n<<2>> provides investigation capabilities, not the full requested governance and response workflow. <<3>> centralizes audit events but does not make queries preventive enforcement or a normalized findings-management system. <<4>> supplies threat detection and exported findings but does not configure the requested compliance standards or automated remediation.\n\nDelegating administration alone is insufficient. Central configuration applies through the associated policies to centrally managed accounts in the home and linked Regions. Findings aggregation also does not execute a corrective action by itself; define matching rules, permissions, response logic and verification.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/securityhub/latest/userguide/start-central-configuration.html\nhttps://docs.aws.amazon.com/controltower/latest/controlreference/controls.html\nhttps://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cwe-all-findings.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/187.mmd",
+  "diagram_alt": "Central security findings are only one layer; preventive controls and response execution must be configured separately.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/start-central-configuration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security Hub CSPM central configuration requires organization integration, a delegated member administrator, a home Region and linked Regions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/controltower/latest/controlreference/controls.html",
+      "checked_on": "2026-09-18",
+      "supports": "Control Tower provides preventive, detective and proactive controls for governed OUs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cwe-all-findings.html",
+      "checked_on": "2026-09-18",
+      "supports": "EventBridge rules match findings and invoke configured response targets."
+    }
+  ],
+  "editorial_notes": [
+    "Updated the service name to Security Hub CSPM and made central configuration coverage explicit.",
+    "Avoided treating delegation or aggregation as automatic remediation."
+  ],
+  "review_status": "authored"
+}

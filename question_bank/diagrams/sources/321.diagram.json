@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "4 TiB historical data: sustained throughput",
+  "columns": [
+    "Measure",
+    "Cold HDD sc1",
+    "Throughput HDD st1"
+  ],
+  "rows": [
+    [
+      "Baseline throughput",
+      "48 MiB/s",
+      "160 MiB/s"
+    ],
+    [
+      "Burst ceiling",
+      "250 MiB/s",
+      "500 MiB/s"
+    ],
+    [
+      "Required sustained scan",
+      "30 MiB/s",
+      "30 MiB/s"
+    ],
+    [
+      "Headroom above requirement",
+      "18 MiB/s",
+      "130 MiB/s"
+    ]
+  ],
+  "footnote": "The requirement fits sc1 baseline performance. Burst credits and sufficient EC2 EBS bandwidth are separate constraints.",
+  "emphasis_rows": [
+    0,
+    2
+  ]
+}

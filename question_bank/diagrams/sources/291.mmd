@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Edge delivery and cross-AZ application availability complement each other
+accDescr: CloudFront with WAF sends static cache misses to private S3 and dynamic requests to an ALB-backed multi-AZ web fleet. The web fleet uses an RDS primary with a synchronous standby in another AZ.
+U[Global HTTPS requests]:::inputData --> C[CloudFront and WAF<br/>Cache and inspect requests]:::process
+C -->|Static cache miss, OAC| S[(Private S3 assets)]:::storage
+C -->|Dynamic paths| L[ALB]:::process
+L --> W[EC2 Auto Scaling web tier<br/>AZ A and AZ B]:::process
+W --> P[(RDS MySQL primary<br/>AZ A)]:::storage
+P -->|Synchronous replication| B[(RDS standby<br/>AZ B)]:::storage

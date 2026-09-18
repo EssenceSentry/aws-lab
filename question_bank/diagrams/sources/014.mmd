@@ -1,0 +1,14 @@
+sequenceDiagram
+accTitle: RPO is data age, RTO is recovery duration
+accDescr: A snapshot reaches the recovery Region before the outage. Recovery creates a cluster and cuts clients over within the tested budget.
+participant Primary as Primary Region
+participant DR as Recovery Region
+participant Ops as Recovery automation
+participant Client as Clients
+Primary->>DR: Completed snapshot copy
+Note over Primary,DR: Recoverable snapshot age at failure must be under 24 hours
+Note over Primary: Region outage begins
+Ops->>DR: Restore copied snapshot
+DR-->>Ops: New cluster ready for validation
+Ops->>Client: Update endpoint and verify service
+Note over Ops,Client: Tested restore + validation + cutover = 40 minutes

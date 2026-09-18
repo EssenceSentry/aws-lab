@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Independent OS, application and data lifecycles
+accDescr: Patched images replace instances, CodeDeploy distributes frequent code releases, and all instances mount one dataset before becoming ready.
+P["OS patches available"] --> A["Patch and test AMI"] --> L["Update launch template"] --> R["Instance refresh within 48 h"]
+C["Application release"] --> D["CodeDeploy"]
+R --> I["Auto Scaling instances"]
+D --> I
+F[("EFS: shared 500 GB")] -->|"mount at startup"| I
+I --> G{"Mount and app healthy?"}
+G -->|"yes"| S["Serve traffic"]
+G -->|"no"| W["Remain out of service"]

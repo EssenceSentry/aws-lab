@@ -1,0 +1,62 @@
+{
+  "question_id": "075",
+  "base_record_sha256": "b6a417564a8904dfd51e3302d2ff35fe72d62342ff3b958935ba9c05aa542039",
+  "record": {
+    "id": "075",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company is moving large analytical files to managed storage in AWS. It must control the encryption key policy and automatic rotation schedule, enforce encrypted uploads, and query the files directly with Amazon Redshift Spectrum. The company does not want to operate storage servers.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use S3 File Gateway to write the files to a bucket encrypted only with SSE-S3. Rely on the S3-managed key for the company’s rotation controls."
+      },
+      {
+        "id": "2",
+        "text": "Store the files in S3 with SSE-KMS using a customer managed symmetric KMS key with automatic rotation enabled. Require HTTPS and the designated key for uploads, and grant the Spectrum role the required S3 and KMS permissions."
+      },
+      {
+        "id": "3",
+        "text": "Store the large files as DynamoDB items encrypted with a customer managed KMS key, and configure Spectrum to read the items directly."
+      },
+      {
+        "id": "4",
+        "text": "Store the files on encrypted EBS volumes attached to an EC2 storage server, and point Spectrum external tables at those volumes."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> combines a Spectrum-compatible object store with customer control over KMS permissions and rotation. Enforce TLS and the approved encryption configuration at the S3 access boundary. The query role also needs access to the objects and permission to decrypt with the KMS key.\n\n<<1>> uses S3-managed encryption keys, which do not provide the requested customer KMS policy and rotation controls. <<3>> is not a suitable large-file object store and is not a direct Spectrum data source. <<4>> adds server management and does not make EBS volumes a Spectrum external data source.\n\nAutomatic KMS rotation changes key material while retaining the logical key and older material needed for decryption. It does not rewrite existing S3 objects or rotate their data keys. Transport encryption and encryption at rest require separate controls.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-data-files.html\nhttps://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingEncryptionInTransit.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/075.mmd",
+  "diagram_alt": "TLS, S3 encryption and KMS authorization are separate controls; key rotation preserves access to existing ciphertext.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-data-files.html",
+      "checked_on": "2026-09-18",
+      "supports": "Spectrum reads supported S3 files and supports SSE-KMS encryption."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+      "checked_on": "2026-09-18",
+      "supports": "Automatic rotation eligibility, retained key identity and no automatic re-encryption of protected data."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "SSE-KMS read permissions and bucket-policy enforcement of a designated key."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingEncryptionInTransit.html",
+      "checked_on": "2026-09-18",
+      "supports": "SecureTransport bucket conditions enforce HTTPS."
+    }
+  ],
+  "editorial_notes": [
+    "Distinguished KMS material rotation from re-encrypting existing objects."
+  ],
+  "review_status": "authored"
+}

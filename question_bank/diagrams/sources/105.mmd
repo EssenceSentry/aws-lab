@@ -1,0 +1,17 @@
+sequenceDiagram
+accTitle: Database failover changes the endpoint target
+accDescr: A failed primary is replaced by the synchronous standby, and the application reconnects through the existing database endpoint.
+participant App as Multi-AZ web tier
+participant DNS as RDS endpoint
+participant P as Primary in AZ A
+participant S as Standby in AZ B
+App->>DNS: Resolve database endpoint
+DNS-->>App: Primary address
+App->>P: Database request
+P->>S: Synchronous replication
+Note over P: Primary or AZ fails
+Note over S: RDS promotes standby
+Note over DNS: Endpoint target is updated
+App->>DNS: Reconnect and resolve endpoint
+DNS-->>App: New primary address
+App->>S: Retry database request

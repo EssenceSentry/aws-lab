@@ -1,0 +1,63 @@
+{
+  "question_id": "051",
+  "base_record_sha256": "a5605698cf230ac6eb44fe6e68c836b346df8fff65712aedaa8c379239562c71",
+  "record": {
+    "id": "051",
+    "exam_domain": "Design for New Solutions",
+    "question": "A software company is deploying an issue-tracking application with a steady baseline of traffic and periodic growth. The existing application uses relational joins, constraints and multi-statement SQL transactions; redesigning its data model is outside the project scope. It must continue operating after an Availability Zone failure and replace failed application instances automatically. Static assets should load quickly for global users.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy an EC2 Auto Scaling group across multiple AZs behind an ALB, use CloudFront for static assets, and use an RDS Multi-AZ DB instance deployment. Manage the resources with CloudFormation."
+      },
+      {
+        "id": "2",
+        "text": "Deploy the application on one Dedicated EC2 instance, use Redshift as the transactional database, and add ElastiCache for frequently requested records."
+      },
+      {
+        "id": "3",
+        "text": "Deploy an EC2 Spot Auto Scaling group behind an ALB, use CloudFront for static assets, and use a Single-AZ RDS primary with an asynchronous read replica and manual promotion."
+      },
+      {
+        "id": "4",
+        "text": "Deploy a fixed set of On-Demand EC2 instances in one AZ, use DynamoDB for the existing database without changing application queries, and add ElastiCache for read performance."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Choose <<1>>. The application tier spans failure domains, and Auto Scaling can replace unhealthy instances while the load balancer sends requests to healthy targets. RDS Multi-AZ provides managed database failover for the existing relational workload. CloudFront caches eligible static assets near users, and CloudFormation makes provisioning repeatable.\n\n<<2>> leaves one application instance as a single point of failure. Dedicated tenancy does not provide redundancy, and a warehouse is not a drop-in operational SQL database. <<3>> lacks automatic database failover: an asynchronous read replica with manual promotion does not satisfy the stated recovery model. Spot can be useful in resilient fleets, but a Spot-only fleet also requires interruption and capacity planning. <<4>> places all compute in one AZ and assumes DynamoDB can run unchanged relational queries. A cache does not repair those design gaps.\n\nEvaluate availability at every tier. Several application servers do not remove a single database failure point, and a managed database does not fix application servers placed in only one AZ. Plan enough surviving capacity to support the required service level after a failure.\n\nAWS documentation (checked September 18, 2026): [Auto Scaling across AZs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-az-console.html), [RDS Multi-AZ DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html), [CloudFront content delivery](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html), [CloudFormation templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/051.mmd",
+  "diagram_alt": "Application instances span AZs and the relational database has its own cross-AZ standby, preventing a hidden single-tier failure point.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-az-console.html",
+      "checked_on": "2026-09-18",
+      "supports": "An Auto Scaling group and load balancer across AZs support continued service and replacement capacity after an AZ failure."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS maintains a synchronous standby in another AZ for availability; that standby does not serve reads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront caches and delivers web content at edge locations and fetches cache misses from origins."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "Versioned templates support repeatable resource provisioning and tracking infrastructure changes."
+    }
+  ],
+  "editorial_notes": [
+    "Added existing relational query and schema constraints so DynamoDB is not dismissed merely for being NoSQL.",
+    "Removed the false blanket claim that Spot is unsuitable for steady-state workloads; the decisive database failover gap is explicit."
+  ],
+  "review_status": "authored"
+}

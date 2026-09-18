@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Cache hits avoid MySQL, misses reuse connections
+accDescr: The application checks ElastiCache first. Hits return immediately, while misses query MySQL through RDS Proxy and populate the cache.
+A["Lambda read request"] --> B{"Usable cache entry?"}
+B -->|Hit| C["Return cached result"]
+B -->|Miss| D["RDS Proxy connection pool"]
+D --> E["MySQL query"]
+E --> F["Populate cache and return"]
+class A inputData
+class B decision
+class C,F output
+class D,E storage

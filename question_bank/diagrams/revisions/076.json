@@ -1,0 +1,58 @@
+{
+  "question_id": "076",
+  "base_record_sha256": "5e80a70b382e559447b3767833ecd93603c3da3fb43af0d0d0e455875760f801",
+  "record": {
+    "id": "076",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs MySQL on EC2 in us-east-1 and has a prepared application fleet in us-west-2. It wants a managed database design for Regional disaster recovery with a target RPO below 1 minute and target application RTO below 5 minutes. The company can migrate to a MySQL-compatible engine. The recovery procedure must make a secondary database writable and reconnect the application.\n\nWhich design provides the strongest fit for these objectives?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Migrate to RDS for MySQL and create a cross-Region read replica. During an outage, change application DNS to the replica endpoint without promoting the replica."
+      },
+      {
+        "id": "2",
+        "text": "Migrate to Aurora MySQL Global Database with a provisioned secondary cluster in us-west-2. Monitor replication lag and automate a tested cross-Region failover procedure, application reconnection, and traffic redirection."
+      },
+      {
+        "id": "3",
+        "text": "Migrate to an RDS for MySQL Multi-AZ DB instance in us-east-1 and rely on its standby for a complete us-east-1 outage."
+      },
+      {
+        "id": "4",
+        "text": "Copy daily database snapshots to us-west-2. During an outage, restore the newest snapshot and manually reconfigure the application."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> maintains a cross-Region database through Aurora Global Database storage-level replication and includes the steps needed to resume writes. AWS describes typical unplanned-failover RPO in seconds and recovery time in minutes, making this a strong design candidate. Validate the complete application recovery time, including detection, failover, connections and traffic switching, against the stated targets.\n\n<<1>> leaves the RDS replica read-only; DNS alone does not promote it. A properly promoted and tested RDS replica can support other DR designs, but this procedure is incomplete. <<3>> provides AZ resilience inside one Region, not a secondary Region. <<4>> can lose up to the snapshot interval of changes and adds restore and manual reconfiguration time.\n\nCross-Region replication is asynchronous. Actual data loss depends on lag at failure, and neither a service name nor a nominal failover duration guarantees the application’s RPO or RTO.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Replication.CrossRegion.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/076.mmd",
+  "diagram_alt": "The recovery sequence distinguishes replication lag from all the steps that determine application downtime.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html",
+      "checked_on": "2026-09-18",
+      "supports": "Unplanned Global Database failover, lag-dependent RPO and recovery in minutes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Replication.CrossRegion.html",
+      "checked_on": "2026-09-18",
+      "supports": "Global Database uses Aurora storage-layer replication rather than MySQL binlog replication."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Read replicas require promotion to become standalone writable databases."
+    }
+  ],
+  "editorial_notes": [
+    "Removed an unconditional sub-minute/sub-five-minute guarantee.",
+    "Made the RDS replica distractor specifically incomplete instead of claiming RDS cross-Region replicas can never meet such targets."
+  ],
+  "review_status": "authored"
+}

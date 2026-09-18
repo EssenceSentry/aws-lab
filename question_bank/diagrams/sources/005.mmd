@@ -1,0 +1,27 @@
+flowchart TB
+accTitle: Inbound health can coexist with a broken outbound path
+accDescr: The ALB reaches healthy application instances in both AZs, but only the AZ with working NAT reaches the map provider. The remedy gives each AZ a local managed gateway.
+ ALB[Internet-facing ALB]
+subgraph A[AZ A]
+ AppA[Healthy application]
+ NatA[Working NAT instance]
+ GwA[Public NAT gateway A]
+ AppA --> NatA
+end
+subgraph B[AZ B]
+ AppB[Healthy application]
+ NatB[Stopped NAT instance]
+ GwB[Public NAT gateway B]
+ AppB -->|outbound call fails| NatB
+end
+ ALB --> AppA
+ ALB --> AppB
+ NatA --> Map[Map provider]
+ NatA -.->|replace| GwA
+ NatB -.->|replace| GwB
+ GwA --> IGW[Internet gateway]
+ GwB --> IGW
+ IGW --> Map
+class ALB inputData
+class NatB warning
+class Map output

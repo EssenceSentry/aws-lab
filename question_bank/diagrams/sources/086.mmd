@@ -1,0 +1,16 @@
+sequenceDiagram
+accTitle: Import provenance without a runtime HSM dependency
+accDescr: The existing HSM generates key material that is securely wrapped and imported into an EXTERNAL-origin KMS key. Subsequent S3 operations use KMS without a call to the original HSM.
+participant H as Existing HSM
+participant A as Key administrator
+participant K as AWS KMS
+participant S as Amazon S3
+A->>K: Create EXTERNAL key and obtain import parameters
+K-->>A: Wrapping public key and import token
+A->>H: Generate and securely wrap key material
+H-->>A: Wrapped key material
+A->>K: Import wrapped material and token
+Note over H,K: Setup transfers a protected copy
+S->>K: SSE-KMS data key operation
+K-->>S: Cryptographic result
+Note over H,S: Routine S3 operations do not call the HSM

@@ -1,0 +1,52 @@
+{
+  "question_id": "109",
+  "base_record_sha256": "c648ef7ec4b5e27cbe562f8741a8fba1fe0f6f4f4508a21639fa6514f86be8e2",
+  "record": {
+    "id": "109",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses AWS Organizations to manage development accounts. Its security team maintains a list of approved AMI IDs for each Region. Developers must be allowed to launch instances from other AMIs, but security must receive a notification when a running instance is evaluated as noncompliant. No automatic blocking or termination is required.\n\nWhich solution meets these requirements with the least custom code?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach an SCP that denies ec2:RunInstances unless the requested AMI is approved, and send notifications for denied API requests."
+      },
+      {
+        "id": "2",
+        "text": "Enable Amazon Inspector and treat every instance without a vulnerability finding as compliant with the approved AMI list."
+      },
+      {
+        "id": "3",
+        "text": "Create an AWS Config aggregator in the security account and supply the approved AMI IDs to the aggregator without deploying evaluation rules in source accounts."
+      },
+      {
+        "id": "4",
+        "text": "Enable AWS Config recording and deploy the approved-amis-by-id managed rule in each relevant account and Region. Match noncompliant rule-evaluation events with EventBridge and send notifications through SNS."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The `approved-amis-by-id` managed rule evaluates running EC2 instances against its configured AMI IDs. Config compliance events can be matched by EventBridge and delivered to SNS. This is a detective control applied after the resource exists, so it does not block development deployments.\n\n<<1>> is preventive and violates the requirement to permit launches.\n\n<<2>> checks a different property. A vulnerability assessment does not establish that an instance uses an approved image ID.\n\n<<3>> aggregates existing configuration and compliance data but does not replace source-account recording and rule evaluation.\n\nDeploy the rule with the appropriate regional list and verify the event and notification configuration. Config events use best-effort delivery, so a compliance dashboard or reconciliation process can complement operational alerts.\n\nOfficial AWS references (checked September 18, 2026): [Approved AMI managed rule](https://docs.aws.amazon.com/config/latest/developerguide/approved-amis-by-id.html). [Config events with EventBridge](https://docs.aws.amazon.com/config/latest/developerguide/monitor-config-with-cloudwatchevents.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/109.mmd",
+  "diagram_alt": "Post-launch Config evaluation routes noncompliant AMI results to notifications without blocking deployment.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/approved-amis-by-id.html",
+      "checked_on": "2026-09-18",
+      "supports": "Running instance evaluation against configured AMI IDs"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/monitor-config-with-cloudwatchevents.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compliance-change events, recording prerequisites, and best-effort event delivery"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Scoped requirement to post-launch detection and notification, clarified regional rule deployment, and avoided promising guaranteed EventBridge delivery."
+  ],
+  "review_status": "authored"
+}

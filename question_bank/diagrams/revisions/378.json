@@ -1,0 +1,57 @@
+{
+  "question_id": "378",
+  "base_record_sha256": "5d64f0e9e08c3b17f047451df5aa24f6c4e98b2e1b0d5cf79a85db584917941b",
+  "record": {
+    "id": "378",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An organization manages 600 AWS member accounts with all Organizations features enabled. Its existing S3 access points are compliant, and direct bucket access is governed separately. The security team must prevent IAM principals in member accounts from creating new Regional S3 access points unless those access points have a VPC network origin.\n\nWhich control enforces this requirement before creation across the member accounts?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add a bucket policy that denies s3:CreateAccessPoint unless aws:ResourceAccount equals VPC."
+      },
+      {
+        "id": "2",
+        "text": "Deploy an AWS Config rule and invoke Lambda to delete an access point after it is created with an Internet network origin."
+      },
+      {
+        "id": "3",
+        "text": "Add an S3 object ACL that denies access-point creation when s3:AccessPointNetworkOrigin is Internet."
+      },
+      {
+        "id": "4",
+        "text": "Attach an SCP at the organization root that denies s3:CreateAccessPoint when s3:AccessPointNetworkOrigin is not VPC."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> makes the requested access point's network origin a preventive authorization condition. A deny on s3:CreateAccessPoint with StringNotEquals for s3:AccessPointNetworkOrigin=VPC blocks noncompliant requests by affected member-account principals. Other IAM permissions must still allow compliant creation; an SCP grants no permissions.\n\nThe condition describes the access point being created, not the network location from which the administrator submits the API request. A VPC-origin access point subsequently accepts data requests only through its associated VPC. The control does not convert existing access points or remove direct bucket access. SCPs do not restrict the management account or service-linked roles, so the stated member-account IAM scope matters.\n\nOption <<1>> uses an account-ID key as though it were a network-origin key and places an organization creation guardrail in the wrong mechanism. Option <<2>> detects and remediates after creation, leaving a compliance interval. Option <<3>> misuses object ACLs: they cannot express conditional explicit denies or govern access-point creation.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-policies.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-vpc.html\nhttps://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/378.mmd",
+  "diagram_alt": "The SCP evaluates the access point configuration before creation; passing the condition still requires IAM authorization.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-policies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Official CreateAccessPoint SCP example uses AccessPointNetworkOrigin with StringNotEquals VPC."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points-vpc.html",
+      "checked_on": "2026-09-18",
+      "supports": "VPC-origin access points restrict data access to the associated VPC."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCP scope, lack of permission grants, management-account and service-linked-role exceptions."
+    }
+  ],
+  "editorial_notes": [
+    "Corrected the inherited claim that an SCP restricts the management account. Distinguished requested network origin from caller location and existing/direct-bucket access. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

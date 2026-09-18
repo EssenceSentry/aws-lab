@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Sanitization must precede publication
+accDescr: A restricted Glue job transforms raw data, and a validation gate controls whether a complete sanitized batch becomes visible downstream.
+RAW[Restricted raw S3 batch]:::storage --> JOB[Glue Spark transformation]
+CAT[Catalog metadata]:::inputData -. schema .-> JOB
+REF[Object references only]:::inputData --> JOB
+JOB --> STAGE[Restricted sanitized staging]:::storage
+STAGE --> VALID{Complete and valid?}:::decision
+VALID -->|yes| PUB[Publish batch manifest]:::output
+PUB --> OUT[Downstream S3 batch]:::storage
+VALID -->|no| HOLD[Hold batch for repair]:::warning

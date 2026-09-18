@@ -1,0 +1,32 @@
+{
+  "type": "table",
+  "title": "Optimize the measured source of elapsed time",
+  "columns": [
+    "Observation",
+    "Targeted response"
+  ],
+  "rows": [
+    [
+      "Most worker time waits for remote MySQL",
+      "Use the RDS placement proven by the benchmark"
+    ],
+    [
+      "DynamoDB is already fast",
+      "Do not expect its cache to remove MySQL wait"
+    ],
+    [
+      "Many identical eligible API reads",
+      "Cache within authorization and freshness boundaries"
+    ],
+    [
+      "Runtime changes after migration",
+      "Retune memory and safe timeout using measurements"
+    ]
+  ],
+  "footnote": "Lower allocated memory or shorter timeouts do not by themselves establish lower successful-job cost.",
+  "emphasis_rows": [
+    0,
+    2,
+    3
+  ]
+}

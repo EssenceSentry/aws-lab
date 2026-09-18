@@ -1,0 +1,58 @@
+{
+  "question_id": "185",
+  "base_record_sha256": "2b477befa6aff91e0f77f2f62352ec01598ae260209bb673dbb9c13f05b945d0",
+  "record": {
+    "id": "185",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company runs a web application in us-west-1 and needs a passive disaster-recovery deployment in us-east-1. Each regional deployment must scale automatically and tolerate an Availability Zone failure. The standby application, dependencies and replicated data are already tested and ready to serve the required load. Under normal conditions, the public hostname must resolve only to the primary Region.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a multi-AZ ALB in us-west-1 and one Auto Scaling group spanning subnets in both Regions, connected through inter-Region VPC peering."
+      },
+      {
+        "id": "2",
+        "text": "Create a separate multi-AZ ALB and Auto Scaling group in each Region. Configure primary and secondary Route 53 failover alias records for the same hostname, with Evaluate Target Health enabled and ALB target health checks that reflect application readiness."
+      },
+      {
+        "id": "3",
+        "text": "Create one ALB whose enabled subnets span both regional VPCs and one Auto Scaling group across both Regions. Point a Route 53 alias at that ALB."
+      },
+      {
+        "id": "4",
+        "text": "Create a separate multi-AZ ALB and Auto Scaling group in each Region. Configure equal-weight Route 53 records for both ALBs and evaluate their health."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Separate regional ALBs and Auto Scaling groups provide regional application deployments, while Route 53 failover records implement the primary/standby traffic policy. ALB target health and application readiness must represent whether each deployment can actually serve requests.\n\n<<1>> attempts to stretch an Auto Scaling group across Regions. <<3>> also attempts to deploy one ALB across regional VPCs. Both resources have regional deployment boundaries. <<4>> makes both healthy deployments eligible during normal operation, contrary to the passive-standby requirement.\n\nDo not confuse where an ALB is deployed with every possible reachable IP target: remote private-IP targets can be supported in suitable topologies. The failure here is the proposed cross-Region ALB or Auto Scaling group resource itself. DNS health detection, caching and client connection reuse mean failover is not instantaneous; tested standby data and capacity remain prerequisites.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-types.html\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html\nhttps://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/185.mmd",
+  "diagram_alt": "Failover DNS chooses between independent regional deployments, each with its own multi-AZ scaling and load balancing.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-types.html",
+      "checked_on": "2026-09-18",
+      "supports": "Failover routing implements active/passive behavior and alias records can evaluate target health."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html",
+      "checked_on": "2026-09-18",
+      "supports": "An Auto Scaling group and its attached load balancer use a compatible regional VPC deployment."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB private-IP targets may be in peered VPCs in other Regions; Route 53 alias health uses target-group health checks."
+    }
+  ],
+  "editorial_notes": [
+    "Made passive routing and standby readiness explicit, and replaced an unspecified routing-policy distractor with equal-weight active/active routing.",
+    "Removed the false blanket claim that an ALB can never register a reachable target in another Region."
+  ],
+  "review_status": "authored"
+}

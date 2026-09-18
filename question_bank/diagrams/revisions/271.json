@@ -1,0 +1,57 @@
+{
+  "question_id": "271",
+  "base_record_sha256": "74715156bead5ecd91dbee972919e18b52f7098fefd41cce10c856388b2f5937",
+  "record": {
+    "id": "271",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A serverless dashboard uses CloudFront and two ready regional origins. Personalized GET requests are slow because a viewer-request Lambda@Edge function calls a distant identity provider for every request. Clients already send short-lived signed JWTs. Security policy permits offline validation until token expiry, and the team has a trusted signing-key rotation process. The primary origin sometimes returns 503 or 504 responses while the secondary remains healthy. Login POST requests use a separate behavior.\n\nWhich changes address both problems without sharing personalized responses between users? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add Route 53 latency records pointing to the existing CloudFront distribution so DNS selects between its regional origins."
+      },
+      {
+        "id": "2",
+        "text": "Increase the origin response timeout and retain the identity-provider call on every viewer request."
+      },
+      {
+        "id": "3",
+        "text": "Cache all dashboard responses under a shared path-only cache key and extend their TTL to the token lifetime."
+      },
+      {
+        "id": "4",
+        "text": "Validate JWT signatures, issuer, audience, expiry, and required claims locally in the viewer-request function using trusted keys. Keep caching disabled for personalized dashboard responses."
+      },
+      {
+        "id": "5",
+        "text": "Use a CloudFront origin group with the two ready origins, failover on 503 and 504, and connection and response timeouts appropriate for the dashboard."
+      }
+    ],
+    "correct_option_ids": [
+      "4",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Local verification removes the identity-provider round trip from each dashboard request. Signature verification must be accompanied by claim validation and trusted key handling. The stated policy accepts the revocation delay inherent in offline validation.\n\n<<5>> is correct. The origin group retries eligible failed GET requests against the secondary. Timeouts influence how long the viewer waits before that attempt. Origins and their data must already be ready to serve the request.\n\n<<1>> selects a DNS endpoint, not an origin inside one CloudFront distribution.\n\n<<2>> preserves the authentication bottleneck and can increase the wait before an origin error or failover.\n\n<<3>> can disclose one user's dashboard to another because the cache key omits identity.\n\nCloudFront origin failover applies to GET, HEAD, and eligible OPTIONS requests, not POST login operations. It evaluates failures per request; it does not permanently switch all future requests to the secondary.\n\nOfficial AWS references (checked September 18, 2026): [Authorization at the edge](https://aws.amazon.com/blogs/networking-and-content-delivery/authorizationedge-how-to-use-lambdaedge-and-json-web-tokens-to-enhance-web-application-security/). [CloudFront origin failover](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/271.mmd",
+  "diagram_alt": "Local token verification removes one remote dependency, while per-request origin failover handles eligible dashboard failures.",
+  "sources": [
+    {
+      "url": "https://aws.amazon.com/blogs/networking-and-content-delivery/authorizationedge-how-to-use-lambdaedge-and-json-web-tokens-to-enhance-web-application-security/",
+      "checked_on": "2026-09-18",
+      "supports": "Viewer-request JWT verification removes remote authorization work from the request path"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html",
+      "checked_on": "2026-09-18",
+      "supports": "Primary and secondary origins, eligible methods, error criteria and timeout controls"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 4 and 5. Explicitly limited origin failover to the GET behavior, made offline token validation an approved policy, and retained personalized-cache isolation."
+  ],
+  "review_status": "authored"
+}

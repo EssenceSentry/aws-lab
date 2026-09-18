@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Public endpoint addresses, private circuit transport
+accDescr: IPsec starts at the corporate customer gateway and ends at AWS. The encrypted outer packets cross Direct Connect through a public virtual interface.
+L[Corporate LAN<br/>Existing protection]:::inputData --> C[Customer gateway<br/>Encrypt application packets]:::decision
+subgraph T[Gateway-to-gateway IPsec]
+C --> D[Direct Connect public VIF<br/>Carries encrypted outer packets]:::inputData
+D --> V[AWS VPN endpoint<br/>Decrypt tunnel packets]:::decision
+end
+V --> A[Private EC2 application]:::output
+N[Public VPN endpoint address<br/>does not require Internet transit]:::warning -. routing distinction .-> D

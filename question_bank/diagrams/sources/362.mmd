@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Verify an off-chain record against a shared commitment
+accDescr: An authorized reader retrieves a record version and nonce from controlled off-chain storage, recomputes its commitment, and compares it with the ledger value. A mismatch reveals a version or integrity problem without placing the record on the ledger.
+D[(Controlled off-chain storage<br/>Record version and random nonce)]:::storage --> H[Authorized verifier<br/>Recompute commitment]:::process
+L[(Permissioned ledger<br/>Version commitment)]:::storage --> C{Commitments match?}:::decision
+H --> C
+C -->|Yes| V[Retrieved version matches<br/>Committed content]:::output
+C -->|No| X[Reject or investigate<br/>Version or integrity mismatch]:::warning

@@ -1,0 +1,52 @@
+{
+  "question_id": "329",
+  "base_record_sha256": "5d2b33d114a2bf58ad1db4b1948e661a235ec74b51c021c34e14fc876c482034",
+  "record": {
+    "id": "329",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company manages workforce identities and security-group membership in on-premises Active Directory. An existing external identity provider uses that directory and supports SAML 2.0 and SCIM. The company wants employees to use corporate sign-in to access multiple AWS accounts, with account permissions administered centrally from those groups. It wants to avoid per-account IAM users and custom synchronization scripts.\n\nWhich solution meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Federate the identity provider with an Amazon Cognito user pool. Use Cognito user groups as the central permission-set assignments for all AWS accounts."
+      },
+      {
+        "id": "2",
+        "text": "Create a SAML identity provider and IAM roles separately in every AWS account. Write scripts to synchronize directory groups and each account's role mappings."
+      },
+      {
+        "id": "3",
+        "text": "Connect the external identity provider to an organization instance of IAM Identity Center using SAML. Provision users and groups through SCIM, then assign the groups to AWS accounts with permission sets."
+      },
+      {
+        "id": "4",
+        "text": "Export Active Directory users into a new AWS Managed Microsoft AD directory. Create directory trust relationships directly with each AWS account to grant administrative roles."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Option <<3>> separates the three required functions. SAML provides federated sign-in, SCIM provisions users and groups, and IAM Identity Center account assignments associate those identities with permission sets. This centralizes access without creating an IAM user in each account.\n\nOption <<1>> uses an application identity service as though it were the AWS Organizations workforce account-assignment system. Cognito federation does not create Identity Center permission-set assignments. Option <<2>> can implement federation, but duplicated per-account configuration and custom synchronization conflict with the low-overhead requirement. Option <<4>> introduces another directory and invents a trust between a directory and an AWS account; directory trusts do not grant AWS account roles.\n\nActive Directory alone is not the SAML issuer in this design: the external IdP performs federation. SAML does not discover directory groups, and SCIM synchronization does not independently grant account access. Both provisioning and account assignments must be configured.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html\nhttps://docs.aws.amazon.com/singlesignon/latest/userguide/provision-automatically.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/329.mmd",
+  "diagram_alt": "SAML authenticates, SCIM provisions, and group-account permission-set assignments authorize access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html",
+      "checked_on": "2026-09-18",
+      "supports": "External IdP SAML authentication, provisioning needs, and centralized AWS account access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/provision-automatically.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCIM synchronizes external user and group information into Identity Center."
+    }
+  ],
+  "editorial_notes": [
+    "Explicitly provided a SAML/SCIM-capable external IdP backed by AD. Removed unsupported direct AD-as-SAML and account-directory-trust claims; key 3 retained."
+  ],
+  "review_status": "authored"
+}

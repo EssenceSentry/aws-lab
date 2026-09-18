@@ -1,0 +1,62 @@
+{
+  "question_id": "314",
+  "base_record_sha256": "13f7fe4c1ef35e0c09896abc9ba3765782ee32eb61992127988adeb7eeef5871",
+  "record": {
+    "id": "314",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A tutorial site uses one CloudFront distribution with a private S3 REST origin for media and an internet-facing Application Load Balancer for ECS tasks on Fargate. HTTPS is configured. For this rollout the ALB must remain internet-facing. The team must prevent viewers from bypassing the designated distribution to read either origin. Bucket owner enforced Object Ownership disables S3 ACLs, and the team can remove unintended grants and protect a secret origin header.\n\nWhich TWO changes should the solutions architect implement? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add a secret custom origin header on CloudFront requests to the ALB. Attach a web ACL to the ALB that allows the exact secret value and blocks other requests, and restrict alternate paths to the tasks."
+      },
+      {
+        "id": "2",
+        "text": "Add a secret custom origin header on CloudFront requests to the ALB. Validate that header only in a web ACL attached to the CloudFront distribution, leaving the ALB directly accessible."
+      },
+      {
+        "id": "3",
+        "text": "Allow only CloudFront source IP ranges in the ALB subnet network ACL, and rely on this rule to distinguish the designated distribution from every other CloudFront distribution."
+      },
+      {
+        "id": "4",
+        "text": "Grant the CloudFront distribution ID read access through the S3 bucket ACL, and keep the bucket policy unchanged."
+      },
+      {
+        "id": "5",
+        "text": "Associate a signing OAC with the S3 origin. Grant GetObject to the CloudFront service principal in the bucket policy with the exact distribution SourceArn, and remove other viewer read grants."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<5>> are correct. Each origin enforces its own access boundary. The ALB-side WAF rule must match the exact header value; the secret must remain protected and be rotated. The S3 policy authorizes the distribution’s signed origin requests.\n\n<<2>> checks the wrong boundary. A caller reaching the ALB directly never encounters the distribution’s web ACL. CloudFront adds the custom origin header on the origin request, after viewer-side processing.\n\n<<3>> can reduce exposed network sources but cannot identify one particular distribution: other customers also use CloudFront infrastructure.\n\n<<4>> cannot work with disabled ACLs, and a distribution ID is not an S3 ACL grantee.\n\nThe header approach depends on secrecy; HTTPS and restrictions on who can read or modify configuration help preserve it. A CloudFront VPC origin with a private ALB is another design to consider when the rollout permits it. Origin protection remains separate from authenticating website users.\n\nOfficial AWS references (checked September 18, 2026): [Private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html). [Restrict ALB access](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html). [WAF exact string matching](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-string-match.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/314.mmd",
+  "diagram_alt": "The designated CloudFront distribution reaches two origins through different origin-side authorization gates.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC signing, service principal, distribution SourceArn, REST endpoints and SSE-KMS key authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Secret origin header, HTTPS, rotation and service-wide prefix-list scope; VPC origin alternative."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-string-match.html",
+      "checked_on": "2026-09-18",
+      "supports": "WAF can compare an individual request header to an exact expected string."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 5. Scoped the public-ALB rollout and disabled ACLs explicitly, and distinguished distribution-specific secrets from service-wide IP ranges."
+  ],
+  "review_status": "authored"
+}

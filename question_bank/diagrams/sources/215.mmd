@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Turn tape contents into completed objects before analysis
+accDescr: The MAM restores ordinary files, a gateway completes their S3 upload, two managed analyses produce results, and the catalog joins those results to its person identifiers.
+M["MAM restores tape files"] --> G["File Gateway: confirm S3 upload"]
+G --> F["Face search against indexed references"]
+G --> L["Object and scene label detection"]
+F --> J["Retrieve completed results and map IDs"]
+L --> J
+J --> C[("MAM search catalog")]
+class M inputData
+class G,F,L,J decision
+class C storage

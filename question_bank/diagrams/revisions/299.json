@@ -1,0 +1,67 @@
+{
+  "question_id": "299",
+  "base_record_sha256": "a46bfe141840442d9430b8b1a075ab4cae043f929683cb49f9b794b62004f7d7",
+  "record": {
+    "id": "299",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A Windows content-management application will move from one test EC2 instance to at least three production instances across Availability Zones. Its mutable content currently resides on the test instance's EBS root volume. Production instances must use the same shared files through native SMB, preserve Windows ACLs and Active Directory identities, and retain file-service availability after an AZ failure.\n\nWhich storage and deployment approach has the least file-server management overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy the Windows application across AZs and mount an EFS file system directly as its native SMB share with Windows ACL semantics."
+      },
+      {
+        "id": "2",
+        "text": "Deploy the Windows application across AZs and use FSx for Lustre as the native Windows SMB share authenticated through the existing AD domain."
+      },
+      {
+        "id": "3",
+        "text": "Deploy the Windows application across AZs, join the instances and a Multi-AZ FSx for Windows File Server file system to the appropriate AD environment, migrate the content while preserving ACLs, and mount the shared SMB path."
+      },
+      {
+        "id": "4",
+        "text": "Deploy the Windows application across AZs and attach one io2 EBS volume to all instances with Multi-Attach, using it as the common filesystem without a file-server layer."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. FSx for Windows File Server supplies the required SMB, Windows ACL, and AD integration as a managed file service. Its Multi-AZ deployment provides a standby file server in another AZ and automatic failover. Each CMS instance accesses the same share instead of maintaining its own evolving content copy.\n\n<<1>> substitutes an NFS-oriented file service for the required native SMB and Windows permission model.\n\n<<2>> substitutes a Lustre filesystem for the required Windows file-server protocol and AD-backed ACL integration.\n\n<<4>> fails the cross-AZ requirement because EBS Multi-Attach operates within one AZ. Shared block access also does not by itself implement SMB or safe concurrent filesystem coordination.\n\nJoin the AD domain and establish DNS, time, network, and file permissions before relying on the mounted share. Copy and validate existing content and ACLs, then switch the CMS content path. An AMI copies an initial disk state but does not synchronize later writes among instances. Multi-AZ improves file-service availability, but failover can briefly pause I/O, so test client and application recovery behavior.\n\nAWS documentation (checked September 18, 2026): [FSx for Windows File Server features](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html); [FSx Multi-AZ availability](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html); [EBS Multi-Attach limits](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html); [EFS protocols and client support](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html); [FSx for Lustre client model](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/299.mmd",
+  "diagram_alt": "All CMS instances use one SMB namespace backed by cross-AZ file servers and the existing directory identities.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed FSx for Windows provides SMB shares, Windows ACLs and Active Directory authentication, accessible by multiple clients."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multi-AZ FSx for Windows maintains active and standby file servers across two AZs with synchronous replication and automatic failover; client I/O can pause during failover."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+      "checked_on": "2026-09-18",
+      "supports": "EBS Multi-Attach attaches supported volumes to instances within one AZ and requires safe concurrent-write coordination; it is not a cross-AZ SMB service."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+      "checked_on": "2026-09-18",
+      "supports": "EFS supports NFSv4 and POSIX permissions, and Windows-based EC2 clients are not supported."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "FSx for Lustre presents a POSIX filesystem through Linux Lustre clients, rather than a native Windows SMB service."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Added Multi-AZ file-service availability, explicit migration of existing content and ACLs, and a realistic failover qualification instead of promising identical data availability at every instant."
+  ],
+  "review_status": "authored"
+}

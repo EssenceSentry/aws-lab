@@ -1,0 +1,57 @@
+{
+  "question_id": "319",
+  "base_record_sha256": "ec4dd82dd6fc6c2cd7933f3084582e74593e2fafb530aa0f6e973657e10f748f",
+  "record": {
+    "id": "319",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is migrating a public car-registration application from one on-premises NGINX application server and a MySQL database to AWS. The application requires server-side code and a MySQL-compatible database. Its tested deployment package runs on EC2, sessions are stored outside the web instances, and the database is compatible with RDS for MySQL. The company wants a managed database, a web tier across two Availability Zones, and only a short write pause at cutover. The full data copy takes several hours. It also requires Route 53 domain registration and public DNS hosting for the apex name.\n\nWhich migration plan meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy the application across two AZs behind an ALB and migrate MySQL to RDS using full load and CDC. Register the domain in Route 53, but create an apex CNAME record pointing to the ALB."
+      },
+      {
+        "id": "2",
+        "text": "Deploy the application in a two-AZ EC2 Auto Scaling group behind an ALB and use RDS MySQL Multi-AZ. Use DMS full load and CDC with validated catch-up and cutover. Register the domain in Route 53 and use a public hosted-zone apex A alias to the ALB."
+      },
+      {
+        "id": "3",
+        "text": "Deploy the application across two AZs behind an ALB with RDS MySQL Multi-AZ. Stop all source database writes before starting the several-hour backup import, then publish a Route 53 apex A alias after the import."
+      },
+      {
+        "id": "4",
+        "text": "Copy the application package into S3 website hosting and migrate MySQL to RDS. Register the domain in Route 53 and use an apex alias to the S3 website endpoint to run the server-side application."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. EC2 runs the application code, the ALB distributes requests across healthy web instances, and RDS manages MySQL. A Multi-AZ DB-instance deployment supplies a standby in another AZ. DMS loads existing data while capturing subsequent changes; source logging, connectivity and target compatibility must be configured. Freeze source writes, confirm catch-up, validate and then switch the application.\n\n<<1>> fails at the apex DNS record: a CNAME cannot occupy the zone apex. Route 53 supports an A alias to the ALB instead.\n\n<<3>> makes the write outage include the entire several-hour import, violating the short-pause requirement.\n\n<<4>> cannot run this application’s server-side runtime in S3 website hosting.\n\nDomain registration, public DNS hosting and the application endpoint are separate configuration steps. CDC reduces the amount left for cutover; it does not eliminate validation, replication lag or the need to coordinate writes. Do not generalize this example into a rule that every AWS service always uses one DNS record type.\n\nOfficial AWS references (checked September 18, 2026): [Route 53 aliases to load balancers](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html). [DMS ongoing replication](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html). [RDS Multi-AZ standby distinction](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/319.mmd",
+  "diagram_alt": "A migration workflow seeds and catches up the database before a short coordinated cutover to the tested two-AZ web tier.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Apex and subdomain alias records can point to an ELB load balancer; CNAME cannot be the zone apex."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html",
+      "checked_on": "2026-09-18",
+      "supports": "Full load plus CDC captures supported source changes; source logging and variable lag require planning."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Traditional Multi-AZ DB-instance standby serves availability, not read scaling."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added the missing domain-registration step, viable server/runtime assumptions and a CDC cutover. Removed the false MGN virtual-machine-only limitation and absolute DNS rules."
+  ],
+  "review_status": "authored"
+}

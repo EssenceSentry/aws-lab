@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Departmental SCP limits survive broader local IAM allows
+accDescr: A service restriction attached to a departmental OU applies to its member-account principals. A local administrator's broad IAM allow cannot override the inherited deny.
+O[Departmental OU<br/>SCP denies selected service]:::reference --> A[Member account]:::process
+A --> U[Administrator role or root user]:::inputData
+U --> C{Requested action matches SCP deny?}:::decision
+C -->|Yes| X[Request denied]:::error
+C -->|No| E[Continue normal permission evaluation]:::process
+I[Local IAM allow]:::reference -.-> C

@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: The same discovery feeds two different pre-migration decisions
+accDescr: Process connections guide application groups and waves, while measured resource use guides EC2 sizing before replication begins.
+D["Transform discovery
+hypervisor + guest OS access"]
+D --> N["Process connection graph"]:::inputData
+D --> U["CPU, memory and storage history"]:::inputData
+N --> G["Application groups
+and migration waves"]:::output
+U --> S["Initial EC2 sizing
+and cost scenarios"]:::output
+G --> V{"Owners validate
+coverage and assumptions"}:::decision
+S --> V
+V --> E["Begin migration execution"]:::output

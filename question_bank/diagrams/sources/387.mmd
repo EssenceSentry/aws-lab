@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Preserve input through both alert paths
+accDescr: Local catchers add an error to an input envelope, while failures outside those catchers use external execution monitoring and durable input references. Both paths feed the notification process.
+I["Input envelope<br/>args + inputRef"]:::inputData --> T["Task / Map / Parallel"]
+T -->|"Caught error after retries"| C["ResultPath $.error<br/>args + inputRef + error"]:::output
+T -->|"Uncaught or execution timeout"| E["FAILED / TIMED_OUT event"]:::warning
+C --> N["SNS email notification"]:::output
+E --> M["External alert handler"]
+R[("Durable diagnostic input")]:::storage --> M
+P["Execution reconciliation"]:::decision --> M
+M --> N

@@ -1,0 +1,52 @@
+{
+  "question_id": "028",
+  "base_record_sha256": "8a030698be98b7c853683168240be55ae803e06fdb5a775de89283e2baf7c825",
+  "record": {
+    "id": "028",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A document-processing portal runs on one EC2 instance and stores uploaded files on attached EBS volumes. Upload bursts delay responses while the same instance performs lengthy verification jobs. Files must remain available when workers are replaced, and the company needs a copy of uploads in another Region for recovery. Jobs can run asynchronously and safely retry.\n\nWhich redesign provides scalable storage and resilient processing?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store uploads in S3 with cross-Region replication. Queue object references in SQS and process them with an EC2 Auto Scaling group spanning multiple Availability Zones. Scale workers using queue backlog per instance and keep templates to recreate regional infrastructure."
+      },
+      {
+        "id": "2",
+        "text": "Store uploads on a larger Provisioned IOPS EBS volume attached to the original instance. Publish jobs to an SNS topic subscribed by every worker and scale workers using the number of notifications."
+      },
+      {
+        "id": "3",
+        "text": "Store uploads on each worker's local EBS volume. Use SQS and an Auto Scaling group across Availability Zones, and delete each local volume when its worker is replaced."
+      },
+      {
+        "id": "4",
+        "text": "Store uploads in S3 with cross-Region replication. Invoke one fixed EC2 processing instance synchronously for every upload and retain that instance during demand spikes."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Correct: <<1>>. S3 separates durable files from worker lifecycles, SQS buffers bursts, and a multi-AZ worker group processes independent jobs. Backlog per worker is a useful scaling metric because required capacity depends on both queued work and processing rate.\n\n<<2>> retains the single-instance storage dependency. SNS fan-out sends work to subscribers; by itself it is not the competing-consumer queue described here.\n\n<<3>> improves compute elasticity but loses durable uploads when the worker volumes are deleted and does not create the required regional copy.\n\n<<4>> fixes storage but preserves the synchronous single-worker bottleneck.\n\nMake workers idempotent, configure visibility timeouts and failure handling, and protect work during scale-in. S3 replication is asynchronous and does not replicate SQS messages or application state; a regional recovery runbook must account for those separately.\n\nOfficial AWS references (checked 2026-09-18):\n[SQS-based Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html)\n[S3 object replication](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/028.mmd",
+  "diagram_alt": "Durable files, buffered jobs, and replaceable workers are separate; queue backlog controls worker capacity.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Backlog per instance scaling and worker scale-in considerations"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "checked_on": "2026-09-18",
+      "supports": "Object replication within and across Regions"
+    }
+  ],
+  "editorial_notes": [
+    "Added explicit cross-Region copy requirement to justify CRR. Replaced the false claim that EBS cannot scale with lifecycle and sharing limitations. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: One baseline drives both patching and compliance
+accDescr: EC2 and hybrid managed nodes are scanned against patch baselines, approved updates are installed, and a subsequent scan refreshes the fleet report.
+E["EC2 managed nodes"]:::inputData --> S["Scan against patch baseline"]
+H["Hybrid managed nodes"]:::inputData --> S
+B["Approved patch baseline"]:::storage --> S
+S --> C["Current compliance records"]:::storage
+S --> M{"Approved patches
+missing?"}:::decision
+M -->|Install operation| I["Install in maintenance window"]
+I --> V["Rescan and refresh status"]
+V --> C
+C --> R["Fleet compliance view
+and report export"]:::output

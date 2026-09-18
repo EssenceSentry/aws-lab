@@ -1,0 +1,67 @@
+{
+  "question_id": "336",
+  "base_record_sha256": "13c458f55bdbf0b1906ac2611fb737909e21746660265fa1972ed705625d5240",
+  "record": {
+    "id": "336",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A solutions architect is assessing hundreds of Windows and Linux VMs on Microsoft Hyper-V before migration. The team needs measured CPU and memory usage, server-to-server connections with process information, and initial EC2 sizing and cost recommendations. It wants a managed assessment workflow and can provide authorized hypervisor and guest OS access.\n\nWhich THREE actions form the appropriate workflow? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Export a one-time list of VM names and allocated CPU and memory. Treat this inventory as sufficient evidence of observed utilization and application dependencies."
+      },
+      {
+        "id": "2",
+        "text": "Deploy a central AWS Transform discovery tool appliance, configure Hyper-V discovery sources, and enable remote OS collection with the required Windows and Linux credentials."
+      },
+      {
+        "id": "3",
+        "text": "Install the CloudWatch agent for CPU and memory metrics. Use Systems Manager OpsCenter to infer and export the servers' complete process dependency graph."
+      },
+      {
+        "id": "4",
+        "text": "Export the collected discovery data and create an AWS Transform migration assessment job. Review the imported inventory and configure target-Region, sizing, and pricing assumptions."
+      },
+      {
+        "id": "5",
+        "text": "Build a custom Glue ETL pipeline and Athena reporting application as a mandatory prerequisite for AWS Transform to read its own supported discovery export."
+      },
+      {
+        "id": "6",
+        "text": "Review the assessment's sizing and cost results, refine scenarios through chat, and examine collected connection and process data with application owners to validate dependency groups."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "4",
+      "6"
+    ],
+    "explanation": {
+      "text": "Options <<2>>, <<4>>, and <<6>> cover collection, assessment, and review. The Transform discovery tool is a centralized appliance or installation that reaches Hyper-V hosts and guest operating systems remotely. Guest credentials and connectivity enable richer performance and process-connection collection. The supported export can then feed a migration assessment with explicit assumptions and human review.\n\nOption <<1>> captures allocation rather than a representative utilization history, and it lacks observed connections. Option <<3>> combines metric collection with an unsupported OpsCenter dependency-inference role. Option <<5>> invents an ETL prerequisite: custom Glue and Athena analysis is possible when useful, but it is unnecessary for ingesting the tool's supported assessment export.\n\nThe collector does not install its own agent on every guest. Check collection failures and missing credentials; incomplete discovery can yield incomplete dependency groups. Assessment reports provide sizing and cost guidance. Migration wave planning is a separate planning activity, not something to assume every cost-assessment report automatically completes.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/transform/latest/userguide/discovery-tool.html\nhttps://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-configure.html\nhttps://docs.aws.amazon.com/transform/latest/userguide/transform-app-assessments.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/336.diagram.json",
+  "diagram_alt": "Inventory, measured utilization, process connections, and assessment assumptions answer different migration questions.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool.html",
+      "checked_on": "2026-09-18",
+      "supports": "Central discovery sources and export to migration assessments."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/discovery-tool-configure.html",
+      "checked_on": "2026-09-18",
+      "supports": "Remote OS metrics and process-connection collection without installing a guest agent."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transform/latest/userguide/transform-app-assessments.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported discovery exports, scenario configuration and assessment review."
+    }
+  ],
+  "editorial_notes": [
+    "Repaired the inherited per-Hyper-V-server tool deployment wording and separated cost assessment from wave planning. Keys 2, 4 and 6 unchanged."
+  ],
+  "review_status": "authored"
+}

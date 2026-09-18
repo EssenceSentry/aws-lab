@@ -1,0 +1,5303 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-18",
+  "source": "questions.jsonl",
+  "source_sha256": "488a9f2151b9db823426e442c33a6b8f5ebf3243d6b6cb7f7d87091bbb126525",
+  "scope": "Primary answer-changing concepts and selected supporting concepts; not every incidental word or service mention.",
+  "method": "Editorial assignments from the live bank, using its existing rule index as navigation and correcting detected stale summaries. Counts are assignment counts, not exam probabilities.",
+  "visual_families": [
+    {
+      "id": "V01",
+      "name": "Boundary topology",
+      "question": "Where does it live; which scope fails?",
+      "encoding": "Containment boxes and typed edges; account, Region, VPC and AZ are explicit.",
+      "interaction": "Toggle one failure boundary; retain the same layout."
+    },
+    {
+      "id": "V02",
+      "name": "Packet or request path trace",
+      "question": "Can this exact request reach its destination and return?",
+      "encoding": "Numbered hops plus route/rule tables; direction, protocol, ports and address translation.",
+      "interaction": "Step a packet and highlight the decisive lookup."
+    },
+    {
+      "id": "V03",
+      "name": "Sequence diagram",
+      "question": "Who calls whom, using which identity or token, in what order?",
+      "encoding": "Actor lanes, numbered messages, credential changes and response/expiry annotations.",
+      "interaction": "Advance one exchange at a time; inspect the token or principal."
+    },
+    {
+      "id": "V04",
+      "name": "Authorization gates and truth table",
+      "question": "Is this action allowed under these conditions?",
+      "encoding": "Request tuple, scoped predicates, explicit deny and missing-grant cases.",
+      "interaction": "Toggle one predicate and explain the changed result."
+    },
+    {
+      "id": "V05",
+      "name": "Hierarchy and responsibility matrix",
+      "question": "Who owns or controls what; what is inherited?",
+      "encoding": "Tree plus owner/operator/requester columns; policy attachment and scope.",
+      "interaction": "Move an account or change one owner without changing other facts."
+    },
+    {
+      "id": "V06",
+      "name": "State and version diagram",
+      "question": "What changes state; what persists?",
+      "encoding": "Named states or immutable versions, guarded transitions and terminal outcomes.",
+      "interaction": "Step a retry, rollback, expiry or replacement."
+    },
+    {
+      "id": "V07",
+      "name": "Timeline and time budget",
+      "question": "What expires, arrives, or becomes ready when?",
+      "encoding": "A shared time axis; durations, deadlines, ordering and uncertainty.",
+      "interaction": "Scrub time or change a delay; keep objectives distinct from observations."
+    },
+    {
+      "id": "V08",
+      "name": "Workflow and swimlanes",
+      "question": "Which steps, gates and responsibilities complete the job?",
+      "encoding": "Ordered steps, branches, handoffs, artifacts and failure/rollback paths.",
+      "interaction": "Reveal the next step and its preconditions."
+    },
+    {
+      "id": "V09",
+      "name": "Failure-state small multiples",
+      "question": "What still works after a component or scope fails?",
+      "encoding": "Same layout before/during/after; lost nodes, remaining paths/capacity and state.",
+      "interaction": "Select a failure; compare side-by-side outcomes."
+    },
+    {
+      "id": "V10",
+      "name": "Constraint/comparison matrix",
+      "question": "Which alternatives meet every hard requirement?",
+      "encoding": "Alternatives by concrete requirements; pass/fail/conditional with explanations.",
+      "interaction": "Apply requirements and eliminate incompatible rows."
+    },
+    {
+      "id": "V11",
+      "name": "Capacity, cost or feasibility plot",
+      "question": "How much is needed, available or affordable?",
+      "encoding": "Measured or explicitly illustrative axes, units, constraints and a feasible region.",
+      "interaction": "Vary demand, headroom, bandwidth or commitment; show assumptions."
+    },
+    {
+      "id": "V12",
+      "name": "Typed data lineage",
+      "question": "What data moves, transforms or remains authoritative?",
+      "encoding": "Data artifacts, transforms, storage/custody and typed edges; metadata path separate.",
+      "interaction": "Follow one record and inspect its representation at each stage."
+    },
+    {
+      "id": "V13",
+      "name": "Partition, keyspace or ordered-log view",
+      "question": "How are records located, ordered and replayed?",
+      "encoding": "Sample keys/records, partition boundaries, sort order and consumer cursors.",
+      "interaction": "Choose a key/query/cursor and highlight touched records."
+    },
+    {
+      "id": "V14",
+      "name": "Dependency graph and wave plan",
+      "question": "What must move, exist or complete together?",
+      "encoding": "Directional dependencies, critical paths, groups/waves and cutover constraints.",
+      "interaction": "Move a component and expose cross-boundary dependencies."
+    },
+    {
+      "id": "V15",
+      "name": "Diagnostic evidence board",
+      "question": "Which observation distinguishes the failure mechanisms?",
+      "encoding": "Symptom, hypotheses, discriminating telemetry, decision and limitation.",
+      "interaction": "Reveal evidence and eliminate unsupported diagnoses."
+    },
+    {
+      "id": "V16",
+      "name": "Annotated code/configuration",
+      "question": "Which exact field or expression changes behavior?",
+      "encoding": "Small valid fragment, semantic callouts and before/after input/output.",
+      "interaction": "Change one field; show its consequence in a paired visual."
+    },
+    {
+      "id": "V17",
+      "name": "Protocol, protection and custody layers",
+      "question": "Which property is protected, on which leg, by whom?",
+      "encoding": "Legs/layers, trust anchors, key location, plaintext/ciphertext and termination.",
+      "interaction": "Reveal a layer or actor and identify what it can see or do."
+    },
+    {
+      "id": "V18",
+      "name": "Input/output service card",
+      "question": "Which transformation does this service perform?",
+      "encoding": "Concrete input, operation, output, latency mode and adjacent nonmatching operation.",
+      "interaction": "Match an example input/output pair to its appropriate operation."
+    }
+  ],
+  "concepts": [
+    {
+      "id": "C01",
+      "group": "Identity and authorization",
+      "name": "Policy evaluation and permission ceilings",
+      "primary_visual": "V04",
+      "companion_visual": "V05",
+      "brief": "Render a request tuple (principal, action, resource, context), applicable grants, ceilings and explicit denies as an evaluation table. Include one allowed and one denied request.",
+      "pitfall": "A universal intersection-of-all-policies Venn diagram is wrong; same-account resource grants, role sessions and cross-account requests have different rules."
+    },
+    {
+      "id": "C02",
+      "group": "Identity and authorization",
+      "name": "Role trust and cross-account assumption",
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "brief": "Use account swimlanes: source principal, STS, target role, target resource. Number AssumeRole and resource calls separately; attach trust and permissions to their owners. Include ExternalId where relevant.",
+      "pitfall": "Trust in a role is not permission to read its resources; consolidated billing creates neither trust nor an administrative session."
+    },
+    {
+      "id": "C03",
+      "group": "Identity and authorization",
+      "name": "Federation and identity/token exchange",
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "brief": "Draw the identity presented at each hop: LDAP authentication, SAML assertion, OIDC token, user-pool token or temporary AWS credentials. Compare workforce Identity Center with customer Cognito and broker patterns.",
+      "pitfall": "An authentication token is not automatically an AWS credential; APIs accepted by one STS caller credential type need not accept another."
+    },
+    {
+      "id": "C04",
+      "group": "Identity and authorization",
+      "name": "ABAC, tag predicates and policy conditions",
+      "primary_visual": "V04",
+      "companion_visual": "V16",
+      "brief": "Use a principal-tag/resource-prefix matching table and an annotated condition block. Test missing, empty, valid, invalid and attacker-modified tags; distinguish bucket and object actions.",
+      "pitfall": "Testing submitted tag keys does not prove that every required key exists. Show trusted attribute provenance and protection against retagging."
+    },
+    {
+      "id": "C05",
+      "group": "Identity and authorization",
+      "name": "Signed requests and expiring access capabilities",
+      "primary_visual": "V03",
+      "companion_visual": "V07",
+      "brief": "Draw signer, authorization check, URL or SigV4 request, and object/API call. Add operation, resource/version, expiry and underlying credential-expiry bands.",
+      "pitfall": "A presigned URL is a transferable bearer capability; signing a GET requires the relevant read permissions and can expire before its nominal URL lifetime."
+    },
+    {
+      "id": "C06",
+      "group": "Identity and authorization",
+      "name": "Workload roles and credential delivery",
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "brief": "Use a responsibility matrix for EC2 role/profile, ECS execution role, ECS task role and application. A short sequence shows metadata/SDK credentials or startup secret retrieval.",
+      "pitfall": "The container execution role is not the running application's task role; an instance profile belongs to its own account."
+    },
+    {
+      "id": "C07",
+      "group": "Identity and authorization",
+      "name": "Directory trust, SSO and provisioning",
+      "primary_visual": "V03",
+      "companion_visual": "V05",
+      "brief": "Separate directory trust, SAML sign-in, SCIM user/group provisioning, permission-set assignment and VPN MFA into labeled lanes. Name the directory owner and trust direction.",
+      "pitfall": "A directory proxy is not a new AD forest, provisioning is not authentication, and directory authentication does not supply VPN routes."
+    },
+    {
+      "id": "C08",
+      "group": "Organization and economics",
+      "name": "Organization hierarchy and SCP scope",
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "brief": "Draw root, OUs and accounts as a policy inheritance tree. Evaluate one concrete action along its path; mark management-account and service-linked-role scope exceptions.",
+      "pitfall": "A child allow cannot cancel an inherited explicit deny. An SCP ceiling does not create the missing IAM grant."
+    },
+    {
+      "id": "C09",
+      "group": "Organization and economics",
+      "name": "Resource sharing and ownership",
+      "primary_visual": "V05",
+      "companion_visual": "V01",
+      "brief": "Pair a two-account resource-sharing diagram with owner/participant/management responsibility columns. Show RAM share, association/attachment and routing as separate operations.",
+      "pitfall": "Sharing a subnet or transit gateway does not transfer all networking administration to the participant or automatically create connectivity."
+    },
+    {
+      "id": "C10",
+      "group": "Organization and economics",
+      "name": "Tagging enforcement and propagation",
+      "primary_visual": "V08",
+      "companion_visual": "V04",
+      "brief": "Use before-create and after-create lanes for tag policy, request-tag control, CloudFormation required-tag hook and Config. Add a resource-by-tag propagation table and FAIL/WARN outcomes.",
+      "pitfall": "Scope the mechanism to supported APIs/types and activated accounts/Regions; checking a stack tag is not proving every resource has it."
+    },
+    {
+      "id": "C11",
+      "group": "Organization and economics",
+      "name": "Approved self-service provisioning",
+      "primary_visual": "V05",
+      "companion_visual": "V08",
+      "brief": "Draw requester, Service Catalog product/version, launch constraint role and created resources. Display allowed parameters, encryption, propagated tags and output URL as a contract.",
+      "pitfall": "The requester does not need every underlying provisioning permission; a portfolio icon alone says nothing about parameter or launch constraints."
+    },
+    {
+      "id": "C12",
+      "group": "Organization and economics",
+      "name": "Billing attribution, budgets and reporting",
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "brief": "Trace resource tags through billing activation to CUR, account-to-OU join, Athena and authorized QuickSight views. Compare historical analysis, threshold alerts and report delivery.",
+      "pitfall": "Tagging is not billing activation; OU membership needs a join, and a dashboard or saved view is not an automated report delivery workflow."
+    },
+    {
+      "id": "C13",
+      "group": "Organization and economics",
+      "name": "Commitment, elasticity and cost allocation",
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "brief": "Plot demand over time with a committed baseline and elastic excess. Add a compatibility matrix for EC2/Compute Savings Plans, RIs, database reservations and Requester Pays cost ownership.",
+      "pitfall": "A billing discount is not spare launch capacity; match service, Region, family and sharing scope before drawing savings."
+    },
+    {
+      "id": "C14",
+      "group": "Organization and economics",
+      "name": "Quotas and utilization thresholds",
+      "primary_visual": "V11",
+      "companion_visual": "V16",
+      "brief": "Show usage and quota in the same unit, a derived utilization ratio and the alarm threshold. Annotate SERVICE_QUOTA expression, dimension and notification path.",
+      "pitfall": "A service quota is not a budget or a scaling target; task count and vCPU usage cannot share a denominator."
+    },
+    {
+      "id": "C15",
+      "group": "Network and DNS",
+      "name": "Subnet ingress, NAT and private egress",
+      "primary_visual": "V02",
+      "companion_visual": "V01",
+      "brief": "Trace one outbound request and its return through the private-subnet route, AZ-local NAT, public-subnet route and internet gateway. Show container image/secret/log dependencies explicitly.",
+      "pitfall": "A private subnet label is not evidence that bootstrap dependencies are reachable; a public IP is not a substitute for the required route."
+    },
+    {
+      "id": "C16",
+      "group": "Network and DNS",
+      "name": "Private endpoints and service exposure",
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "brief": "Use a provider/consumer boundary diagram for gateway endpoints, interface endpoints, PrivateLink and S3 access points. Place endpoint, identity and resource policy gates beside the request path.",
+      "pitfall": "Private transport is not authorization. Managed S3/DynamoDB services are outside the VPC even when their access path is private."
+    },
+    {
+      "id": "C17",
+      "group": "Network and DNS",
+      "name": "Transit routing, segmentation and inspection",
+      "primary_visual": "V02",
+      "companion_visual": "V05",
+      "brief": "Pair spoke/TGW/inspection topology with attachment-to-route-table association and propagation tables. Trace forward and return packets through Network Firewall or GWLB endpoints.",
+      "pitfall": "A hub drawing does not prove transit, segmentation or symmetric inspection; distinguish GWLB appliances from native Network Firewall endpoints."
+    },
+    {
+      "id": "C18",
+      "group": "Network and DNS",
+      "name": "Hybrid connectivity and failure domains",
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "brief": "Use small multiples for normal, circuit-loss, router-loss and site-loss states. Label DX/VPN links, customer gateways, locations and remaining throughput.",
+      "pitfall": "Two tunnels or links sharing a device/site are not independent failure domains. A VPN backup need not match DX throughput."
+    },
+    {
+      "id": "C19",
+      "group": "Network and DNS",
+      "name": "DX gateways, VIFs and BGP advertisements",
+      "primary_visual": "V02",
+      "companion_visual": "V16",
+      "brief": "Draw the physical connection, VIF, DX gateway and VGW/TGW association as distinct objects. Add a prefix advertisement/filter table and BGP prerequisites.",
+      "pitfall": "A DX gateway is not arbitrary VPC-to-VPC transit; VGW filtering and TGW allowed-prefix advertisement have different semantics."
+    },
+    {
+      "id": "C20",
+      "group": "Network and DNS",
+      "name": "CIDR overlap and longest-prefix routing",
+      "primary_visual": "V02",
+      "companion_visual": "V13",
+      "brief": "Draw address intervals and a concrete destination lookup beside the topology. Highlight the winning /32 versus /16 row and show the return route.",
+      "pitfall": "Address overlap between two separate spokes does not by itself invalidate each spoke's nonoverlapping peering with the hub; peering remains nontransitive."
+    },
+    {
+      "id": "C21",
+      "group": "Network and DNS",
+      "name": "Security-group and NACL packet decisions",
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "brief": "Trace source/destination, listener/target port and return ephemeral ports through SG and NACL tables. Show SG reference identity and the actual source address at each hop.",
+      "pitfall": "SGs are stateful allow rules; NACLs are ordered stateless rules. Health checks can require a protocol different from application traffic."
+    },
+    {
+      "id": "C22",
+      "group": "Network and DNS",
+      "name": "Private DNS and hybrid resolution",
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "brief": "Follow a named DNS query through the VPC resolver, associated private zone or outbound forwarding rule, and authoritative server. Pair cross-account association with an owner sequence.",
+      "pitfall": "Name resolution and packet connectivity are separate; private-zone association does not require peering merely to resolve names."
+    },
+    {
+      "id": "C23",
+      "group": "Network and DNS",
+      "name": "Geographic routing, health and access restriction",
+      "primary_visual": "V10",
+      "companion_visual": "V09",
+      "brief": "Compare geographic business rules, latency selection, failover health and country blocking. Use normal/failure snapshots with the actual routing decision and fallback.",
+      "pitfall": "Geolocation routing is not authorization, and DNS changes do not relocate session state or existing connections."
+    },
+    {
+      "id": "C24",
+      "group": "Network and DNS",
+      "name": "Remote-user VPN access",
+      "primary_visual": "V03",
+      "companion_visual": "V02",
+      "brief": "Show certificate and user authentication, MFA, authorization rule, endpoint association and route as separate prerequisites. Then trace the private application request.",
+      "pitfall": "Successful login does not prove authorization or reachability; distinguish Client VPN from site-to-site connectivity."
+    },
+    {
+      "id": "C25",
+      "group": "Network and DNS",
+      "name": "Connection lifetime and keepalive",
+      "primary_visual": "V07",
+      "companion_visual": "V06",
+      "brief": "Draw last payload, idle interval, keepalive probes, idle expiry, reset and reconnect on a scaled timeline. Label units and the boundary condition.",
+      "pitfall": "A long-idle connection failure is not evidence of bandwidth exhaustion; increasing capacity does not change connection lifetime."
+    },
+    {
+      "id": "C26",
+      "group": "Edge, APIs and cryptography",
+      "name": "TLS legs, certificate scope and termination",
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "brief": "Split viewer-to-edge and edge-to-origin TLS legs. Label hostname, certificate location, termination owner, SNI and protocol policy on each leg.",
+      "pitfall": "One HTTPS padlock does not prove both legs are encrypted; viewer and origin certificates have different scope requirements."
+    },
+    {
+      "id": "C27",
+      "group": "Edge, APIs and cryptography",
+      "name": "DNSSEC and transport security properties",
+      "primary_visual": "V17",
+      "companion_visual": "V03",
+      "brief": "Draw DNS signing/validation and HTTPS as parallel protection tracks. Mark authenticity, integrity, confidentiality and downgrade prevention as separate properties.",
+      "pitfall": "DNSSEC does not encrypt DNS and SNI does not add encryption. Keep HSTS/first-visit behavior distinct from an HTTP redirect."
+    },
+    {
+      "id": "C28",
+      "group": "Edge, APIs and cryptography",
+      "name": "Caching, origins and delivery paths",
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "brief": "Trace static/dynamic paths, cache hit/miss, origin selection and TTL. Label S3 REST versus website endpoints and show an on-premises origin when migration is not required.",
+      "pitfall": "A CDN need not imply origin migration; cache only reusable responses, and a website endpoint is not a private OAC REST origin."
+    },
+    {
+      "id": "C29",
+      "group": "Edge, APIs and cryptography",
+      "name": "Versioned publication and freshness",
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "brief": "Show immutable tile versions, completion verification, publication of a latest manifest and client version pinning. Use separate cache policies for manifest and tiles.",
+      "pitfall": "A TTL is not a synchronized publication barrier; S3 object versioning does not automatically change a CDN URL cache key."
+    },
+    {
+      "id": "C30",
+      "group": "Edge, APIs and cryptography",
+      "name": "Edge execution and cache-key equivalence",
+      "primary_visual": "V16",
+      "companion_visual": "V03",
+      "brief": "Use before/after request cards for query normalization or device variants, followed by cache-key computation. Mark viewer/origin event stage and runtime capability constraints.",
+      "pitfall": "Do not lowercase semantically case-sensitive values or omit the variant from the key; JWT verification differs from the login exchange."
+    },
+    {
+      "id": "C31",
+      "group": "Edge, APIs and cryptography",
+      "name": "Viewer authorization and origin protection",
+      "primary_visual": "V04",
+      "companion_visual": "V02",
+      "brief": "Draw two separate gates: viewer eligibility and origin access. Include OAC service principal/distribution condition, or validated secret header for the relevant custom origin.",
+      "pitfall": "Signed viewer URLs do not prevent direct origin bypass by themselves; OAI and OAC are different policy models."
+    },
+    {
+      "id": "C32",
+      "group": "Edge, APIs and cryptography",
+      "name": "Ingress protocol and address requirements",
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "brief": "Build a matrix for ALB, NLB, Global Accelerator, Route 53 and API entry points with raw TCP, UDP, HTTP, WebSocket, static global addresses and health behavior.",
+      "pitfall": "Port number alone does not select a transport load balancer. Global address stability, regional balancing and DNS selection are separate requirements."
+    },
+    {
+      "id": "C33",
+      "group": "Edge, APIs and cryptography",
+      "name": "Key custody and HSM-backed TLS",
+      "primary_visual": "V17",
+      "companion_visual": "V05",
+      "brief": "Draw key-operation boundaries: private key stays in HSM, web server performs the TLS integration, load balancer passes TCP through. Separate payload flow from cryptographic operations.",
+      "pitfall": "A padlock hides who can extract or use a key; encryption in transit and encrypted log storage need separate configurations."
+    },
+    {
+      "id": "C34",
+      "group": "Edge, APIs and cryptography",
+      "name": "API invocation, subscriptions and push",
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "brief": "Use request/response versus subscription/push sequences for API Gateway, AppSync, WebSocket callbacks and Function URLs. Include authentication and authorization explicitly.",
+      "pitfall": "An API key is not user authentication; a WebSocket connection needs the correct server-to-client callback operation."
+    },
+    {
+      "id": "C35",
+      "group": "Compute and resilience",
+      "name": "Tier-level availability and scale boundaries",
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "brief": "Draw application and database tiers with independent failure/scaling boundaries. Compare healthy and one-AZ-down states, showing traffic and durable state.",
+      "pitfall": "An ASG, load balancer and database each solve different failure paths; multiple boxes alone do not establish sufficient capacity."
+    },
+    {
+      "id": "C36",
+      "group": "Compute and resilience",
+      "name": "Running headroom versus reserved recovery capacity",
+      "primary_visual": "V11",
+      "companion_visual": "V09",
+      "brief": "Show AZ capacity as occupied, unused reserved and unavailable slots. Compare before failure, immediate survivors and post-recovery capacity, with recovery time explicit.",
+      "pitfall": "Do not equate quota, ASG maximum, billing commitment, reserved slots and already-running capacity."
+    },
+    {
+      "id": "C37",
+      "group": "Compute and resilience",
+      "name": "Scaling signals and bottleneck diagnosis",
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "brief": "Draw demand, queue depth, latency, CPU and downstream capacity as a cause/evidence graph; then show the control loop and scaling action. Label scheduled versus reactive scaling.",
+      "pitfall": "Adding capacity to the wrong tier can increase throttling or replacement storms. Correlation alone does not identify the bottleneck."
+    },
+    {
+      "id": "C38",
+      "group": "Compute and resilience",
+      "name": "Runtime, container placement and portability",
+      "primary_visual": "V10",
+      "companion_visual": "V01",
+      "brief": "Compare EC2, Lambda, ECS/Fargate, ECS Anywhere and EKS by duration, host control, portability, network and operational constraints. Show where orchestration and tasks actually run.",
+      "pitfall": "Container packaging is not a guarantee of runtime fit; Fargate does not run on arbitrary on-premises hosts."
+    },
+    {
+      "id": "C39",
+      "group": "Compute and resilience",
+      "name": "Container startup and task isolation",
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "brief": "Separate image pull, secret injection and logging at startup from runtime application calls. Label task ENI/SG, execution-role permissions and task-role permissions.",
+      "pitfall": "Network isolation and IAM isolation are independent. A correct secret ARN cannot fix a wrong writer endpoint or blocked database port."
+    },
+    {
+      "id": "C40",
+      "group": "Compute and resilience",
+      "name": "Interruptible work and graceful termination",
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "brief": "Show queued, running, draining, checkpointed, retried and completed states, with durable input/output and idempotent completion. Include who owns retry and acknowledgement.",
+      "pitfall": "Spot diversification does not guarantee availability; retry without durable state or duplicate handling can lose or repeat work."
+    },
+    {
+      "id": "C41",
+      "group": "Compute and resilience",
+      "name": "Lambda duration and concurrency budgets",
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "brief": "Use a duration feasibility strip and separate concurrent-execution, downstream-connection and warm-environment budgets. Compare reserved and provisioned concurrency with labeled effects.",
+      "pitfall": "Prewarming is not an unlimited throughput grant; a long overall workflow can be split, but one invocation still has a duration constraint."
+    },
+    {
+      "id": "C42",
+      "group": "Compute and resilience",
+      "name": "Resource identity across recovery and replacement",
+      "primary_visual": "V06",
+      "companion_visual": "V05",
+      "brief": "Track instance, ENI/MAC, IP, volume and role identity through recovery, stop/start or replacement. Attach AZ and reassociation prerequisites to the transition.",
+      "pitfall": "Replacement is not identity-preserving recovery; MAC-bound licensing follows the relevant interface rather than an arbitrary new instance."
+    },
+    {
+      "id": "C43",
+      "group": "Compute and resilience",
+      "name": "HPC locality and tightly coupled performance",
+      "primary_visual": "V01",
+      "companion_visual": "V11",
+      "brief": "Place compute, cluster placement group, EFA and shared Lustre storage inside explicit locality boundaries. Annotate latency, bandwidth and failure-domain tradeoffs.",
+      "pitfall": "Close placement is a performance choice, not an availability guarantee; distinguish communication bandwidth from storage I/O."
+    },
+    {
+      "id": "C44",
+      "group": "Storage and data protection",
+      "name": "Block, file and object interfaces",
+      "primary_visual": "V10",
+      "companion_visual": "V12",
+      "brief": "Use an interface matrix for EBS, instance store, EFS, FSx Windows/Lustre and S3: protocol, shared access, persistence, AD/POSIX requirements and owner.",
+      "pitfall": "Storage capacity alone does not establish substitutability; preserve the application's file/block/object contract."
+    },
+    {
+      "id": "C45",
+      "group": "Storage and data protection",
+      "name": "Storage performance dimensions",
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "brief": "Compare capacity (GiB), operations (IOPS), bandwidth (MiB/s), latency and EC2 limits in aligned small charts. Mark the workload's measured feasible region.",
+      "pitfall": "Equal IOPS does not imply equal throughput or latency. Q112 is a tested gp3 fit, not a universal io1-to-gp3 rule."
+    },
+    {
+      "id": "C46",
+      "group": "Storage and data protection",
+      "name": "Storage lifecycle, retrieval and retention",
+      "primary_visual": "V06",
+      "companion_visual": "V10",
+      "brief": "Draw age/access-triggered states with restore delay, minimum duration, retrieval charge and deletion eligibility as labels. Pair with immediate-versus-asynchronous retrieval constraints.",
+      "pitfall": "An inexpensive archive is not automatically immediately accessible. Avoid invented prices or exact restore guarantees."
+    },
+    {
+      "id": "C47",
+      "group": "Storage and data protection",
+      "name": "Object versions, delete markers and rollback",
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "brief": "Use one lane per object key and immutable version cards, current pointer, null version and delete marker. Draw rollback by copying an old version into a new current version.",
+      "pitfall": "Deleting intervening versions destroys history; versioning is separate from authorization, retention and cache invalidation."
+    },
+    {
+      "id": "C48",
+      "group": "Storage and data protection",
+      "name": "Envelope encryption, KMS and cross-account keys",
+      "primary_visual": "V17",
+      "companion_visual": "V04",
+      "brief": "Separate plaintext data, data key, wrapped key and KMS/HSM boundary. For cross-account reads show bucket permission, caller policy and key authorization as distinct checks.",
+      "pitfall": "Encryption is not permission, key import is not plaintext distribution, and key lifecycle differs from object lifecycle."
+    },
+    {
+      "id": "C49",
+      "group": "Storage and data protection",
+      "name": "Replication lag, eligibility and service commitments",
+      "primary_visual": "V07",
+      "companion_visual": "V15",
+      "brief": "Draw write, replication completion and observation times, plus eligible-object coverage and exception paths. Compare a business deadline, service commitment and operational alarm.",
+      "pitfall": "A percentage-based SLA is not an every-object upper bound; alerting observes misses rather than preventing them."
+    },
+    {
+      "id": "C50",
+      "group": "Storage and data protection",
+      "name": "Hybrid storage and transfer protocols",
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "brief": "Trace file, block or tape operations through File/Volume/Tape Gateway or Transfer Family to durable storage. Show hot local cache versus authoritative copy and endpoint identity.",
+      "pitfall": "Virtual tape, SMB/NFS files, iSCSI blocks and SFTP are different interfaces. CHAP authentication is not payload encryption."
+    },
+    {
+      "id": "C51",
+      "group": "Storage and data protection",
+      "name": "File synchronization and replacement cutover",
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "brief": "Draw initial copy, repeated incremental sync, write freeze, verified delta and endpoint switch. Use source/target lanes for DataSync, FSx replacement and staged S3 sync.",
+      "pitfall": "A completed bulk copy is not current data if writes continued; changing filesystem deployment type can require a new resource."
+    },
+    {
+      "id": "C52",
+      "group": "Storage and data protection",
+      "name": "Inventory, storage metrics and growth",
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "brief": "Compare per-object Inventory with aggregate Storage Lens trends and filesystem free-capacity alarms. Annotate observation window and automatic expansion limits.",
+      "pitfall": "An inventory listing cannot manufacture historical aggregate metrics; storage automation needs time to complete before exhaustion."
+    },
+    {
+      "id": "C53",
+      "group": "Databases and state",
+      "name": "HA standby, read replicas and writer promotion",
+      "primary_visual": "V09",
+      "companion_visual": "V03",
+      "brief": "Give every database node a role badge: writer, readable replica or standby for the specified deployment. Animate failure, promotion, endpoint resolution and client reconnect.",
+      "pitfall": "Multi-AZ is not one universal replication/readability topology; read scaling, write scaling and availability must be shown separately."
+    },
+    {
+      "id": "C54",
+      "group": "Databases and state",
+      "name": "Query cache, replica routing and connection pooling",
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "brief": "Compare repeated-query load, connection churn and reporting traffic. Trace cache hit/miss, reader routing and pooled connections with the exact bottleneck highlighted.",
+      "pitfall": "ElastiCache, read replicas and RDS Proxy address different costs; adding them without application integration may not help."
+    },
+    {
+      "id": "C55",
+      "group": "Databases and state",
+      "name": "Global replication and consistency",
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "brief": "Draw local reads, authoritative writes, replication lag, promotion and conflict semantics per selected engine/mode. Label MREC/MRSC and supported topology when relevant.",
+      "pitfall": "Do not label all global tables eventually consistent or all global replicas writable; mode, engine and Region restrictions matter."
+    },
+    {
+      "id": "C56",
+      "group": "Databases and state",
+      "name": "Partition keys, sort keys and expiry",
+      "primary_visual": "V13",
+      "companion_visual": "V06",
+      "brief": "Show sample items grouped by partition key and ordered by sort key, expected query ranges, hot partitions and period tables. Add TTL eligibility versus eventual deletion.",
+      "pitfall": "A schema must serve the access pattern; TTL is not an exact deletion clock or immediate reclamation guarantee."
+    },
+    {
+      "id": "C57",
+      "group": "Databases and state",
+      "name": "Engine compatibility and managed responsibilities",
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "brief": "Compare required feature, protocol, engine support and managed/self-managed responsibilities for RDS Oracle, RAC, DocumentDB, Neptune and other alternatives.",
+      "pitfall": "API compatibility is not full engine equivalence; self-managed clustering requires supported storage and interconnect design."
+    },
+    {
+      "id": "C58",
+      "group": "Databases and state",
+      "name": "Clone, snapshot and replication semantics",
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "brief": "Show a point-in-time fork with shared copy-on-write storage separately from an ongoing replication arrow. Add subsequent source writes and cutover reconciliation.",
+      "pitfall": "An Aurora clone is not a live replication stream, and copying function code does not copy all configuration/dependencies."
+    },
+    {
+      "id": "C59",
+      "group": "Databases and state",
+      "name": "Session state and disposable compute",
+      "primary_visual": "V12",
+      "companion_visual": "V09",
+      "brief": "Follow one user session through load balancing, a failed instance and replacement. Mark authoritative session storage, cache state and routing affinity separately.",
+      "pitfall": "Sticky sessions do not replicate state; stateless web instances still depend on a stateful system somewhere."
+    },
+    {
+      "id": "C60",
+      "group": "Messaging and workflows",
+      "name": "Queue decoupling and backpressure",
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "brief": "Show arrival rate, queue accumulation, bounded consumers and downstream service rate. Pair backlog-over-time with acknowledgement and durable payload references.",
+      "pitfall": "A queue absorbs a burst but does not create infinite drain capacity, instantaneous completion or exactly-once side effects."
+    },
+    {
+      "id": "C61",
+      "group": "Messaging and workflows",
+      "name": "Message visibility, retries and dead letters",
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "brief": "Draw available, leased/invisible, deleted and DLQ states. Add receive count, processing time, visibility extension and redrive threshold on a time axis.",
+      "pitfall": "Retention, visibility timeout and maxReceiveCount are different controls; a long enough timeout cannot fix a one-attempt DLQ policy."
+    },
+    {
+      "id": "C62",
+      "group": "Messaging and workflows",
+      "name": "Fan-out, competing consumers and events",
+      "primary_visual": "V01",
+      "companion_visual": "V03",
+      "brief": "Contrast one queue with competing workers against one subscription/queue per independent service. Number which consumer sees each event and where retries are isolated.",
+      "pitfall": "More consumers on one queue do not mean every consumer receives every message; fan-out is not stream replay."
+    },
+    {
+      "id": "C63",
+      "group": "Messaging and workflows",
+      "name": "Stream partition ordering and independent replay",
+      "primary_visual": "V13",
+      "companion_visual": "V07",
+      "brief": "Use an append-only log strip with partition-key lanes and independent consumer cursors/checkpoints. Mark retention boundary, replay range and deduplication at sinks.",
+      "pitfall": "Per-key ordering is not global ordering; successful queue deletion differs from advancing a cursor in a retained stream."
+    },
+    {
+      "id": "C64",
+      "group": "Messaging and workflows",
+      "name": "Event time, windows and late arrivals",
+      "primary_visual": "V07",
+      "companion_visual": "V12",
+      "brief": "Draw separate event-time and arrival-time axes, window boundaries, watermark and late-event policy. Split live aggregate and buffered warehouse/archive paths.",
+      "pitfall": "An arrival-order total is not event-time windowing; a minutes-latency warehouse path need not determine dashboard freshness."
+    },
+    {
+      "id": "C65",
+      "group": "Messaging and workflows",
+      "name": "Durable workflows, callbacks and error data",
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "brief": "Draw Task/Choice/Map/Parallel/Wait/callback states, Retry/Catch edges and terminal outcomes. Annotate payload before and after ResultPath and preserve original input explicitly.",
+      "pitfall": "States.ALL is not literally all errors; a callback waiting state is not a continuously running Lambda invocation."
+    },
+    {
+      "id": "C66",
+      "group": "Messaging and workflows",
+      "name": "Notification delivery and SMTP contracts",
+      "primary_visual": "V03",
+      "companion_visual": "V17",
+      "brief": "Use sender, broker/provider and recipient lifelines; label SNS subscription confirmation, mobile push or SES SMTP credentials, STARTTLS and port.",
+      "pitfall": "A notification topic is not every email protocol; SMTP credentials are distinct from ordinary AWS API access credentials."
+    },
+    {
+      "id": "C67",
+      "group": "Analytics and search",
+      "name": "Data lake, warehouse and search lineage",
+      "primary_visual": "V12",
+      "companion_visual": "V18",
+      "brief": "Track raw objects, stream records, transformed tables, Redshift microbatches and OpenSearch indexes with typed edges and storage ownership.",
+      "pitfall": "A search index is not the durable original archive, and schema discovery, transformation and serving are different stages."
+    },
+    {
+      "id": "C68",
+      "group": "Analytics and search",
+      "name": "Schema discovery, ETL and sanitization",
+      "primary_visual": "V12",
+      "companion_visual": "V16",
+      "brief": "Draw raw fields through a Glue job's actual masking/transformation into published output; show the crawler/catalog on a separate metadata path.",
+      "pitfall": "A crawler does not redact PII. Carry object references between orchestration stages when payload size/runtime matters."
+    },
+    {
+      "id": "C69",
+      "group": "Analytics and search",
+      "name": "Query scan cost and concurrent execution",
+      "primary_visual": "V11",
+      "companion_visual": "V13",
+      "brief": "Show partitions and columns eliminated by a query, bytes scanned and concurrent-query slots. Contrast Athena/serverless use with continuously provisioned compute.",
+      "pitfall": "Concurrency scaling is not a fix for every slow query; changing format alone does not make queries use partition filters."
+    },
+    {
+      "id": "C70",
+      "group": "Analytics and search",
+      "name": "Distributed compute versus durable cluster state",
+      "primary_visual": "V01",
+      "companion_visual": "V09",
+      "brief": "Draw EMR primary/core/task responsibilities, HDFS ownership and Spot interruption cases. Separate durable storage from disposable processing nodes.",
+      "pitfall": "Identical server icons obscure whether terminating a node loses state, coordination or only compute capacity."
+    },
+    {
+      "id": "C71",
+      "group": "Operations and security",
+      "name": "Metrics, logs, traces and audit evidence",
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "brief": "Use an evidence board: question asked, telemetry required, collection path, event selectors, query and limitation. Distinguish guest metrics, flow summaries, packets, traces and API/data events.",
+      "pitfall": "CloudTrail is not a universal packet/log collector; default monitoring may omit the guest metric or data event the question requires."
+    },
+    {
+      "id": "C72",
+      "group": "Operations and security",
+      "name": "Prevention, detection and remediation timing",
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "brief": "Draw request, possible resource creation, evaluation, notification and remediation on a common axis. Show preventive gates before creation and the exposure interval afterward.",
+      "pitfall": "Reactive cleanup is not prevention; an aggregator or notification does not supply enforcement."
+    },
+    {
+      "id": "C73",
+      "group": "Operations and security",
+      "name": "Security findings and inspection scope",
+      "primary_visual": "V10",
+      "companion_visual": "V15",
+      "brief": "Compare Inspector dependency/code findings, Macie sensitive objects, GuardDuty threats, Security Hub aggregation and Config configuration evidence by input and output.",
+      "pitfall": "A findings hub does not perform every scan or block every action. Exact exclusion tags and scan scope belong in an annotation card."
+    },
+    {
+      "id": "C74",
+      "group": "Operations and security",
+      "name": "Layered attack defenses",
+      "primary_visual": "V17",
+      "companion_visual": "V02",
+      "brief": "Map network, transport and application threats to NACL/SG, Shield, WAF and origin restrictions. Show the attack path and remaining bypass path.",
+      "pitfall": "A product logo is not proof of coverage; SQL injection filtering and volumetric resilience target different failure mechanisms."
+    },
+    {
+      "id": "C75",
+      "group": "Operations and security",
+      "name": "Patch baselines, targeting and maintenance waves",
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "brief": "Use environment/OS swimlanes with baseline selection, scan/install, staggered windows, reboot and compliance evidence. Include hybrid managed-node prerequisites.",
+      "pitfall": "Scheduling, patch execution and compliance evaluation are different operations; simultaneous maintenance can defeat multi-AZ availability."
+    },
+    {
+      "id": "C76",
+      "group": "Operations and security",
+      "name": "Diagnosis, quarantine and repair runbooks",
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "brief": "Show alarm/evidence, preserve or quarantine, inspect, repair, validate and resume states. Separate host recovery, guest EC2Rescue and ASG replacement paths.",
+      "pitfall": "Suppressing termination is temporary investigation state, not a repair; retain logs before completing a termination lifecycle hook."
+    },
+    {
+      "id": "C77",
+      "group": "Operations and security",
+      "name": "Backup provenance, restore and audit integrity",
+      "primary_visual": "V12",
+      "companion_visual": "V07",
+      "brief": "Trace source to recovery point, copied vault/bucket, key, restore target and validation. Add schedule/retention lanes, log integrity and immutability controls as separate properties.",
+      "pitfall": "A backup job success is not proof of a completed regional copy or a tested application restore; replication can reproduce corruption."
+    },
+    {
+      "id": "C78",
+      "group": "Operations and security",
+      "name": "Secret and access-key rotation",
+      "primary_visual": "V06",
+      "companion_visual": "V03",
+      "brief": "Draw create, test, activate, application refresh and revoke-old states for a secret or SSH key. Show the database update integration and IAM/KMS retrieval permissions.",
+      "pitfall": "Changing a stored reference is not rotating the database password; deleting an EC2 key-pair record does not remove authorized_keys on hosts."
+    },
+    {
+      "id": "C79",
+      "group": "Delivery and infrastructure",
+      "name": "Infrastructure declaration and resource lifecycle",
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "brief": "Pair template fragments with create/update/replace/delete transitions. Annotate Ref versus GetAtt, Retain/Snapshot and replacement policies on the exact resource.",
+      "pitfall": "A template is not the data, a change set is not an integration test, and retaining only one DB resource may not preserve the complete desired stack."
+    },
+    {
+      "id": "C80",
+      "group": "Delivery and infrastructure",
+      "name": "Deployment strategies and rollback",
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "brief": "Use version lanes with traffic share over time, fleet overlap, health gates and rollback. Compare blue/green CNAME swap, immutable replacement, rolling updates and Lambda aliases.",
+      "pitfall": "Deployment labels alone do not guarantee zero downtime; include capacity, schema compatibility and failure gates."
+    },
+    {
+      "id": "C81",
+      "group": "Delivery and infrastructure",
+      "name": "Build, test, approval and release pipelines",
+      "primary_visual": "V08",
+      "companion_visual": "V05",
+      "brief": "Show artifact-producing stages and pass/fail gates across development/test/production lanes, with security scans and manual approval where required.",
+      "pitfall": "Repository, build service, deployment service and pipeline orchestration are different responsibilities; failed gates must stop progression."
+    },
+    {
+      "id": "C82",
+      "group": "Delivery and infrastructure",
+      "name": "Multi-account and multi-Region rollout",
+      "primary_visual": "V05",
+      "companion_visual": "V08",
+      "brief": "Use an account-by-Region deployment matrix with target OUs, trusted access, existing/new accounts and rollout status. Link the StackSet declaration to resulting instances.",
+      "pitfall": "One successful stack deployment is not organization-wide coverage; activation and permissions have their own scope."
+    },
+    {
+      "id": "C83",
+      "group": "Delivery and infrastructure",
+      "name": "Image baking and startup dependencies",
+      "primary_visual": "V14",
+      "companion_visual": "V07",
+      "brief": "Draw build-time versus boot-time dependencies, AMI artifact, parameter lookup, launch template update and replacement. Mark time spent on downloads/configuration.",
+      "pitfall": "Publishing a new AMI or latest-AMI parameter does not automatically replace existing instances."
+    },
+    {
+      "id": "C84",
+      "group": "Migration and recovery",
+      "name": "Migration strategy and operational ownership",
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "brief": "Place retain/retire/relocate/rehost/replatform/repurchase/refactor alternatives in a change-versus-responsibility matrix. Highlight the actual application/OS/license constraints.",
+      "pitfall": "A managed destination is not proof that no code or compatibility changes are needed; service names alone do not identify the migration strategy."
+    },
+    {
+      "id": "C85",
+      "group": "Migration and recovery",
+      "name": "Discovery, assessment and migration waves",
+      "primary_visual": "V14",
+      "companion_visual": "V11",
+      "brief": "Draw application dependency clusters, directional calls, latency-sensitive edges and proposed migration waves. Add measured utilization and TCO assumptions as a separate evidence panel.",
+      "pitfall": "An inventory list is not a dependency map, and a discovery/assessment tool is not a data-replication mechanism."
+    },
+    {
+      "id": "C86",
+      "group": "Migration and recovery",
+      "name": "Transfer feasibility and bulk-plus-delta planning",
+      "primary_visual": "V11",
+      "companion_visual": "V07",
+      "brief": "Plot cumulative bytes transferable by the deadline with explicit bytes/bits and utilization. Split export, facility transfer, upload, load, CDC and validation durations.",
+      "pitfall": "Theoretical wire time is a lower bound. A bulk-transfer option still needs availability, logistics, delta bandwidth and cutover feasibility."
+    },
+    {
+      "id": "C87",
+      "group": "Migration and recovery",
+      "name": "Schema conversion, seeding, CDC and cutover",
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "brief": "Use source/schema/data/target lanes: convert and test, consistent seed, matching log position, capture changes, reconcile, freeze and redirect writes. Include rollback/failback dependencies.",
+      "pitfall": "An unrelated second full load is not coordinated CDC; protocol/engine compatibility and transaction reconciliation remain required."
+    },
+    {
+      "id": "C88",
+      "group": "Migration and recovery",
+      "name": "Server replication, import, test and cutover",
+      "primary_visual": "V08",
+      "companion_visual": "V06",
+      "brief": "Draw source OS agent, staging replication, test instance, launch settings and cutover. Contrast continuous block replication with importing a supported VM disk artifact.",
+      "pitfall": "Installing only on the hypervisor is not installing the required in-guest agent; a descriptor file is not an importable disk image."
+    },
+    {
+      "id": "C89",
+      "group": "Migration and recovery",
+      "name": "DR readiness, RPO, RTO and failback",
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "brief": "Combine a recovery timeline with a readiness matrix for backup/restore, pilot light, warm standby and active/active. Include keys, capacity, DB promotion, reconnect, validation, traffic and failback.",
+      "pitfall": "Data recovery point and service recovery time are different axes; DNS alone does not promote a database or create recovery capacity."
+    },
+    {
+      "id": "C90",
+      "group": "Specialized workloads",
+      "name": "AI/media transformations and service selection",
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "brief": "Use input-to-output cards: image to labels/faces, document to text, text to entities, audio to transcript, MP4 to HLS, utterance to intent/action. Track originals and derived metadata separately.",
+      "pitfall": "OCR is not text interpretation, a face collection is not the photo archive, and a lifecycle choice must preserve required retrieval latency."
+    },
+    {
+      "id": "C91",
+      "group": "Specialized workloads",
+      "name": "IoT ingestion and offline edge execution",
+      "primary_visual": "V01",
+      "companion_visual": "V12",
+      "brief": "Draw device, local gateway/runtime, cloud ingestion/rules and storage with connectivity boundaries. Separate centrally trained model from deployed edge inference and raw/aggregate paths.",
+      "pitfall": "Offline inference needs local model/runtime/dependencies; a buffered ingest path has a different freshness contract from live processing."
+    },
+    {
+      "id": "C92",
+      "group": "Specialized workloads",
+      "name": "IoT connectivity diagnosis and protocol cutover",
+      "primary_visual": "V15",
+      "companion_visual": "V03",
+      "brief": "Use device-connected, authenticated, topic-published, rule-matched and sink-written checkpoints. For MQTT cutover label hostname/TLS identity, auth, endpoint and delivery behavior.",
+      "pitfall": "Changing DNS alone does not repair TLS or authorization; connected devices can still fail at a rule or database sink."
+    },
+    {
+      "id": "C93",
+      "group": "Specialized workloads",
+      "name": "Desktop/application delivery and access location",
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "brief": "Compare streamed application versus full desktop, backend hosting and permitted office egress IPs. Trace the actual source address seen at the access control.",
+      "pitfall": "A renamed application-streaming service is not a generic web migration; an office move can change allowlisted egress without changing user identity."
+    },
+    {
+      "id": "C94",
+      "group": "Specialized workloads",
+      "name": "Immutable ledgers and deletable sensitive data",
+      "primary_visual": "V12",
+      "companion_visual": "V06",
+      "brief": "Separate off-chain PII from on-chain commitments and references. Trace retrieval, deletion and what remains on the immutable ledger.",
+      "pitfall": "Hashing PII does not automatically make it anonymous or erasable; avoid a diagram implying that the immutable ledger deletes with the source."
+    },
+    {
+      "id": "C95",
+      "group": "Edge, APIs and cryptography",
+      "name": "Field-level confidentiality through intermediaries",
+      "primary_visual": "V17",
+      "companion_visual": "V12",
+      "brief": "Draw a sample request with ordinary fields and selected encrypted fields. Track which proxy, application component and final processor can read each field, separately from each TLS leg.",
+      "pitfall": "Transport decryption at an intermediary need not expose application-encrypted fields; encryption does not make a response safe to cache for all viewers."
+    },
+    {
+      "id": "C96",
+      "group": "Storage and data protection",
+      "name": "Upload acceleration versus content delivery",
+      "primary_visual": "V02",
+      "companion_visual": "V10",
+      "brief": "Draw uploader-to-S3 and viewer-to-content paths separately. Mark the chosen transfer endpoint, client distance, transport path and measured transfer time; contrast API edge entry and object upload.",
+      "pitfall": "A CDN cache, an edge-optimized API and S3 Transfer Acceleration address different legs. Enabling acceleration without changing the upload endpoint does not establish the accelerated path."
+    },
+    {
+      "id": "C97",
+      "group": "Messaging and workflows",
+      "name": "Change records and event-source triggers",
+      "primary_visual": "V12",
+      "companion_visual": "V03",
+      "brief": "Follow a database item change or object upload into an event record, configured trigger/event-source mapping, processing attempt and durable result. Label payload versus object reference and retry ownership.",
+      "pitfall": "A change event is not a full database backup or a globally ordered log. Delivery/processing retries require idempotency and failure handling appropriate to that source."
+    },
+    {
+      "id": "C98",
+      "group": "Compute and resilience",
+      "name": "Service decomposition and independent scaling",
+      "primary_visual": "V01",
+      "companion_visual": "V10",
+      "brief": "Split a monolith into bounded service paths such as browsing and checkout. Give each its own target group, compute fleet, scaling signal, state dependencies and failure boundary.",
+      "pitfall": "A new function or container boundary does not automatically decouple shared database load, authentication, deployment or consistency requirements."
+    }
+  ],
+  "questions": [
+    {
+      "question_id": "001",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C27",
+        "C26"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V03",
+      "learning_target": "DNSSEC authenticity and TLS confidentiality require separate paths, certificates and controls."
+    },
+    {
+      "question_id": "002",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C05",
+        "C71"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V07",
+      "learning_target": "AWS_IAM requires SigV4 and invoke permission; X-Ray traces requests."
+    },
+    {
+      "question_id": "003",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C80",
+        "C83"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Beanstalk blue/green swaps environment CNAMEs; hooks configure the environment."
+    },
+    {
+      "question_id": "004",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C42",
+        "C83"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V05",
+      "learning_target": "Reuse AZ-compatible ENIs for MAC-bound licensing; bootstrap from Parameter Store."
+    },
+    {
+      "question_id": "005",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C15",
+        "C35"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V01",
+      "learning_target": "Replace failed NAT-instance topology with resilient NAT routing."
+    },
+    {
+      "question_id": "006",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C16",
+        "C01"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "S3 gateway endpoint plus endpoint, role, and bucket restrictions."
+    },
+    {
+      "question_id": "007",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C23",
+        "C31"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V09",
+      "learning_target": "Country access restrictions and geographic DNS routing solve different requirements."
+    },
+    {
+      "question_id": "008",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C02",
+        "C71"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "Temporary audit-role access and the correct CloudTrail event coverage are separate prerequisites."
+    },
+    {
+      "question_id": "009",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C75"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Patch Manager executes baseline-driven patching; Maintenance Windows schedules it."
+    },
+    {
+      "question_id": "010",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C67",
+        "C34",
+        "C18"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V18",
+      "learning_target": "Kinesis Producer Library ingests; WebSocket management API sends to clients."
+    },
+    {
+      "question_id": "011",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C53",
+        "C28"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V03",
+      "learning_target": "Multi-AZ availability, read replicas, and static-content delivery solve different problems."
+    },
+    {
+      "question_id": "012",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C13",
+        "C37"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Right-size and reserve the five-instance baseline; autoscale the burst."
+    },
+    {
+      "question_id": "013",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C04",
+        "C71"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V16",
+      "learning_target": "Principal-tag ABAC plus CloudTrail S3 data events for access audits."
+    },
+    {
+      "question_id": "014",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C89",
+        "C49"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Cross-Region Redshift snapshots; verify copy frequency and restoration time."
+    },
+    {
+      "question_id": "015",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C60",
+        "C56"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Buffer write bursts in SQS; scale consumers and DynamoDB throughput."
+    },
+    {
+      "question_id": "016",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C17",
+        "C15"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V05",
+      "learning_target": "TGW central egress with firewall inspection and correct return routes."
+    },
+    {
+      "question_id": "017",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C54",
+        "C28"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Precompute reports on a replica; serve S3 output through CloudFront."
+    },
+    {
+      "question_id": "018",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C81",
+        "C78"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V05",
+      "learning_target": "CodeDeploy supports hybrid deployment; protect configuration with SecureString."
+    },
+    {
+      "question_id": "019",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C74",
+        "C21"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V02",
+      "learning_target": "NACL IP denial and Shield Advanced address distinct attack controls."
+    },
+    {
+      "question_id": "020",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C81",
+        "C79"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V05",
+      "learning_target": "SAM plus build/deploy/pipeline tooling; repository is not pipeline execution."
+    },
+    {
+      "question_id": "021",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C74",
+        "C72"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V02",
+      "learning_target": "WAF on a supported REST API stage; Config tracks configuration."
+    },
+    {
+      "question_id": "022",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C03",
+        "C28",
+        "C56"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "Cognito users; DynamoDB metadata; private S3 media and CloudFront."
+    },
+    {
+      "question_id": "023",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C26"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "ALB certificates must exist in each load balancer's Region."
+    },
+    {
+      "question_id": "024",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C22",
+        "C09"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "Cross-account private hosted-zone authorization/association; peering not inherently required."
+    },
+    {
+      "question_id": "025",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C15",
+        "C39"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V01",
+      "learning_target": "Private Fargate needs public-subnet NAT or complete private-endpoint access."
+    },
+    {
+      "question_id": "026",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C75",
+        "C35"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Separate patch groups and nonoverlapping windows avoid simultaneous outages."
+    },
+    {
+      "question_id": "027",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C89",
+        "C77"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Recovery logs tighten RPO; distinguish RDS-managed backups from Macie-scannable S3."
+    },
+    {
+      "question_id": "028",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C60",
+        "C49"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Replicate input data; parallelize queued workers; recreate regional infrastructure."
+    },
+    {
+      "question_id": "029",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C75",
+        "C72"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Patch baselines and Config approved-image checks are different compliance controls."
+    },
+    {
+      "question_id": "030",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C74",
+        "C35"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V02",
+      "learning_target": "CloudFront/WAF/resilient capacity can meet lower-budget DDoS requirements."
+    },
+    {
+      "question_id": "031",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C13",
+        "C40"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Commit steady compute/database usage; Spot requires interruption tolerance."
+    },
+    {
+      "question_id": "032",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C75"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Target patch policies by environment and operating system; stage rollouts."
+    },
+    {
+      "question_id": "033",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C55",
+        "C56"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "DynamoDB global tables; Keyspaces replication dismissal is outdated."
+    },
+    {
+      "question_id": "034",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C71"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "CloudWatch agent supplies memory/filesystem/log metrics; Logs Insights queries logs."
+    },
+    {
+      "question_id": "035",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C64",
+        "C67"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V12",
+      "learning_target": "Real-time stream ingestion; S3 aggregation and Redshift analytics."
+    },
+    {
+      "question_id": "036",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C22"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "Private A record to private IP; enable both VPC DNS settings."
+    },
+    {
+      "question_id": "037",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C35",
+        "C79",
+        "C32"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Native HTTP path routing, the no-container-refactor constraint, the single-Region requirement, and retention of the actual database resources select the keyed design. User count alone does not select Aurora over RDS or CloudFormation over Elastic Beanstalk."
+    },
+    {
+      "question_id": "038",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C56",
+        "C03"
+      ],
+      "primary_visual": "V13",
+      "companion_visual": "V06",
+      "learning_target": "Small user preferences fit DynamoDB; use scoped temporary credentials."
+    },
+    {
+      "question_id": "039",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C33",
+        "C48"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V05",
+      "learning_target": "HSM-held non-exportable TLS key; TCP pass-through; protected log encryption."
+    },
+    {
+      "question_id": "040",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C14"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V16",
+      "learning_target": "Alarm on actual usage divided by its service quota."
+    },
+    {
+      "question_id": "041",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C83",
+        "C44"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V07",
+      "learning_target": "Baked OS image; CodeDeploy application updates; EFS avoids massive boot downloads."
+    },
+    {
+      "question_id": "042",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C08"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "Root explicit deny cannot be overridden by an OU allow."
+    },
+    {
+      "question_id": "043",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C91",
+        "C67"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V12",
+      "learning_target": "IoT Basic Ingest plus buffered Firehose fits delay-tolerant low-operations ingestion."
+    },
+    {
+      "question_id": "044",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C34",
+        "C05"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "API/Lambda authentication; DynamoDB metadata; authorized presigned S3 transfers."
+    },
+    {
+      "question_id": "045",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C33",
+        "C48"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V05",
+      "learning_target": "TLS private key stays in CloudHSM; load balancer passes TCP through."
+    },
+    {
+      "question_id": "046",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C21",
+        "C16"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "Targets can reference the NLB SG; enforced PrivateLink inbound rules use the client private IP, not the endpoint IP."
+    },
+    {
+      "question_id": "047",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C37",
+        "C60",
+        "C41"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "Stream buffering and bounded consumers must fit Lambda concurrency and DynamoDB write capacity."
+    },
+    {
+      "question_id": "048",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C89"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Warm standby keeps a scaled-down complete application ready for rapid recovery."
+    },
+    {
+      "question_id": "049",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C57",
+        "C53"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "learning_target": "RDS Oracle Multi-AZ is managed HA, not Oracle RAC."
+    },
+    {
+      "question_id": "050",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C60",
+        "C03"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Authenticate separately; queue checkout work; persist durable state."
+    },
+    {
+      "question_id": "051",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C35",
+        "C28",
+        "C53"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Multi-AZ application and transactional DB; cache suitable web content."
+    },
+    {
+      "question_id": "052",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C60",
+        "C66"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "SQS processing plus DynamoDB and SNS mobile push; no carrier-edge requirement."
+    },
+    {
+      "question_id": "053",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C03",
+        "C02"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "SAML trust principal and AssumeRoleWithSAML parameters must match."
+    },
+    {
+      "question_id": "054",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C53",
+        "C22"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V03",
+      "learning_target": "Use RDS DNS endpoint and reconnect; do not pin changing instance IPs."
+    },
+    {
+      "question_id": "055",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C79",
+        "C28"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "Versioned infrastructure definitions plus CloudFront distribution."
+    },
+    {
+      "question_id": "056",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C26",
+        "C06"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "Separate certificate administration; terminate TLS outside application-managed instances."
+    },
+    {
+      "question_id": "057",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C26"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "Integrated ACM certificate for the ALB; distinguish certificate offering/cost."
+    },
+    {
+      "question_id": "058",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C48"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V04",
+      "learning_target": "SSE-S3 envelope encryption and default encryption, not multi-factor encryption."
+    },
+    {
+      "question_id": "059",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C92",
+        "C73"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V03",
+      "learning_target": "Check device connectivity, authentication, IoT rules, action permissions and sink failures separately."
+    },
+    {
+      "question_id": "060",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C15"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V01",
+      "learning_target": "Correct NAT placement, Elastic IP, and private-subnet default route."
+    },
+    {
+      "question_id": "061",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C17",
+        "C09"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V05",
+      "learning_target": "Shared TGW and centralized GWLB-based egress inspection at account scale."
+    },
+    {
+      "question_id": "062",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C59",
+        "C53",
+        "C35"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V09",
+      "learning_target": "Stateless autoscaling, shared sessions/cache, read replicas, and DB availability."
+    },
+    {
+      "question_id": "063",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C57",
+        "C77"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "learning_target": "RAC requires supported self-management; patching and snapshot lifecycle remain necessary."
+    },
+    {
+      "question_id": "064",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C20",
+        "C21"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V13",
+      "learning_target": "The /32 host route wins over the /16 route only for 10.0.0.77. A itself does not overlap either peer, so the separate A–B and A–C peerings are valid."
+    },
+    {
+      "question_id": "065",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C46",
+        "C73",
+        "C53"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V10",
+      "learning_target": "Immediate old-object access favors Standard-IA; Multi-AZ and Macie solve other needs."
+    },
+    {
+      "question_id": "066",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C80",
+        "C79"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "CloudFormation ASG rolling UpdatePolicy replaces instances for AMI changes."
+    },
+    {
+      "question_id": "067",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C24"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V02",
+      "learning_target": "Remote users need client VPN into private applications, not public exposure."
+    },
+    {
+      "question_id": "068",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C18"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Two VPN tunnels do not remove a single customer-device/location failure."
+    },
+    {
+      "question_id": "069",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C48",
+        "C05"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V04",
+      "learning_target": "SSE-C needs HTTPS and customer-key headers; current default blocks new use."
+    },
+    {
+      "question_id": "070",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C73",
+        "C72"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V15",
+      "learning_target": "Inspector findings plus tests feed an AMI approval and periodic revalidation workflow."
+    },
+    {
+      "question_id": "071",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C26"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "ALB multiple certificates use SNI; CloudFront dedicated IP does not bypass coverage."
+    },
+    {
+      "question_id": "072",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C26"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "Default CloudFront certificate with HTTPS-only or redirect policy."
+    },
+    {
+      "question_id": "073",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C50",
+        "C89"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Stored Volume Gateway snapshots can restore as EBS for EC2 recovery."
+    },
+    {
+      "question_id": "074",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C43",
+        "C44"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V11",
+      "learning_target": "Cluster placement/EFA and FSx Lustre fit tightly coupled HPC."
+    },
+    {
+      "question_id": "075",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C48",
+        "C01"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V04",
+      "learning_target": "Spectrum-compatible SSE-KMS plus TLS bucket policy; not SSE-C."
+    },
+    {
+      "question_id": "076",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C89",
+        "C55"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Aurora Global Database plus promotion and regional traffic failover."
+    },
+    {
+      "question_id": "077",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C89",
+        "C53"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Replicate the large database; restore stateless application from image/template."
+    },
+    {
+      "question_id": "078",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C54",
+        "C66"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Reporting on a read replica; SNS notification versus full SMTP delivery."
+    },
+    {
+      "question_id": "079",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C60",
+        "C54"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "SQS buffers relational writes without forcing a DynamoDB redesign."
+    },
+    {
+      "question_id": "080",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C60",
+        "C44"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Parallel queued workers with shared S3 input/output."
+    },
+    {
+      "question_id": "081",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C81",
+        "C80"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V05",
+      "learning_target": "Test in nonproduction; inspect changes; blue/green deployment supports rollback."
+    },
+    {
+      "question_id": "082",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C26"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "Viewer HTTPS and origin HTTPS require separate policies and valid certificates."
+    },
+    {
+      "question_id": "083",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C36",
+        "C13"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V09",
+      "learning_target": "Three AZs need spare failure capacity; commit baseline rather than peaks."
+    },
+    {
+      "question_id": "084",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C03",
+        "C05"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "OIDC web identity supplies temporary S3/DynamoDB credentials."
+    },
+    {
+      "question_id": "085",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C60",
+        "C56"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Queue write bursts and control downstream database throughput."
+    },
+    {
+      "question_id": "086",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C48",
+        "C78"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V04",
+      "learning_target": "Import wrapped external KMS material; distinguish automatic and on-demand rotation."
+    },
+    {
+      "question_id": "087",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C10",
+        "C12"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V04",
+      "learning_target": "Bulk-tag existing resources; activate billing tags; enforce future request tags."
+    },
+    {
+      "question_id": "088",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C72",
+        "C08"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Config/Lambda termination is reactive, not prevention of an unapproved launch."
+    },
+    {
+      "question_id": "089",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C54",
+        "C53"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "ElastiCache replicas provide applicable read scaling and failover capabilities."
+    },
+    {
+      "question_id": "090",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C80",
+        "C71"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Lambda canary 10% then 90% after five minutes; trace and alarm."
+    },
+    {
+      "question_id": "091",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C31",
+        "C72"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V02",
+      "learning_target": "Block Public Access prevents accidental public exposure."
+    },
+    {
+      "question_id": "092",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C93",
+        "C35"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "learning_target": "Application streaming preserves desktop-app experience; managed backend scales separately."
+    },
+    {
+      "question_id": "093",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C25"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V06",
+      "learning_target": "Keepalive timing and safe reconnect address idle expiry; bandwidth is not the diagnosed problem."
+    },
+    {
+      "question_id": "094",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C54",
+        "C28"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Cache database work separately from cacheable HTTP content."
+    },
+    {
+      "question_id": "095",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C74",
+        "C31"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V02",
+      "learning_target": "WAF handles application-layer rules; Shield Advanced addresses DDoS capabilities."
+    },
+    {
+      "question_id": "096",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C23",
+        "C55"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V09",
+      "learning_target": "Latency routing with health; cross-Region cache state is not automatic."
+    },
+    {
+      "question_id": "097",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C73",
+        "C71"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V15",
+      "learning_target": "Macie identifies S3 sensitive data; CloudTrail data events record object access."
+    },
+    {
+      "question_id": "098",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C48",
+        "C49"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V04",
+      "learning_target": "Encrypted cross-Region Redshift snapshots require destination KMS copy grant."
+    },
+    {
+      "question_id": "099",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C03",
+        "C05"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "Federated temporary credentials; static frontend and scoped direct data access."
+    },
+    {
+      "question_id": "100",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C43",
+        "C42"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V11",
+      "learning_target": "Stop and move eligible instances into cluster placement group, then restart."
+    },
+    {
+      "question_id": "101",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C71",
+        "C01"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Observed CloudTrail activity supports policy generation only when representative required events are captured."
+    },
+    {
+      "question_id": "102",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C59",
+        "C53",
+        "C35"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V09",
+      "learning_target": "Sticky routing is not session durability; Aurora Auto Scaling adds readers."
+    },
+    {
+      "question_id": "103",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C19",
+        "C18"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V16",
+      "learning_target": "Direct Connect gateway supports eligible multi-Region VPC associations."
+    },
+    {
+      "question_id": "104",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C76",
+        "C74"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "Session Manager removes SSH exposure; layered resilience and edge protection."
+    },
+    {
+      "question_id": "105",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C35",
+        "C53"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Multi-AZ ASG/ALB and RDS protect independent tiers."
+    },
+    {
+      "question_id": "106",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C40",
+        "C90"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "Fargate web tier, retryable Spot workers, Rekognition, and durable S3."
+    },
+    {
+      "question_id": "107",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C06",
+        "C79"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "learning_target": "CloudFormation creates IAM role and EC2 instance profile, not static credentials."
+    },
+    {
+      "question_id": "108",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C26"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "CloudFront viewer certificate in us-east-1; ALB origin certificate in its Region."
+    },
+    {
+      "question_id": "109",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C72",
+        "C71"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Approved-image Config evaluation and notifications are post-deployment controls."
+    },
+    {
+      "question_id": "110",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C60",
+        "C03"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Cognito authorization and SQS decoupling for durable voting writes."
+    },
+    {
+      "question_id": "111",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C65",
+        "C41"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "Split an overall long workflow into short Lambda tasks with Map/Parallel."
+    },
+    {
+      "question_id": "112",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C45",
+        "C44"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "gp3 includes a performance baseline independent of volume size. IOPS measures operations per second; MiB/s measures data transferred per second."
+    },
+    {
+      "question_id": "113",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C26",
+        "C06"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "Separate certificate administration from host administration; mark the actual TLS termination boundary."
+    },
+    {
+      "question_id": "114",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C47",
+        "C05",
+        "C48"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "learning_target": "Preserve every document version and roll back by creating a new current version; issue scoped expiring access."
+    },
+    {
+      "question_id": "115",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C34"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "AppSync subscriptions push GraphQL updates rather than repeated polling."
+    },
+    {
+      "question_id": "116",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C02",
+        "C01"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "EC2 role trust says who assumes; permission policy says what it can access."
+    },
+    {
+      "question_id": "117",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C76",
+        "C42"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "EC2Rescue automation repairs guest/access problems, not host recovery metrics."
+    },
+    {
+      "question_id": "118",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C60",
+        "C18"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Durable buffering decouples on-premises processing from incoming traffic and connectivity."
+    },
+    {
+      "question_id": "119",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C03",
+        "C04"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "Corporate federation plus scoped S3 prefixes; avoid replicated IAM users."
+    },
+    {
+      "question_id": "120",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C83",
+        "C79"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V07",
+      "learning_target": "SSM latest-AMI parameter still requires a stack update and instance replacement."
+    },
+    {
+      "question_id": "121",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C87",
+        "C18"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "External MySQL replication needs consistent seed and binlog coordinates."
+    },
+    {
+      "question_id": "122",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C02"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "Cross-account limited audit role, not shared permanent administrator credentials."
+    },
+    {
+      "question_id": "123",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C02"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "The audited target account owns the role that trusts the auditor."
+    },
+    {
+      "question_id": "124",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C77",
+        "C71",
+        "C48"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V07",
+      "learning_target": "Centralize CloudTrail; protect encryption, retention, deletion, and integrity separately."
+    },
+    {
+      "question_id": "125",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C35",
+        "C53",
+        "C23"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "ASG/ALB, Aurora replicas, and Route 53 alias form complementary layers."
+    },
+    {
+      "question_id": "126",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C05",
+        "C06"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V07",
+      "learning_target": "Instance-role presigning needs GetObject for downloads, not only list/upload."
+    },
+    {
+      "question_id": "127",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C35",
+        "C32"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Targets receive ALB traffic only through enabled AZs and healthy configuration."
+    },
+    {
+      "question_id": "128",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C50",
+        "C44"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Cached Volume Gateway separates local hot blocks from authoritative AWS data and host filesystem aggregation."
+    },
+    {
+      "question_id": "129",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C28",
+        "C46"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Partition/object layout and CloudFront private-origin caching for articles."
+    },
+    {
+      "question_id": "130",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C06",
+        "C79"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "learning_target": "EC2 instance role/profile grants DynamoDB access without stored access keys."
+    },
+    {
+      "question_id": "131",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C03",
+        "C04"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "Trusted backend authenticates users and brokers scoped temporary credentials."
+    },
+    {
+      "question_id": "132",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C79",
+        "C77"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "Retain S3 versus Snapshot RDS; distinguish deletion from replacement policies."
+    },
+    {
+      "question_id": "133",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C04",
+        "C01"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V16",
+      "learning_target": "Tag-scoped explicit deny protects production; protect the tags as well."
+    },
+    {
+      "question_id": "134",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C79",
+        "C62"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "SQS GetAtt Arn, not Ref URL, for SNS subscription; queue policy needed."
+    },
+    {
+      "question_id": "135",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C21",
+        "C71"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "SG/NACL directions and database port; Config explains configuration changes."
+    },
+    {
+      "question_id": "136",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C79",
+        "C77"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "CloudFormation Retain/Snapshot preserve resources or recoverable data appropriately."
+    },
+    {
+      "question_id": "137",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C28",
+        "C22"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Direct S3 website needs public access and correct hostname/redirect setup."
+    },
+    {
+      "question_id": "138",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C18",
+        "C17"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Direct Connect is not encrypted by default; layer supported IPsec VPN."
+    },
+    {
+      "question_id": "139",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C03",
+        "C02",
+        "C04"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "The broker first establishes who the user is and which bucket is authorized; it then uses its own permitted AWS identity to obtain an appropriately scoped role session."
+    },
+    {
+      "question_id": "140",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C57",
+        "C35"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "learning_target": "DocumentDB compatibility is not universal MongoDB feature equivalence."
+    },
+    {
+      "question_id": "141",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C39",
+        "C06"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "learning_target": "awsvpc provides task network isolation; task IAM role scopes application access."
+    },
+    {
+      "question_id": "142",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C75",
+        "C72"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Patch Manager performs patching; Config evaluates compliance."
+    },
+    {
+      "question_id": "143",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C71",
+        "C21"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Traffic Mirroring captures packets; Flow Logs only summarize flows."
+    },
+    {
+      "question_id": "144",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C39",
+        "C78"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "learning_target": "Execution role resolves startup secrets; task role authorizes application calls."
+    },
+    {
+      "question_id": "145",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C63",
+        "C67"
+      ],
+      "primary_visual": "V13",
+      "companion_visual": "V07",
+      "learning_target": "Independent consumers need retained-log replay and separate checkpoints; warehouse loads also need deduplication."
+    },
+    {
+      "question_id": "146",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C64",
+        "C67",
+        "C46"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V12",
+      "learning_target": "Stateful event-time windows and late-event handling belong on the live path; warehouse/archive delivery can lag."
+    },
+    {
+      "question_id": "147",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C80",
+        "C81",
+        "C79"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Lambda alias traffic shifting and Beanstalk immutable fleets have separate gates, capacity and rollback behavior."
+    },
+    {
+      "question_id": "148",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C80"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Beanstalk blue/green uses two environments and CNAME swap."
+    },
+    {
+      "question_id": "149",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C54"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Cache repeated database reads or offload them to replicas."
+    },
+    {
+      "question_id": "150",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C32",
+        "C35",
+        "C22"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "learning_target": "The apex name requires an appropriate alias rather than a CNAME, and the ASG must use the ALB health signal to replace application-unhealthy instances."
+    },
+    {
+      "question_id": "151",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C63"
+      ],
+      "primary_visual": "V13",
+      "companion_visual": "V07",
+      "learning_target": "Kinesis partition key supplies session-level ordering, not global ordering."
+    },
+    {
+      "question_id": "152",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C97",
+        "C63"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V03",
+      "learning_target": "DynamoDB Streams trigger consumers from item changes."
+    },
+    {
+      "question_id": "153",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C90",
+        "C67"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "Textract extracts scanned text; OpenSearch indexes; S3/CloudFront serve assets."
+    },
+    {
+      "question_id": "154",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C74"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V02",
+      "learning_target": "Combine L3/L4 DDoS protection with WAF HTTP attack filtering."
+    },
+    {
+      "question_id": "155",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C74",
+        "C21"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V02",
+      "learning_target": "Minimize exposed paths/ports and restrict origins; layered protection."
+    },
+    {
+      "question_id": "156",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C40",
+        "C38"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "Batch on interruption-tolerant capacity; retries and S3 protect results."
+    },
+    {
+      "question_id": "157",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C13",
+        "C44"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Requester Pays moves eligible transfer/request costs, not storage, to authenticated requesters."
+    },
+    {
+      "question_id": "158",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C70",
+        "C40"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V09",
+      "learning_target": "EMR task nodes can use Spot without holding HDFS data."
+    },
+    {
+      "question_id": "159",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C70",
+        "C40"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V09",
+      "learning_target": "Reliable primary/core topology; Spot task nodes add disposable compute."
+    },
+    {
+      "question_id": "160",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C37"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "Scale-in adjustment must match the specified low-utilization threshold and count."
+    },
+    {
+      "question_id": "161",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C60",
+        "C66"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Queue location processing; durable offer metadata; SNS mobile notifications."
+    },
+    {
+      "question_id": "162",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C13",
+        "C08"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "RI benefits depend on matching usage and Region; not cross-Region sharing."
+    },
+    {
+      "question_id": "163",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C24"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V02",
+      "learning_target": "Client VPN provides remote-user entry to otherwise private applications."
+    },
+    {
+      "question_id": "164",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C56",
+        "C13",
+        "C46"
+      ],
+      "primary_visual": "V13",
+      "companion_visual": "V06",
+      "learning_target": "DynamoDB reserved capacity applies to provisioned mode; archive/drop period tables."
+    },
+    {
+      "question_id": "165",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C18",
+        "C13"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "VPN is a lower-cost DX backup with different performance characteristics."
+    },
+    {
+      "question_id": "166",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C46",
+        "C56"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V10",
+      "learning_target": "Archive data cheaply but retain searchable metadata; choose a valid restore window."
+    },
+    {
+      "question_id": "167",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C34",
+        "C56"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "REST/Lambda/DynamoDB architecture; API keys do not replace user authentication."
+    },
+    {
+      "question_id": "168",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C40",
+        "C35"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "Mixed On-Demand/Spot across AZs with load balancing and interruption tolerance."
+    },
+    {
+      "question_id": "169",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C56"
+      ],
+      "primary_visual": "V13",
+      "companion_visual": "V06",
+      "learning_target": "Device partition key, timestamp sort key, and period-based retention strategy."
+    },
+    {
+      "question_id": "170",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C71",
+        "C77"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Multi-Region CloudTrail plus global events and protected central log storage."
+    },
+    {
+      "question_id": "171",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C09",
+        "C08"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V01",
+      "learning_target": "Enable RAM organization sharing/trusted access before organizational resource sharing."
+    },
+    {
+      "question_id": "172",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C13",
+        "C08"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Management-account RI discount-sharing controls isolate unit benefits."
+    },
+    {
+      "question_id": "173",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C08"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "SCPs apply to member root but not management-account or service-linked roles."
+    },
+    {
+      "question_id": "174",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C08",
+        "C11"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "SCPs restrict allowed services; platform provisioning tools do not replace them."
+    },
+    {
+      "question_id": "175",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C71",
+        "C21"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Private routes plus Flow Logs and central subscriptions diagnose rejected traffic."
+    },
+    {
+      "question_id": "176",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C71"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Global service events alone do not create an all-Region CloudTrail trail."
+    },
+    {
+      "question_id": "177",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C19",
+        "C18"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V16",
+      "learning_target": "DX gateway connects eligible regional VPCs without automatic full-mesh VPC transit."
+    },
+    {
+      "question_id": "178",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C02",
+        "C71"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "Resource-policy sharing preserves caller identity; assumed-role context is different."
+    },
+    {
+      "question_id": "179",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C55",
+        "C23"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "Geographic routing rules and regional read access do not make every Aurora replica an independent writer."
+    },
+    {
+      "question_id": "180",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C08",
+        "C02",
+        "C04"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "Use ownership-aligned OUs, target-account roles, and trusted ABAC attributes."
+    },
+    {
+      "question_id": "181",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C02",
+        "C08"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "Consolidated billing does not grant account administration permissions."
+    },
+    {
+      "question_id": "182",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C15",
+        "C74"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V01",
+      "learning_target": "URL/domain restrictions require suitable proxy/firewall and no bypass routes."
+    },
+    {
+      "question_id": "183",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C47"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "learning_target": "Existing S3 objects retain null version IDs when versioning is enabled."
+    },
+    {
+      "question_id": "184",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C41"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Reserved concurrency controls capacity/cap; provisioned concurrency prewarms environments."
+    },
+    {
+      "question_id": "185",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C89",
+        "C23",
+        "C35"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Active/passive regional stacks need health-driven routing and ready recovery resources."
+    },
+    {
+      "question_id": "186",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C11",
+        "C10"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V08",
+      "learning_target": "Service Catalog tags/parameters must propagate to the intended underlying resources."
+    },
+    {
+      "question_id": "187",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C73",
+        "C72",
+        "C08"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V15",
+      "learning_target": "Security Hub centralizes findings but is not every preventive/remediation control."
+    },
+    {
+      "question_id": "188",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C01"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V05",
+      "learning_target": "PowerUserAccess allows broad workload administration and selected organization reads, but not most IAM administration; NotAction is not a deny."
+    },
+    {
+      "question_id": "189",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C03",
+        "C02"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "A broker with role-session credentials must choose a compatible STS API and scope the resulting session."
+    },
+    {
+      "question_id": "190",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C08",
+        "C01"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "An SCP allowlist omitting S3 blocks it despite identity-policy permission."
+    },
+    {
+      "question_id": "191",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C02"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "Vendor-specific ExternalId in role trust prevents confused-deputy access."
+    },
+    {
+      "question_id": "192",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C04",
+        "C10"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V16",
+      "learning_target": "ForAllValues on TagKeys does not require all named tags or nonempty values."
+    },
+    {
+      "question_id": "193",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C57",
+        "C77"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "learning_target": "RAC One Node is not ordinary RDS; validate EC2 topology and backups."
+    },
+    {
+      "question_id": "194",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C84"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "learning_target": "Replatform changes hosting/managed services without fundamental application redesign."
+    },
+    {
+      "question_id": "195",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C86",
+        "C87"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V07",
+      "learning_target": "60 TB at 50 Mbps exceeds 30 days; coordinate a consistent terminal-transferred seed with schema conversion and CDC."
+    },
+    {
+      "question_id": "196",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C89",
+        "C82",
+        "C55"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "StackSets and replication prepare DR; failback needs data reconciliation."
+    },
+    {
+      "question_id": "197",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C19"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V16",
+      "learning_target": "DX router/VIF setup requires correct BGP and authentication configuration."
+    },
+    {
+      "question_id": "198",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C87"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Heterogeneous migration needs schema conversion plus DMS data/CDC."
+    },
+    {
+      "question_id": "199",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C22"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "Resolver outbound forwarding for AD namespace; retain AWS-aware VPC DNS."
+    },
+    {
+      "question_id": "200",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C41",
+        "C60"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Thirty-minute work does not fit one standard Lambda invocation; queue workers."
+    },
+    {
+      "question_id": "201",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C51",
+        "C86"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Pre-seed the bulk dataset before cutover; transfer only the final delta."
+    },
+    {
+      "question_id": "202",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C50",
+        "C46"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Tape Gateway preserves the virtual tape/iSCSI backup-software interface."
+    },
+    {
+      "question_id": "203",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C28",
+        "C74"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "CloudFront can front an on-premises HTTP origin with WAF protection."
+    },
+    {
+      "question_id": "204",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C40",
+        "C60",
+        "C46"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "SQS/Spot processing for retryable image jobs; archive completed media appropriately."
+    },
+    {
+      "question_id": "205",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C28",
+        "C12"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Move duplicated static media to S3/CloudFront; investigate costs separately."
+    },
+    {
+      "question_id": "206",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C90",
+        "C46"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "S3-triggered asynchronous Transcribe jobs; lifecycle recorded audio by retention needs."
+    },
+    {
+      "question_id": "207",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C11",
+        "C90",
+        "C10"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V08",
+      "learning_target": "Service Catalog constrains encrypted SageMaker notebook provisioning and outputs."
+    },
+    {
+      "question_id": "208",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C65"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "Step Functions persists order workflow and waits for external completion callbacks."
+    },
+    {
+      "question_id": "209",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C88"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V06",
+      "learning_target": "MGN agent-based replication belongs on source servers, not only the hypervisor."
+    },
+    {
+      "question_id": "210",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C88",
+        "C86"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V06",
+      "learning_target": "Prioritize critical replicated servers separately from bulk-export transfer logistics."
+    },
+    {
+      "question_id": "211",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C88"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V06",
+      "learning_target": "MGN continuously replicates server blocks, then supports test and cutover."
+    },
+    {
+      "question_id": "212",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C03",
+        "C07"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "Corporate SAML federation supplies temporary access without new AWS passwords."
+    },
+    {
+      "question_id": "213",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C36",
+        "C13"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V09",
+      "learning_target": "Reserve matching unused recovery slots in surviving AZs; distinguish capacity from discounts and running headroom."
+    },
+    {
+      "question_id": "214",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C03",
+        "C04",
+        "C05"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "Cognito user-pool authentication and identity-pool credentials need server-enforced per-identity S3 authorization."
+    },
+    {
+      "question_id": "215",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C90",
+        "C50"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "Extract tape contents into files before file-gateway ingestion; keep original media separate from recognition metadata."
+    },
+    {
+      "question_id": "216",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C90",
+        "C50"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "A face collection stores derived representations; originals and person-ID mappings require separate ownership."
+    },
+    {
+      "question_id": "217",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C96",
+        "C28"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V10",
+      "learning_target": "S3 Transfer Acceleration uses the accelerate endpoint for distant transfers."
+    },
+    {
+      "question_id": "218",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C88"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V06",
+      "learning_target": "MGN supports low-downtime rehosting of eligible physical Windows/Linux servers."
+    },
+    {
+      "question_id": "219",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C82",
+        "C79"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V08",
+      "learning_target": "Organization-integrated StackSets deploy across accounts and Regions."
+    },
+    {
+      "question_id": "220",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C02"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "Vendor generates unique ExternalId; customer checks it in AssumeRole trust."
+    },
+    {
+      "question_id": "221",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C48",
+        "C01",
+        "C02"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V04",
+      "learning_target": "Cross-account encrypted S3 needs bucket, caller IAM, and KMS permissions."
+    },
+    {
+      "question_id": "222",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C41",
+        "C60"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Long queue jobs fit EC2 workers, not a single short-lived Lambda invocation."
+    },
+    {
+      "question_id": "223",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C07"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V05",
+      "learning_target": "Identity Center with Managed AD requires a two-way trust to self-managed AD, not a one-way trust."
+    },
+    {
+      "question_id": "224",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C03",
+        "C07"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "LDAP must become compatible SAML/OIDC identity or use a broker."
+    },
+    {
+      "question_id": "225",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C07"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V05",
+      "learning_target": "Managed AD trust preserves corporate identities without duplicating IAM users."
+    },
+    {
+      "question_id": "226",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C54",
+        "C53"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Read-query CPU pressure calls for eligible reader routing or application-integrated cache-aside behavior."
+    },
+    {
+      "question_id": "227",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C06"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "learning_target": "Instance profile provides rotating temporary S3 credentials through SDK metadata access."
+    },
+    {
+      "question_id": "228",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C84",
+        "C38",
+        "C57"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V05",
+      "learning_target": "Supported OpenJDK/container replatforming and managed DB reduce licensing/operations."
+    },
+    {
+      "question_id": "229",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C89",
+        "C77"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Frequent recoverable transaction logs tighten RPO beyond full-backup frequency."
+    },
+    {
+      "question_id": "230",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C90",
+        "C66"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "Connect is the contact center; Lex handles conversational intent."
+    },
+    {
+      "question_id": "231",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C18"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "VPN backup to existing DX paths favors cost over identical link performance."
+    },
+    {
+      "question_id": "232",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C77",
+        "C89"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V07",
+      "learning_target": "Managed continuous/PITR backup can meet short recovery-point requirements."
+    },
+    {
+      "question_id": "233",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C40",
+        "C13",
+        "C46"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "Drain retryable Spot containers; commit steady DB; lifecycle retained data."
+    },
+    {
+      "question_id": "234",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C28",
+        "C31"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "CloudFront distributes large game objects; private REST origin does not need website hosting."
+    },
+    {
+      "question_id": "235",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C53",
+        "C54"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V03",
+      "learning_target": "Aurora replicas/RDS Proxy reduce failover impact without an absolute interruption guarantee."
+    },
+    {
+      "question_id": "236",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C78",
+        "C79"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V03",
+      "learning_target": "Secrets Manager rotation needs both schedule and working rotation integration."
+    },
+    {
+      "question_id": "237",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C60",
+        "C28"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V08",
+      "learning_target": "Queue answer writes; offload cacheable assets to S3/CloudFront."
+    },
+    {
+      "question_id": "238",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C28"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Accelerate existing on-premises web delivery without migrating the origin first."
+    },
+    {
+      "question_id": "239",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C62",
+        "C54"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V03",
+      "learning_target": "SNS with one SQS per service; RDS Proxy pools DB connections."
+    },
+    {
+      "question_id": "240",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C10",
+        "C72"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V04",
+      "learning_target": "Config detects missing tags; supported SCP request-tag checks prevent creation."
+    },
+    {
+      "question_id": "241",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C51",
+        "C88",
+        "C44"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "SMB data goes to FSx Windows via DataSync; VM import handles machine images."
+    },
+    {
+      "question_id": "242",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C39",
+        "C21",
+        "C78"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "learning_target": "ECS secret reference uses execution role; writer endpoint and DB SG must match."
+    },
+    {
+      "question_id": "243",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C18",
+        "C19"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Additional DX path and gateway/VIF associations; diversify physical failure domains."
+    },
+    {
+      "question_id": "244",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C50",
+        "C21"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Transfer Family VPC internet-facing endpoint preserves EIPs/keys and permits IP allowlisting."
+    },
+    {
+      "question_id": "245",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C68",
+        "C67"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V16",
+      "learning_target": "The Glue transformation masks sensitive fields; the crawler only supplies schema metadata."
+    },
+    {
+      "question_id": "246",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C16",
+        "C39"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "VPC Lambda needs private DB reachability and a DynamoDB endpoint or NAT."
+    },
+    {
+      "question_id": "247",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C51",
+        "C44"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "DataSync schedules incremental SMB transfer to FSx Windows."
+    },
+    {
+      "question_id": "248",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C51",
+        "C44"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Create new FSx Multi-AZ deployment, synchronize, and cut over."
+    },
+    {
+      "question_id": "249",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C12",
+        "C67"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "CUR plus account-to-OU mapping and QuickSight access controls for unit dashboards."
+    },
+    {
+      "question_id": "250",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C37",
+        "C89"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "CloudWatch memory metrics inform right-sizing; preserve needed DR capacity."
+    },
+    {
+      "question_id": "251",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C90",
+        "C46"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "MediaConvert creates HLS; instant-access archive preserves immediate original retrieval."
+    },
+    {
+      "question_id": "252",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C87"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "SQL Server to MySQL is heterogeneous: schema conversion plus data/CDC."
+    },
+    {
+      "question_id": "253",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C38",
+        "C53",
+        "C39"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V01",
+      "learning_target": "Containerize supported .NET application; Fargate, Multi-AZ DB, and scoped secrets."
+    },
+    {
+      "question_id": "254",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C81"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V05",
+      "learning_target": "Feature branches build/test/deploy in isolated nonproduction accounts."
+    },
+    {
+      "question_id": "255",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C11",
+        "C06"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V08",
+      "learning_target": "Service Catalog launch role provisions resources without broad requester permissions."
+    },
+    {
+      "question_id": "256",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C17",
+        "C09"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V05",
+      "learning_target": "Separate TGW route tables/propagation preserve development-production isolation."
+    },
+    {
+      "question_id": "257",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C50"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Managed Transfer Family replaces EC2 SFTP operations while retaining endpoint naming."
+    },
+    {
+      "question_id": "258",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C78",
+        "C76"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V03",
+      "learning_target": "Replace authorized_keys and remove the old key; key-pair deletion alone is insufficient."
+    },
+    {
+      "question_id": "259",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C21"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "Application and DB SG directions/port must agree; stateful return is implicit."
+    },
+    {
+      "question_id": "260",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C90",
+        "C65"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "Textract extracts scanned content; Comprehend interprets text; Step Functions orchestrates."
+    },
+    {
+      "question_id": "261",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C37",
+        "C54"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "Dependency-aware monitoring should not trigger fleet-wide liveness replacement storms."
+    },
+    {
+      "question_id": "262",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C32",
+        "C23"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "learning_target": "Global Accelerator supplies static anycast IPs and healthy regional endpoints."
+    },
+    {
+      "question_id": "263",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C56"
+      ],
+      "primary_visual": "V13",
+      "companion_visual": "V06",
+      "learning_target": "On-demand/scalable DynamoDB for small items; TTL is asynchronous deletion."
+    },
+    {
+      "question_id": "264",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C76"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "Temporarily suspend termination for investigation; use Session Manager and resume."
+    },
+    {
+      "question_id": "265",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C61",
+        "C60"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "learning_target": "One-hour visibility already fits the job; maxReceiveCount=1 causes premature DLQ."
+    },
+    {
+      "question_id": "266",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C50"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "CHAP authenticates iSCSI sessions but does not encrypt their payloads."
+    },
+    {
+      "question_id": "267",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C81",
+        "C79"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V05",
+      "learning_target": "Test-stack change set/execution and CodeBuild integration tests serve different checks."
+    },
+    {
+      "question_id": "268",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C24",
+        "C15"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V02",
+      "learning_target": "Client VPN needs user authorization and routes into intended connected VPCs."
+    },
+    {
+      "question_id": "269",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C01",
+        "C08"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V05",
+      "learning_target": "SCP permission ceiling does not grant the missing IAM allow."
+    },
+    {
+      "question_id": "270",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C29",
+        "C31"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "learning_target": "Publish a completed immutable tile version before switching the uncached manifest; clients pin that version."
+    },
+    {
+      "question_id": "271",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C30",
+        "C28",
+        "C05"
+      ],
+      "primary_visual": "V16",
+      "companion_visual": "V03",
+      "learning_target": "Offline JWT verification and GET origin failover are separate mechanisms; neither migrates a login POST."
+    },
+    {
+      "question_id": "272",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C26",
+        "C28"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V01",
+      "learning_target": "Valid custom-domain certificate and cache lifetime matching content freshness."
+    },
+    {
+      "question_id": "273",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C30",
+        "C28"
+      ],
+      "primary_visual": "V16",
+      "companion_visual": "V03",
+      "learning_target": "Device-specific edge logic requires correct cache-key variation."
+    },
+    {
+      "question_id": "274",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C30"
+      ],
+      "primary_visual": "V16",
+      "companion_visual": "V03",
+      "learning_target": "Normalize query strings before cache lookup; preserve case-sensitive application semantics."
+    },
+    {
+      "question_id": "275",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C31",
+        "C05"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V02",
+      "learning_target": "Private S3 OAC origin plus signed viewer access; URL remains a bearer token."
+    },
+    {
+      "question_id": "276",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C28"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "CloudFront custom on-premises origin improves delivery without application migration."
+    },
+    {
+      "question_id": "277",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C38"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V01",
+      "learning_target": "ECS Anywhere manages external hosts; Fargate handles AWS-hosted containers."
+    },
+    {
+      "question_id": "278",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C08",
+        "C02"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "Invited accounts do not automatically receive OrganizationAccountAccessRole."
+    },
+    {
+      "question_id": "279",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C65"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "Step Functions coordinates states, parallelism, retry, and reprocessing."
+    },
+    {
+      "question_id": "280",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C44",
+        "C46",
+        "C51"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V12",
+      "learning_target": "Durable S3 and temporary high-performance Lustre have separate lifetimes; verify export before filesystem deletion."
+    },
+    {
+      "question_id": "281",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C67",
+        "C64"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V18",
+      "learning_target": "Firehose transforms/buffers into OpenSearch for near-real-time analytics."
+    },
+    {
+      "question_id": "282",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C55",
+        "C35"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "DynamoDB global tables and regional Fargate services enable eligible active/active design."
+    },
+    {
+      "question_id": "283",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C22",
+        "C09"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "Zone owner authorizes VPC association; VPC owner associates; then remove authorization."
+    },
+    {
+      "question_id": "284",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C37",
+        "C41",
+        "C54"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "Reduce real duration/connection bottlenecks; API caching only for reusable responses."
+    },
+    {
+      "question_id": "285",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C89",
+        "C77",
+        "C50"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Preprovision recovery capacity and restore supported backup artifacts to minimize RTO."
+    },
+    {
+      "question_id": "286",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C67",
+        "C90"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V18",
+      "learning_target": "S3 document storage plus OpenSearch indexing and application serving."
+    },
+    {
+      "question_id": "287",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C42",
+        "C76"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V05",
+      "learning_target": "System-status recovery preserves supported instance identity; replacement is different."
+    },
+    {
+      "question_id": "288",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C78",
+        "C79"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V03",
+      "learning_target": "CloudFormation resolves Secrets Manager password; rotation integration updates it."
+    },
+    {
+      "question_id": "289",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C67",
+        "C79"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V18",
+      "learning_target": "OpenSearch supplies searchable index; S3 retains durable source documents."
+    },
+    {
+      "question_id": "290",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C05",
+        "C06"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V07",
+      "learning_target": "Presigned URL depends on signature, permissions, method, expiry, and credential lifetime."
+    },
+    {
+      "question_id": "291",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C35",
+        "C53",
+        "C74"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Resilient application/DB tiers plus static delivery and WAF filtering."
+    },
+    {
+      "question_id": "292",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C32",
+        "C21"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "learning_target": "UDP requires suitable NLB; do not block necessary TCP health checks."
+    },
+    {
+      "question_id": "293",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C21",
+        "C74"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "NACL can explicitly deny hostile IP ranges; SG cannot contain deny rules."
+    },
+    {
+      "question_id": "294",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C86",
+        "C87"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V07",
+      "learning_target": "Bulk seed beyond WAN limit, then CDC final changes and coordinated cutover."
+    },
+    {
+      "question_id": "295",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C28",
+        "C49"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Regional origin selection and cross-Region replication address different parts of a cache-miss path."
+    },
+    {
+      "question_id": "296",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C79",
+        "C81"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "CDK uses familiar languages; CloudFormation iteration does exist via Fn::ForEach."
+    },
+    {
+      "question_id": "297",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C83"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V07",
+      "learning_target": "Bake the shared framework into an AMI to shorten startup."
+    },
+    {
+      "question_id": "298",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C13",
+        "C53",
+        "C35"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Commit stable baseline; scale application and Aurora readers for variable demand."
+    },
+    {
+      "question_id": "299",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C44",
+        "C35"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V12",
+      "learning_target": "Windows CMS sharing requires suitable SMB/AD filesystem, usually FSx Windows."
+    },
+    {
+      "question_id": "300",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C52",
+        "C37"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "Monitor FreeStorageCapacity and automate supported FSx storage increases before exhaustion."
+    },
+    {
+      "question_id": "301",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C71",
+        "C14"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Logs agent, metric filter, alarm, and SNS each supply a required step."
+    },
+    {
+      "question_id": "302",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C49",
+        "C71"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V15",
+      "learning_target": "RTC percentage commitment, replication-lag alarm and an every-object deadline are different statements."
+    },
+    {
+      "question_id": "303",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C72",
+        "C31"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Block Public Access prevents supported exposure; notifications and investigation provide subsequent evidence."
+    },
+    {
+      "question_id": "304",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C41",
+        "C97"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Event-driven ten-minute Lambda processing fits standard invocation duration."
+    },
+    {
+      "question_id": "305",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C71",
+        "C08"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "CloudTrail/EventBridge records organization actions; Config is not universal membership history."
+    },
+    {
+      "question_id": "306",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C72",
+        "C65",
+        "C04"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "User quarantine and approval need persistent restrictions, race awareness and separate preventive boundaries."
+    },
+    {
+      "question_id": "307",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C75"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Patch Manager supports hybrid patching, not arbitrary major OS migration."
+    },
+    {
+      "question_id": "308",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C91",
+        "C90"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V12",
+      "learning_target": "SageMaker trains centrally; Greengrass runs local/offline inference components."
+    },
+    {
+      "question_id": "309",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C92",
+        "C22"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V03",
+      "learning_target": "IoT MQTT cutover requires custom-domain TLS, authentication, and delivery settings."
+    },
+    {
+      "question_id": "310",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C90",
+        "C66"
+      ],
+      "primary_visual": "V18",
+      "companion_visual": "V12",
+      "learning_target": "Connect plus Lex and Lambda provides automated conversational business actions."
+    },
+    {
+      "question_id": "311",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C81",
+        "C73"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V05",
+      "learning_target": "Pipeline build/security checks, failure events, and manual approval gate production."
+    },
+    {
+      "question_id": "312",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C54",
+        "C53"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "RDS read replicas offload monthly reporting without loading the writer."
+    },
+    {
+      "question_id": "313",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C95",
+        "C26",
+        "C28"
+      ],
+      "primary_visual": "V17",
+      "companion_visual": "V12",
+      "learning_target": "Field-level encryption protects selected form fields; TLS and caching are separate."
+    },
+    {
+      "question_id": "314",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C31",
+        "C74"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V02",
+      "learning_target": "OAC protects S3; validate CloudFront-added secret header at ALB/WAF origin."
+    },
+    {
+      "question_id": "315",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C31",
+        "C48"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V02",
+      "learning_target": "Private S3 REST bucket plus OAC restricts origin access."
+    },
+    {
+      "question_id": "316",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C05",
+        "C31"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V07",
+      "learning_target": "Signed S3/CloudFront URLs are bearer capabilities; origin access and original-user identity are separate concerns."
+    },
+    {
+      "question_id": "317",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C31"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V02",
+      "learning_target": "OAC uses CloudFront service-principal policy, not OAI's identity model."
+    },
+    {
+      "question_id": "318",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C28"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Add S3 origin and static-path behavior; keep dynamic routes on ALB."
+    },
+    {
+      "question_id": "319",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C35",
+        "C87"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Multi-AZ application, managed DB migration, and Route 53 alias cutover."
+    },
+    {
+      "question_id": "320",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C85",
+        "C84"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V11",
+      "learning_target": "Discovery facts, organizational readiness and migration cost/plan assessment answer different questions."
+    },
+    {
+      "question_id": "321",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C45",
+        "C57",
+        "C87"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Cold HDD suitability depends on actual sequential I/O; a database label alone cannot establish a valid choice."
+    },
+    {
+      "question_id": "322",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C85"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V11",
+      "learning_target": "Discovery gathers configuration, utilization, and dependencies before migration planning."
+    },
+    {
+      "question_id": "323",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C87",
+        "C84",
+        "C57"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Db2 conversion/data migration; WebSphere rehost; validate IBM MQ protocol compatibility."
+    },
+    {
+      "question_id": "324",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C59",
+        "C53",
+        "C35"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V09",
+      "learning_target": "Aurora Auto Scaling adds readers; sticky sessions do not replicate state."
+    },
+    {
+      "question_id": "325",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C89",
+        "C53"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Pilot light requires DB promotion and ASG scale-up before traffic cutover."
+    },
+    {
+      "question_id": "326",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C28",
+        "C31"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Custom error page needs correct behavior/origin; S3 website cannot use OAC."
+    },
+    {
+      "question_id": "327",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C09",
+        "C17"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V01",
+      "learning_target": "VPC owner shares subnets and controls networking; participants own their workloads."
+    },
+    {
+      "question_id": "328",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C76",
+        "C40"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V08",
+      "learning_target": "Termination lifecycle hook captures logs; match Command versus Automation API."
+    },
+    {
+      "question_id": "329",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C07",
+        "C03"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V05",
+      "learning_target": "SAML authentication, SCIM provisioning and account permission assignments are separate integration paths."
+    },
+    {
+      "question_id": "330",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C12",
+        "C10"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Management activates cost allocation tags; CUR can then expose eligible tagged costs."
+    },
+    {
+      "question_id": "331",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C12",
+        "C67"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "CUR/QuickSight organization dashboards need account-to-OU mapping and access rules."
+    },
+    {
+      "question_id": "332",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C82",
+        "C08"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V08",
+      "learning_target": "StackSets trusted access and automatic OU deployment include newly created accounts."
+    },
+    {
+      "question_id": "333",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C85"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V11",
+      "learning_target": "Discovery/right-sizing and dependencies support application grouping and migration waves."
+    },
+    {
+      "question_id": "334",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C04",
+        "C21",
+        "C08"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V16",
+      "learning_target": "Tag-scoped SG protection must cover authorize, revoke, modify, delete, and tag changes."
+    },
+    {
+      "question_id": "335",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C34",
+        "C41"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "Function URL fits simple webhook; validate provider signature when not using IAM auth."
+    },
+    {
+      "question_id": "336",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C85"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V11",
+      "learning_target": "Discovery data supports assessment, dependencies, right-sizing and waves; it is not the replication step."
+    },
+    {
+      "question_id": "337",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C75"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V07",
+      "learning_target": "Register hybrid managed nodes, then apply Patch Manager policies and compliance reporting."
+    },
+    {
+      "question_id": "338",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C46",
+        "C67"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V10",
+      "learning_target": "Search-index tiering changes hot/warm/cold responsibilities and access requirements."
+    },
+    {
+      "question_id": "339",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C54",
+        "C41"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Reuse connections outside handler and pool with RDS Proxy."
+    },
+    {
+      "question_id": "340",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C37",
+        "C71"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "Representative runtime measurements feed recommendations; a scheduled export is a separate automation step."
+    },
+    {
+      "question_id": "341",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C98",
+        "C34",
+        "C38"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V10",
+      "learning_target": "Separate Lambda-backed API functions scale independently instead of one monolith."
+    },
+    {
+      "question_id": "342",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C38",
+        "C41",
+        "C40"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V01",
+      "learning_target": "Package long encoding as ECR image and launch Fargate task; not long Lambda."
+    },
+    {
+      "question_id": "343",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C58",
+        "C51"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V07",
+      "learning_target": "Cross-account Aurora clone is copy-on-write, not live replication; recreate Lambda configuration."
+    },
+    {
+      "question_id": "344",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C52"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V11",
+      "learning_target": "Storage Lens advanced metrics: 15-month query window versus 14 days for free metrics; Inventory is not historical aggregate analytics."
+    },
+    {
+      "question_id": "345",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C96",
+        "C34"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V10",
+      "learning_target": "Accelerate distant S3 upload; edge-optimized REST API addresses API entry latency."
+    },
+    {
+      "question_id": "346",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C12",
+        "C13"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V10",
+      "learning_target": "Account-filtered budget alerts and scheduled department reports require separate configuration."
+    },
+    {
+      "question_id": "347",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C66"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V17",
+      "learning_target": "SES SMTP uses separate credentials and STARTTLS 587, not insecure SMTP assumptions."
+    },
+    {
+      "question_id": "348",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C88",
+        "C79"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V06",
+      "learning_target": "VM Import needs actual supported disk/image artifact, not just an OVF descriptor."
+    },
+    {
+      "question_id": "349",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C24",
+        "C07"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V02",
+      "learning_target": "Client VPN supports MFA enabled on Managed Microsoft AD or AD Connector; the latter is not an obligatory extra layer."
+    },
+    {
+      "question_id": "350",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C71",
+        "C08"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "Organization trail covers current/future member accounts with correct scope."
+    },
+    {
+      "question_id": "351",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C38",
+        "C67",
+        "C53",
+        "C98"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V01",
+      "learning_target": "Kubernetes portability, serverless OLTP, and serverless analytics are distinct layers."
+    },
+    {
+      "question_id": "352",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C54"
+      ],
+      "primary_visual": "V15",
+      "companion_visual": "V12",
+      "learning_target": "ElastiCache reduces repeated queries; RDS Proxy reduces connection overhead."
+    },
+    {
+      "question_id": "353",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C93",
+        "C21"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "learning_target": "Update WorkSpaces IP access control group for new office egress address."
+    },
+    {
+      "question_id": "354",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C09",
+        "C17"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V01",
+      "learning_target": "RAM shares TGW; its owner enables appropriate auto-accept settings."
+    },
+    {
+      "question_id": "355",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C17",
+        "C40"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V05",
+      "learning_target": "GWLB endpoints distribute traffic through configured autoscaled network appliances."
+    },
+    {
+      "question_id": "356",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C19"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V16",
+      "learning_target": "TGW advertises configured allowed prefixes; VGW filters VPC CIDRs. A 200 Mbps DX connection is not automatically invalid."
+    },
+    {
+      "question_id": "357",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C69",
+        "C71"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V13",
+      "learning_target": "Parquet and hourly partitions lower flow-log SQL scan cost."
+    },
+    {
+      "question_id": "358",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C23",
+        "C32"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V09",
+      "learning_target": "Latency alias routing and EvaluateTargetHealth choose healthy low-latency ELBs."
+    },
+    {
+      "question_id": "359",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C08",
+        "C04"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "SCP IAM restriction needs principal exception and management-account scope awareness."
+    },
+    {
+      "question_id": "360",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C89",
+        "C53",
+        "C23"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Cross-Region MySQL replica must be promoted before application write failover."
+    },
+    {
+      "question_id": "361",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C98",
+        "C30"
+      ],
+      "primary_visual": "V01",
+      "companion_visual": "V10",
+      "learning_target": "Split browsing/checkout scaling boundaries; edge JWT logic must verify claims/signature."
+    },
+    {
+      "question_id": "362",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C94",
+        "C56"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V06",
+      "learning_target": "Keep PII off immutable blockchain; store only appropriate commitments on ledger."
+    },
+    {
+      "question_id": "363",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C89",
+        "C55"
+      ],
+      "primary_visual": "V07",
+      "companion_visual": "V09",
+      "learning_target": "Aurora global replication plus DRS application recovery; test full RPO/RTO path."
+    },
+    {
+      "question_id": "364",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C38",
+        "C41"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V01",
+      "learning_target": "Long video processing on event-launched Fargate avoids idle workers and Lambda timeout."
+    },
+    {
+      "question_id": "365",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C02",
+        "C06"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V04",
+      "learning_target": "Target trusts source EC2 role; source can AssumeRole; no foreign instance profile."
+    },
+    {
+      "question_id": "366",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C35",
+        "C53"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V01",
+      "learning_target": "Multi-AZ application load balancing plus Aurora reader capacity."
+    },
+    {
+      "question_id": "367",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C16",
+        "C18",
+        "C32"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "NLB endpoint service can expose eligible on-premises IP targets over DX privately."
+    },
+    {
+      "question_id": "368",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C38",
+        "C37"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V01",
+      "learning_target": "Long ECS-on-EC2 jobs can binpack memory; match scaling metrics and job duration."
+    },
+    {
+      "question_id": "369",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C44",
+        "C79"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V12",
+      "learning_target": "EFS preserves NFS contract; keep durable Aurora outside disposable Beanstalk lifecycle."
+    },
+    {
+      "question_id": "370",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C03",
+        "C02",
+        "C81"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V10",
+      "learning_target": "GitHub OIDC role trust uses AssumeRoleWithWebIdentity and scoped token claims."
+    },
+    {
+      "question_id": "371",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C41",
+        "C60",
+        "C44"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "Sporadic short queue jobs favor Lambda and S3 over always-on workers."
+    },
+    {
+      "question_id": "372",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C53",
+        "C89"
+      ],
+      "primary_visual": "V09",
+      "companion_visual": "V03",
+      "learning_target": "Cross-Region SQL Server replicas exist but require supported edition/version/configuration."
+    },
+    {
+      "question_id": "373",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C85",
+        "C13"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V11",
+      "learning_target": "Migration Evaluator builds utilization-based TCO/assessment, not a live replication stream."
+    },
+    {
+      "question_id": "374",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C16",
+        "C04"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V04",
+      "learning_target": "S3 endpoint plus VPC-origin access point and bucket delegation confine approved access."
+    },
+    {
+      "question_id": "375",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C15",
+        "C37",
+        "C13"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V01",
+      "learning_target": "S3 gateway endpoint removes eligible NAT charges; schedule predictable scaling ahead."
+    },
+    {
+      "question_id": "376",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C06",
+        "C04",
+        "C46"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V03",
+      "learning_target": "ECR organization pull policy; identity token permission; expire only targeted untagged images."
+    },
+    {
+      "question_id": "377",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C55",
+        "C23"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "Local read replica reduces distant read latency while writer stays primary."
+    },
+    {
+      "question_id": "378",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C04",
+        "C16",
+        "C08"
+      ],
+      "primary_visual": "V04",
+      "companion_visual": "V16",
+      "learning_target": "Deny access-point creation unless AccessPointNetworkOrigin is VPC."
+    },
+    {
+      "question_id": "379",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C10",
+        "C82",
+        "C04"
+      ],
+      "primary_visual": "V08",
+      "companion_visual": "V04",
+      "learning_target": "Required tag keys plus an enabled FAIL-mode STACK hook block supported CloudFormation deployments; direct-API bypass controls remain separate."
+    },
+    {
+      "question_id": "380",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C30"
+      ],
+      "primary_visual": "V16",
+      "companion_visual": "V03",
+      "learning_target": "CloudFront Functions is sufficient for lightweight viewer query normalization."
+    },
+    {
+      "question_id": "381",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C22"
+      ],
+      "primary_visual": "V03",
+      "companion_visual": "V01",
+      "learning_target": "Private zone association and both DNS settings; retain correct DHCP resolver."
+    },
+    {
+      "question_id": "382",
+      "exam_domain": "Accelerate Workload Migration and Modernization",
+      "concept_ids": [
+        "C85",
+        "C69"
+      ],
+      "primary_visual": "V14",
+      "companion_visual": "V11",
+      "learning_target": "Analyze discovered dependencies; migrate tightly coupled servers in coordinated waves."
+    },
+    {
+      "question_id": "383",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C69"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V13",
+      "learning_target": "Redshift concurrency scaling handles eligible simultaneous queries, not every slow query."
+    },
+    {
+      "question_id": "384",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C08",
+        "C10"
+      ],
+      "primary_visual": "V05",
+      "companion_visual": "V04",
+      "learning_target": "Implement precise service/instance-class restrictions with supported controls/SCPs and dependencies."
+    },
+    {
+      "question_id": "385",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C69",
+        "C67"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V13",
+      "learning_target": "Athena/Glue on S3 ORC can replace always-on EMR for intermittent SQL."
+    },
+    {
+      "question_id": "386",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C13",
+        "C38"
+      ],
+      "primary_visual": "V11",
+      "companion_visual": "V10",
+      "learning_target": "EC2 Instance SP, Compute SP for Lambda, and MemoryDB reservations differ."
+    },
+    {
+      "question_id": "387",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C65",
+        "C66"
+      ],
+      "primary_visual": "V06",
+      "companion_visual": "V16",
+      "learning_target": "Catch preserves input only with appropriate ResultPath; States.ALL has exceptions."
+    },
+    {
+      "question_id": "388",
+      "exam_domain": "Design for New Solutions",
+      "concept_ids": [
+        "C77",
+        "C89"
+      ],
+      "primary_visual": "V12",
+      "companion_visual": "V07",
+      "learning_target": "AWS Backup schedules/retentions/copies; explicit failure events; copies are asynchronous."
+    },
+    {
+      "question_id": "389",
+      "exam_domain": "Continuous Improvement for Existing Solutions",
+      "concept_ids": [
+        "C17",
+        "C18"
+      ],
+      "primary_visual": "V02",
+      "companion_visual": "V05",
+      "learning_target": "Multi-AZ GWLB endpoints and appliances need symmetric forward/return inspection routes."
+    },
+    {
+      "question_id": "390",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C32",
+        "C55",
+        "C36"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V02",
+      "learning_target": "Raw TCP/UDP, fixed global ingress and permitted asynchronous data visibility select separate ingress and database capabilities."
+    },
+    {
+      "question_id": "391",
+      "exam_domain": "Design Solutions for Organizational Complexity",
+      "concept_ids": [
+        "C73",
+        "C16"
+      ],
+      "primary_visual": "V10",
+      "companion_visual": "V15",
+      "learning_target": "Inspector dependency scanning versus code scanning; exact code-exclusion tag."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "question_id": "211",
+  "base_record_sha256": "0204cbc5bdc2fb0fe3b6bd354f317f49c63bf113ddf0ecd3a4713f35767e57f1",
+  "record": {
+    "id": "211",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company must rehost a three-tier application from supported on-premises VMs to EC2. Each VM has a root disk and several terabytes of changing application data on supported local block volumes. All required volumes must remain synchronized while the team performs application tests. The final write freeze must be short, and the company wants managed migration lifecycle operations.\n\nWhich approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use AWS Transform MGN with a Replication Agent on each source server and include all required supported disks. Validate test launches, quiesce source writes and verify replication catch-up, then launch and validate cutover instances before switching traffic."
+      },
+      {
+        "id": "2",
+        "text": "Export and import complete VM images repeatedly with a scheduled VM Import/Export script, including another full export after freezing writes for cutover."
+      },
+      {
+        "id": "3",
+        "text": "Replicate only the root disks with MGN. Import the data disks once as snapshots before testing and attach those original snapshots to the final cutover instances."
+      },
+      {
+        "id": "4",
+        "text": "Use discovery data to create clean EC2 instances and migrate application files with a custom sequence of scheduled copy scripts and manually coordinated cutover steps."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. MGN maintains block-level replication of the selected server disks and provides test and cutover launches. Including the data disks in that replication path avoids an independently stale copy of the application's state.\n\n<<2>> recreates point-in-time imports and a large final transfer instead of maintaining the required continuous replication.\n\n<<3>> leaves subsequent changes to the data disks behind, even if the root disk is current.\n\n<<4>> can form a custom migration project, but adds rebuilding, synchronization, and lifecycle coordination that the managed rehosting workflow supplies.\n\nReplication catch-up is not a substitute for application-consistent quiescence and validation. After a cutover instance is launched, continued source replication goes to the staging area, not into that already-running cutover instance. Freeze or redirect writers correctly, validate dependencies, and define rollback before transferring production ownership.\n\nOfficial AWS references (checked September 18, 2026): [Managed server replication](https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html). [MGN cutover behavior](https://docs.aws.amazon.com/mgn/latest/ug/launch-cutover.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/211.mmd",
+  "diagram_alt": "The full server state remains in the replication path until a final quiesced catch-up precedes the production launch.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html",
+      "checked_on": "2026-09-18",
+      "supports": "Block-level replication and configurable replication/launch lifecycle"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/launch-cutover.html",
+      "checked_on": "2026-09-18",
+      "supports": "New cutover launch and subsequent replication to staging, not running cutover instances"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added application-consistent final catch-up and corrected any implication that a launched cutover instance continues receiving source writes."
+  ],
+  "review_status": "authored"
+}

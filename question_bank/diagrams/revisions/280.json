@@ -1,0 +1,62 @@
+{
+  "question_id": "280",
+  "base_record_sha256": "e36f15f981f8fab0e02ffd9387e81687d6b64299f5aeea23821b257f4e329fbc",
+  "record": {
+    "id": "280",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An engineering team retains 200 TB of files but processes only a changing subset during a 72-hour job each month. Some files are not accessed for several months, yet every file must remain available without an archive restore. The application has been certified only with Lustre and requires file locking and in-place updates. A tested FSx for Lustre SSD Persistent 2 configuration meets its performance target. Jobs may release their working file system after results have been durably exported.\n\nWhich storage design meets these requirements while avoiding an idle high-performance file system between jobs?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep the durable repository in S3 Intelligent-Tiering with optional asynchronous archive tiers disabled. Create the tested FSx for Lustre SSD Persistent 2 file system linked to S3 for each job, load required data, and verify result exports before deleting the file system."
+      },
+      {
+        "id": "2",
+        "text": "Keep all data in EFS and replace the certified Lustre mount with NFS without application recertification."
+      },
+      {
+        "id": "3",
+        "text": "Keep all data in S3 Glacier Deep Archive and create a Lustre working file system immediately when each job starts, without restoring its input objects."
+      },
+      {
+        "id": "4",
+        "text": "Mount S3 directly with Mountpoint for Amazon S3 and assume it provides the full Lustre locking and in-place-update behavior."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. S3 retains the repository between jobs, and the tested SSD Lustre file system supplies the required active-workload interface. Verify successful export before releasing the working copy. Intelligent-Tiering can move less-used objects among its immediate-access tiers when the optional asynchronous archive tiers are disabled.\n\n<<2>> offers a managed file system, but violates the application's certification requirement.\n\n<<3>> requires an archive restore before the job can read its inputs, contrary to the access requirement.\n\n<<4>> treats an object-storage mount as a complete Lustre replacement. Required file semantics must be supported, not inferred from the presence of a mount path.\n\nFSx exports new objects using S3 Standard; apply the intended S3 lifecycle transition afterward. S3 Intelligent-Tiering and FSx for Lustre Intelligent-Tiering are different features: the latter currently does not support S3 data repository associations.\n\nOfficial AWS references (checked September 18, 2026): [Lustre data repositories](https://docs.aws.amazon.com/fsx/latest/LustreGuide/fsx-data-repositories.html). [Exporting Lustre changes](https://docs.aws.amazon.com/fsx/latest/LustreGuide/export-changed-data-meta-dra.html). [S3 storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html). [Mountpoint file semantics](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint-usage.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/280.mmd",
+  "diagram_alt": "The durable repository outlives each job, and verified exports gate deletion of the temporary working file system.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/fsx-data-repositories.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 integration and the restriction on FSx Intelligent-Tiering file systems"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/export-changed-data-meta-dra.html",
+      "checked_on": "2026-09-18",
+      "supports": "Changed-data export and S3 Standard storage for exported objects"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Immediate-access Intelligent-Tiering tiers versus optional restore-based archive tiers"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint-usage.html",
+      "checked_on": "2026-09-18",
+      "supports": "Mountpoint intentionally implements a subset of POSIX and is not a full file-system replacement"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Distinguished S3 and FSx Intelligent-Tiering, retained the tested SSD Persistent 2 requirement, and required verified exports before teardown."
+  ],
+  "review_status": "authored"
+}

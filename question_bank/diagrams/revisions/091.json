@@ -1,0 +1,47 @@
+{
+  "question_id": "091",
+  "base_record_sha256": "95445157a10afe03621e91a450d6b44c17d29331bbfd24c2ffdfa89eac8f1569",
+  "record": {
+    "id": "091",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company stores confidential documents in an S3 bucket used only by authorized applications and employees. The bucket has legacy ACLs, and a recent policy change accidentally exposed some objects publicly. The company needs a managed preventive control against public access through both ACLs and bucket policies, with minimal custom automation.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Require the private canned ACL on every PutObject request, and leave bucket-policy and ACL modification permissions unchanged."
+      },
+      {
+        "id": "2",
+        "text": "Enable AWS Config rules for public S3 access and notify the security team whenever the bucket becomes noncompliant."
+      },
+      {
+        "id": "3",
+        "text": "Apply an SCP that denies PutObjectAcl when a public canned ACL is requested, and leave bucket-policy changes unrestricted."
+      },
+      {
+        "id": "4",
+        "text": "Enable all four S3 Block Public Access settings for the bucket and restrict who can change them. Apply an account-level baseline where compatible with the other buckets."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The four settings cover both new public grants and access derived from existing public ACLs or policies. BlockPublicAcls rejects public ACL operations, IgnorePublicAcls ignores public ACL grants, BlockPublicPolicy rejects public policies, and RestrictPublicBuckets restricts access when a resource policy is public. Protecting the settings prevents workload users from removing the control.\n\n<<1>> constrains an upload path but leaves later ACL changes and public bucket policies uncovered.\n\n<<2>> detects an exposure after it occurs and depends on a response. It does not provide the requested preventive control.\n\n<<3>> covers one ACL modification operation, not public bucket policies or every public ACL creation path.\n\nBlock Public Access does not rewrite existing ACLs or policies, so audit and repair them as well. It also does not replace least-privilege authorization for named IAM principals or control every way an authorized user might share data.\n\nAWS documentation (checked September 18, 2026): [S3 Block Public Access](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/091.diagram.json",
+  "diagram_alt": "The four Block Public Access settings separately address public ACL creation, ACL effectiveness, public policies, and access under those policies.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+      "checked_on": "2026-09-18",
+      "supports": "The four settings prevent or neutralize public ACL and public resource-policy access without rewriting existing policies and ACLs."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Distinguished prevention from detection and avoided claiming that Block Public Access revokes all forms of unauthorized sharing."
+  ],
+  "review_status": "authored"
+}

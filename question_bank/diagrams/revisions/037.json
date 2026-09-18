@@ -1,0 +1,52 @@
+{
+  "question_id": "037",
+  "base_record_sha256": "9187a24c280dfc10f0f559b741c4f9a815215b5e615635b3f984a8e3b1d62820",
+  "record": {
+    "id": "037",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company is migrating a Windows Server and IIS application with a MySQL database to AWS. It must run in one Region across at least two Availability Zones. The team cannot containerize or rewrite the application. The load balancer must route /catalog/* and /checkout/* to separate target groups, and the web tier must scale with demand.\n\nTests have validated Aurora MySQL compatibility and performance. Database resources must remain usable if their CloudFormation stack is deleted; required networking and secrets are in a separate retained stack.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy Windows EC2 instances across two AZs behind a Network Load Balancer. Configure NLB listener rules to select target groups by HTTP path, and retain a Multi-AZ RDS database."
+      },
+      {
+        "id": "2",
+        "text": "Deploy Windows EC2 Auto Scaling capacity across two AZs behind an ALB with path-based rules and a Route 53 alias. Deploy an Aurora MySQL writer and reader in different AZs, and set DeletionPolicy: Retain on the DB cluster and DB instances."
+      },
+      {
+        "id": "3",
+        "text": "Deploy Windows Auto Scaling capacity and an ALB in each of two Regions. Use Aurora Global Database, Route 53 latency routing, and Retain policies for the database resources."
+      },
+      {
+        "id": "4",
+        "text": "Containerize the application on ECS behind an ALB and deploy a Multi-AZ database. Set DeletionPolicy: Snapshot so that the live database remains after stack deletion."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. ALB path conditions supply the required request routing. Windows EC2 supports the unchanged application, and Auto Scaling across AZs provides elastic web capacity. Retain on both the Aurora cluster and its instances preserves those resources when the stack is deleted.\n\n<<1>> fails because an NLB does not evaluate HTTP path conditions.\n\n<<3>> violates the single-Region constraint, even though it could be a valid design for a different recovery requirement.\n\n<<4>> requires prohibited containerization. Snapshot creates a recovery artifact and deletes the resource; it does not retain a running database.\n\nRetention applies per resource and retained resources continue to incur charges. Dependencies must survive too, as specified here. DeletionPolicy does not control an update that replaces a resource; use the separate replacement policy where required. Aurora is justified by the stated compatibility tests, not by an assumed user-count threshold.\n\nOfficial AWS references (checked 2026-09-18):\n[ALB rule conditions](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html)\n[CloudFormation DeletionPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/037.diagram.json",
+  "diagram_alt": "The four independent constraints distinguish valid routing, deployment scope, and live-resource retention from similar alternatives.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB supports HTTP path conditions"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html",
+      "checked_on": "2026-09-18",
+      "supports": "Retain preserves resources; Snapshot deletes after creating a snapshot; replacement updates differ"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the previously repaired constraints and answer. Simplified wording and distinguished resource retention from snapshot recovery."
+  ],
+  "review_status": "authored"
+}

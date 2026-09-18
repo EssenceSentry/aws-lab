@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Build and synchronize before the cutover window
+accDescr: The web tier and RDS target are prepared in parallel. Full data copy and ongoing changes precede the write freeze and validated public DNS cutover.
+W[Deploy and test<br/>Two-AZ EC2 web tier<br/>ALB and external sessions]:::process --> C[Freeze source writes<br/>Confirm final catch-up<br/>Validate application]:::decision
+D[MySQL source<br/>Configured change logs]:::inputData --> M[DMS full load<br/>and CDC]:::process
+M --> R[(RDS MySQL<br/>Multi-AZ target)]:::storage
+R --> C
+C --> P[Route 53 public apex alias<br/>Serve through ALB]:::output

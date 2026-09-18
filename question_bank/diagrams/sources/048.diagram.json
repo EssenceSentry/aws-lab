@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "What remains to do after the disaster?",
+  "columns": [
+    "Strategy",
+    "Already available",
+    "Work before recovery"
+  ],
+  "rows": [
+    [
+      "Backup and restore",
+      "Backup data",
+      "Provision tiers + restore database"
+    ],
+    [
+      "Pilot light",
+      "Core replica",
+      "Provision missing tiers + resize"
+    ],
+    [
+      "Warm standby",
+      "Complete reduced stack",
+      "Promote + scale + switch traffic"
+    ],
+    [
+      "Hot standby",
+      "Complete full-capacity stack",
+      "Promote + switch traffic"
+    ]
+  ],
+  "footnote": "For this workload, only the tested warm and hot standby plans fit 5 minutes; warm standby runs less idle capacity.",
+  "emphasis_rows": [
+    2
+  ]
+}

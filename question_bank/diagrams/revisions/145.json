@@ -1,0 +1,62 @@
+{
+  "question_id": "145",
+  "base_record_sha256": "48d2fa5b2e58c80d4aef2731a083708388eee593c06d02027dc6602f7f9c84d1",
+  "record": {
+    "id": "145",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A genomics platform receives about 8 KB of records per second. Two independent analysis applications must each consume every record promptly, maintain separate checkpoints, and replay the preceding seven days even after successful processing. Processed results must reach Redshift in microbatches within several minutes. Stable event IDs support idempotent processing and loading.\n\nWhich design meets all requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Write records to Kinesis Data Streams with its default 24-hour retention. Use distinct KCL applications with separate checkpoints and load processed results into Redshift from S3 microbatches."
+      },
+      {
+        "id": "2",
+        "text": "Write records to Kinesis Data Streams with seven-day retention. Use distinct KCL applications with separate checkpoints. Stage processed microbatches in S3, then COPY them into Redshift staging tables and deduplicate by event ID before merging."
+      },
+      {
+        "id": "3",
+        "text": "Write records to one SQS queue with seven-day retention. Run both analysis applications as consumers that delete each message after successful processing, and load processed results from S3 microbatches."
+      },
+      {
+        "id": "4",
+        "text": "Invoke both analysis applications synchronously for every submission and load their final results into Redshift. Retain only those results after successful processing."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. A retained Kinesis stream supports independent consumers without deleting data when one consumer advances. Separate KCL application identities keep lease and checkpoint state separate. The S3-to-Redshift load path can operate on microbatches without delaying the live consumers.\n\n<<1>> supports independent consumption and microbatch loading, but its 24-hour retention cannot provide the required seven-day replay window.\n\n<<3>> distributes work among competing consumers instead of delivering the full stream to each application. Queue retention does not restore successfully deleted messages.\n\n<<4>> removes the original replay source after processing.\n\nConfigure the retention window explicitly and size stream and consumer capacity for normal processing plus replay. Use event IDs in an idempotent load workflow: Redshift COPY does not independently enforce uniqueness merely because a primary key is declared.\n\nOfficial AWS references (checked September 18, 2026): [Kinesis stream concepts](https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html). [KCL checkpoint metadata](https://docs.aws.amazon.com/streams/latest/dev/kcl-dynamoDB.html). [Redshift COPY from S3](https://docs.aws.amazon.com/redshift/latest/dg/t_Loading-data-from-S3.html). [Redshift constraints](https://docs.aws.amazon.com/redshift/latest/dg/t_Defining_constraints.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/145.mmd",
+  "diagram_alt": "Independent checkpoints allow both applications to read the retained log; warehouse deduplication is a separate step.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Independent concurrent consumers and configurable retained records"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/kcl-dynamoDB.html",
+      "checked_on": "2026-09-18",
+      "supports": "Distinct application names and lease tables with checkpoints"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/t_Loading-data-from-S3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Parallel microbatch loading from S3"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/t_Defining_constraints.html",
+      "checked_on": "2026-09-18",
+      "supports": "Primary and unique constraints are informational rather than enforced"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2 and previous retained-log repair. Made the Redshift staging/deduplication step explicit instead of implying COPY provides uniqueness."
+  ],
+  "review_status": "authored"
+}

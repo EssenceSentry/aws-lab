@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Two email triggers, one account budget",
+  "columns": [
+    "Requirement",
+    "Configured mechanism"
+  ],
+  "rows": [
+    [
+      "Department scope",
+      "Linked-account filter in management account"
+    ],
+    [
+      "Threshold crossed",
+      "Budget notification to that department"
+    ],
+    [
+      "Monthly schedule",
+      "Separate Budgets Report and recipients"
+    ],
+    [
+      "Explore a cost change",
+      "Interactive Cost Explorer analysis"
+    ]
+  ],
+  "footnote": "Threshold alerts and scheduled reports are separate configurations.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

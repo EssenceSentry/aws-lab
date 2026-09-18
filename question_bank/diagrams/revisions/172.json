@@ -1,0 +1,47 @@
+{
+  "question_id": "172",
+  "base_record_sha256": "d5ebce7b14d96c8d07316bc351f809e0246f8a48b09dd34ee59dd7f613d7ccce",
+  "record": {
+    "id": "172",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses consolidated billing in AWS Organizations. One business-unit account has purchased EC2 Reserved Instances for a workload that will launch in three months. Finance requires that the account neither share its RI discounts with other member accounts nor receive their shared discounts. The account must remain in the organization, and sharing among the other accounts must continue.\n\nWhich change meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Have an administrator in the business-unit member account set the purchased reservations to private visibility in the EC2 console."
+      },
+      {
+        "id": "2",
+        "text": "Remove the business-unit account from the organization and pay its charges separately until the workload launches."
+      },
+      {
+        "id": "3",
+        "text": "Have an authorized management-account administrator deactivate Reserved Instance and Savings Plans discount sharing for the business-unit account in Billing preferences, leaving the other accounts enabled."
+      },
+      {
+        "id": "4",
+        "text": "Attach an SCP to the business-unit account that denies PurchaseReservedInstancesOffering and ModifyReservedInstances, while leaving the billing sharing preferences enabled."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The management account controls reservation discount sharing in Billing preferences. Disabling sharing for the specified account isolates its discount participation while preserving sharing among the other enabled accounts.\n\n<<1>> assumes a reservation visibility setting in a member account that is not the billing control for organization sharing.\n\n<<2>> breaks the requirement to retain organization membership and its centralized governance.\n\n<<4>> restricts API actions for purchasing or modifying reservations. It does not change how existing reservation discounts are allocated on the bill.\n\nThe reservation commitment remains payable while unused, so isolating discounts before the workload launches can increase the organization's effective cost. Current sharing controls also support account groups, but the requirement here is no sharing to or from this one account.\n\nAWS documentation (checked September 18, 2026): [Reservation discount sharing preferences](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/172.mmd",
+  "diagram_alt": "Disabling sharing affects discount participation for the selected account without removing it from Organizations.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html",
+      "checked_on": "2026-09-18",
+      "supports": "The management account can enable or disable sharing for specified accounts and configure organization-wide or group-based sharing."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced master-account terminology, made the no-sharing-in-either-direction requirement explicit, and acknowledged current group-based sharing controls."
+  ],
+  "review_status": "authored"
+}

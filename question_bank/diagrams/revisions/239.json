@@ -1,0 +1,77 @@
+{
+  "question_id": "239",
+  "base_record_sha256": "5dbfcd9ff0085a81896d6165680df4a47769649fa7c0beed28533551ae0b0cb8",
+  "record": {
+    "id": "239",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "Each new S3 photo sends an SNS notification to several Lambda processors. Every processor must receive every event and write its own metadata to the existing RDS for MySQL DB instance. During upload bursts, database CPU rises and processing fails. Profiling shows that connection creation is a major cost, while the database can sustain the average write workload if arrivals are smoothed. The company must retain this database deployment.\n\nWhich changes together address the bottlenecks and provide independent retry backlogs? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable SNS delivery-status logging and rely on notification-delivery retries alone to control the rate of completed database writes."
+      },
+      {
+        "id": "2",
+        "text": "Place RDS Proxy in front of the RDS DB instance and make each Lambda processor use the proxy endpoint for database connections."
+      },
+      {
+        "id": "3",
+        "text": "Subscribe one SQS queue per processor to the SNS topic. Have each Lambda processor consume its own queue with bounded concurrency, idempotent writes, and retry and dead-letter handling."
+      },
+      {
+        "id": "4",
+        "text": "Use RDS Data API for the existing ordinary RDS for MySQL DB instance without changing its database deployment."
+      },
+      {
+        "id": "5",
+        "text": "Add RDS read replicas and send all metadata INSERT and UPDATE statements to their read-only endpoints."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<3>> are correct. RDS Proxy reuses backend database connections to reduce the measured connection-churn overhead. A separate SQS subscription preserves a copy of each SNS event for each processor and provides an independent backlog. Bound concurrency across all consumers so their combined write rate remains within the writer's capacity.\n\n<<1>> provides delivery visibility, but a successfully delivered notification is not proof of a committed metadata write. Delivery retries alone do not provide controlled per-processor database backlogs.\n\n<<4>> targets the wrong database deployment. RDS Data API supports compatible Aurora clusters; it is not a feature that can be enabled on this ordinary RDS for MySQL instance.\n\n<<5>> does not offload the write workload. Read replicas are intended for reads, while these statements must reach an appropriate writer.\n\nDo not give all processors one shared SQS queue: competing consumers would divide the messages rather than give each processor every event. Use stable event or object-version identifiers to make retries idempotent, and acknowledge a message only after its processing succeeds. Monitor oldest-message age and dead-letter queues. Proxy pooling cannot make an underprovisioned database execute unlimited writes, and session pinning can reduce pooling efficiency.\n\nAWS documentation (checked September 18, 2026): [RDS Proxy pooling and failover](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html); [SNS fanout to SQS subscribers](https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html); [Lambda processing of SQS queues](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html); [SQS event-source concurrency limits](https://docs.aws.amazon.com/lambda/latest/api/API_ScalingConfig.html); [RDS Data API scope](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html); [RDS read replicas and standbys](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/239.mmd",
+  "diagram_alt": "Each processor has its own copy and backlog, while bounded consumers share pooled connections to the same database writer.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Pooling reduces database connection overhead; during failover the proxy can preserve idle client connections, accept new connections, and route to the new writer, while active work can fail."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html",
+      "checked_on": "2026-09-18",
+      "supports": "SNS publishes a copy of each notification to each subscribed SQS queue, allowing independent durable consumer backlogs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda polls SQS, deletes successfully processed messages, and can deliver duplicates; handlers must be idempotent and handle retry failures."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/api/API_ScalingConfig.html",
+      "checked_on": "2026-09-18",
+      "supports": "MaximumConcurrency limits concurrent Lambda invocations for an SQS event source using standard polling mode."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS Data API exposes supported Aurora DB clusters through an HTTP interface, not an ordinary RDS for MySQL DB instance."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "MySQL read replicas serve separately routed reads using asynchronous replication; a conventional Multi-AZ DB-instance standby cannot serve reads."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2 and 3. Added measured connection-churn and average-throughput assumptions, made per-subscriber fanout and bounded concurrency explicit, and avoided claiming that pooling alone fixes unlimited write throughput."
+  ],
+  "review_status": "authored"
+}

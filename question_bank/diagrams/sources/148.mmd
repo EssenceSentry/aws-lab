@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Keep the previous environment ready for rollback
+accDescr: Both environments remain alive after a production CNAME swap so that the mapping can be reversed and clients using older DNS answers still have a target.
+P["Production CNAME"] -->|Before swap| B["Blue: previous version"]
+P -.->|After validation and swap| G["Green: new version"]
+B --> R["Retained through rollback window"]
+G --> H["Observe health and errors"]
+H -->|Rollback if needed| P
+class P inputData
+class H decision
+class B,G output
+class R storage

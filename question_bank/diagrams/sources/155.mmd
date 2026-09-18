@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Close the direct-origin bypass
+accDescr: CloudFront requests must pass a source-network check and a protected-header check before ALB forwarding, and EC2 only accepts the ALB path.
+CF["CloudFront request"] --> SG{"Origin-facing network source?"}
+DIRECT["Direct internet request"] --> SG
+SG -->|No| DENY["Reject"]
+SG -->|Yes| H{"Protected origin header?"}
+H -->|No| DENY
+H -->|Yes| A["ALB forwards to private EC2"]
+class CF,DIRECT inputData
+class SG,H decision
+class DENY warning
+class A output

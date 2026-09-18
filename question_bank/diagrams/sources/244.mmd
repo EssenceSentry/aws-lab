@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: One preserved identity, multiple reachable addresses
+accDescr: Partners use a hostname or alternate endpoint IPs to reach a multi-AZ Transfer Family server whose host key and S3 permissions are configured separately.
+P[Partner SFTP clients]:::inputData --> DNS[Hostname or alternate IPs]
+subgraph ENDPOINT[VPC-hosted Transfer Family]
+  A[AZ A, reused Elastic IP]
+  B[AZ B, new Elastic IP]
+  SGATE[Source-IP security group]:::decision
+  AUTH[SSH user authentication]
+end
+DNS --> A
+DNS --> B
+A --> SGATE
+B --> SGATE
+SGATE --> AUTH
+KEY[Imported host key]:::storage -. server identity .-> AUTH
+AUTH -->|scoped user role| S3[S3 partner prefixes]:::storage

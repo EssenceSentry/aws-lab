@@ -1,0 +1,14 @@
+sequenceDiagram
+accTitle: RAM integration creates the role needed for OU sharing
+accDescr: A management-account principal enables organization sharing through RAM. RAM initializes its organization integration before an owner creates a resource share targeting an OU.
+participant M as Management account
+participant R as AWS RAM
+participant O as Organizations and IAM
+participant A as Resource owner
+M->>R: Enable organization sharing
+R->>O: Enable integration and create service-linked role
+O-->>R: Organization structure access available
+R-->>M: Sharing enabled
+A->>R: Create share with resources and OU principal
+R->>O: Resolve OU membership
+R-->>A: Share available to eligible member accounts

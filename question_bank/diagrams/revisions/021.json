@@ -1,0 +1,52 @@
+{
+  "question_id": "021",
+  "base_record_sha256": "a309f95455574660456edfa165834acfd8ab9c78c68ee771eb1bdb9e576486f4",
+  "record": {
+    "id": "021",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A university runs a student portal with AWS Lambda and a Regional Amazon API Gateway REST API. After an SQL injection incident, the application team is fixing unsafe database queries. The security team also needs managed request filtering and a history of changes to the firewall configuration. The portal does not need a content delivery network.\n\nWhich solution meets these requirements with the least additional infrastructure?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Associate an AWS WAF regional web ACL containing SQL injection rules with the REST API stage. Enable AWS Config recording for the supported WAF resources."
+      },
+      {
+        "id": "2",
+        "text": "Associate an AWS WAF web ACL directly with each Lambda function. Use AWS Firewall Manager to retain the firewall configuration history."
+      },
+      {
+        "id": "3",
+        "text": "Create a CloudFront distribution in front of the REST API and associate a WAF web ACL with the distribution. Enable AWS Config recording for the supported WAF resources."
+      },
+      {
+        "id": "4",
+        "text": "Block the attacking IP addresses in the database subnet network ACL. Use VPC Flow Logs to retain the history of the filtering rules."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Correct: <<1>>. API Gateway REST API stages support direct association with a regional AWS WAF web ACL in the same Region. SQL injection rules inspect requests before they reach the integration. AWS Config records supported resource configurations and their changes.\n\n<<2>> is incorrect because WAF does not associate directly with Lambda functions. Firewall Manager distributes security policies; it does not replace Config configuration history.\n\n<<3>> can provide filtering, but adds a distribution that the scenario does not need. Direct stage association meets the stated requirements with fewer components.\n\n<<4>> filters network traffic by addresses and ports, not SQL syntax. Flow Logs record traffic metadata, not historical rule configurations.\n\nUse WAF as defense in depth. Parameterized queries and appropriate database permissions remain necessary; request filtering cannot guarantee that every injection attempt is blocked.\n\nOfficial AWS references (checked 2026-09-18):\n[WAF integration with REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html)\n[WAF monitoring tools](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring_automated_manual.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/021.mmd",
+  "diagram_alt": "Request filtering and application query protection act on traffic, while AWS Config records firewall changes.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html",
+      "checked_on": "2026-09-18",
+      "supports": "Regional web ACL association with a REST API stage and SQL injection filtering"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/monitoring_automated_manual.html",
+      "checked_on": "2026-09-18",
+      "supports": "AWS Config supplies historical resource configuration"
+    }
+  ],
+  "editorial_notes": [
+    "Removed the implication that WAF alone repairs SQL injection; made minimum infrastructure the selection criterion. Replaced invalid ALB-to-API-Gateway and NACL assumptions with a clear layer distinction. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

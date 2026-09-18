@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Prevent new violations and detect existing violations separately
+accDescr: An SCP evaluates tag-on-create launch requests and denies missing Project tags. Separately, Config evaluates recorded instances and sends compliance data to a central organization aggregator.
+R[Member-account launch request]:::inputData --> T{Project tag supplied?<br/>SCP launch guardrail}:::decision
+T -->|No| X[Deny RunInstances]:::error
+T -->|Yes, other permissions allow| I[EC2 instance]:::output
+I --> C[Config required-tags rule<br/>Evaluate Project key]:::process
+E[Existing recorded instances]:::inputData --> C
+C --> A[Organization Config aggregator<br/>Central compliance view]:::output

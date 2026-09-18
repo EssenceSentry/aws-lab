@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Sign-in, provisioning and authorization are separate
+accDescr: The external identity provider sends SAML sign-in assertions and SCIM identity updates through distinct paths, while administrators assign groups and permission sets to accounts.
+AD["Active Directory
+users and groups"]:::storage --> I["External identity provider"]
+I -->|SAML sign-in| A["Identity Center authentication"]
+I -->|SCIM provisioning| G["Identity Center users and groups"]:::storage
+P["Account + group + permission set"]:::inputData --> R["Account assignment"]
+G --> R
+A --> E{"Authenticated and
+assigned?"}:::decision
+R --> E
+E -->|Yes| S["Temporary AWS account session"]:::output

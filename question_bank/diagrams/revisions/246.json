@@ -1,0 +1,62 @@
+{
+  "question_id": "246",
+  "base_record_sha256": "ebca9465f9402dca85964d18ab5b23a8bb1cbf3c0ea9f30b3b67dce130ef2271",
+  "record": {
+    "id": "246",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "Standard Lambda functions process images and write metadata to DynamoDB in the same Region. They must now issue graph queries to a private Neptune DB cluster. The functions use IPv4 and can be connected to the cluster VPC. IAM database and DynamoDB permissions are already correct.\n\nWhich network designs allow the functions to reach both services? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Connect the functions to public subnets, allow their security group into Neptune, and use only a default route to an internet gateway for DynamoDB access."
+      },
+      {
+        "id": "2",
+        "text": "Connect the functions to private subnets and permit their security group into Neptune on the configured database port. Associate a DynamoDB gateway endpoint with the function subnet route tables."
+      },
+      {
+        "id": "3",
+        "text": "Leave the functions without customer-VPC connectivity and create a Neptune management API interface endpoint in the database VPC, using that endpoint for graph queries."
+      },
+      {
+        "id": "4",
+        "text": "Connect the functions to private subnets and permit their security group into Neptune. Route outbound IPv4 traffic through a public NAT gateway with internet-gateway connectivity to reach the DynamoDB service endpoint."
+      },
+      {
+        "id": "5",
+        "text": "Leave the functions without customer-VPC connectivity and add a Neptune inbound rule for the Lambda service IP ranges."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<4>> are correct. VPC connectivity provides a private route to Neptune. DynamoDB can then be reached through its gateway endpoint or through a working NAT egress path to its public service endpoint. Endpoint policies, security controls and IAM permissions must also permit the operations.\n\n<<1>> does not give a standard VPC-connected Lambda function a public IPv4 address, so an internet-gateway route alone is insufficient. <<3>> supplies a private management API endpoint, not network reachability from the function to the graph database query endpoint. <<5>> changes filtering but does not establish a route into the private VPC.\n\nA gateway endpoint avoids a NAT dependency for DynamoDB traffic. NAT remains useful when the function needs other external destinations. Adding a VPC attachment changes the function’s outbound network path, so reassess all dependencies when making that change.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc-internet.html\nhttps://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html\nhttps://docs.aws.amazon.com/neptune/latest/userguide/vpc-interface-endpoints.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/246.mmd",
+  "diagram_alt": "VPC attachment enables private Neptune access; DynamoDB connectivity requires an endpoint or a valid outbound path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc-internet.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard VPC-connected functions do not obtain internet access merely by using a public subnet; IPv4 internet access can use a NAT path."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html",
+      "checked_on": "2026-09-18",
+      "supports": "DynamoDB gateway endpoints provide VPC access without an internet gateway or NAT."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/neptune/latest/userguide/vpc-interface-endpoints.html",
+      "checked_on": "2026-09-18",
+      "supports": "Neptune interface endpoints expose API infrastructure shared with RDS, distinct from the graph query endpoint."
+    }
+  ],
+  "editorial_notes": [
+    "Specified standard Lambda and IPv4 to avoid mixing newer Lambda Managed Instances or IPv6 networking behavior into this question."
+  ],
+  "review_status": "authored"
+}

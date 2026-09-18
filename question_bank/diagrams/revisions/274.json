@@ -1,0 +1,52 @@
+{
+  "question_id": "274",
+  "base_record_sha256": "eb4e9f8edaa506a6e103d910042104b588813b8f2a1cb7a13f44574e287178e4",
+  "record": {
+    "id": "274",
+    "exam_domain": "Design for New Solutions",
+    "question": "A CloudFront distribution caches product images using query parameters for color and size. The origin treats parameter names and values as case-insensitive and parameter order as irrelevant. Parameters never repeat, and these URLs contain no signatures or case-sensitive identifiers. Logs show separate cache entries for semantically identical requests such as ?Color=Red&Size=Large and ?size=large&color=red.\n\nWhich change consolidates equivalent requests without merging different image variants?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a viewer-request Lambda@Edge function to parse and consistently re-encode the parameters, lowercase their names and values, and sort them before CloudFront looks up the cache entry."
+      },
+      {
+        "id": "2",
+        "text": "Exclude all query parameters from the cache key and stop forwarding them to the origin."
+      },
+      {
+        "id": "3",
+        "text": "Add a reverse proxy at the origin that normalizes query parameters before generating each image."
+      },
+      {
+        "id": "4",
+        "text": "Use an origin-request Lambda@Edge function to lowercase and sort parameters after a cache miss."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. CloudFront distinguishes query-string case and order. Canonicalizing equivalent inputs before cache lookup produces a shared key while retaining color and size values that select different images.\n\n<<2>> merges genuinely different variants, potentially returning the wrong image.\n\n<<3>> normalizes too late to combine entries already selected by CloudFront's original keys.\n\n<<4>> also runs after the cache lookup. It can normalize requests sent to the origin, but cannot prevent the initial fragmentation.\n\nCanonicalization must follow the application's semantics. Lowercasing arbitrary query values could corrupt identifiers or signatures; sorting repeated parameters could change their meaning. The stated URL contract makes these transformations safe here.\n\nOfficial AWS references (checked September 18, 2026): [Query-string cache identity](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/QueryStringParameters.html). [CloudFront trigger timing](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudfront-trigger-events.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/274.mmd",
+  "diagram_alt": "Equivalent query strings converge before lookup, showing why origin-side normalization is too late.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/QueryStringParameters.html",
+      "checked_on": "2026-09-18",
+      "supports": "Case and parameter order create distinct cached variants"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudfront-trigger-events.html",
+      "checked_on": "2026-09-18",
+      "supports": "Viewer-request modifications occur before cache lookup"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added a safe normalization contract and replaced the fictional case-insensitive setting with a valid but mistimed origin-request alternative."
+  ],
+  "review_status": "authored"
+}

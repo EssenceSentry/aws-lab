@@ -1,0 +1,12 @@
+sequenceDiagram
+accTitle: The vendor binds role assumption to the requesting customer
+accDescr: Requests for the intended customer carry its external ID and can assume the audit role. Another customer cannot use that role by merely supplying its ARN because the vendor sends a different customer ID.
+participant V as Vendor service
+participant S as STS trust evaluation
+participant R as Customer audit resources
+V->>S: Assume audit role, intended customer's external ID
+S-->>V: Scoped temporary session
+V->>R: Authorized EC2 discovery request
+V->>S: Same role ARN, different customer's external ID
+S-->>V: Denied, external ID does not match
+Note over V,S: Vendor chooses the ID from its trusted customer mapping

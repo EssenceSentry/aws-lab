@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: An SCP exception does not grant IAM access
+accDescr: For an IAM request from a covered member-account principal, the SCP denies non-supervisory roles. Exempt roles must still pass normal IAM authorization.
+A["Covered principal requests IAM action"] --> B{"Approved supervisory role?"}
+B -->|No| C["Explicit SCP deny"]
+B -->|Yes| D{"IAM grant and other controls allow?"}
+D -->|No| E["Deny"]
+D -->|Yes| F["Allow IAM action"]
+class A inputData
+class B,D decision
+class C,E warning
+class F output

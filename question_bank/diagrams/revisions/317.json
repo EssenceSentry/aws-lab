@@ -1,0 +1,52 @@
+{
+  "question_id": "317",
+  "base_record_sha256": "da11e7c5a983d98a48767a8abb774da9338f87e75374fae9cae6370617c10df6",
+  "record": {
+    "id": "317",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "Employees upload reports through an application whose backend role has s3:PutObject permission. They download through CloudFront, where viewer authorization is already configured. Some employees can also read the objects directly from S3 because of legacy read grants. The company must remove the download bypass while preserving the backend upload workflow. The S3 origin uses its REST endpoint and has ACLs disabled.\n\nWhich change should the solutions architect make?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach an OAC that signs origin requests. Allow distribution-scoped CloudFront GetObject access in the bucket policy, remove the legacy employee read grants, and retain the backend’s scoped PutObject permission."
+      },
+      {
+        "id": "2",
+        "text": "Install a custom viewer TLS certificate on CloudFront and remove every S3 permission, including the application backend’s upload permission."
+      },
+      {
+        "id": "3",
+        "text": "Enable CloudFront field-level encryption and keep the existing S3 permissions, because field encryption forces all S3 GET requests through CloudFront."
+      },
+      {
+        "id": "4",
+        "text": "Require CloudFront signed URLs and configure OAC, but retain the employees’ direct S3 GetObject grants to avoid changing their IAM permissions."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Treat uploading and downloading as separate permission paths: the backend retains the object-write action it needs, while employee reads go through the authorized CloudFront distribution. Review identity policies, bucket policies and access points so no unintended direct read path remains.\n\n<<2>> breaks uploads and does not establish the required signed CloudFront origin grant. A viewer certificate controls TLS identity, not S3 authorization.\n\n<<3>> protects selected fields in supported requests; it does not alter S3 read grants.\n\n<<4>> adds a CloudFront viewer gate but preserves the independent S3 bypass.\n\nOAC authenticates CloudFront’s origin requests. Removing an Allow in one policy is insufficient if another applicable policy still grants the same direct access. Preserve the required writer deliberately instead of applying an indiscriminate deny to all S3 operations.\n\nOfficial AWS references (checked September 18, 2026): [Private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html). [S3 access controls](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-overview.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/317.diagram.json",
+  "diagram_alt": "A permission matrix preserves the backend writer while removing direct employee reads and authorizing CloudFront reads.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC signing, service principal, distribution SourceArn, REST endpoints and SSE-KMS key authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-overview.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 identity and resource policies determine distinct object read and write access."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Made backend uploads an explicit path that must survive download lockdown and removed the false description of OAC as an IAM user."
+  ],
+  "review_status": "authored"
+}

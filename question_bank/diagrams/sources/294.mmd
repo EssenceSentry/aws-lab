@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Transfer the large baseline separately from the small change stream
+accDescr: A consistent 25 TB baseline travels through Data Transfer Terminal and S3 into Aurora while the source retains binlogs. Those changes catch up over the VPN before a brief write pause and cutover.
+M[(On-premises MySQL<br/>Continue serving writes)]:::storage -->|Consistent 25 TB baseline| B[Backup plus exact binlog position]:::process
+B --> T[Data Transfer Terminal<br/>Upload baseline to S3]:::process
+T --> A[(Restore Aurora MySQL)]:::storage
+M -->|Retained binlogs<br/>50 Mbps VPN| A
+A --> V[Brief write pause<br/>Final catch-up and validation]:::process
+V --> C[Application cutover]:::output

@@ -1,0 +1,52 @@
+{
+  "question_id": "111",
+  "base_record_sha256": "59f821345e36c4c15fd7d21bb63d046d35b4701f5929d5d1afffebe42b4ccfbc",
+  "record": {
+    "id": "111",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company builds a searchable photo catalog with several Lambda functions that extract different kinds of metadata. Photos are independent, and the extraction rules for a photo can run independently. Each function completes within five minutes, but processing photos and rules sequentially makes the overall batch take 45 minutes. The company must collect all rule results for each photo before updating its ElastiCache catalog. It wants to reuse the functions and minimize custom orchestration code.\n\nWhich change will reduce batch duration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a Step Functions workflow with a Map state to process photos concurrently. For each photo, use a Parallel state to invoke independent extraction functions, combine their results, and then update the catalog."
+      },
+      {
+        "id": "2",
+        "text": "Use a Step Functions workflow with a Map state whose maximum concurrency is one. Run each photo's extraction functions sequentially and update the catalog after the last function."
+      },
+      {
+        "id": "3",
+        "text": "Create one SQS queue per batch and configure each extraction function as a competing consumer of that queue so that every function receives every photo."
+      },
+      {
+        "id": "4",
+        "text": "Port all extraction functions to containers and build a custom AWS Batch scheduler that submits and polls each rule job before updating the catalog."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Map expresses concurrency across photos, and Parallel expresses concurrency across independent rules for one photo. A Parallel state waits for its branches to complete before passing their collected outputs to the next state, which provides the required join before the catalog update.\n\n<<2>> preserves both forms of serialization and therefore does not address the stated bottleneck.\n\n<<3>> treats a work queue as a broadcast mechanism. Competing consumers distribute messages; they do not ensure that every rule processes every photo or provide a per-photo result join.\n\n<<4>> could support parallel processing, but requires a container migration and custom coordination when Step Functions can orchestrate the existing functions directly.\n\nThe 45 minutes describes the whole batch, not one Lambda invocation. Select Map concurrency and workflow mode to fit the dataset, Lambda concurrency quotas, downstream capacity, and retry behavior.\n\nOfficial AWS references (checked September 18, 2026): [Step Functions Map](https://docs.aws.amazon.com/step-functions/latest/dg/state-map.html). [Step Functions Parallel](https://docs.aws.amazon.com/step-functions/latest/dg/state-parallel.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/111.mmd",
+  "diagram_alt": "A Map distributes independent photos, while each photo forks rule tasks and joins all outputs before catalog persistence.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/state-map.html",
+      "checked_on": "2026-09-18",
+      "supports": "Concurrent processing of independent dataset items and concurrency modes"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/state-parallel.html",
+      "checked_on": "2026-09-18",
+      "supports": "Concurrent branches and collection of their outputs before the next state"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Distinguished total batch duration from Lambda invocation duration, and stated independence plus the required per-photo join."
+  ],
+  "review_status": "authored"
+}

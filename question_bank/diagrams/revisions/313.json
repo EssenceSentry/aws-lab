@@ -1,0 +1,57 @@
+{
+  "question_id": "313",
+  "base_record_sha256": "902c2f81fa2570676990160f1c2c083373421f20c6f04347b45609ef3805a89d",
+  "record": {
+    "id": "313",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A payment application receives supported URL-encoded form POSTs through CloudFront. The origin supports chunked encoding. Selected sensitive fields must remain encrypted after TLS terminates so that only a designated payment component with the private key can read them. The same distribution serves public, versioned static assets whose short cache duration causes unnecessary origin requests. Payment responses must not be cached.\n\nWhich configuration meets both requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Require HTTPS for viewers and origins. Add User-Agent to the static-asset cache key, and rely on the TLS certificate to keep fields encrypted after the origin terminates TLS."
+      },
+      {
+        "id": "2",
+        "text": "Use CloudFront signed URLs for payment requests. Extend the static assets’ cache duration, and let every origin component read the submitted form fields."
+      },
+      {
+        "id": "3",
+        "text": "Configure OAC for the S3 asset origin. Include all request headers in the asset cache key, and use the OAC signature as encryption for payment form fields."
+      },
+      {
+        "id": "4",
+        "text": "Require HTTPS on both connections and configure field-level encryption for the selected supported form fields. Extend caching for the public versioned assets within their freshness policy, and disable caching for payment responses."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. HTTPS protects each transport connection. Field-level encryption applies additional public-key encryption to selected supported form fields at the edge, allowing those fields to pass through intermediate origin components without revealing their values. Only the designated component holds the corresponding private key.\n\nThe public assets have a separate caching requirement: longer appropriate Cache-Control lifetimes, compatible CloudFront TTL limits and stable versioned URLs allow more reuse. Disable caching on the payment response behavior instead of applying the asset policy everywhere.\n\n<<1>> stops protecting plaintext at TLS termination, and unnecessary high-cardinality User-Agent values fragment the cache.\n\n<<2>> supplies an access credential; signed URLs do not encrypt the submitted fields.\n\n<<3>> authenticates origin requests to S3; it does not implement payment field encryption. Including irrelevant headers also reduces cache reuse.\n\nField-level encryption is format-specific, not arbitrary encryption of all request bodies. Its use does not by itself establish payment-system compliance; application access and key handling still matter.\n\nOfficial AWS references (checked September 18, 2026): [Field-level encryption](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html). [Cache hit ratio](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html). [Cache policy TTLs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-key-understand-cache-policy.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/313.mmd",
+  "diagram_alt": "Two request paths separate encrypted sensitive form processing from cacheable public assets.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "Selected URL-encoded POST fields use public-key encryption; chunked origin support is required."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html",
+      "checked_on": "2026-09-18",
+      "supports": "Appropriate cache duration and avoiding unnecessary high-cardinality cache keys improve reuse."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-key-understand-cache-policy.html",
+      "checked_on": "2026-09-18",
+      "supports": "All-zero TTL settings disable caching; cache policy limits interact with origin headers."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Replaced blanket PCI certification and long-cache claims with explicit form-format, private-key and public-asset assumptions."
+  ],
+  "review_status": "authored"
+}

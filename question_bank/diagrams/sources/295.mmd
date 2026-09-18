@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Replication and origin selection shorten the North American miss path
+accDescr: CloudFront serves cache hits at the edge. On misses, Lambda at Edge selects a geographically appropriate S3 origin. The US origin is populated asynchronously from the European source before new map URLs are published.
+U[Viewer requests map]:::inputData --> H{CloudFront cache hit?}:::decision
+H -->|Yes| C[Return cached map]:::output
+H -->|No| F[Origin-request function<br/>Select by viewer geography]:::process
+F -->|North America| US[(S3 us-east-1)]:::storage
+F -->|Europe| EU[(S3 eu-west-1)]:::storage
+EU -.->|Async replication<br/>Verify before publishing| US

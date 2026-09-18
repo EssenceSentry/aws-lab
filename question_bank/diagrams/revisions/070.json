@@ -1,0 +1,63 @@
+{
+  "question_id": "070",
+  "base_record_sha256": "44983417b3e045c2bb81b7d8d77d33f62ca1d1c194a84e31f70f8bb88570ee9b",
+  "record": {
+    "id": "070",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company maintains custom Linux AMIs for EC2 applications. A candidate AMI must pass application tests and a vulnerability review before production use. Approved images must be rebuilt at least every 30 days, and running instances must receive approved operating system patches. The operating system and installed packages are supported by Amazon Inspector.\n\nWhich actions should the company take? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Install SSM Agent in the image and treat its presence as proof that the image has passed a CVE scan."
+      },
+      {
+        "id": "2",
+        "text": "Build an automated image pipeline that evaluates application tests and Inspector findings before publishing an approved AMI ID to a protected Parameter Store parameter. Schedule image rebuilds every 30 days and use Patch Manager for approved patching of the running fleet."
+      },
+      {
+        "id": "3",
+        "text": "Enable current Amazon Inspector EC2 scanning and launch candidate AMIs as isolated test instances with the required scan coverage. Confirm scanning completed and evaluate findings before approving each image."
+      },
+      {
+        "id": "4",
+        "text": "Use AWS Config configuration history as the source of operating system package vulnerability findings and approve images with no configuration changes."
+      },
+      {
+        "id": "5",
+        "text": "Use CloudTrail API event logs to identify all installed packages and approve images that have no recorded security-related API calls."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<2>> implements the approval, publication and recurring maintenance workflow. <<3>> supplies actual vulnerability evidence from eligible EC2 instances launched from the candidate image. The pipeline must verify scan coverage and completion; an empty findings list alone could mean scanning never succeeded.\n\n<<1>> confuses an inventory/management agent with a completed vulnerability assessment. Inspector can use SSM-managed inventory, but the agent’s presence is not approval. <<4>> records resource configuration, not the package-to-CVE assessment required here. <<5>> records API activity, not a complete software inventory or package vulnerability assessment.\n\nAn AMI is immutable. Patch a build instance and create a new AMI, then retest and republish it. Patching already running instances is a separate fleet operation. Restrict production launches to the controlled approved-image path and protect permission to change approval metadata.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/070.mmd",
+  "diagram_alt": "An approval gate combines completed scan evidence and application tests before publishing an image for production.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Inspector package scanning, agent-based inventory, eligibility and coverage status."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "Patch Manager provides fleet patch operations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+      "checked_on": "2026-09-18",
+      "supports": "Parameter Store holds controlled configuration values such as approved AMI IDs."
+    }
+  ],
+  "editorial_notes": [
+    "Uses current Inspector scanning instead of Inspector Classic assessment templates.",
+    "Clarified immutable AMI rebuilds, coverage verification and separate running-fleet patching."
+  ],
+  "review_status": "authored"
+}

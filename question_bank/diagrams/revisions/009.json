@@ -1,0 +1,52 @@
+{
+  "question_id": "009",
+  "base_record_sha256": "5017a8b26b7e53094b97da60bf3f11f9a48d004c92f4979d47b91fff84419dd9",
+  "record": {
+    "id": "009",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company has a documented patch approval list for its on-premises servers. It wants EC2 instances to follow equivalent operating-system patch rules during an existing weekly maintenance window. The instances can reach Systems Manager and their package repositories. The company wants managed compliance reporting and as little custom orchestration as possible.\n\nWhich solution should a solutions architect recommend?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Session Manager to open sessions on the instances during the maintenance window. Have operators run the approved installation commands and record the results manually."
+      },
+      {
+        "id": "2",
+        "text": "Create matching Patch Manager baselines and use a scheduled Lambda function to discover targets, invoke patch commands, track completion, and implement cutoff and concurrency controls."
+      },
+      {
+        "id": "3",
+        "text": "Package approved updates with Systems Manager Distributor and create a State Manager association that installs the package whenever it changes, regardless of the maintenance window."
+      },
+      {
+        "id": "4",
+        "text": "Ensure the instances are Systems Manager managed nodes with SSM Agent and the required IAM permissions. Create matching Patch Manager baselines and register an AWS-RunPatchBaseline task in the maintenance window with appropriate targets and execution controls."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> separates patch approval from execution timing. Patch Manager evaluates the configured baseline, while Maintenance Windows schedules the patch task and controls its execution. Managed-node prerequisites and package-repository connectivity are still required.\n\n<<1>> substitutes manual sessions for fleet patch automation and compliance reporting. <<2>> can be engineered to work, but recreates orchestration already available in the maintenance-window service. <<3>> distributes packages without respecting the stated maintenance schedule or providing the same baseline-driven patch workflow.\n\nTranslate the on-premises approval policy into supported operating-system baselines; Patch Manager does not automatically import every third-party baseline format. State Manager can participate in patch workflows, so its mere presence is not what makes a design incorrect.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/maintenance-windows.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/009.mmd",
+  "diagram_alt": "Patch approval, maintenance scheduling, package downloads, and compliance reporting have distinct roles.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "Baseline-driven patching, compliance, supported execution methods, and managed nodes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/maintenance-windows.html",
+      "checked_on": "2026-09-18",
+      "supports": "Scheduling and controlling potentially disruptive managed-node tasks."
+    }
+  ],
+  "editorial_notes": [
+    "Removed irrelevant Direct Connect/LAG details and unsupported automatic baseline synchronization. Repaired the false claim that State Manager cannot participate in patching. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

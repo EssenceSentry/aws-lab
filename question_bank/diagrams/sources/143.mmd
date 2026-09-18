@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Capture the backend connection at the target ENI
+accDescr: Client TLS ends at the ALB, HTTP reaches the application ENI, and a separate mirrored copy goes to a packet appliance.
+C["Client"] -->|TLS| L["ALB: TLS termination"]
+L -->|Backend HTTP| E["Application ENI"]
+E --> A["Application process"]
+E -.->|Packet copy| M["Mirror target and analyzer"]
+class C inputData
+class L decision
+class A,M output

@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: Private Fargate image pull through public NAT
+accDescr: A private task routes outbound traffic through a NAT gateway in a public subnet and then an internet gateway.
+subgraph V[VPC]
+subgraph P[Private subnet]
+T[Fargate task ENI] <-->|Default and return routes| RT[Private route table]
+end
+subgraph U[Public subnet]
+N[Public NAT gateway - Elastic IP]
+end
+I[Internet gateway]
+N <-->|Public subnet routes| I
+RT <--> N
+end
+I <-->|HTTPS through NAT| E[ECR and image layers]
+class T inputData
+class E output

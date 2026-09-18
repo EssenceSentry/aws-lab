@@ -1,0 +1,57 @@
+{
+  "question_id": "228",
+  "base_record_sha256": "0a6d0c88e52571db9485d1ae642df69936dd8aeafcd6add46c3f37faa8f4e361",
+  "record": {
+    "id": "228",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company runs Java applications in Docker containers on self-managed virtual machines and uses a self-managed MySQL database. It wants to migrate to AWS, replace its commercial JDK with a compatible OpenJDK distribution, and stop managing container hosts and database servers. Major application or relational-schema redesign is out of scope. A full database export and import takes six hours, but the allowed cutover outage is 15 minutes.\n\nWhich migration approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the containers and MySQL on EC2 instances that mirror the current servers. Replace the commercial JDK with a tested OpenJDK image and manage the hosts as before."
+      },
+      {
+        "id": "2",
+        "text": "Test Amazon Corretto container images, publish them to ECR, and run the services on ECS with Fargate. Migrate MySQL to a supported RDS for MySQL deployment using DMS full load and change replication, then validate and perform a controlled cutover."
+      },
+      {
+        "id": "3",
+        "text": "Rewrite the application as Lambda functions and replace MySQL with DynamoDB, redesigning the data access layer around the new key structure."
+      },
+      {
+        "id": "4",
+        "text": "Run tested Corretto images on ECS with Fargate and migrate MySQL to RDS, but stop the source database for the entire full-data export and import without ongoing change replication."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. This replatforming approach changes the runtime and managed hosting while retaining containers, Java, and MySQL's relational model. Corretto supplies a no-cost OpenJDK distribution. Fargate removes container-host management, RDS manages the database infrastructure, and DMS can transfer existing data while replicating subsequent changes before cutover.\n\n<<1>> can reduce JDK licensing expense but retains the server operations that the company wants to remove.\n\n<<3>> introduces the application and data-model redesign explicitly excluded from scope.\n\n<<4>> selects suitable runtime services but makes the entire data transfer part of the outage, failing the short-cutover requirement for the proposed migration approach.\n\nValidate Java dependencies, container compatibility, supported database versions, schema objects, and data consistency before switching traffic. Change replication reduces the final catch-up window; it does not eliminate cutover coordination or guarantee zero downtime. Replatforming does not mean every configuration remains unchanged.\n\nAWS documentation (checked September 18, 2026): [Amazon Corretto](https://aws.amazon.com/corretto/); [ECS with Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html); [DMS homogeneous MySQL migration](https://docs.aws.amazon.com/dms/latest/userguide/dm-migrating-data-mysql.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/228.diagram.json",
+  "diagram_alt": "Replatforming replaces runtime licensing and server operations while preserving the containerized Java and relational application model.",
+  "sources": [
+    {
+      "url": "https://aws.amazon.com/corretto/",
+      "checked_on": "2026-09-18",
+      "supports": "Corretto is a no-cost production-ready OpenJDK distribution compatible with the Java SE standard."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html",
+      "checked_on": "2026-09-18",
+      "supports": "Fargate runs ECS containers without requiring the customer to provision and manage EC2 container hosts."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/dm-migrating-data-mysql.html",
+      "checked_on": "2026-09-18",
+      "supports": "DMS can migrate MySQL to RDS MySQL with full load and binlog-based change replication before cutover."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Specified Fargate to substantiate removal of host management and a short-cutover constraint for DMS, and replaced an automatic SQL-to-DynamoDB conversion distractor with an otherwise sound migration that causes prolonged downtime."
+  ],
+  "review_status": "authored"
+}

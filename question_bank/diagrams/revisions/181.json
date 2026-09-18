@@ -1,0 +1,53 @@
+{
+  "question_id": "181",
+  "base_record_sha256": "ed362c4fe7045b4b3caae7ec158d200d75a3a627b9bb6dd88d25988b93dbd6b1",
+  "record": {
+    "id": "181",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A software company uses separate development and test accounts in AWS Organizations with consolidated billing. Administrators authenticate centrally and must stop or delete specified resources in both accounts when budgets are exceeded. They must use temporary credentials and receive only the required resource-management permissions.\n\nWhich access design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a role only in the management account and attach policies naming development and test resource ARNs, without configuring access in either target account."
+      },
+      {
+        "id": "2",
+        "text": "Create scoped resource-management roles in the development and test accounts that trust the central administrators' designated principal. Permit that principal to assume the roles."
+      },
+      {
+        "id": "3",
+        "text": "Create target-account roles with trust for central administrators but no permissions policies, relying on the administrators' management-account permissions to carry into each session."
+      },
+      {
+        "id": "4",
+        "text": "Grant the central administrators access to consolidated billing and rely on the organization's billing relationship to authorize resource-management API calls in member accounts."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The roles live in the accounts that own the resources. Their trust policies establish who can assume them, and their permissions policies define which local resources the resulting sessions can manage. The central principal also needs permission to make the cross-account AssumeRole calls.\n\n<<1>> supplies a caller-side policy but no authorization in the target accounts. <<3>> mistakes trust for workload permission: a trusted session does not inherit the caller's existing management-account privileges. <<4>> confuses consolidated payment with authorization to operate resources.\n\nCentral authentication, target-account authorization and billing consolidation are separate concerns. Use identifiable sessions and narrowly scoped actions, resources and conditions rather than distributing long-term keys or granting blanket administration.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html\nhttps://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_access.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/181.mmd",
+  "diagram_alt": "Target-account roles authorize resource operations independently of the organization billing relationship.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cross-account role assumption needs caller authorization and target trust; role sessions use target-role permissions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_access.html",
+      "checked_on": "2026-09-18",
+      "supports": "Member-account resource access requires authorization such as a trusted target-account role; consolidated billing alone does not supply it."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the corrected cross-account role placement and replaced obsolete master-account terminology.",
+    "Made the caller-versus-target permissions distinction explicit in the distractors."
+  ],
+  "review_status": "authored"
+}

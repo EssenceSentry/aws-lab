@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Remove repeated reads from primary database compute
+accDescr: Eligible reads use a cache and read replica path. Writes and freshness-sensitive reads use the primary, while asynchronous replication feeds the replica.
+A[Application data access]:::inputData -->|Reusable read| C{Valid cache entry?}:::decision
+C -->|Hit| O[Return cached result]:::output
+C -->|Miss| R[(MySQL read replica)]:::storage
+R --> F[Return result and fill cache]:::output
+A -->|Write or current read| P[(Primary MySQL instance)]:::storage
+P -.->|Asynchronous replication| R

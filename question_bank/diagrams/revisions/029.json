@@ -1,0 +1,63 @@
+{
+  "question_id": "029",
+  "base_record_sha256": "4d38040e651d881cb5eb32e830601c9459e244eebe85aee71a4f2b55d1214bff",
+  "record": {
+    "id": "029",
+    "exam_domain": "Design for New Solutions",
+    "question": "A clinic runs Windows applications on EC2. Security policy requires scheduled installation of approved operating-system patches and notification whenever a running instance uses an AMI outside an approved list. Developers must still be able to launch an unapproved AMI for investigation. All instances meet Systems Manager managed-node prerequisites.\n\nWhich actions meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach an IAM policy that denies RunInstances when the requested AMI is not on the approved list."
+      },
+      {
+        "id": "2",
+        "text": "Enable GuardDuty and use its threat findings as the authoritative record of missing operating-system patches and unapproved AMIs."
+      },
+      {
+        "id": "3",
+        "text": "Schedule AWS-RunPatchBaseline with Scan for all Windows instances. Treat a successful scan and its compliance report as evidence that all approved updates have been installed."
+      },
+      {
+        "id": "4",
+        "text": "Define approved patches in a Systems Manager Patch Manager baseline and schedule AWS-RunPatchBaseline with Install, an appropriate reboot policy, and compliance reporting."
+      },
+      {
+        "id": "5",
+        "text": "Record EC2 instances in AWS Config and configure the approved-amis-by-id managed rule. Route NON_COMPLIANT compliance-change events through EventBridge to an SNS topic."
+      }
+    ],
+    "correct_option_ids": [
+      "4",
+      "5"
+    ],
+    "explanation": {
+      "text": "Correct: <<4>> and <<5>>. Patch Manager defines and installs approved updates on managed nodes. AWS Config evaluates running instances against the AMI list, and EventBridge routes compliance changes to the notification target. This is a detective control, so it does not prevent a launch.\n\n<<1>> is a preventive control and conflicts with the requirement to permit investigation instances.\n\n<<2>> is incorrect because GuardDuty threat detection does not replace the patch installation workflow or the specified AMI allow-list evaluation.\n\n<<3>> checks patch compliance but does not install updates. A successful Scan execution does not establish that the machine is patched; installation and any required reboot remain separate actions.\n\n<<4>> requires an execution schedule as well as a baseline: approval rules alone do not install patches. <<5>> requires Config resource recording and permissions for the EventBridge-to-SNS delivery. Distinguish patch compliance, image compliance, and threat detection when selecting controls.\n\nOfficial AWS references (checked 2026-09-18):\n[AWS-RunPatchBaseline](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-aws-runpatchbaseline.html)\n[Approved AMI rule](https://docs.aws.amazon.com/config/latest/developerguide/approved-amis-by-id.html)\n[Config events in EventBridge](https://docs.aws.amazon.com/config/latest/developerguide/monitor-config-with-cloudwatchevents.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/029.mmd",
+  "diagram_alt": "Patch installation and AMI detection are independent controls; notification follows a permitted launch.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-aws-runpatchbaseline.html",
+      "checked_on": "2026-09-18",
+      "supports": "Patch installation and reboot behavior"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/approved-amis-by-id.html",
+      "checked_on": "2026-09-18",
+      "supports": "Detects running instances using AMIs outside the configured list"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/monitor-config-with-cloudwatchevents.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compliance-change events can invoke notification targets"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved two-answer key and detective-control requirement; completed the baseline option with installation and scheduling rather than implying baseline creation patches instances.",
+    "Root review replaced unrelated Shield patching distractor with the supported Scan versus Install distinction."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "025",
+  "base_record_sha256": "fe10061afd85648540fc59fd0c1d501bdc967547690e2b90b6f1e79b6814785d",
+  "record": {
+    "id": "025",
+    "exam_domain": "Design for New Solutions",
+    "question": "An Amazon ECS service runs Linux tasks on AWS Fargate in private IPv4 subnets. The task execution role has the required ECR permissions, but image pulls time out. The VPC has no NAT gateway or VPC endpoints. Security policy prohibits public IP addresses on tasks but permits outbound HTTPS through a managed NAT gateway.\n\nWhich change restores image pulls from Amazon ECR?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable public IP assignment in the service network configuration and create a gateway VPC endpoint for Amazon ECR."
+      },
+      {
+        "id": "2",
+        "text": "Keep public IP assignment disabled. Create a public NAT gateway with an Elastic IP in a public subnet, route that subnet to an internet gateway, and route the private subnets' default IPv4 traffic to the NAT gateway."
+      },
+      {
+        "id": "3",
+        "text": "Keep public IP assignment disabled. Create a private NAT gateway in an isolated subnet and route the task subnets' default IPv4 traffic to it for internet access."
+      },
+      {
+        "id": "4",
+        "text": "Change the Fargate task definition from awsvpc network mode to bridge network mode so that tasks can use the host's internet connection."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. The task ENI keeps its private address. Its subnet route sends outbound traffic to a public NAT gateway, which uses an Elastic IP and an internet gateway to reach public service endpoints. Return traffic follows the established translation.\n\n<<1>> violates the no-public-IP requirement, and ECR uses interface endpoints, not an ECR gateway endpoint. Public IP assignment also cannot repair missing routes by itself.\n\n<<3>> is incorrect because a private NAT gateway does not provide internet access through an internet gateway.\n\n<<4>> is unsupported: Fargate requires awsvpc networking.\n\nInternet egress is not universally required for ECR pulls. A private alternative for current Fargate Linux platforms uses ECR API and registry interface endpoints plus the S3 gateway endpoint, appropriate DNS/security settings, and endpoints for any additional task dependencies.\n\nOfficial AWS references (checked 2026-09-18):\n[Fargate task networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-networking.html)\n[ECR VPC endpoint requirements](https://docs.aws.amazon.com/AmazonECR/latest/userguide/vpc-endpoints.html)\n[Public and private NAT gateways](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/025.mmd",
+  "diagram_alt": "A public NAT gateway provides outbound connectivity while the task ENI retains only a private IP.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-networking.html",
+      "checked_on": "2026-09-18",
+      "supports": "Private task ENIs can reach ECR using NAT or private endpoints"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/vpc-endpoints.html",
+      "checked_on": "2026-09-18",
+      "supports": "ECR interface endpoints and S3 gateway endpoint requirements"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+      "checked_on": "2026-09-18",
+      "supports": "Public NAT gateway requires an Elastic IP and public subnet; private NAT cannot use an internet gateway"
+    }
+  ],
+  "editorial_notes": [
+    "Resolved the original contradiction between prohibited external connectivity and the keyed NAT design by explicitly permitting managed outbound HTTPS. Corrected public-IP configuration ownership and documented endpoint alternative. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

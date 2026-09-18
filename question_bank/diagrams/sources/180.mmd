@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Check both role entry and resource ownership
+accDescr: A business-unit developer must first be authorized to assume that unit's production role. The role then authorizes deletion only for resources with the matching protected ownership scope.
+U[Business-unit A developer]:::inputData --> T{Authorized to assume<br/>requested production role?}:::decision
+T -->|Unit B role| X[Denied at role trust boundary]:::error
+T -->|Unit A role| R[Unit A production role session]:::process
+R --> P{Deletion action and resource<br/>inside Unit A scope?}:::decision
+P -->|No| D[Denied by role permissions]:::error
+P -->|Yes| O[Delete Unit A resource]:::output
+C[Central team controls<br/>ownership tags and role policies]:::reference -.-> P

@@ -1,0 +1,52 @@
+{
+  "question_id": "034",
+  "base_record_sha256": "71fbceb95243462d66256c33244c24a96aad10e41b8af9d60514d28818442938",
+  "record": {
+    "id": "034",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company operates 200 Windows and Linux EC2 instances managed by Systems Manager. A monthly operations report must include guest memory utilization, filesystem free space, and analysis of application log messages. The report results must be written to an S3 bucket. The team wants to reuse managed collection and query services.\n\nWhich solution meets the requirements with the least custom telemetry code?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Systems Manager to install and configure the unified CloudWatch agent. Send guest metrics to CloudWatch Metrics and log files to CloudWatch Logs. Schedule metric retrieval and Logs Insights queries, then write the completed query results and report to S3."
+      },
+      {
+        "id": "2",
+        "text": "Enable EC2 detailed monitoring and query its default metrics for guest memory utilization and filesystem free space. Use those metric results as the application log analysis and save them to S3."
+      },
+      {
+        "id": "3",
+        "text": "Keep only SSM Agent installed and assume it automatically streams all application logs and guest metrics to CloudWatch. Run Logs Insights queries and save the results to S3."
+      },
+      {
+        "id": "4",
+        "text": "Configure VPC Traffic Mirroring for each instance and analyze the mirrored packets to obtain local memory utilization, filesystem free space, and all application log messages. Save the analysis to S3."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Correct: <<1>>. The unified CloudWatch agent collects guest operating-system metrics and configured log files on Windows and Linux. Metrics and logs have distinct destinations and query interfaces; the scheduled workflow must retrieve the results and explicitly persist the report in S3.\n\n<<2>> increases the frequency of supported EC2 metrics but does not add arbitrary guest memory, filesystem, or log-message collection.\n\n<<3>> confuses management with telemetry collection. SSM Agent can install and manage the CloudWatch agent, but its presence alone does not publish all of those signals.\n\n<<4>> observes network packets, not internal operating-system counters or every local log file.\n\nLogs Insights queries log events; use metric APIs for time-series utilization. Writing a report to S3 is a separate step from querying logs, and guest metrics collected by the agent can incur custom-metric charges.\n\nOfficial AWS references (checked 2026-09-18):\n[Unified CloudWatch agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html)\n[Retrieve Logs Insights results](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_GetQueryResults.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/034.mmd",
+  "diagram_alt": "Metrics and log events require different queries; the report workflow explicitly persists their results to S3.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cross-platform guest metrics and log collection; Systems Manager integration"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_GetQueryResults.html",
+      "checked_on": "2026-09-18",
+      "supports": "GetQueryResults retrieves completed or partial query results; persistence requires a delivery workflow"
+    }
+  ],
+  "editorial_notes": [
+    "Separated logs from numeric metrics and made the scheduled query-result-to-S3 step explicit. Removed obsolete Inspector-agent terminology and irrelevant CDK setup. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

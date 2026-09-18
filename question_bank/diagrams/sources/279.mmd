@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Join parallel work before loading the catalog
+accDescr: Validated input fans out to two transformations with bounded retries, joins only after both succeed, and routes an exhausted failure to investigation.
+A["Validate batch reference"] --> B["Product transform<br/>Bounded retries with backoff"]
+A --> C["Image metadata transform<br/>Bounded retries with backoff"]
+B --> D{"Both branches succeeded?"}
+C --> D
+D -->|Yes| F["Load catalog idempotently"]
+D -->|Exhausted failure| E["Investigate failed execution"]
+class A inputData
+class B,C process
+class D decision
+class F output
+class E warning

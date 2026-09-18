@@ -1,0 +1,47 @@
+{
+  "question_id": "349",
+  "base_record_sha256": "a4b9bd05afb5d1e7483f4ba9f5d9b5055bd3231eeea6b3b1300e4b11fa6b5368",
+  "record": {
+    "id": "349",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company has an AWS Managed Microsoft AD directory with a trust to its on-premises Active Directory. Employees need remote VPN access from their laptops to private VPC applications. The company must authenticate employees with directory credentials and require a supported RADIUS-based second factor. The network team can configure VPN routes, authorization rules, security groups, and subnet associations.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Site-to-Site VPN connection to the corporate office and enable directory MFA for WorkSpaces desktops. Require employees to use their ordinary laptops without connecting through those desktops."
+      },
+      {
+        "id": "2",
+        "text": "Create an AWS Client VPN endpoint with Active Directory authentication using the AWS Managed Microsoft AD directory. Enable its supported RADIUS MFA integration and configure the required Client VPN network access."
+      },
+      {
+        "id": "3",
+        "text": "Create a VPN CloudHub topology connecting branch-office customer gateways. Keep password authentication on the private applications and use the hub for individual employees' laptop VPN authentication."
+      },
+      {
+        "id": "4",
+        "text": "Create an AWS Client VPN endpoint with directory password authentication but no directory MFA. Add Direct Connect connectivity between the office and AWS and treat the private circuit as the second authentication factor."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Client VPN provides remote access for individual clients and supports Active Directory authentication through AWS Managed Microsoft AD or AD Connector. When supported MFA is enabled for the connected directory, Client VPN requires it. The existing managed directory can integrate with a RADIUS server. Authentication must be combined with authorization rules and working network routes.\n\n<<1>> connects networks and can protect WorkSpaces logins, but neither component supplies the requested MFA-protected laptop VPN sessions.\n\n<<3>> connects branch networks through Site-to-Site VPN. It does not turn branch gateways into a managed remote-user VPN authentication service.\n\n<<4>> supplies remote-user connectivity, but a Direct Connect circuit is a network path, not a second factor proving the employee's identity.\n\nSuccessful authentication does not by itself authorize every VPC destination.\n\nOfficial AWS references (checked September 18, 2026): [Client VPN Active Directory authentication](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/ad.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/349.diagram.json",
+  "diagram_alt": "Directory authentication and RADIUS MFA establish identity, while authorization and network configuration separately permit access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/ad.html",
+      "checked_on": "2026-09-18",
+      "supports": "Client VPN supports AWS Managed Microsoft AD and AD Connector authentication with MFA when enabled on the directory."
+    }
+  ],
+  "editorial_notes": [
+    "Corrected any implication that AD Connector is the only MFA-capable directory choice; separated identity checks from routing and authorization."
+  ],
+  "review_status": "authored"
+}

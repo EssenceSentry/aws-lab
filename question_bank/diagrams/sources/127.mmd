@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Registration is only one ALB eligibility gate
+accDescr: A target must be registered, referenced by a listener and in an enabled zone before health and traffic distribution matter.
+R[Target is registered]:::inputData --> L{Listener uses<br/>target group?}:::decision
+L -->|No| U[Unused<br/>Target.NotInUse]:::warning
+L -->|Yes| Z{Target AZ enabled<br/>on the ALB?}:::decision
+Z -->|No| U
+Z -->|Yes| H{Target healthy?}:::decision
+H -->|Yes| T[Eligible for routing]:::output
+H -->|No| N[Investigate health checks]:::warning

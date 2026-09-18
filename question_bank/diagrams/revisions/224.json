@@ -1,0 +1,57 @@
+{
+  "question_id": "224",
+  "base_record_sha256": "c4713f5d49521b84b0cd82a1c86056f1f841ce9b1837ffe9eb9e9d5405e80d47",
+  "record": {
+    "id": "224",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "An employee mobile app must use a custom authentication service backed by the company's LDAP directory. After sign-in, the app must receive temporary, restricted IAM role credentials to call AWS APIs directly. Long-lived IAM user keys must not be distributed to devices.\n\nWhich architectures can independently meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Issue custom SAML assertions and call AssumeRoleWithSAML against an IAM Identity Center-managed AWSReservedSSO role, without creating a separately trusted IAM SAML role."
+      },
+      {
+        "id": "2",
+        "text": "Authenticate against LDAP, store opaque application session tokens in DynamoDB, and send those tokens directly to S3 as the sole authorization for object API calls."
+      },
+      {
+        "id": "3",
+        "text": "Issue OIDC tokens from the custom authentication service and embed a shared IAM user access key in the app to sign its AWS requests."
+      },
+      {
+        "id": "4",
+        "text": "Implement a SAML 2.0 identity provider that authenticates against LDAP. Register its metadata as an IAM SAML provider, configure a restricted trusting role, and exchange valid assertions with STS AssumeRoleWithSAML."
+      },
+      {
+        "id": "5",
+        "text": "Implement an OIDC identity provider that authenticates against LDAP. Configure a Cognito identity pool to trust it and map authenticated users to restricted IAM roles, then exchange valid ID tokens for temporary AWS credentials."
+      }
+    ],
+    "correct_option_ids": [
+      "4",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<4>> and <<5>> are alternative complete architectures. In the SAML flow, IAM provider metadata and the role trust policy allow STS to validate the assertion and return temporary role credentials. In the OIDC flow, the configured Cognito identity pool exchanges the identity token for credentials associated with an authorized IAM role.\n\n<<1>> uses an unsupported target: AssumeRoleWithSAML cannot assume Identity Center-managed AWSReservedSSO roles. The direct SAML design needs the appropriate IAM provider and role trust configuration.\n\n<<2>> creates an application session, but omits the AWS credential exchange. An arbitrary token stored in DynamoDB is not an AWS request signature or an S3 authorization credential.\n\n<<3>> authenticates users but distributes shared long-lived credentials, violating both the temporary-credential and role-based access requirements.\n\nLDAP is the authentication backend, not a SAML assertion or OIDC token format. Validate token signatures, issuer, audience, expiration, and role selection, and enforce user-specific resource permissions. Successful authentication alone does not grant access to every AWS resource.\n\nAWS documentation (checked September 18, 2026): [STS SAML credential exchange](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html); [Identity-pool credential exchange](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/224.diagram.json",
+  "diagram_alt": "Two alternative credential-exchange architectures bridge LDAP-backed authentication to temporary IAM-role access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html",
+      "checked_on": "2026-09-18",
+      "supports": "An IAM SAML provider and role trust permit signed assertions to obtain temporary role credentials; this API cannot assume AWSReservedSSO roles."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html",
+      "checked_on": "2026-09-18",
+      "supports": "OIDC ID tokens can be exchanged through a configured Cognito identity pool for temporary credentials used to sign AWS requests."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 4 and 5. Explicitly identified alternative architectures and replaced a vague Identity Center limitation with the documented AWSReservedSSO/AssumeRoleWithSAML restriction."
+  ],
+  "review_status": "authored"
+}

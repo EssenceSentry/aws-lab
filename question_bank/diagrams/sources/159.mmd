@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Recover task work without losing stable cluster roles
+accDescr: Stable primary and core nodes retain coordination and HDFS, while interrupted Spot task work is rescheduled and completed output is committed to S3.
+S["On-Demand primary and core"] -->|Schedule work and provide HDFS| T["Spot executor attempt"]
+T --> F{"Attempt interrupted?"}
+F -->|Yes| R["Reschedule retryable work"]
+R --> T
+F -->|No, completed| O[("Commit output to S3")]
+N["Application masters pinned to stable nodes"] -.-> S
+class S,N inputData
+class F decision
+class R warning
+class O storage

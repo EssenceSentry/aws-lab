@@ -1,0 +1,62 @@
+{
+  "question_id": "371",
+  "base_record_sha256": "1d349af0434b966bd9a8b1b713a009a1c748ad8f804b5649746c739116933e74",
+  "record": {
+    "id": "371",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A research pipeline reads article URLs from SQS, downloads and analyzes each article, and writes one independent JSON result. Each job takes no more than five minutes and fits Lambda's resource limits. Traffic is bursty with long idle periods. Consumers retrieve complete result files and do not require shared file locking or in-place updates.\n\nThe team can adapt its storage calls and wants to eliminate always-running worker servers and shared-filesystem administration. Which changes should it make? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a Lambda SQS event source mapping to invoke the processing function for queued article URLs, with bounded concurrency and retry-safe processing."
+      },
+      {
+        "id": "2",
+        "text": "Replace the existing workers with continuously running EC2 Spot instances while retaining operating-system and worker-fleet management."
+      },
+      {
+        "id": "3",
+        "text": "Move each complete JSON result into a Neptune graph database and keep the same whole-file retrieval access pattern."
+      },
+      {
+        "id": "4",
+        "text": "Move each complete JSON result into a continuously provisioned RDS database and keep the same whole-file retrieval access pattern."
+      },
+      {
+        "id": "5",
+        "text": "Store each result as an S3 object with a stable key, access controls, and an appropriate lifecycle policy."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<5>> match the workload boundaries. The SQS event source mapping manages polling and invokes Lambda for available work, while S3 holds independently retrievable result objects. The stated duration and resource fit allow compute to run per job instead of maintaining the existing worker fleet.\n\n<<2>> can reduce EC2 compute prices and is suitable for some retryable queue workloads, but retains the always-running servers and administration this scenario requires eliminating. Spot interruptions do not automatically make every queue workload unsuitable.\n\n<<3>> introduces a graph database without a relationship-query requirement.\n\n<<4>> introduces database capacity and administration without a relational-query requirement. RDS engines can store JSON; the issue is mismatch with the stated whole-object access pattern, not an inability to store the format.\n\nChoose a batch size that fits the function timeout; one five-minute URL per invocation is a straightforward starting point. Configure the SQS visibility timeout, dead-letter handling and partial batch failures appropriately. Duplicate delivery remains possible, so use stable job identities and idempotent S3 writes, and acknowledge success only after the output is durable. Limit concurrency to respect website rate limits and downstream capacity. Compare actual request, duration and storage costs; this selection follows the explicit operational constraints rather than claiming serverless is always cheapest.\n\nAWS documentation (checked September 18, 2026): [Lambda processing of SQS messages](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html); [Lambda function limits](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html); [S3 object storage](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/371.mmd",
+  "diagram_alt": "A job is acknowledged only after its independent S3 result is written, while failed processing stays on the queue recovery path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html",
+      "checked_on": "2026-09-18",
+      "supports": "An event source mapping polls SQS and invokes Lambda with batches, deleting successful messages and retrying failures; duplicate handling and partial batch responses matter."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Lambda function invocation is limited to 900 seconds; the configurable memory ceiling exceeds 3 GiB."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 stores independently addressed objects and supports policy-controlled access and lifecycle management, fitting whole-document storage without shared filesystem semantics."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 5. Made whole-object semantics, code adaptation and Lambda resource fit explicit. Removed categorical claims that Spot cannot handle queue work or that RDS cannot store JSON, and avoided an unmeasured universal pricing comparison."
+  ],
+  "review_status": "authored"
+}

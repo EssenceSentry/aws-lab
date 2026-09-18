@@ -1,0 +1,18 @@
+sequenceDiagram
+accTitle: Acceptance and database commit are different events
+accDescr: The API acknowledges durable queue intake first. A bounded worker commits an idempotent transaction before successful processing removes the message, and failures can retry safely.
+participant C as Client
+participant A as API
+participant Q as SQS
+participant W as Lambda consumer
+participant D as PostgreSQL
+C->>A: Submit with stable request ID
+A->>Q: Persist work item
+Q-->>A: Send succeeds
+A-->>C: Accepted, processing pending
+W->>Q: Event source mapping polls queue
+Q-->>W: Deliver work batch
+W->>D: Idempotent transaction
+D-->>W: Commit succeeds
+W-->>Q: Successful processing, mapping deletes message
+Note over W,D: Retry after commit uses the same request ID

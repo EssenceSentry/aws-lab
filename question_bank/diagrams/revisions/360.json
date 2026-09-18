@@ -1,0 +1,68 @@
+{
+  "question_id": "360",
+  "base_record_sha256": "8a3149c0a1cf7d023606a5d9d94147179502481b2a392851da6649695e360608",
+  "record": {
+    "id": "360",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company runs a web application with RDS for MySQL in one Region and maintains application capacity in a recovery Region. Its disaster recovery objectives are an RTO of 30 minutes and an RPO of 1 hour. Recovery exercises show that restoring this database from backup exceeds the RTO, while promoting a prebuilt replica and bringing the recovery application into service fits within 30 minutes. The company monitors replication freshness and has an approved control to stop primary writes before a replication interruption can exceed the RPO. Recovery procedures also prevent both Regions from accepting writes simultaneously.\n\nWhich two components should the solutions architect implement? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Export the database to S3 every hour and copy the exports to the recovery Region, relying on importing a complete export after a regional failure."
+      },
+      {
+        "id": "2",
+        "text": "Copy database snapshots to the recovery Region and restore a new DB instance from the latest snapshot only after detecting a failure."
+      },
+      {
+        "id": "3",
+        "text": "Create a cross-Region RDS read replica in advance. Use tested recovery automation, including Lambda calls to PromoteReadReplica, to promote it and configure the recovery application to use its writable RDS endpoint."
+      },
+      {
+        "id": "4",
+        "text": "Create an RDS read replica in another Availability Zone of the primary Region and use it as the only database recovery copy for a regional outage."
+      },
+      {
+        "id": "5",
+        "text": "Configure Route 53 failover records for the regional application endpoints. Make recovery health depend on a successfully promoted database and a functioning application, and validate DNS caching and client reconnection within the recovery procedure."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> maintains a database copy in the recovery Region before failure, avoiding the measured full-restore delay. Promotion makes the replica a standalone writable DB instance. The automation must wait for readiness through a suitable orchestration mechanism rather than assume one Lambda invocation can wait indefinitely.\n\n<<5>> directs application clients to the recovery deployment when the primary is unhealthy and the recovery application is ready. Database promotion, application configuration, and DNS failover are separate steps. Use the promoted RDS endpoint for database connections so TLS hostname verification matches the RDS certificate.\n\n<<1>> and <<2>> are backup-and-restore designs. They retain useful recovery data, but the measured full restoration time violates this workload's RTO. An hourly schedule alone also does not bound data loss to one hour when export or copy delay is included.\n\n<<4>> remains in the affected Region and does not supply the required regional isolation.\n\nCross-Region replication is asynchronous, and promotion can take several minutes or longer. The tested timing, freshness monitoring, and write controls establish this scenario's objectives; the service choice alone does not guarantee them. Route 53 moves traffic; it neither promotes RDS nor fences the former writer.\n\nOfficial AWS references (checked September 18, 2026): [Cross-Region read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.XRgn.html). [Read replica promotion](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.Promote.html). [Route 53 failover selection](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-how-route-53-chooses-records.html). [RDS MySQL TLS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Concepts.SSLSupport.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/360.mmd",
+  "diagram_alt": "Promoting the prepared replica and validating the recovery application precede DNS selection of the healthy recovery endpoint.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.XRgn.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS MySQL supports prepared read replicas in another Region; replication lag and initial creation time must be considered."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.Promote.html",
+      "checked_on": "2026-09-18",
+      "supports": "Promotion stops replication, reboots the replica, and produces a standalone DB instance; timing varies."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-how-route-53-chooses-records.html",
+      "checked_on": "2026-09-18",
+      "supports": "Failover record selection depends on primary and secondary health."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Concepts.SSLSupport.html",
+      "checked_on": "2026-09-18",
+      "supports": "The RDS database endpoint is included in the server certificate for hostname verification."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved key 3/5 while making recovery timing and asynchronous-replication RPO assumptions explicit.",
+    "Moved DNS failover to application entry points and used the actual RDS endpoint for database TLS hostname verification; added readiness and writer fencing."
+  ],
+  "review_status": "authored"
+}

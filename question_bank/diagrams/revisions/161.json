@@ -1,0 +1,52 @@
+{
+  "question_id": "161",
+  "base_record_sha256": "fa2ebb66985de37df5e8c7c0ff31860da73cfb02e66f84bcbe09a3cf1500c553",
+  "record": {
+    "id": "161",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A restaurant chain wants its mobile application to notify signed-in users about nearby offers. Location events arrive in bursts, and processing capacity can temporarily lag ingestion. The system must durably accept events without holding mobile connections open, then aim to send a native push notification within one minute under normal network conditions. Stale locations must not generate offers after users have left.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Have an ALB-backed EC2 API process each location synchronously, query DynamoDB, and send an SNS mobile push notification before acknowledging the location event. Store no pending work."
+      },
+      {
+        "id": "2",
+        "text": "Have an authenticated API store location events in S3. Run an EC2 job every five minutes to query nearby offers in DynamoDB and publish SNS mobile push notifications."
+      },
+      {
+        "id": "3",
+        "text": "Have an authenticated API enqueue location events in SQS. Scale EC2 workers to poll the queue, reject stale events, query nearby offers in DynamoDB, and publish to registered SNS mobile endpoints. Monitor queue age and processing latency."
+      },
+      {
+        "id": "4",
+        "text": "Have an authenticated API enqueue locations in SQS. Let each EC2 worker query DynamoDB and email the matching offer through SES, then delete the processed message."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The queue durably decouples ingestion from processing, while worker scaling and backlog-age monitoring help meet the latency target. Workers must use event timestamps to discard obsolete locations and make processing duplicate-safe. SNS delivers native mobile notifications through the registered platform endpoint and the device platform's push service.\n\n<<1>> couples acceptance to synchronous processing and keeps the client waiting when workers fall behind. Without pending-work storage, it does not meet the requested ingestion behavior.\n\n<<2>> introduces a five-minute polling delay before processing, exceeding the notification target even before delivery time is considered.\n\n<<4>> decouples processing but delivers email rather than the required native mobile notification.\n\nThe one-minute objective is an end-to-end engineering target, not an unconditional SQS or SNS delivery guarantee. Include queue wait, worker time, platform delivery, and device connectivity when measuring it.\n\nAWS documentation (checked September 18, 2026): [SQS standard queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html); [SNS mobile endpoints](https://docs.aws.amazon.com/sns/latest/dg/mobile-platform-endpoint.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/161.mmd",
+  "diagram_alt": "Location freshness is checked after queueing so processing delays do not produce obsolete offers.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard queues decouple producers and workers and use at-least-once delivery."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/mobile-platform-endpoint.html",
+      "checked_on": "2026-09-18",
+      "supports": "A registered device token identifies an SNS platform endpoint that routes notifications through the mobile platform push service."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Made durable asynchronous acceptance and native mobile push explicit, and replaced irrelevant carrier-connectivity distractors with credible latency failures."
+  ],
+  "review_status": "authored"
+}

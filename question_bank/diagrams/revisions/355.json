@@ -1,0 +1,62 @@
+{
+  "question_id": "355",
+  "base_record_sha256": "488a2f40fba56d0b3b13b3fac871f72a6b998c90cf3bbc4ebf115d42c06fa8e0",
+  "record": {
+    "id": "355",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs stateful third-party inspection appliances on EC2 in a security VPC. A custom script currently launches and registers replacements, but failures of that script have left too few healthy appliances. The company needs automatic replacement and demand-based scaling, plus transparent inspection of IP traffic from application VPCs. The appliances support the Gateway Load Balancer GENEVE integration. The network team can configure symmetric inspection routes.\n\nWhich two changes form the required solution? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add Direct Connect connections to the application networks and use the private circuits as the appliance replacement and load-balancing mechanism."
+      },
+      {
+        "id": "2",
+        "text": "Put the appliances in an EC2 Auto Scaling group with a repeatable launch template. Attach a Gateway Load Balancer target group, enable suitable health checks, and configure scaling policies based on appliance load."
+      },
+      {
+        "id": "3",
+        "text": "Peer each application VPC with the security VPC and use static routes to a single appliance IP address, retaining the existing replacement script."
+      },
+      {
+        "id": "4",
+        "text": "Put the appliance instances behind an Application Load Balancer and forward all transparent IP traffic through an HTTP listener."
+      },
+      {
+        "id": "5",
+        "text": "Create a Gateway Load Balancer endpoint service and consumer Gateway Load Balancer endpoints. Configure application and return routes through the endpoints so both directions of each flow traverse the inspection service."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<2>> supplies managed fleet lifecycle control. Auto Scaling launches configured appliances, registers and deregisters targets, and can replace unhealthy instances. Choose scaling signals and startup health-check settings that reflect real appliance readiness.\n\n<<5>> supplies transparent traffic insertion across VPC boundaries. A Gateway Load Balancer endpoint is the route target for the inspection service; GWLB exchanges traffic with compatible appliances using GENEVE. Correct forward and return routing preserves the stateful inspection path.\n\n<<1>> provides hybrid connectivity, not appliance fleet replacement or load balancing.\n\n<<3>> supplies a network path but retains a single appliance destination and the unreliable lifecycle script.\n\n<<4>> operates on HTTP/HTTPS requests rather than transparently distributing arbitrary IP packets to inspection appliances.\n\nGWLB flow stickiness and symmetric routing do not replicate appliance session state. Test failure behavior and draining with the vendor; existing stateful sessions can still be disrupted when an appliance fails.\n\nOfficial AWS references (checked September 18, 2026): [Auto Scaling load balancer integration](https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html). [Gateway Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html). [GWLB endpoints](https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/355.diagram.json",
+  "diagram_alt": "Auto Scaling maintains appliance capacity, while GWLB endpoints and symmetric routes insert inspection into traffic paths.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Auto Scaling supports GWLB target groups, automatic target registration, and optional load-balancer health checks."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "GWLB provides transparent IP traffic distribution, flow stickiness, and GENEVE integration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Consumer Gateway Load Balancer endpoints insert an endpoint service into forward and return route paths."
+    }
+  ],
+  "editorial_notes": [
+    "Removed unrelated Organizations details and distinguished GWLB endpoints from ordinary interface endpoints; avoided promising seamless stateful failover."
+  ],
+  "review_status": "authored"
+}

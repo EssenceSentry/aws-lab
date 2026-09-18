@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Commit the usage floor; scale the variable demand",
+  "columns": [
+    "Observed period",
+    "Required instances",
+    "Billing coverage"
+  ],
+  "rows": [
+    [
+      "Quiet hours",
+      "5",
+      "5 covered by commitment"
+    ],
+    [
+      "Ordinary busy hours",
+      "Between 5 and 30",
+      "5 committed + variable On-Demand"
+    ],
+    [
+      "Forecast event peak",
+      "30",
+      "5 committed + 25 On-Demand"
+    ]
+  ],
+  "footnote": "Counts are the scenario’s tested assumptions. Scheduled pre-scaling prepares capacity before a known event.",
+  "emphasis_rows": [
+    0,
+    2
+  ]
+}

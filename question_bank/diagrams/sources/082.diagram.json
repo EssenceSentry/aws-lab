@@ -1,0 +1,23 @@
+{
+  "type": "table",
+  "title": "CloudFront HTTPS has two separate TLS legs",
+  "columns": [
+    "Connection",
+    "Certificate location",
+    "Required policy"
+  ],
+  "rows": [
+    [
+      "Viewer → CloudFront",
+      "ACM us-east-1\nSAN includes www.example.com",
+      "Redirect HTTP to HTTPS"
+    ],
+    [
+      "CloudFront → ALB",
+      "ACM eu-west-1\nSAN matches origin TLS hostname",
+      "HTTPS Only origin\nALB HTTPS listener"
+    ]
+  ],
+  "footnote": "Trusted third-party certificates are also supported. Each connection must independently satisfy TLS requirements.",
+  "emphasis_rows": []
+}

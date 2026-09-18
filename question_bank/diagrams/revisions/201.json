@@ -1,0 +1,52 @@
+{
+  "question_id": "201",
+  "base_record_sha256": "91c1e683d058ff7926612a9d06e5ea97afd55078e6bb393e5bf05863b35259c6",
+  "record": {
+    "id": "201",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "An engineering company must migrate 1 TB of files to AWS. It can begin preparing ten days before cutover, but writes may be suspended for only six hours on Friday evening. Its existing 50-Mbps link takes about 48 hours to copy the full dataset. Measurements show that repeated file-level synchronizations can keep up with changes and leave no more than 25 GB for the final transfer. The destination application's S3 access and metadata requirements have been validated. Physical transport and a network upgrade would add avoidable cost.\n\nWhich migration plan meets the outage limit at the lowest incremental cost?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use aws s3 sync to seed the dataset before cutover and repeat incremental synchronizations. Quiesce writes on Friday, synchronize and verify the final changes and deletions, and then switch the application to S3."
+      },
+      {
+        "id": "2",
+        "text": "Transport a complete export to an approved Data Transfer Terminal reservation and upload it to S3, adding the required travel and facility costs."
+      },
+      {
+        "id": "3",
+        "text": "Wait until Friday evening, deploy a stored Volume Gateway, and upload a new full copy before restoring it into EBS volumes for the application."
+      },
+      {
+        "id": "4",
+        "text": "Wait until Friday evening and upload the full dataset to S3 using parallel multipart uploads over the existing link."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Moving the bulk data while the source remains available leaves only the measured final changes in the outage window. The ideal transfer time for 25 GB at 50 Mbps is about 1.1 hours, leaving room for the measured overhead and validation within six hours.\n\n<<2>> can move data quickly at the facility, but adds unnecessary logistics and expense when the staged online path meets the deadline.\n\n<<3>> starts a full transfer too late and adds a block-storage workflow that the validated S3 destination does not need.\n\n<<4>> cannot remove the access-link bottleneck. Parallel multipart transfers improve utilization and retry behavior, but cannot push 1 TB through a 50-Mbps link in six hours.\n\nFile synchronization copies changed files, not just changed blocks inside them. Plan using bytes in changed files, not a percentage of file count. Handle source deletions deliberately, verify data, and freeze writes before the final pass. The full decimal-terabyte transfer has a theoretical minimum of about 44.4 hours; 48 hours is the measured practical estimate, not a physical constant.\n\nOfficial AWS references (checked September 18, 2026): [AWS CLI synchronization](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html). [Data Transfer Terminal](https://docs.aws.amazon.com/datatransferterminal/latest/userguide/what-is-dtt.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/201.mmd",
+  "diagram_alt": "Pre-seeding and repeated synchronization move most bytes outside the outage, leaving a bounded final transfer and validation.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html",
+      "checked_on": "2026-09-18",
+      "supports": "Changed-file synchronization, deletion handling and comparison behavior"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/datatransferterminal/latest/userguide/what-is-dtt.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reserved facility with customer-supplied devices, rather than an automatic device-to-EBS conversion"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added lead time, measured changed-file bytes, outage budget and validated object semantics; removed unsupported terminal-to-EBS steps and a fixed reservation lead-time claim."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,11 @@
+stateDiagram-v2
+accTitle: Tape lifecycle preserves the backup application
+accDescr: The backup application writes an online virtual tape, ejects it into an archive, and retrieves it before restoration.
+[*] --> Online
+Online: Online virtual tape
+Online --> Archiving: Backup application ejects tape
+Archiving --> Archived: Upload and archival complete
+Archived: Glacier-backed tape archive
+Archived --> Retrieved: Retrieve tape to gateway
+Retrieved --> Restored: Backup application restores files
+Restored --> [*]

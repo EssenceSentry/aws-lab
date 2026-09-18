@@ -1,0 +1,62 @@
+{
+  "question_id": "345",
+  "base_record_sha256": "b0184cd3b4a38b62f5a21bc32e7d356298aa046e2fc6b749d3ecd3dd53341f63",
+  "record": {
+    "id": "345",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A document service hosts its frontend behind CloudFront, accepts PDF uploads directly to S3, and submits asynchronous OCR jobs through a Regional API Gateway REST API. Processing and storage must remain in us-east-1. Users in Asia and the Middle East experience slow uploads and job-submission responses. Tests show that S3 Transfer Acceleration and an edge-optimized API endpoint improve those two paths enough to meet the targets at acceptable incremental cost. Backend processing time is already acceptable.\n\nWhich changes should the company make? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable S3 Transfer Acceleration and update upload requests or presigned upload URLs to use the supported acceleration endpoint."
+      },
+      {
+        "id": "2",
+        "text": "Replace DynamoDB job metadata with Aurora Serverless and route database connections through RDS Proxy."
+      },
+      {
+        "id": "3",
+        "text": "Introduce EC2 upload servers behind Global Accelerator, then copy uploaded PDFs from their EBS volumes into S3."
+      },
+      {
+        "id": "4",
+        "text": "Deploy complete processing stacks and data copies in additional Regions and route users to regional deployments."
+      },
+      {
+        "id": "5",
+        "text": "Change the REST API from a Regional endpoint to an edge-optimized endpoint, updating the deployment, custom-domain mapping, and DNS as required."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<5>> are correct. They address the two measured client paths while retaining the single-Region backend. Transfer Acceleration carries supported S3 transfers through AWS edge infrastructure, and an edge-optimized REST API uses a managed CloudFront distribution for API entry.\n\n<<2>> changes a metadata store that is not the bottleneck.\n\n<<3>> adds upload-server operation and another data-copy step when the tested managed S3 path meets the requirement.\n\n<<4>> violates the stated single-Region processing and storage constraint.\n\nThe existing frontend distribution does not automatically accelerate separate direct-to-S3 uploads or calls to the Regional API hostname. Measure the actual client paths: acceleration benefits vary with location, network, and object size. An edge endpoint does not relocate the OCR execution or remove its regional processing time.\n\nOfficial AWS references (checked September 18, 2026): [S3 acceleration measurement](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration-speed-comparison.html). [API Gateway edge entry](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/amazon-api-gateway.html). [Changing REST API endpoint types](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-migration.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/345.mmd",
+  "diagram_alt": "Large uploads and small API submissions use different accelerated entry paths without moving backend processing to another Region.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration-speed-comparison.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compare accelerated and ordinary multipart upload paths"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/amazon-api-gateway.html",
+      "checked_on": "2026-09-18",
+      "supports": "Edge-optimized APIs use a managed CloudFront distribution"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-migration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Regional and edge-optimized REST endpoints can be migrated with configuration and deployment updates"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 5. Replaced unsupported universal speed percentages and cost claims with measured benefit and a single-Region requirement."
+  ],
+  "review_status": "authored"
+}

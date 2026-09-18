@@ -1,0 +1,57 @@
+{
+  "question_id": "225",
+  "base_record_sha256": "0096cbae5de28229ed8595c09ecab0c934c9a9d5fae65cd2e911251fbd59e3ba",
+  "record": {
+    "id": "225",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses an on-premises Active Directory for employee identities. It is deploying Windows workloads that require an AD domain in AWS and wants employees to use the same corporate credentials for those workloads and a workforce AWS access portal. Private network connectivity is available. The company wants AWS to manage the cloud directory servers and does not want duplicate employee accounts.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Cognito user pool with new employee accounts and use its application tokens as the domain credentials for the Windows workloads."
+      },
+      {
+        "id": "2",
+        "text": "Create new users in the IAM Identity Center identity store and separately maintain matching user accounts and passwords in the Windows workload domain."
+      },
+      {
+        "id": "3",
+        "text": "Deploy self-managed Active Directory domain controllers on EC2 and operate their replication, backups, patching, and availability."
+      },
+      {
+        "id": "4",
+        "text": "Create AWS Managed Microsoft AD with the necessary two-way trust to the existing directory. Join the Windows workloads to the managed domain and connect IAM Identity Center to that directory for group-based workforce access."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Managed Microsoft AD supplies an AD-compatible cloud domain without transferring directory-server operations to the customer. Trust lets the existing directory remain the employee identity source. Identity Center adds workforce account and application assignments and requires two-way trust for the self-managed directory integration.\n\n<<1>> supplies application identities, not an Active Directory domain for Windows workloads, and creates duplicate employee accounts.\n\n<<2>> requires separate identities and password administration, contrary to the existing-credential requirement.\n\n<<3>> can extend Active Directory functionality into AWS but leaves the company responsible for directory-server operations.\n\nTrust does not copy all employee accounts into a second directory or automatically authorize access to every workload. Configure group-based permissions, DNS resolution, and network paths for the services involved. Identity Center can use an existing directory; creating new users in its built-in store is not required for SSO.\n\nAWS documentation (checked September 18, 2026): [Identity Center with self-managed AD](https://docs.aws.amazon.com/singlesignon/latest/userguide/connectonpremad.html); [Managed Microsoft AD responsibilities](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html); [Identity Center workforce access](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/225.mmd",
+  "diagram_alt": "Trust preserves the corporate identity source while the managed cloud directory supports both Windows workloads and workforce access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/connectonpremad.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed AD integration requires two-way trust for Identity Center, while AD Connector supports only its directly connected domain for this integration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed AD provides AD domain controllers with AWS-managed monitoring, recovery, replication, snapshots, and updates; trusts preserve existing corporate identities."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Identity Center centralizes workforce account and application assignments using an existing identity source."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added the AD-dependent Windows workload and AWS-managed directory requirements, and made Identity Center integration explicit instead of claiming that a trust alone provisions console access."
+  ],
+  "review_status": "authored"
+}

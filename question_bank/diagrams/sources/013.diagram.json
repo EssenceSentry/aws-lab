@@ -1,0 +1,41 @@
+{
+  "type": "table",
+  "title": "A trusted scientist attribute selects the allowed prefix",
+  "columns": [
+    "Session userNameID",
+    "Requested operation",
+    "Policy outcome"
+  ],
+  "rows": [
+    [
+      "alice",
+      "GetObject alice/report.csv",
+      "Allow within assigned prefix"
+    ],
+    [
+      "alice",
+      "GetObject bob/report.csv",
+      "No matching object grant"
+    ],
+    [
+      "alice",
+      "ListBucket with prefix alice/",
+      "Allow scoped listing"
+    ],
+    [
+      "alice",
+      "ListBucket with prefix bob/",
+      "Listing condition fails"
+    ],
+    [
+      "Missing attribute",
+      "GetObject alice/report.csv",
+      "No matching prefix grant"
+    ]
+  ],
+  "footnote": "Assumes no other grants. Every relevant object API request is separately recorded by the configured CloudTrail data events.",
+  "emphasis_rows": [
+    0,
+    2
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "question_id": "049",
+  "base_record_sha256": "eb5597b9706a2ba6d4de8ac81080b5b6107d6cc7145065586aa03411ba19296b",
+  "record": {
+    "id": "049",
+    "exam_domain": "Design for New Solutions",
+    "question": "A news publisher is migrating its Oracle database to Amazon RDS for Oracle. Readers and editors use the application at all hours. The database must automatically resume read and write service after a DB instance or Availability Zone failure, with minimal database administration.\n\nWhich configuration meets this requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a Single-AZ RDS for Oracle instance and schedule RMAN backups with the RDS administrative procedures."
+      },
+      {
+        "id": "2",
+        "text": "Use an RDS for Oracle Multi-AZ DB instance deployment with a synchronous standby in another Availability Zone."
+      },
+      {
+        "id": "3",
+        "text": "Enable Oracle Real Application Clusters as the availability option for the RDS for Oracle database."
+      },
+      {
+        "id": "4",
+        "text": "Use a Single-AZ RDS for Oracle instance with an asynchronous read replica and direct readers to the replica."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Choose <<2>>. An RDS Multi-AZ DB instance deployment maintains a synchronous standby in a different Availability Zone and provides managed failover. Applications retain the database endpoint name but must retry and reconnect during recovery. The standby is for availability, not for serving normal read traffic.\n\n<<1>> provides backups, not a running failover target. RDS for Oracle does support RMAN backup tasks through its administrative package; claiming that RMAN is entirely unsupported would be incorrect. <<3>> is unavailable because RDS for Oracle does not support Oracle RAC. <<4>> can offload reads, but an asynchronous read replica does not by itself provide automatic writable failover through the primary endpoint. Promotion and connection changes would require a separate recovery design, and replication lag can affect data loss.\n\nChoose an availability mechanism for failure recovery and a read-scaling mechanism for query throughput. Backups remain necessary even when a standby protects against infrastructure failure.\n\nAWS documentation (checked September 18, 2026): [RDS Multi-AZ DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html), [RDS Oracle RMAN tasks](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.CommonDBATasks.RMAN.html), [RDS Oracle FAQs](https://aws.amazon.com/rds/oracle/faqs/), [RDS failover and DNS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/049.mmd",
+  "diagram_alt": "RDS promotes the synchronous standby and clients reconnect through the existing endpoint after a failure.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS maintains a synchronous standby in another AZ for availability; that standby does not serve reads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.CommonDBATasks.RMAN.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS for Oracle supports RMAN backup tasks through rdsadmin procedures; backups are not automatic failover."
+    },
+    {
+      "url": "https://aws.amazon.com/rds/oracle/faqs/",
+      "checked_on": "2026-09-18",
+      "supports": "Oracle RAC is not supported on RDS; Oracle replicas use asynchronous Data Guard replication."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS changes the DB endpoint DNS mapping to the standby and clients must re-establish connections."
+    }
+  ],
+  "editorial_notes": [
+    "Corrected the false inherited claim that RDS for Oracle does not support RMAN.",
+    "Kept correct option 2 and distinguished automatic Multi-AZ writer recovery from manually promoted asynchronous read replicas."
+  ],
+  "review_status": "authored"
+}

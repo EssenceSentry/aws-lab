@@ -1,0 +1,18 @@
+flowchart TB
+accTitle: Durable acceptance and a single counted vote
+accDescr: A queue acknowledgment precedes the accepted response, and a conditional write rejects repeated contest-and-voter records before tallying.
+V["Authenticated voter"] --> API["Validate contest and voter identity"]
+API --> Q[("SQS durable message")]
+Q -->|Submission succeeds| ACK["Accepted for processing"]
+Q --> W["Worker receives message"]
+W --> C{"Atomic conditional PutItem result?"}
+C -->|Inserted| D[("Unique vote committed")]
+C -->|Record already exists| DUP["Duplicate: do not add vote"]
+D --> DEL["Delete processed queue message"]
+DUP --> DEL
+D --> T["Tally after queue and failures reconcile"]
+class V inputData
+class Q,D storage
+class C decision
+class DUP warning
+class ACK,T output

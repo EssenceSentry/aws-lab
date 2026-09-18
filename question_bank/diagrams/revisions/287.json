@@ -1,0 +1,52 @@
+{
+  "question_id": "287",
+  "base_record_sha256": "ab0c138579cf062e3cb8d731ed660691b0af6cc19b5cfb57395eaf77f200bc93",
+  "record": {
+    "id": "287",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A legacy application runs on a supported EBS-backed EC2 instance. Licensing and external allowlists depend on its instance ID, private IPv4 address, and existing auto-assigned public IPv4 address. Those identifiers cannot change during recovery. The application can restart from its EBS data after a reboot. The team wants an AWS-managed response to an underlying host failure with configurable alarm thresholds and notifications.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Associate a new Elastic IP address and automate stopping and starting the instance when its system status check fails."
+      },
+      {
+        "id": "2",
+        "text": "Use Systems Manager Patch Manager to reinstall operating-system updates after any failed status check."
+      },
+      {
+        "id": "3",
+        "text": "Create a CloudWatch alarm that reboots the instance when StatusCheckFailed_System indicates a failure."
+      },
+      {
+        "id": "4",
+        "text": "Create a CloudWatch alarm on StatusCheckFailed_System with an EC2 recover action and the required SNS notifications."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. CloudWatch action based recovery attempts to move a supported instance away from impaired underlying infrastructure while retaining its instance ID, addresses, and attached EBS volumes. The alarm supplies the requested threshold and notification controls.\n\n<<1>> can be automated, but assigning a new Elastic IP replaces the existing public address. A stop/start without an Elastic IP also changes an auto-assigned public IPv4 address.\n\n<<2>> addresses guest operating-system maintenance, not recovery from a failed host.\n\n<<3>> reboots the guest on its current host and does not provide the recover action's host-relocation behavior.\n\nRecovery resembles an unplanned reboot: RAM state is lost, and the application must restart safely. Success depends on supported configuration and available capacity. This is single-instance recovery, not an application architecture that survives an Availability Zone outage without interruption.\n\nOfficial AWS references (checked September 18, 2026): [EC2 automatic instance recovery](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-recover.html). [CloudWatch recover actions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cloudwatch-recovery.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/287.diagram.json",
+  "diagram_alt": "A recovery table separates preserved identity and persistent storage from replaced infrastructure and lost volatile state.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-recover.html",
+      "checked_on": "2026-09-18",
+      "supports": "Preserved instance identity, addresses and EBS volumes, with lost RAM state"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cloudwatch-recovery.html",
+      "checked_on": "2026-09-18",
+      "supports": "System status check metric, configurable alarms, notifications and recovery prerequisites"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added the existing auto-assigned public IPv4 constraint to distinguish recovery from an otherwise automatable Elastic IP and stop/start design."
+  ],
+  "review_status": "authored"
+}

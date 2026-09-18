@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Find the first failing boundary in the IoT path
+accDescr: Diagnosis branches from connectivity to publication to rule execution and finally destination writes, preventing missing rows from being mistaken automatically for disconnection.
+S["No new DynamoDB rows"] --> C{"Device connected?"}
+C -->|"no"| A["Network, certificate, IoT policy"]
+C -->|"yes"| P{"Publish recorded?"}
+P -->|"no"| D["Device application / publish authorization"]
+P -->|"yes"| R{"Rule matched and action ran?"}
+R -->|"no"| Q["Topic, SQL and rule configuration"]
+R -->|"yes"| W{"DynamoDB write succeeded?"}
+W -->|"no"| E["Action IAM role, schema, throttling"]
+W -->|"yes"| V["Check table, Region and monitoring query"]

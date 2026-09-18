@@ -1,0 +1,57 @@
+{
+  "question_id": "216",
+  "base_record_sha256": "27e5160fcbc32c7300d241f1a3cb3d7f86fb137690286948fe678e50d2ed6114",
+  "record": {
+    "id": "216",
+    "exam_domain": "Design for New Solutions",
+    "question": "A studio wants to identify known performers in a 50-TB tape archive and show a still image beside each match in its media catalog. It has reference photos with internal person IDs. The existing MAM can export tape contents to NFS as supported video files and extract frames at specified timestamps. Direct Connect is available. The studio wants to retain that workflow while moving the assets to S3 and minimizing model and server management.\n\nWhich design meets all requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Export videos through the MAM to S3 File Gateway and confirm upload completion. Index reference photos in a Rekognition collection, keep person-ID mappings, and orchestrate asynchronous stored-video face search. Use match timestamps with the MAM’s frame-export capability to store stills in S3 and link their keys to catalog results."
+      },
+      {
+        "id": "2",
+        "text": "Upload videos and index reference photos in a Rekognition collection, then use the face IDs returned by face search as S3 object keys for still images, without exporting or storing any frames."
+      },
+      {
+        "id": "3",
+        "text": "Move backups into a Tape Gateway archive and stop producing ordinary video files, then submit the virtual tape archives themselves as Rekognition stored-video inputs."
+      },
+      {
+        "id": "4",
+        "text": "Export videos to S3, deploy an EC2 fleet running custom facial-recognition models, and build a custom frame-extraction and metadata pipeline that replaces the MAM integration."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. It preserves the existing file-export and frame-export capabilities while using managed face search. Video objects, searchable face representations, person mappings, and still images remain explicit assets with their own storage and identifiers.\n\n<<2>> omits the still images. A face collection stores mathematical representations; a returned face ID is not an image object or an automatically inferred real-world name.\n\n<<3>> preserves tape backups but does not expose a supported video object for analysis. The backup application must first restore the contents into ordinary media files.\n\n<<4>> can produce the desired output, but replaces existing capabilities and introduces model and server operations that the company wants to minimize.\n\nIndex known reference faces, interpret matches with appropriate confidence thresholds, and map identifiers to the studio's catalog. GetFaceSearch returns analysis results after the asynchronous job completes; separate extraction creates the displayable still. Preserve timestamp offsets if videos are segmented, and validate accuracy on representative footage.\n\nOfficial AWS references (checked September 18, 2026): [Face representations](https://docs.aws.amazon.com/rekognition/latest/dg/collections.html). [Stored-video face search](https://docs.aws.amazon.com/rekognition/latest/dg/video.html). [File-based ingestion](https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/216.diagram.json",
+  "diagram_alt": "Face-search vectors, person mappings, original videos, and display stills have different representations and storage responsibilities.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/collections.html",
+      "checked_on": "2026-09-18",
+      "supports": "Collections store vectors rather than images and support indexed-reference matching"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/video.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 video input and asynchronous StartFaceSearch/GetFaceSearch"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "NFS/SMB files backed by S3 objects"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added an explicit existing still-extraction capability and separated face vectors, person identities, source videos and stored stills so no service is credited with producing missing image assets."
+  ],
+  "review_status": "authored"
+}

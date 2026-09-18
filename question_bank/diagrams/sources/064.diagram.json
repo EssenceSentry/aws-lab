@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Longest prefix selects the peer",
+  "columns": [
+    "Destination from A",
+    "Matching routes",
+    "Selected peer"
+  ],
+  "rows": [
+    [
+      "10.0.0.77",
+      "/32 to B and /16 to C",
+      "B: /32 is more specific"
+    ],
+    [
+      "10.0.0.88",
+      "/16 to C only",
+      "C"
+    ],
+    [
+      "Reply to 172.16.x.x",
+      "172.16.0.0/16 in B or C",
+      "A through that peer connection"
+    ]
+  ],
+  "footnote": "A /24 exception would also send 10.0.0.88 to B.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

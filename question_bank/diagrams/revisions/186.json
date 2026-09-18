@@ -1,0 +1,63 @@
+{
+  "question_id": "186",
+  "base_record_sha256": "02cf4eb1ce7e01682e00f32a762091327b7bb7266c1e1a0e495087829ebf3b36",
+  "record": {
+    "id": "186",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company requires employees in member accounts to provision approved CloudFormation-based products through AWS Service Catalog. Permissions already prevent bypassing that path. All resource types in scope support the required creation-time tagging. The company needs both product-origin identifiers and business tags such as CostCenter and Owner to be applied when resources are provisioned.\n\nWhich actions provide these two types of tags? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use an AWS Config required-tags rule with remediation as the mechanism that guarantees every resource has tags at the instant it is created."
+      },
+      {
+        "id": "2",
+        "text": "Use Service Catalog AutoTags to identify the portfolio, product, provisioning principal and other supported product-origin attributes."
+      },
+      {
+        "id": "3",
+        "text": "Activate cost allocation tags in Billing and Cost Management to create the required tag keys and values on each new resource."
+      },
+      {
+        "id": "4",
+        "text": "Define the required business tags in the supported resource Tags properties of the CloudFormation products and configure any required propagation settings."
+      },
+      {
+        "id": "5",
+        "text": "Run a scheduled Systems Manager Automation document that scans for untagged resources and adds tags after provisioning."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<4>> are correct. Service Catalog AutoTags identify a provisioned resource's origin, while the product templates supply the organization's business tags. These serve different purposes and can coexist.\n\n<<1>> detects and remediates a configuration after creation, so it does not guarantee creation-time tagging. <<3>> makes existing eligible tag data available for cost allocation; activation does not apply the tags to resources. <<5>> also acts after creation and leaves a period with missing tags.\n\nTag support and propagation vary by resource type. Verify the underlying resources, not only the stack's tags, and retain the controls that prevent users from bypassing approved products. Service Catalog AutoTags are supported for the CloudFormation products in this scenario, not Terraform Open Source products, and their original values are not automatically updated when a product's launch path changes.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/servicecatalog/latest/adminguide/autotags.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-resource-tags.html\nhttps://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/186.mmd",
+  "diagram_alt": "Service Catalog origin tags and template business tags converge on the supported resources during governed provisioning.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/autotags.html",
+      "checked_on": "2026-09-18",
+      "supports": "AutoTags encode provisioned-product origin, exclude Terraform Open Source products and retain original values."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-resource-tags.html",
+      "checked_on": "2026-09-18",
+      "supports": "Resource Tags properties and propagation vary by resource type."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cost allocation tag activation organizes existing tag data for billing reports; it does not create resource tags."
+    }
+  ],
+  "editorial_notes": [
+    "Separated origin tracking from required business metadata and preserved the no-bypass and tag-support assumptions.",
+    "Used current AutoTags limitations rather than implying automatic tagging of every AWS resource."
+  ],
+  "review_status": "authored"
+}

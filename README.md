@@ -8,6 +8,12 @@ mobile study app built from [the question bank](question_bank/questions.jsonl).
 It supports domain practice, mixed exams, optional timers, offline study,
 and saved progress, with a GitHub Pages deployment workflow.
 
+The [visual-language audit](question_bank/visual_language_audit.md) describes
+18 reusable visual forms for the bank's concepts. Editable diagram sources,
+question revisions, AWS references, and rendering instructions are in
+[question_bank/diagrams](question_bank/diagrams/README.md). Generated PNGs live
+in `question_bank/images` and appear in the questions' explanations.
+
 A local Streamlit application for studying the supplied Tutorials Dojo
 SAP-C02 chapter on **Design Solutions for Organizational Complexity**.
 

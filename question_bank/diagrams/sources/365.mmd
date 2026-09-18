@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Cross-account role assumption needs permission on both sides
+accDescr: The source role in Account B already permits AssumeRole on the target. The target role in Account A must separately trust that exact source role ARN. Both approvals produce the temporary target-role session.
+B[Account B source role<br/>EC2 instance-profile credentials]:::inputData --> I[Identity policy<br/>Allow AssumeRole on target ARN]:::process
+I --> G{Both authorization<br/>sides permit?}:::decision
+A[Account A target trust<br/>Exact source role ARN]:::process --> G
+G -->|Yes, no applicable deny| S[Temporary target-role session<br/>Target permissions apply]:::output
+G -->|Missing permission or trust| X[Access denied]:::error

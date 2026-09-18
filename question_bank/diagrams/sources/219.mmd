@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: OU membership drives regional stack deployment
+accDescr: A central template and target OU membership feed service-managed StackSets, which deploy the baseline in each selected Region and repeat the operation for new member accounts.
+T["Approved baseline template"] --> S["Service-managed StackSet"]
+O["Target OU accounts, including new members"] --> S
+S --> A["Selected Region A: stack per target account"]
+S --> B["Selected Region B: stack per target account"]
+class T,O inputData
+class S decision
+class A,B output

@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Keep the TLS private key outside host administration
+accDescr: Security administers ACM and the ALB listener, developers administer EC2, and visitor TLS terminates before traffic reaches those hosts.
+SEC["Security team"] --> ACM["ACM certificate: export disabled"]
+ACM -->|Certificate association| ALB["ALB HTTPS listener"]
+SEC -->|Administer listener| ALB
+V["Public visitor"] -->|TLS| ALB
+ALB -->|Application traffic| EC2["EC2 application instances"]
+DEV["Developers"] -->|OS administration| EC2
+N["TLS private key is not installed here"] -.-> EC2
+class SEC,DEV,V inputData
+class N warning
+class EC2 output

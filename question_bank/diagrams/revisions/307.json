@@ -1,0 +1,52 @@
+{
+  "question_id": "307",
+  "base_record_sha256": "823f2676899e8378486387c04e7b7ec5d1785cf01f8a08167e76f5ee1aeb861a",
+  "record": {
+    "id": "307",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company runs a customer-facing application on redundant Windows EC2 instances managed by Systems Manager. The fleet has enough spare capacity to keep serving customers while individual instances are drained and rebooted. The company needs centralized compliance reporting, scheduled installation of approved security patches, and a way to deploy urgent approved patches outside the normal schedule.\n\nWhich approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable automatic Windows updates on every instance at the same time and allow all instances to reboot immediately whenever updates become available."
+      },
+      {
+        "id": "2",
+        "text": "Use Patch Manager with approved baselines and patch policies or maintenance windows, plus on-demand urgent patching. Coordinate draining, installation, required reboots, and health checks in controlled rolling batches."
+      },
+      {
+        "id": "3",
+        "text": "Launch the fleet from one patched and hardened AMI, then rely on that original image indefinitely without subsequent patch scans, installations, or image replacements."
+      },
+      {
+        "id": "4",
+        "text": "Run scheduled Patch Manager Scan operations and report missing approved patches, but leave all installations and required reboots disabled."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Patch Manager provides a centrally defined approval baseline, compliance scans, and installation workflows that can run on a schedule or on demand. The redundant fleet allows required reboots to occur in controlled groups while healthy instances continue serving traffic.\n\n<<1>> can install updates but risks taking the whole application offline during simultaneous reboots and does not implement the requested centrally controlled rollout.\n\n<<3>> establishes only an initial patch state. An immutable-image strategy can work when images are continually rebuilt, validated, and rolled out, but the proposed one-time image does not address future patches.\n\n<<4>> identifies noncompliance without correcting it. A Scan operation is not an Install operation.\n\nUse approved security patches rather than interpreting the goal as immediately installing every new operating-system release. Patch Manager does not perform major OS version upgrades or guarantee application compatibility. Test patches, coordinate load-balancer draining and recovery, and stop the rollout when health checks fail. Concurrency limits and maintenance windows help control execution, but do not themselves implement application-aware draining or guarantee availability. Track pending reboots because installation alone may not complete remediation.\n\nAWS documentation (checked September 18, 2026): [Systems Manager Patch Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html); [Quick Setup patch policies](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-policies.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/307.mmd",
+  "diagram_alt": "Patching progresses from one batch to the next only after application health recovers, preserving service through redundant instances.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "Patch Manager scans and installs patches approved by configured baselines, supports scheduled and on-demand operations and compliance reporting, and does not perform major OS upgrades."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-policies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Patch policies select approved baselines and schedule separate scan and install operations; on-demand patching is a separate account-Region operation."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Removed impossible always-latest/no-downtime wording and unrelated service combinations. Added sufficient redundancy, approval semantics, urgent on-demand patching, and explicit application health gates."
+  ],
+  "review_status": "authored"
+}

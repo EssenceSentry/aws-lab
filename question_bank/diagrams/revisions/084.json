@@ -1,0 +1,51 @@
+{
+  "question_id": "084",
+  "base_record_sha256": "bc2396dc9e45734fedd1945fee78a49a4fed5016b0ffe0b164c775246824b499",
+  "record": {
+    "id": "084",
+    "exam_domain": "Design for New Solutions",
+    "question": "A mobile application uploads each user's photos to Amazon S3 and stores captions in Amazon DynamoDB. Users already authenticate with an OpenID Connect identity provider. The company is removing a custom API tier and wants the mobile application to call AWS APIs directly. It will configure IAM trust and permissions for the existing identity provider, and must not embed long-term AWS credentials in the application.\n\nWhich authentication flow meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Exchange the identity provider token with AWS STS AssumeRoleWithWebIdentity. Use the returned access key ID, secret access key, and session token to sign requests with permissions scoped to the authenticated user."
+      },
+      {
+        "id": "2",
+        "text": "Embed an IAM user's access key in the application. Use that key to call STS AssumeRole and obtain temporary credentials for each signed-in user."
+      },
+      {
+        "id": "3",
+        "text": "Submit the OpenID Connect identity token to STS AssumeRoleWithSAML. Use the returned credentials for the user's S3 objects and DynamoDB items."
+      },
+      {
+        "id": "4",
+        "text": "Exchange the identity provider token with STS AssumeRoleWithWebIdentity. Sign AWS requests with the returned access key ID and secret access key, and discard the session token."
+      },
+      {
+        "id": "5",
+        "text": "Create an Amazon Cognito user pool and use its ID token directly as the AWS credential for S3 and DynamoDB API requests, without a credential exchange."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. AssumeRoleWithWebIdentity accepts a token from a trusted, configured identity provider without requiring an AWS access key in the client. STS returns temporary credentials, including the session token, for the role session. The trust policy and permissions must enforce the intended identity and user-specific access boundary.\n\n<<2>> obtains temporary role credentials but exposes a reusable IAM user credential in every application installation, violating the stated constraint.\n\n<<3>> uses the wrong federation protocol. AssumeRoleWithSAML expects a SAML assertion, not an OIDC identity token.\n\n<<4>> omits a required part of the temporary credential set. A temporary access key pair must be accompanied by its session token.\n\n<<5>> confuses authentication tokens with AWS signing credentials. Cognito identity pools can exchange supported identity tokens for temporary AWS credentials, but a user pool token alone is not an S3 or DynamoDB signing credential.\n\nAWS documentation (checked September 18, 2026): [AssumeRoleWithWebIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/084.mmd",
+  "diagram_alt": "OIDC authentication is exchanged for a complete temporary AWS credential set before direct data access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html",
+      "checked_on": "2026-09-18",
+      "supports": "OIDC identity tokens can be exchanged for role credentials consisting of an access key ID, secret access key, and session token without preexisting AWS credentials."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Repaired ambiguous choices that described temporary access keys as if they were long-term credentials. A Cognito identity pool remains a valid alternative outside the incorrect token-only flow."
+  ],
+  "review_status": "authored"
+}

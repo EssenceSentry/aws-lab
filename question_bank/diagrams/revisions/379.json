@@ -1,0 +1,52 @@
+{
+  "question_id": "379",
+  "base_record_sha256": "caa645d809fa97bba54e1ca08d0eced5e757ab33638ce89fa04393c0332ac899",
+  "record": {
+    "id": "379",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company provisions resources in its member accounts only through protected CloudFormation pipelines. Existing IAM and organization controls prevent users from bypassing those pipelines or disabling governance. An enforced tag policy already restricts Project tag values, but deployments can still omit the Project tag. Every resource type in scope supports required-tag validation.\n\nWhich solution blocks deployments with missing Project tags while minimizing custom code?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy an AWS Config required-tags rule to every account and notify the resource owner when Project is missing."
+      },
+      {
+        "id": "2",
+        "text": "Deny cloudformation:CreateStack unless the request contains an aws:RequestTag/Project value, and rely on the stack tag to validate every resource."
+      },
+      {
+        "id": "3",
+        "text": "Mark Project as required in the organization tag policy and activate the AWS-managed tagging compliance hook in WARN mode in every account and Region."
+      },
+      {
+        "id": "4",
+        "text": "Define Project as a required key for the resource types with report_required_tag_for. Activate AWS::TagPolicies::TaggingComplianceValidator as an enabled STACK hook in FAIL mode in every deployment account and Region."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> combines a required-key definition with preventive enforcement in the actual deployment path. The organization's effective tag policy declares which resource types require Project. The AWS-managed CloudFormation hook checks stack deployments against that policy and blocks missing required tags in FAIL mode. Activate it in every relevant account and Region, provide its execution role with the documented trust and tag:ListRequiredTags permission, and use StackSets for consistent rollout.\n\nThe existing allowed-value policy and the required-key check solve different problems: an allowed-value rule alone does not require an absent tag to exist. Required-key reporting also does not block deployments by itself; enforcement depends on the configured IaC integration. This hook operates at STACK level, not as a resource hook.\n\nOption <<1>> detects an already-created violation. Option <<2>> checks a stack API request and cannot establish that every resource has its required tag; tag propagation varies by resource type. Option <<3>> deliberately permits a noncompliant deployment with a warning. The protected-pipeline premise closes the bypass path that a CloudFormation-only check would otherwise leave.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_example-tag-policies.html\nhttps://docs.aws.amazon.com/organizations/latest/userguide/enforce-required-tag-keys-iac.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/379.diagram.json",
+  "diagram_alt": "Allowed-value enforcement and required-key enforcement address different tag failures; a missing Project key is blocked by the required-key hook in fail mode.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_example-tag-policies.html",
+      "checked_on": "2026-09-18",
+      "supports": "report_required_tag_for defines required keys by resource type alongside tag value rules."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/enforce-required-tag-keys-iac.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed tagging compliance hook, STACK-only operation, per-account/Region activation, execution-role permissions, WARN versus FAIL and StackSets."
+    }
+  ],
+  "editorial_notes": [
+    "Retained the current required-tag IaC feature and removed historical review commentary. Made pipeline anti-bypass assumptions explicit and separated tag presence from allowed values. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

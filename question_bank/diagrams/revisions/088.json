@@ -1,0 +1,52 @@
+{
+  "question_id": "088",
+  "base_record_sha256": "4a2d8f21ab2b7cf4a1f1eead69c9038b393e8d69f2062c152ece75b1cadca7ed",
+  "record": {
+    "id": "088",
+    "exam_domain": "Design for New Solutions",
+    "question": "A development organization maintains an approved list of AMI IDs. Its automated build pipeline must remain able to launch EC2 test instances without manual approval or a new launch-time authorization restriction. Security accepts a short detection window but requires unapproved instances to be terminated automatically and the security team notified. The approved list is maintained centrally.\n\nWhich TWO designs can independently provide the required post-launch control? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add a manual approval action to the deployment pipeline before each EC2 launch and notify security when approval is rejected."
+      },
+      {
+        "id": "2",
+        "text": "Enable AWS Config recording and the approved-amis-by-id rule with the approved AMI list. Route noncompliance events through EventBridge to a Lambda function that rechecks the current AMI, terminates unapproved instances, and publishes an SNS notification."
+      },
+      {
+        "id": "3",
+        "text": "Use EventBridge Scheduler to invoke a Lambda function frequently. Have the function inventory running instances, compare their AMI IDs with the approved list, terminate unapproved instances, and publish an SNS notification."
+      },
+      {
+        "id": "4",
+        "text": "Apply an IAM deny to RunInstances for AMIs outside the approved list, and publish an SNS notification when a launch is denied."
+      },
+      {
+        "id": "5",
+        "text": "Enable the approved-amis-by-id AWS Config rule and send its noncompliance events to an SNS topic for the security team to investigate manually."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<3>> are correct. Both evaluate instances after launch, compare their AMI IDs with the centrally maintained allowlist, perform automated remediation, and notify security. The Config managed rule evaluates running instances on configuration changes. A scheduled inventory implements the same control through polling. Update the rule parameters or polling configuration when the approved list changes, and make termination logic idempotent and resistant to stale events.\n\n<<1>> introduces the manual launch gate that the pipeline cannot accept.\n\n<<4>> is a valid preventive pattern when properly scoped, but it introduces the launch-time restriction excluded by the scenario.\n\n<<5>> detects and reports violations but leaves remediation manual.\n\nPost-launch controls permit a detection and remediation window. If the requirement were that an unapproved AMI must never run, neither selected design would satisfy it by itself.\n\nAWS documentation (checked September 18, 2026): [Approved AMIs Config rule](https://docs.aws.amazon.com/config/latest/developerguide/approved-amis-by-id.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/088.mmd",
+  "diagram_alt": "Two alternative detectors converge on automated remediation after launch, leaving an explicit detection window.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/approved-amis-by-id.html",
+      "checked_on": "2026-09-18",
+      "supports": "The managed rule evaluates running EC2 instances on configuration changes against a supplied AMI ID list."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2 and 3. Made the accepted detection window and independent alternative designs explicit. Replaced an implausible Inspector distractor with detection-only Config."
+  ],
+  "review_status": "authored"
+}

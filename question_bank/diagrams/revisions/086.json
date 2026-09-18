@@ -1,0 +1,62 @@
+{
+  "question_id": "086",
+  "base_record_sha256": "b6b4ff2dfcec2222b38d2a90c54890c9ad118898436a8abb0685a5c336a58ac3",
+  "record": {
+    "id": "086",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company must encrypt objects in an S3 bucket with SSE-KMS. Its security policy requires the KMS key material to be generated in the company's existing on-premises HSM. The policy permits securely importing a copy into AWS KMS, and routine S3 reads and writes must not depend on connectivity to the on-premises HSM.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an AWS CloudHSM cluster and generate a new KMS key in a CloudHSM custom key store. Configure the bucket to use that key."
+      },
+      {
+        "id": "2",
+        "text": "Create a KMS external key store connected to the on-premises key manager. Keep the key material exclusively on premises and use that key for SSE-KMS."
+      },
+      {
+        "id": "3",
+        "text": "Create a symmetric KMS key with EXTERNAL origin, obtain its import parameters, wrap the on-premises-generated key material as required, and import it. Configure S3 to use that KMS key ARN."
+      },
+      {
+        "id": "4",
+        "text": "Create a symmetric KMS key with AWS_KMS origin. Replace its AWS-generated material with the on-premises-generated material, and configure S3 to use its key ARN."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Importing key material preserves its external generation provenance while allowing KMS to perform cryptographic operations using the imported copy. S3 can use the resulting customer managed key for SSE-KMS without contacting the original HSM during every request.\n\n<<1>> generates new material in a different HSM environment and therefore fails the required origin of the material.\n\n<<2>> retains an operational dependency on the external key manager and its connectivity, which the scenario explicitly excludes.\n\n<<4>> uses the wrong immutable key origin. The import workflow requires a KMS key created for externally supplied material, not replacement of material in an AWS_KMS-origin key.\n\nProtect a recoverable copy of imported material and manage its expiration. If required imported material is deleted or expires, the key becomes unusable until the appropriate material is restored. Automatic rotation is not supported for EXTERNAL keys, although current KMS supports on-demand rotation for symmetric keys with imported material.\n\nAWS documentation (checked September 18, 2026): [Importing KMS key material](https://docs.aws.amazon.com/kms/latest/developerguide/importing-keys.html); [S3 SSE-KMS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html); [KMS key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html); [KMS external key stores](https://docs.aws.amazon.com/kms/latest/developerguide/keystore-external.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/086.mmd",
+  "diagram_alt": "An initial protected import establishes external key provenance while later S3 encryption uses the KMS-held copy.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/importing-keys.html",
+      "checked_on": "2026-09-18",
+      "supports": "Externally generated key material can be imported into a KMS key with EXTERNAL origin using the secure wrapping workflow."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 can use a specified customer managed KMS key for server-side encryption."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+      "checked_on": "2026-09-18",
+      "supports": "EXTERNAL symmetric keys support on-demand rotation but not automatic rotation, and loss or expiration of imported material makes the key unusable."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/keystore-external.html",
+      "checked_on": "2026-09-18",
+      "supports": "External key store operations depend on an external key manager and proxy, affecting availability and latency."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Made permission to import and independence from the on-premises HSM explicit. Updated the obsolete claim that imported symmetric keys cannot support any rotation."
+  ],
+  "review_status": "authored"
+}

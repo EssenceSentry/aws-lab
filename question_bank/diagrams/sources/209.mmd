@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Replicate guest disks, not just the inventory
+accDescr: A guest-installed agent captures the VM root and data disks into the MGN staging area, while vCenter inventory alone supplies no such disk-replication path.
+V["VM guest: root and data disks"] --> A["Replication Agent in that guest"]
+A --> S[("MGN staging disks")]
+S --> T["Test and cutover EC2 launches"]
+I["vCenter inventory only"] -.-> N["No guest-agent replication by itself"]
+class V,I inputData
+class A decision
+class S storage
+class T output
+class N warning

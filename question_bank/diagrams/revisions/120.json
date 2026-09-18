@@ -1,0 +1,52 @@
+{
+  "question_id": "120",
+  "base_record_sha256": "635fc6c7822a015c577992bbd8193d836327fff9269e4e5ca457cb7f103e4828",
+  "record": {
+    "id": "120",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company deploys EC2 Auto Scaling groups with CloudFormation. Its image pipeline validates a new regional AMI before approving it for production. Engineers currently edit hardcoded AMI IDs in every template. The company wants reusable templates and an automated, controlled replacement of existing instances after each approved image release.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Systems Manager State Manager association that patches packages on running instances, and leave the templates' hardcoded AMI IDs unchanged."
+      },
+      {
+        "id": "2",
+        "text": "Create an AWS Config rule that reports instances using an old AMI, and rely on the compliance result to change their launch templates and replace the instances."
+      },
+      {
+        "id": "3",
+        "text": "Store the approved AMI ID in Parameter Store and reference it from CloudFormation, but update only the parameter after each release and wait for existing instances to adopt the new AMI automatically."
+      },
+      {
+        "id": "4",
+        "text": "Store each Region's approved AMI ID in Parameter Store and reference its key with an AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> template parameter. Have the pipeline update the parameter, create and execute a stack change set, and roll the Auto Scaling group to the new launch-template version using a configured update policy."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. A CloudFormation Systems Manager parameter type lets the template retain a stable key while CloudFormation resolves the current AMI ID during stack creation or update. The pipeline must still initiate the stack operation and replace existing instances through an appropriate Auto Scaling update policy. Review the AMI resolved into the change set before execution.\n\n<<1>> changes installed software but leaves the image used for newly launched instances stale. It does not implement the requested image-release process.\n\n<<2>> detects a configuration condition; a compliance finding alone does not mutate launch templates or roll instances.\n\n<<3>> omits the deployment trigger and rollout. Changing Parameter Store does not automatically update a CloudFormation stack or replace an instance's running image.\n\nSeparate image approval, parameter publication, stack update, and instance rollout. A latest-value reference selects configuration at deployment time; it is not a subscription that continuously reconciles running hosts.\n\nOfficial AWS references (checked September 18, 2026): [CloudFormation SSM parameter types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-supplied-parameter-types.html). [CloudFormation update policies](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatepolicy.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/120.mmd",
+  "diagram_alt": "The approved AMI value must pass through a stack update and a separate instance replacement mechanism to reach running capacity.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-supplied-parameter-types.html",
+      "checked_on": "2026-09-18",
+      "supports": "AMI parameter type, resolution at stack/change-set operations, and UsePreviousValue key semantics"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatepolicy.html",
+      "checked_on": "2026-09-18",
+      "supports": "Auto Scaling rolling replacement or instance refresh triggered by supported stack property updates"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added approved regional images, explicit stack/change-set execution, and controlled existing-instance replacement; parameter publication alone is not deployment."
+  ],
+  "review_status": "authored"
+}

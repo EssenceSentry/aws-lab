@@ -1,0 +1,15 @@
+sequenceDiagram
+accTitle: Two authentication domains in one broker flow
+accDescr: LDAP authenticates the employee. Separately, the broker's AWS role credentials authenticate its STS call, which returns an approved role session.
+actor U as Employee
+participant B as EC2 identity broker
+participant L as LDAP directory
+participant S as AWS STS
+U->>B: Sign in
+B->>L: Validate identity over protected connection
+L-->>B: Authenticated employee
+B->>B: Select role from trusted mapping
+B->>S: AssumeRole signed with EC2 role credentials
+S->>S: Evaluate caller permission and role trust
+S-->>B: Temporary chained session, at most 1 hour
+B-->>U: Access key, secret key, session token

@@ -1,0 +1,54 @@
+{
+  "question_id": "044",
+  "base_record_sha256": "40acfd44aa1a19b2d42898c49ac6de1c77721968eab056ed2bfce4ac9d3eee59",
+  "record": {
+    "id": "044",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company is building a stateless REST API with brief requests and long idle periods between unpredictable traffic bursts. Users need standard sign-up and sign-in features. Metadata must remain durable, and authorized users must download large private objects without sending the object bytes through the application.\n\nWhich design meets these requirements with the least infrastructure and authentication code to operate?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the API on Fargate behind an ALB with a custom authentication service. Store metadata in DynamoDB and private objects in S3. Proxy each authorized object download through the containers."
+      },
+      {
+        "id": "2",
+        "text": "Run an always-on Fargate service behind an ALB with Cognito authentication. Store metadata in DynamoDB and private objects in S3. Return short-lived presigned URLs after checking object access."
+      },
+      {
+        "id": "3",
+        "text": "Use API Gateway REST APIs with Lambda integrations and a Cognito user pool authorizer. Store metadata in DynamoDB and private objects in S3. Return short-lived presigned URLs after checking object access."
+      },
+      {
+        "id": "4",
+        "text": "Use API Gateway REST APIs with Lambda integrations and a custom Lambda authorizer. Store the only copy of metadata in an ElastiCache Memcached cluster and private objects in S3. Return presigned URLs after checking object access."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Choose <<3>>. API Gateway and Lambda fit brief, intermittent API work without an always-running application fleet. Cognito supplies the required identity features and a built-in REST API authorizer. DynamoDB stores durable metadata. After application-level authorization, a presigned S3 URL lets the client transfer an object directly using the signer's delegated permission.\n\n<<1>> requires custom identity code and proxies large transfers through the compute tier, violating the download requirement. <<2>> can satisfy the functional requirements, but its continuously running service and ALB add infrastructure to operate during idle periods. It is not the best fit for the stated operating model; Fargate is not universally more expensive than Lambda. <<4>> adds unnecessary authorizer code and uses an evictable Memcached cache as the sole metadata store.\n\nA valid identity token does not establish permission to every object. Check ownership or other resource authorization before signing. Presigned URLs are bearer credentials: anyone who receives one can use its allowed operation until it expires or the signing credentials cease to be valid.\n\nAWS documentation (checked September 18, 2026): [Cognito API authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html), [S3 presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/044.mmd",
+  "diagram_alt": "Authentication precedes object authorization, and S3 sends the object directly to the client.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html",
+      "checked_on": "2026-09-18",
+      "supports": "API Gateway REST methods can require valid Cognito user pool tokens without a custom Lambda authorizer."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+      "checked_on": "2026-09-18",
+      "supports": "Presigned URLs delegate time-limited object operations using the signer permissions and expire no later than temporary credentials."
+    }
+  ],
+  "editorial_notes": [
+    "Added intermittent short requests to support the operational preference for Lambda without claiming universal lower cost.",
+    "Made object-level authorization and bearer-URL behavior explicit.",
+    "Specified Memcached in the cache distractor to avoid ambiguous persistence claims about other ElastiCache engines."
+  ],
+  "review_status": "authored"
+}

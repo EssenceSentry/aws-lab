@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Recovery artifacts and discovery exports serve different purposes
+accDescr: Replicated RDS backups feed restoration, while customer S3 exports feed Macie discovery and remediation.
+D[(Source RDS MySQL)] --> B[Automated snapshots and logs]
+B -->|Cross-Region replication| R[Recovery Region backups]
+R -->|Point-in-time restore| N[(New DB instance)]
+T[Infrastructure templates] --> A[Recovered application]
+N --> A
+D -->|Selected Parquet export| S[(Controlled S3 bucket)]
+S --> M[Macie discovery]
+M --> F[Findings]
+F --> W[Remediation workflow]
+class T inputData
+class D,R,N,S storage
+class A,W output

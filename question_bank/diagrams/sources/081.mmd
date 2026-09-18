@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Validate before shifting production traffic
+accDescr: Tests and change review precede green deployment. Green health gates the traffic switch while the blue environment remains available for rollback.
+A[Release artifact and template]:::inputData --> B[Automated tests in nonproduction]:::process
+B --> C[Review CloudFormation change set]:::process
+C --> D[Deploy green environment]:::process
+D --> E{Health and release checks pass?}:::decision
+E -->|No| F[Keep or restore traffic on blue]:::warning
+E -->|Yes| G[Route traffic to green]:::process
+G --> H{Rollback alarm?}:::decision
+H -->|Yes| F
+H -->|No, observation complete| I[Retire blue]:::output

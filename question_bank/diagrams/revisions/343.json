@@ -1,0 +1,62 @@
+{
+  "question_id": "343",
+  "base_record_sha256": "ac7a3bd4cecbc63c269f5fe9586cfccbb863ec0d45c7ee016e3d5b79d2225d00",
+  "record": {
+    "id": "343",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is moving a Lambda application and Aurora MySQL database between accounts in the same organization and Region. The database supports cross-account cloning and uses a customer-managed KMS key whose sharing permissions can be configured. The team has tested a brief write freeze, clone creation, validation, and cutover within its outage window; full dump/import and snapshot restore take longer. The Lambda ZIP package is in S3, and the target network and deployment configuration are prepared.\n\nWhich actions complete the migration? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Freeze writes, export the full database with mysqldump, and import it into a new target-account Aurora cluster before reopening the application."
+      },
+      {
+        "id": "2",
+        "text": "Share the Aurora cluster through AWS RAM with the required KMS permissions. During the tested write freeze, create the target-account clone, validate it, and redirect the application before reopening writes."
+      },
+      {
+        "id": "3",
+        "text": "Freeze writes, create and share a database snapshot, and restore the target cluster from it before reopening the application."
+      },
+      {
+        "id": "4",
+        "text": "Share the source Lambda function through AWS RAM and treat the share as a transfer of function ownership and configuration."
+      },
+      {
+        "id": "5",
+        "text": "Copy the ZIP package to the target account and create the target Lambda function, reproducing its IAM, networking, triggers, dependencies, and required settings. Configure it for the target database at cutover."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Aurora copy-on-write cloning creates a separate volume without first copying every data page. RAM permits the supported cross-account clone, and the KMS permissions authorize use of encrypted source data. The tested write freeze prevents later source writes from being missed.\n\n<<5>> is correct. The package supplies code, while the recreated function configuration supplies the runtime permissions and integration needed in the target account.\n\n<<1>> and <<3>> are valid database-copy approaches, but their measured full transfer or restore time exceeds this outage window.\n\n<<4>> is not a Lambda ownership-migration mechanism.\n\nA clone is an independent point-in-time copy, not a continuously updated replica. If writes must continue after its creation, a supported catch-up process is required before cutover. Cross-account encrypted cloning also cannot use the default RDS KMS key; check the supported configuration and quotas before migration.\n\nOfficial AWS references (checked September 18, 2026): [Aurora copy-on-write cloning](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html). [Lambda ZIP deployment](https://docs.aws.amazon.com/lambda/latest/dg/configuration-function-zip.html). [Cross-account Aurora cloning](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.Cross-Account.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/343.mmd",
+  "diagram_alt": "The write freeze prevents independent source and clone histories from diverging before the target application takes over.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html",
+      "checked_on": "2026-09-18",
+      "supports": "Independent clone volumes, same-Region limits and reduced initial copying"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-function-zip.html",
+      "checked_on": "2026-09-18",
+      "supports": "ZIP code packages and function configuration can be recreated with Lambda or CloudFormation."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.Cross-Account.html",
+      "checked_on": "2026-09-18",
+      "supports": "RAM sharing, KMS permissions and default RDS key limitation"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2 and 5. Replaced unconditional least-downtime language with tested timings and write quiescence, and required full Lambda configuration recreation."
+  ],
+  "review_status": "authored"
+}

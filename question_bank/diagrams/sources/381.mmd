@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: DNS configuration and the resolver path
+accDescr: DHCP selects AmazonProvidedDNS, both VPC DNS attributes enable the required behavior, and an associated private hosted zone supplies private records.
+D["DHCP: AmazonProvidedDNS"]:::inputData --> E["EC2 DNS client"]
+E --> R["Route 53 Resolver<br/>10.232.18.2"]
+Z[("Associated private hosted zone")]:::storage --> R
+S["enableDnsSupport = true<br/>enableDnsHostnames = true"]:::inputData -.-> R
+S --> H["AWS public DNS hostname"]:::output
+P["Instance has public IPv4"]:::inputData --> H
+R --> A["Private DNS answer"]:::output

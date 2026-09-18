@@ -1,0 +1,16 @@
+flowchart TB
+accTitle: Buffer work independently of durable files
+accDescr: Uploads persist in S3; an SQS queue carries references to replaceable workers and drives a scaling feedback loop.
+U[Upload API] -->|File| S[(S3 uploads)]
+U -->|Object reference| Q[SQS queue]
+Q --> W[Multi-AZ worker group]
+W -->|Read file| S
+W -->|Complete then delete message| Q
+Q -.->|Visible backlog| M[Backlog per worker]
+W -.->|Running capacity| M
+M -.->|Scaling policy| W
+S -->|Asynchronous CRR| R[(Recovery Region S3)]
+class U inputData
+class S,R storage
+class M decision
+class W output

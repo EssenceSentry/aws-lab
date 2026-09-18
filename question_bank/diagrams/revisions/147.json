@@ -1,0 +1,57 @@
+{
+  "question_id": "147",
+  "base_record_sha256": "426d8890999f9cb1b5e1fdbbb4bef3d0f66342fb3a34833188370f8881ba52bd",
+  "record": {
+    "id": "147",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company operates Lambda APIs and an Elastic Beanstalk web tier backed by DynamoDB and OpenSearch. Releases are backward compatible and do not change database schemas or shared infrastructure. During web deployments, the entire existing fleet must remain available until replacement instances pass validation. Lambda releases need gradual traffic shifting, health checks, and rollback. Failed releases must also block subsequent deployment executions until an operator clears the failure.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Lambda versions and CodeDeploy canary traffic shifting with alarms and rollback. Deploy the Beanstalk web tier with All at once, and block later releases after failures."
+      },
+      {
+        "id": "2",
+        "text": "Use Lambda versions and CodeDeploy canary traffic shifting with alarms and rollback. Deploy the Beanstalk web tier with ordinary Rolling deployments, and block later releases after failures."
+      },
+      {
+        "id": "3",
+        "text": "Use Lambda versions and aliases with CodeDeploy validation hooks, alarms, and automatic rollback. Use Beanstalk Immutable deployments with sufficient temporary capacity. Configure the release pipeline to latch a failure gate that prevents further deployments until explicitly cleared."
+      },
+      {
+        "id": "4",
+        "text": "Use Lambda versions and CodeDeploy canary traffic shifting with rollback, and use Beanstalk Immutable deployments. Continue automatically with the next queued release whenever the previous deployment fails."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Beanstalk Immutable deployments create replacement instances while retaining the original fleet during validation. CodeDeploy shifts Lambda alias traffic between published versions and can roll back when configured hooks or alarms fail. The release pipeline separately enforces the stop-after-failure requirement.\n\n<<1>> updates the web fleet together and does not retain the entire original serving fleet during validation.\n\n<<2>> removes batches from service during an ordinary rolling deployment, violating the full-capacity constraint.\n\n<<4>> provides deployment rollback but omits the required block on later releases.\n\nImplement the failure gate explicitly, for example by serializing releases and disabling inbound deployment-stage transitions before admitting the next release. CodeDeploy rollback or CloudFormation failure alone is not a permanent pipeline lock. Reserve enough instance and Lambda concurrency capacity, and test application health and version compatibility; no policy name guarantees zero errors.\n\nOfficial AWS references (checked September 18, 2026): [Beanstalk immutable updates](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environmentmgmt-updates-immutable.html). [Gradual Lambda deployments](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/automating-updates-to-serverless-apps.html). [CodePipeline stage gates](https://docs.aws.amazon.com/codepipeline/latest/userguide/transitions.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/147.diagram.json",
+  "diagram_alt": "A compact comparison separates temporary web capacity, Lambda traffic rollback, and persistent pipeline failure gating.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environmentmgmt-updates-immutable.html",
+      "checked_on": "2026-09-18",
+      "supports": "Temporary replacement group, retained original fleet, validation, rollback and doubled temporary capacity"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/automating-updates-to-serverless-apps.html",
+      "checked_on": "2026-09-18",
+      "supports": "Versions, aliases, CodeDeploy hooks, alarms and rollback"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/transitions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Disabled stage transitions and explicit manual approval mechanisms"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Separated rollback from a durable subsequent-release gate, excluded incompatible shared-resource changes, and removed the claim that DynamoDB resides inside a customer VPC."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,15 @@
+sequenceDiagram
+accTitle: Search the catalog before restoring the archive
+accDescr: A metadata lookup returns the Glacier archive identifier. Restoration then occurs as an asynchronous job before its bytes can be downloaded.
+participant U as Retrieval workflow
+participant D as DynamoDB catalog
+participant G as Legacy Glacier vault
+U->>D: Indexed dataset search
+D-->>U: Dataset metadata and archive ID
+U->>G: Initiate archive retrieval job
+G-->>U: Job ID
+Note over U,G: Asynchronous retrieval interval
+G-->>U: Job completion notification
+U->>G: Download job output
+G-->>U: Compressed dataset
+Note over U: Decompress and deliver within tested objective

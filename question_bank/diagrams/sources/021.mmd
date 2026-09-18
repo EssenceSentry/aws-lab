@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Request filtering and configuration history
+accDescr: WAF evaluates REST API requests while Config records a separate history of firewall configuration.
+U[Portal request] --> W{WAF rules}
+W -->|SQL injection match| B[Block]
+W -->|Allowed| A[REST API stage]
+A --> L[Lambda]
+L -->|Parameterized query| D[(Database)]
+C[Firewall configuration change] --> W
+C --> H[AWS Config history]
+class U,C inputData
+class W decision
+class B warning
+class D,H storage
+class L output

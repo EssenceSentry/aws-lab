@@ -1,0 +1,73 @@
+{
+  "question_id": "248",
+  "base_record_sha256": "f5d0ac7908e210d82e14c1931a2440cbfbc0f4c40f945f5e3b0e85cf50c14363",
+  "record": {
+    "id": "248",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An organization requires every production FSx for Windows File Server deployment to have managed availability across two Availability Zones. Some file systems are Single-AZ and receive frequent writes. A full restore would exceed the allowed write-outage window, but testing shows the remaining changes can be copied and verified during a short final freeze.\n\nWhich migration plan meets the policy with the least disruption?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Multi-AZ file system, use DataSync for an initial copy and repeated incremental tasks while the source remains active, then freeze writes for a final verified transfer and switch clients."
+      },
+      {
+        "id": "2",
+        "text": "Take one backup while the source remains writable, use the console restore wizard to change its deployment type to Multi-AZ, and switch clients later without transferring post-backup writes."
+      },
+      {
+        "id": "3",
+        "text": "Create a second Single-AZ file system in another AZ, schedule DataSync copies, and manually switch clients if the original file system fails."
+      },
+      {
+        "id": "4",
+        "text": "Edit the existing Single-AZ file system's deployment type to Multi-AZ in place, retaining its existing file-system identifier."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Copying most data before cutover limits the final outage to the remaining transfer, verification and client switch. The destination is an actual Multi-AZ FSx deployment with managed cross-AZ availability.\n\n<<2>> attempts to change a deployment type that the documented console restore wizard fixes. It also omits writes made after the backup. <<3>> leaves two Single-AZ deployments and relies on scheduled copies and manual recovery, which does not meet the policy. <<4>> proposes an unsupported in-place deployment-type change.\n\nDataSync executes transfer tasks; it is not continuous synchronous replication. Monitor incremental runs, keep one authoritative writer, and test the final copy and client reconnection. A backup protects a point in time; it does not by itself provide a continuously available, current Multi-AZ destination.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/fsx/latest/WindowsGuide/migrate-files-to-fsx-datasync.html\nhttps://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html\nhttps://docs.aws.amazon.com/fsx/latest/APIReference/API_UpdateFileSystemWindowsConfiguration.html\nhttps://docs.aws.amazon.com/datasync/latest/userguide/datasync-large-migration-running-tasks.html\nhttps://docs.aws.amazon.com/fsx/latest/WindowsGuide/how-to-restore-backups.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-fsx-filesystem-windowsconfiguration.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/248.mmd",
+  "diagram_alt": "Repeated copies reduce the final delta, but safe migration still requires a write freeze, validation and an explicit client switch.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/migrate-files-to-fsx-datasync.html",
+      "checked_on": "2026-09-18",
+      "supports": "DataSync migrates on-premises files or files between FSx systems, including migration from Single-AZ to a new Multi-AZ file system."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multi-AZ FSx for Windows uses a standby in another AZ and managed failover."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/APIReference/API_UpdateFileSystemWindowsConfiguration.html",
+      "checked_on": "2026-09-18",
+      "supports": "The Windows file-system update configuration does not expose a deployment-type conversion."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/datasync-large-migration-running-tasks.html",
+      "checked_on": "2026-09-18",
+      "supports": "DataSync migration uses discrete initial and incremental tasks and a controlled final cutover."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/how-to-restore-backups.html",
+      "checked_on": "2026-09-18",
+      "supports": "The documented FSx Windows console backup-restore wizard has a fixed deployment type."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-fsx-filesystem-windowsconfiguration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Changing FSx Windows DeploymentType requires replacement, not an in-place update."
+    }
+  ],
+  "editorial_notes": [
+    "Repaired the continuous-DataSync claim and made later writes plus the outage constraint distinguish a one-time backup restore.",
+    "Corrected the inherited assertion that the console restore path can change Single-AZ backups to Multi-AZ; the current guide fixes deployment type. No broader API behavior is asserted."
+  ],
+  "review_status": "authored"
+}

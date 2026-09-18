@@ -1,0 +1,62 @@
+{
+  "question_id": "039",
+  "base_record_sha256": "15258d7087dd80d975703d2bfa6bf37c4e74beb192181d0a665cde5cedc681ab",
+  "record": {
+    "id": "039",
+    "exam_domain": "Design for New Solutions",
+    "question": "A bank runs a web application across two Availability Zones. Its TLS private key must be generated inside a company-controlled CloudHSM cluster and must never be exportable to a web server. The architecture must remain available after losing one AZ. Application logs need durable storage, and a separate KMS permission must govern which employees can decrypt them.\n\nWhich design meets all requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a TCP Network Load Balancer and copy the TLS private key from an encrypted S3 bucket to each web server during startup. Store application logs in S3 with SSE-KMS and restricted policies."
+      },
+      {
+        "id": "2",
+        "text": "Use a TCP Network Load Balancer and configure the web servers to perform TLS private-key operations in CloudHSM with a non-extractable key. Spread adequately sized HSM capacity across AZs. Store logs in S3 with a customer-managed KMS key and policies restricting object reads and decryption."
+      },
+      {
+        "id": "3",
+        "text": "Terminate TLS on an Application Load Balancer using an imported certificate and private key. Store logs on encrypted instance-store volumes and keep the decryption keys only on the instances."
+      },
+      {
+        "id": "4",
+        "text": "Use a TCP Network Load Balancer and a single CloudHSM in one AZ for TLS operations. Store logs in a private S3 bucket using SSE-S3 and grant authorized employees GetObject access."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. A TCP listener passes the encrypted TLS connection to the web server, whose supported cryptographic integration invokes the HSM for private-key operations. Generate the key as non-extractable and maintain enough HSM and application capacity in surviving AZs. S3 supplies durable log storage; SSE-KMS adds a separate decrypt authorization requirement.\n\n<<1>> creates server-side copies of the private key, violating the custody requirement even if the S3 source is encrypted.\n\n<<3>> moves TLS key custody to the load balancer, and instance-store logs are not durable across instance loss.\n\n<<4>> leaves a single-AZ cryptographic dependency. SSE-S3 does not supply the separately controlled KMS permission requested here.\n\nHSM storage alone does not make a key non-extractable: set the key attribute explicitly. For logs, both S3 read authorization and KMS decrypt authorization matter. Configure TLS clients for HSM redundancy and retry transient failures; merely creating additional HSMs does not prove sufficient surviving capacity.\n\nOfficial AWS references (checked 2026-09-18):\n[CloudHSM TLS integration](https://docs.aws.amazon.com/cloudhsm/latest/userguide/ssl-offload.html)\n[CloudHSM key management](https://docs.aws.amazon.com/cloudhsm/latest/userguide/bp-hsm-key-management.html)\n[CloudHSM availability](https://docs.aws.amazon.com/cloudhsm/latest/userguide/bp-cluster-management.html)\n[S3 SSE-KMS permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/039.mmd",
+  "diagram_alt": "The TLS key stays inside the HSM boundary; log access passes separate S3 and KMS authorization checks.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/ssl-offload.html",
+      "checked_on": "2026-09-18",
+      "supports": "Web servers can offload TLS private-key operations to CloudHSM"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/bp-hsm-key-management.html",
+      "checked_on": "2026-09-18",
+      "supports": "Non-extractable keys cannot be exported; extractability must be configured"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/bp-cluster-management.html",
+      "checked_on": "2026-09-18",
+      "supports": "AZ distribution and redundant capacity for HSM availability"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "KMS decrypt authorization for reads and customer-managed policy control"
+    }
+  ],
+  "editorial_notes": [
+    "Replaced ambiguous corporate-environment wording with an explicit company-controlled HSM boundary and distinct KMS authorization requirement. Added capacity after AZ loss rather than assuming two HSMs always suffice. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

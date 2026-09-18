@@ -1,0 +1,52 @@
+{
+  "question_id": "159",
+  "base_record_sha256": "f1149072aab0b6e5ad3aa2c82c8cdecb4d93010e2cae2128d4ddf5cff61ee9ab",
+  "record": {
+    "id": "159",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An analytics company will run a single 48-hour EMR performance study. The cluster needs HDFS intermediate data and stable coordination, but executor tasks can be retried after interruptions. Completed outputs are written to S3. The company wants to reduce compute expense without adding Spot interruption risk to the coordinator or HDFS storage. It has no unused reservations and no future workload to consume a new long-term commitment.\n\nWhich configuration should it choose?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Spot primary and core nodes with On-Demand task nodes, placing the persistent cluster roles on discounted capacity."
+      },
+      {
+        "id": "2",
+        "text": "Purchase a new one-year Reserved Instance for the primary node, use On-Demand core nodes, and use Spot task nodes."
+      },
+      {
+        "id": "3",
+        "text": "Use On-Demand primary and core nodes and diversified Spot task nodes. Configure YARN node labels for the selected EMR release to keep application masters on On-Demand or core nodes, and enable suitable task retries."
+      },
+      {
+        "id": "4",
+        "text": "Purchase new one-year Reserved Instances for all primary and core capacity and use Spot task nodes."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. It places retryable executor work on Spot while keeping primary coordination, HDFS data nodes, and critical application-master processes on stable purchasing capacity. Node-label configuration is explicit because default application-master placement varies by EMR release.\n\n<<1>> places Spot interruption risk on the exact roles that the requirement protects, while paying On-Demand rates for the retryable compute tier.\n\n<<2>> and <<4>> introduce new annual commitments for capacity needed only for this study. A matching reservation already owned by the company could apply to On-Demand usage, but none exists here.\n\nTask nodes do not store HDFS blocks, but their loss can discard in-memory or shuffle state and require recomputation. Configure and test recovery, persist completed outputs outside the cluster, and diversify Spot capacity. This preserves the intended failure boundary; it does not guarantee uninterrupted execution or a fixed completion time.\n\nOfficial AWS references (checked September 18, 2026): [EMR node types and labels](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html). [Reserved Instance commitments](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/159.mmd",
+  "diagram_alt": "Spot executor attempts can be retried while HDFS and critical application masters remain on stable nodes.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html",
+      "checked_on": "2026-09-18",
+      "supports": "Task nodes lack HDFS DataNodes and application-master placement differs across releases"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
+      "checked_on": "2026-09-18",
+      "supports": "Discount application to matching On-Demand usage and one- or three-year purchase terms"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Distinguished retryable executor loss from critical application-master placement and removed the obsolete claim that Spot interruption is simply a response to price fluctuations."
+  ],
+  "review_status": "authored"
+}

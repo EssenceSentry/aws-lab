@@ -1,0 +1,52 @@
+{
+  "question_id": "152",
+  "base_record_sha256": "e93cd520d9c06993121707161ffcf97578450d5cf4c91e329c109984907a0a54",
+  "record": {
+    "id": "152",
+    "exam_domain": "Design for New Solutions",
+    "question": "An ECS application writes completed financial-analysis results into a DynamoDB table. A separate Lambda function must validate every newly inserted result soon after it is committed. Updates to existing results must not trigger the validation logic. The company wants to leave the producer application unchanged and use a managed change-consumption mechanism.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable DynamoDB Streams with new item images and create a Lambda event source mapping. In the function, process INSERT records and handle repeated processing idempotently."
+      },
+      {
+        "id": "2",
+        "text": "Modify every ECS producer to publish an SNS message after writing a result, and subscribe the validation function to the topic."
+      },
+      {
+        "id": "3",
+        "text": "Run a scheduled Lambda function that repeatedly scans the whole table and maintains a custom list of previously seen result keys."
+      },
+      {
+        "id": "4",
+        "text": "Enable DynamoDB Streams with old images only and validate newly inserted results using each record's OldImage without fetching the item."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. DynamoDB Streams captures committed item changes, and a Lambda event source mapping manages polling and invocation. New images provide the inserted result for validation; checking `eventName` in the handler limits the business logic to INSERT records.\n\n<<2>> requires producer changes and introduces a separate write-and-notify path that must handle partial failure.\n\n<<3>> can be built, but adds full-table scans, custom checkpointing, and polling delay when native change capture is available.\n\n<<4>> selects the wrong image. A new insertion has no previous item image to validate.\n\nStream records are retained for 24 hours, so monitor consumer age and failures and configure retry and failure handling. Although a change appears once in the stream, Lambda event source mappings can process records more than once. Idempotent validation prevents duplicate side effects. The stream is an asynchronous change source, not a permanent audit archive.\n\nOfficial AWS references (checked September 18, 2026): [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html). [Lambda DynamoDB event sources](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/152.mmd",
+  "diagram_alt": "Lambda consumes committed DynamoDB changes and validates INSERT new images while ignoring other change types.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html",
+      "checked_on": "2026-09-18",
+      "supports": "Item-level changes, stream image choices, per-item order and 24-hour retention"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed polling, batching, invocation, duplicate processing and failure considerations"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added INSERT-only handler logic, new-image selection and idempotency; avoids relying on an eventName filter unsupported by the documented DynamoDB filtering limitation."
+  ],
+  "review_status": "authored"
+}

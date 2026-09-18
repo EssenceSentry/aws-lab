@@ -1,0 +1,57 @@
+{
+  "question_id": "030",
+  "base_record_sha256": "6a234497bc159a36df85405f623a39599b49cdfc4f6e783c732e1b67a73b6924",
+  "record": {
+    "id": "030",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs a public web application on EC2 and wants to improve resilience to network floods and HTTP request floods. Its budget permits CloudFront, AWS WAF, and capacity scaling but not a Shield Advanced subscription.\n\nWhich actions directly improve DDoS resilience? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place CloudFront in front of the application, cache suitable content, restrict direct origin access, and monitor demand with CloudWatch to support controlled Auto Scaling."
+      },
+      {
+        "id": "2",
+        "text": "Move all application files from EBS to S3 and schedule operating-system patching. Use these changes as the primary protection against request floods."
+      },
+      {
+        "id": "3",
+        "text": "Distribute allowed HTTP traffic through an Application Load Balancer to a multi-AZ fleet. Associate a WAF web ACL with tested filtering and rate-based rules."
+      },
+      {
+        "id": "4",
+        "text": "Attach additional network interfaces to each EC2 instance and rely on the extra interfaces to filter malicious requests before they reach the application."
+      },
+      {
+        "id": "5",
+        "text": "Purchase EC2 Reserved Instances for the existing fleet and rely on the reservation to increase each instance's network capacity during attacks."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "3"
+    ],
+    "explanation": {
+      "text": "Correct: <<1>> and <<3>>. CloudFront moves request handling to the edge and reduces origin load through caching. WAF filters application-layer requests, while an ALB and a multi-AZ fleet distribute permitted work. Restrict origin access so attackers cannot simply bypass the edge.\n\n<<2>> may improve storage and patch hygiene, but neither change directly filters or absorbs a request flood.\n\n<<4>> does not provide a malicious-request classifier or make instance bandwidth unlimited; network limits still depend on the instance configuration.\n\n<<5>> changes the billing model, not the performance of an otherwise identical instance.\n\nShield Standard provides automatic baseline protection without a Shield Advanced subscription. WAF rules and application capacity still need tuning. Scaling improves availability but can increase costs and cannot be treated as unlimited attack absorption.\n\nOfficial AWS references (checked 2026-09-18):\n[CloudFront DDoS resilience](https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/cloudfront.html)\n[AWS DDoS mitigation techniques](https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/mitigation-techniques.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/030.mmd",
+  "diagram_alt": "Caching, request filtering, and distributed capacity reduce different parts of the DDoS load.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/cloudfront.html",
+      "checked_on": "2026-09-18",
+      "supports": "Edge filtering and caching reduce origin exposure"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/mitigation-techniques.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront, WAF, ALB, Auto Scaling and baseline mitigation form a layered architecture"
+    }
+  ],
+  "editorial_notes": [
+    "Removed the unrelated bug-bounty narrative and POSIX distractor. Made distractors plausible but explicitly insufficient controls. Preserved two-answer key."
+  ],
+  "review_status": "authored"
+}

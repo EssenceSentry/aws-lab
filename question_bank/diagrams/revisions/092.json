@@ -1,0 +1,52 @@
+{
+  "question_id": "092",
+  "base_record_sha256": "d3016524995ac393669c45b5336a7ee4f1323f7988fd3707f6c4b9e54e547709",
+  "record": {
+    "id": "092",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company has a desktop application that makes many synchronous HTTP calls to application servers backed by MySQL. Remote users experience high latency. The company wants to migrate the system to AWS, retain the existing desktop application with minimal changes, and keep its application and database tiers available after an Availability Zone failure. Users need access to this application, not a managed personal desktop.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep the desktop application on users' computers. Put CloudFront in front of the uncacheable HTTP API, run the servers across two AZs, and use Aurora MySQL with a reader in another AZ."
+      },
+      {
+        "id": "2",
+        "text": "Rewrite the desktop application as a browser application. Replace the server and database tiers with Lambda and DynamoDB."
+      },
+      {
+        "id": "3",
+        "text": "Run the desktop application through Amazon WorkSpaces Applications (formerly AppStream 2.0) near an ALB and an EC2 Auto Scaling group spanning AZs. Use Aurora MySQL with a writer and at least one reader in another AZ."
+      },
+      {
+        "id": "4",
+        "text": "Provide each user with a WorkSpaces Personal desktop. Run the application servers in one AZ and retain MySQL on a single EC2 instance in that AZ."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Application streaming moves the chatty client-to-server interactions into AWS while users receive the application display and send input over the remote connection. WorkSpaces Applications supports existing desktop applications without requiring a browser rewrite. Multi-AZ application servers and an Aurora reader outside the writer's AZ provide recovery capacity for the backend tiers.\n\n<<1>> improves backend availability but leaves the chatty desktop client remote. The specified uncacheable API still requires repeated WAN round trips, and CloudFront caching cannot remove them.\n\n<<2>> can produce a different cloud architecture but requires a substantial client and data-model rewrite, violating the migration constraint.\n\n<<4>> hosts full desktops that users do not need and, decisively, retains single-AZ application and database failure points.\n\nAurora's replicated storage and its DB instance placement are separate considerations. Include a reader in another AZ for an existing compute failover target rather than assuming that a writer-only cluster provides the same recovery behavior.\n\nAWS documentation (checked September 18, 2026): [Amazon WorkSpaces Applications](https://docs.aws.amazon.com/appstream2/latest/developerguide/what-is-appstream.html); [Aurora high availability](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/092.mmd",
+  "diagram_alt": "Only display and input traverse the remote-user connection, while frequent application calls stay within AWS and the backend spans AZs.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/appstream2/latest/developerguide/what-is-appstream.html",
+      "checked_on": "2026-09-18",
+      "supports": "The service formerly named AppStream 2.0 hosts existing desktop applications in AWS and streams them to browsers or clients."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html",
+      "checked_on": "2026-09-18",
+      "supports": "A reader in another Availability Zone provides a failover target beyond the writer AZ, while Aurora storage spans multiple AZs."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Updated AppStream 2.0 branding to current WorkSpaces Applications, specified HTTP for ALB compatibility, and required a cross-AZ Aurora reader."
+  ],
+  "review_status": "authored"
+}

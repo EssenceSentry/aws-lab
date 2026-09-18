@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Requester Pays changes who receives eligible charges",
+  "columns": [
+    "Cost or access property",
+    "With the stated partner credentials"
+  ],
+  "rows": [
+    [
+      "Object storage",
+      "Studio, the bucket owner"
+    ],
+    [
+      "Eligible download request",
+      "Partner account"
+    ],
+    [
+      "Eligible data download",
+      "Partner account"
+    ],
+    [
+      "Required request behavior",
+      "Authenticated access plus requester-pays acknowledgment"
+    ]
+  ],
+  "footnote": "Access policies still apply. Assuming a role owned by the studio would bill that role-owning account instead.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

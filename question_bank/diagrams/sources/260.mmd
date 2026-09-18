@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Extraction, interpretation and approval are separate stages
+accDescr: Textract supplies document structure, Comprehend enriches the extracted notes, and confidence plus business validation controls automated submission or human review.
+DOC[S3 scanned form]:::inputData --> TX[Textract fields and tables]
+TX --> NLP[Comprehend entities from notes]
+NLP --> CHECK{Confidence and rules pass?}:::decision
+CHECK -->|yes| APPROVED[Approved result]:::storage
+CHECK -->|no| HUMAN[Human review]:::warning
+HUMAN --> APPROVED
+APPROVED --> API[Idempotent API submission]:::output

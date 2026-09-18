@@ -1,0 +1,7 @@
+flowchart TB
+accTitle: CDK changes the authoring model while retaining CloudFormation deployment
+accDescr: Developers author TypeScript or Python constructs. A CodeBuild pipeline stage synthesizes templates and assets, and CloudFormation then owns resource creation and updates.
+C[TypeScript or Python<br/>CDK constructs]:::inputData --> B[CodeBuild in CodePipeline<br/>Build, test and synthesize]:::process
+B --> T[Cloud assembly<br/>Templates and assets]:::output
+T --> F[CloudFormation stack deployment]:::process
+F --> R[AWS resources<br/>Stack-managed lifecycle]:::output

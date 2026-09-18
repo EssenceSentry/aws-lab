@@ -1,0 +1,53 @@
+{
+  "question_id": "089",
+  "base_record_sha256": "acd404185d1f6cec75cf2c2b1ef003c556af933d49f68b09ec91ccfe41d56f1f",
+  "record": {
+    "id": "089",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A news application runs its web tier on AWS but must retain its on-premises database for the next six months. Readers repeatedly request the same articles, which change infrequently. Tracing shows that repeated database round trips across the hybrid connection dominate response time. Users also submit comments that must continue to be stored in the database.\n\nWhich change most directly reduces read latency with the least application redesign?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Migrate the database to Amazon Aurora and redirect all application reads and comment writes to the new database."
+      },
+      {
+        "id": "2",
+        "text": "Copy the articles and comments into Amazon OpenSearch Service and redesign the application to use it as the authoritative store."
+      },
+      {
+        "id": "3",
+        "text": "Add an ElastiCache for Redis OSS cache with a cross-AZ replica and Multi-AZ automatic failover near the web tier. Use cache-aside reads for article content, with expiration and invalidation when content changes, while retaining the on-premises database as the source of record."
+      },
+      {
+        "id": "4",
+        "text": "Add CloudFront caching for the site's images, style sheets, and JavaScript files while leaving article reads unchanged."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A cache hit returns article content close to the AWS web tier and avoids the slow on-premises read. On a miss, the application retrieves the article from the database and fills the cache. Expiration and invalidation limit stale content, while authoritative comment writes continue to reach the database. Cross-AZ replicas with Multi-AZ automatic failover reduce cache downtime. Cache loss must still be recoverable from the source of record.\n\n<<1>> could remove the hybrid database round trip but violates the six-month database-location constraint.\n\n<<2>> changes the authoritative storage model and query/write paths instead of adding a focused read cache.\n\n<<4>> improves static asset delivery but leaves the measured article-read bottleneck unchanged.\n\nChoose cache keys, freshness rules, and failure behavior deliberately. Caching is effective when repeated reads and an acceptable freshness policy justify reusing prior results.\n\nAWS documentation (checked September 18, 2026): [Cache-aside and expiration](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html); [ElastiCache replication and failover](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Replication.Redis.Groups.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/089.mmd",
+  "diagram_alt": "Cache-aside sequence shows the application reading the cache, fetching an article from the on-premises database on a miss, filling the cache and persisting comments to the database.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache hits avoid database reads, misses populate the cache, and TTL or write handling is needed to limit stale results."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Replication.Redis.Groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Valkey and Redis OSS replicas can scale reads, while Multi-AZ with automatic failover reduces downtime after primary failure."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Added measured latency and database-location constraints rather than claiming alternative services can never serve the workload. Specified Multi-AZ automatic failover rather than implying that replication alone provides it.",
+    "Root replaced the cache-fill topology arrow with an explicit application-mediated cache-aside sequence."
+  ],
+  "review_status": "authored"
+}

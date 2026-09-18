@@ -1,0 +1,52 @@
+{
+  "question_id": "358",
+  "base_record_sha256": "87f4396f9ec31e13d83b94b1e81565b894d57ae82186cd452c9fd02f21ac9e03",
+  "record": {
+    "id": "358",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company serves an application through public ALBs in two AWS Regions. Both deployments can serve live requests, and each has healthy targets that verify application readiness, including required database access. Users are distributed worldwide. The company wants DNS to select the healthy Region with the lowest estimated network latency for each user and continue using the remaining Region when one deployment is unhealthy.\n\nWhich solution meets the requirement with the least custom routing logic?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create Route 53 geolocation alias records that map countries to the nearest Region and enable Evaluate Target Health on the aliases."
+      },
+      {
+        "id": "2",
+        "text": "Deploy a Regional API Gateway endpoint and a custom redirect service that chooses an application Region from the client IP address country."
+      },
+      {
+        "id": "3",
+        "text": "Create Route 53 primary and secondary failover alias records, enable Evaluate Target Health, and always prefer the primary Region while it is healthy."
+      },
+      {
+        "id": "4",
+        "text": "Create Route 53 latency-based alias records for the two regional ALBs and enable Evaluate Target Health on each alias."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Latency-based routing uses Route 53 latency data to select among the configured Regions. Evaluate Target Health incorporates the ALB target health into DNS selection, so an unhealthy deployment can be excluded while the other remains healthy. The application-aware target checks make this health signal meaningful.\n\n<<1>> uses geographic rules. Geographic proximity is not the same as the lowest measured network latency.\n\n<<2>> adds custom application routing and uses country as a proxy for latency. It does not provide the requested managed latency-based selection.\n\n<<3>> supplies active-passive failover, but sends all users to the primary while it is healthy, regardless of which Region has lower latency.\n\nThis is DNS selection based on observed regional latency, not a new end-to-end timing probe for every request. Resolver behavior and DNS caching affect changes. If every record is unhealthy, Route 53 can return unhealthy records rather than an empty answer; health-based routing is not a guarantee of availability during total failure.\n\nOfficial AWS references (checked September 18, 2026): [Route 53 latency routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html). [Route 53 health selection](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-how-route-53-chooses-records.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/358.diagram.json",
+  "diagram_alt": "DNS uses estimated regional latency when both deployments are healthy, excludes one unhealthy deployment, and has explicit cache and total-failure limits.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+      "checked_on": "2026-09-18",
+      "supports": "Latency routing uses AWS regional latency data rather than geographic distance."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-how-route-53-chooses-records.html",
+      "checked_on": "2026-09-18",
+      "supports": "Evaluate Target Health uses alias-resource health; if all records are unhealthy Route 53 applies documented fallback behavior."
+    }
+  ],
+  "editorial_notes": [
+    "Used native ALB alias health evaluation rather than unnecessary separate checks; qualified DNS caching, latency estimates, and all-unhealthy fallback."
+  ],
+  "review_status": "authored"
+}

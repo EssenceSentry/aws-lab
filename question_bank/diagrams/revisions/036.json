@@ -1,0 +1,52 @@
+{
+  "question_id": "036",
+  "base_record_sha256": "44257da4c563588a215741b5568f038f0ab601676d7e338c0fe29c242fc3a18b",
+  "record": {
+    "id": "036",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company operates several VPCs in one account. Required VPC peering routes and security-group rules already allow approved applications to connect to a central EC2 database server using its private IPv4 address. The database has no public address. The applications must resolve database.internal.example.com, while internet DNS clients must not receive that private record.\n\nWhich Route 53 configuration meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a public hosted zone for internal.example.com and add an A record pointing to the database private address. Enable both VPC DNS attributes."
+      },
+      {
+        "id": "2",
+        "text": "Create a private hosted zone associated with the application VPCs and add the A record. Set enableDnsHostnames to true and enableDnsSupport to false."
+      },
+      {
+        "id": "3",
+        "text": "Create a private hosted zone associated only with the database VPC and add the A record. Rely on VPC peering alone to make that private zone visible to every application VPC."
+      },
+      {
+        "id": "4",
+        "text": "Create a private hosted zone for internal.example.com, associate it with the database and application VPCs, and create the database A record pointing to the private address. Set enableDnsHostnames and enableDnsSupport to true."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Correct: <<4>>. A private hosted zone supplies records to associated VPCs through the VPC resolver. Both required DNS attributes must be enabled. An A record maps the database name to its private IPv4 address.\n\n<<1>> publishes the DNS record publicly. A private IP address in a public zone does not make that zone private, even though the address itself is not publicly routable.\n\n<<2>> disables DNS support required for this resolution path.\n\n<<3>> is incorrect because peering does not automatically share private hosted-zone associations.\n\nDNS visibility does not grant network access. The stem separately supplies the routes, security rules, and absence of a public database address. In a cross-account design, direct associations also require authorization by the hosted-zone owner.\n\nOfficial AWS references (checked 2026-09-18):\n[Private hosted-zone behavior](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-considerations.html)\n[Cross-account association](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/036.mmd",
+  "diagram_alt": "Private DNS resolution returns an address; separately configured routes and security rules permit the database connection.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-considerations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Associated VPC resolution and required DNS attributes"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Authorization required for direct cross-account association"
+    }
+  ],
+  "editorial_notes": [
+    "Separated DNS privacy from network reachability; replaced a public-IP-equals-public-access overclaim and the invalid IP-valued CNAME distractor. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

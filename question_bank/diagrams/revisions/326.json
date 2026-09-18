@@ -1,0 +1,52 @@
+{
+  "question_id": "326",
+  "base_record_sha256": "7f4a8c236c0f6ba6ad7a2563df11d1e6f3f27578442c4c09b378ed43cde9aab0",
+  "record": {
+    "id": "326",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company serves a web application through CloudFront, with an ALB forwarding requests to ECS tasks on Fargate. When the ALB returns HTTP 502, users should receive a branded error page while the HTTP response remains 502. Healthy requests must continue normally. A static HTML error page is available.\n\nWhich solution meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store the page in a private S3 bucket. Add its REST endpoint as a CloudFront origin with origin access control, route an error-page path to that origin, and configure a custom 502 response using that page and status code 502."
+      },
+      {
+        "id": "2",
+        "text": "Use an ALB error alarm to invoke Lambda. Have Lambda replace the application listener rule with a redirect to a public error-page URL, then restore the rule when the alarm clears."
+      },
+      {
+        "id": "3",
+        "text": "Host the page on an S3 website endpoint. Configure Route 53 failover between the application and the website whenever an application health check fails."
+      },
+      {
+        "id": "4",
+        "text": "Add a highest-priority ALB rule matching all request paths. Configure the rule to return a fixed 502 response containing the branded page."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> handles the error on the request path that already serves the application. CloudFront can substitute a custom body for an origin's 502 response while retaining the 502 status. A separate cache behavior routes the error-page object to S3, and OAC permits CloudFront to read a private REST origin. Choose an error-caching TTL appropriate to recovery speed.\n\nOption <<2>> changes routing globally after a metric alarm, so it redirects healthy requests too and requires custom rule-management logic. Option <<3>> performs DNS failover rather than substituting the body of a particular 502 response. An S3 website endpoint also cannot use OAC. Option <<4>> matches healthy requests as well and prevents them from reaching the application.\n\nThe custom response improves the user experience; it does not repair the underlying application. Keep the error page independently available, because a failure fetching it changes the response CloudFront can return.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/GeneratingCustomErrorResponses.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/326.mmd",
+  "diagram_alt": "Only an origin 502 invokes the custom body path, while successful responses and the 502 status retain their meaning.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/GeneratingCustomErrorResponses.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront substitutes custom error responses and depends on error-page availability."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC protects an S3 REST origin and is unsupported for S3 website endpoints."
+    }
+  ],
+  "editorial_notes": [
+    "Made HTTP status preservation and per-response handling explicit. Preserved key 1 and removed ambiguous browser-redirection wording."
+  ],
+  "review_status": "authored"
+}

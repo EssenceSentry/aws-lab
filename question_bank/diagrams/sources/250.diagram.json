@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Enough data for a recommendation is not enough for a resize",
+  "columns": [
+    "Observed history",
+    "Recommendation eligibility",
+    "Operational conclusion"
+  ],
+  "rows": [
+    [
+      "12 hours of metrics",
+      "Below EC2 minimum",
+      "Continue collecting"
+    ],
+    [
+      "36 quiet hours",
+      "May meet EC2 minimum",
+      "Business peaks can still be missing"
+    ],
+    [
+      "Representative business cycle",
+      "Check supported metrics and resource eligibility",
+      "Review capacity and test the change"
+    ],
+    [
+      "Passive node appears idle",
+      "Recommendation may still be produced",
+      "Retain capacity for the active workload"
+    ]
+  ],
+  "footnote": "EC2 minimum: 30 hours in the standard 14-day lookback. Minimum evidence is not a failover-capacity guarantee.",
+  "emphasis_rows": [
+    2
+  ]
+}

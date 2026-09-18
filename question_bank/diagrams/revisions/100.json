@@ -1,0 +1,52 @@
+{
+  "question_id": "100",
+  "base_record_sha256": "9d3556b62b82b3e18463dc565fb984b40ac73cd14ac6a1901c7db9b58ed9a498",
+  "record": {
+    "id": "100",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An HPC application uses a controller and many EC2 worker instances. The workers are in one cluster placement group, but the controller is outside the group. All instances are in the same Availability Zone, use a supported EBS-backed instance type, and communicate by private IP address. The team has measured excessive latency between the controller and workers.\n\nThe controller can be stopped briefly, but the workers must remain running. Which action most directly improves network locality while meeting this constraint?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Stop the controller, change its placement to the workers' existing cluster placement group, and restart it when capacity is available."
+      },
+      {
+        "id": "2",
+        "text": "Stop all workers and the controller, create a new cluster placement group, and restart every instance in the new group."
+      },
+      {
+        "id": "3",
+        "text": "Associate an Elastic IP address with the controller and switch controller-to-worker traffic from private addresses to public addresses."
+      },
+      {
+        "id": "4",
+        "text": "Move the controller into a spread placement group while leaving the workers in their existing cluster placement group."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Cluster placement groups place supported instances close together within an AZ to improve latency and inter-instance network performance. An existing instance must be stopped before its placement group can be changed. Moving only the controller into the workers' group preserves the requirement that workers remain running.\n\n<<2>> can colocate the instances but violates the worker-availability constraint.\n\n<<3>> changes addressing rather than placement. An Elastic IP address does not move the controller closer to the workers or establish the cluster placement relationship.\n\n<<4>> uses a strategy intended to separate instances across distinct hardware, not to colocate the controller with the existing worker group.\n\nPlacement depends on available capacity, so a stopped instance may not be able to restart immediately in the requested group. Plan the change and capacity ahead of time. Achievable throughput also depends on instance type and networking features; group membership is not a universal bandwidth guarantee.\n\nAWS documentation (checked September 18, 2026): [Change EC2 instance placement](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/change-instance-placement-group.html); [EC2 placement strategies](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/100.mmd",
+  "diagram_alt": "The controller changes placement through a stop, modify, and restart sequence while existing workers stay running.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/change-instance-placement-group.html",
+      "checked_on": "2026-09-18",
+      "supports": "An existing instance must be stopped before its placement group membership can be changed."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cluster placement groups colocate supported instances within an AZ for lower latency and higher inter-instance network performance."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Made EBS-backed placement prerequisites and the worker-availability constraint explicit, retained private networking, and removed any universal bandwidth promise."
+  ],
+  "review_status": "authored"
+}

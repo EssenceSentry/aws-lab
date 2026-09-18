@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Device variants must have distinct cache identities
+accDescr: A viewer-request classifier rewrites one legacy asset path into mobile or desktop prefixes before cache lookup, selecting the matching S3 object.
+A["Legacy path + User-Agent"] --> B{"Viewer-request classifier"}
+B -->|Mobile| C["/mobile/logo.png"]
+B -->|Desktop| D["/desktop/logo.png"]
+C --> E["Mobile cache entry"]
+D --> F["Desktop cache entry"]
+E -->|Miss| G["S3 mobile object"]
+F -->|Miss| H["S3 desktop object"]
+class A inputData
+class B decision
+class C,D output
+class E,F,G,H storage

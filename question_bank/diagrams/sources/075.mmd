@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Transport, stored data and key custody
+accDescr: HTTPS protects upload transport. S3 encrypts stored files with a customer managed KMS key. Spectrum requires both object access and key permissions. Rotation changes key material without rewriting files.
+U[Uploader]:::inputData -->|HTTPS required| S[(S3 files<br/>SSE-KMS)]:::storage
+K[Customer managed KMS key<br/>Policy and rotation schedule]:::decision -->|Protects data keys| S
+R[Redshift Spectrum role]:::inputData -->|S3 object access| S
+R -.->|KMS decrypt permission| K
+K --> O[Old key material retained<br/>Existing files still decrypt]:::output

@@ -1,0 +1,67 @@
+{
+  "question_id": "002",
+  "base_record_sha256": "14bc3ed2c63e8d6bc806dffb8e3d8e59e0918f23ee133a8a21187b1b2331c75f",
+  "record": {
+    "id": "002",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company exposes Python Lambda functions through an Amazon API Gateway REST API. Only IAM principals with permission to invoke the API may call it. The operations team also needs latency traces and service maps for sampled requests across API Gateway, Lambda, and instrumented downstream calls.\n\nWhich solution meets both requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Set method authorization to AWS_IAM, grant scoped execute-api:Invoke permissions, and have callers sign requests with Signature Version 4. Enable active X-Ray tracing on the API stage and Lambda functions, including downstream instrumentation and permissions."
+      },
+      {
+        "id": "2",
+        "text": "Restrict CORS to the company website and grant callers execute-api:Invoke permissions. Leave method authorization set to NONE and use API Gateway access logs to produce distributed traces."
+      },
+      {
+        "id": "3",
+        "text": "Require an API key and usage plan for each caller. Enable X-Ray tracing on the API stage and Lambda functions, and use the API key to enforce the caller’s IAM permissions."
+      },
+      {
+        "id": "4",
+        "text": "Create an API Gateway backend client certificate and distribute it to callers. Enable execution logging in CloudWatch Logs and use the certificate to identify each caller’s IAM role."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> combines IAM authorization with distributed tracing. AWS_IAM requires a signed request whose principal is permitted to invoke the relevant API resource. Active tracing samples requests; instrumented services contribute segments to the same trace. Prefer temporary role credentials.\n\n<<2>> fails authentication: CORS governs browser access to responses, and an IAM grant is not enforced by a method configured with authorization NONE. Access logs alone do not create end-to-end traces. <<3>> confuses API keys, which identify usage-plan consumers, with IAM authorization. <<4>> reverses the certificate’s purpose: an API Gateway backend client certificate authenticates API Gateway to a backend, not callers to IAM.\n\nAuthentication, authorization, usage limits, and observability are separate concerns. X-Ray sampling does not guarantee a trace for every request.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-iam-policy-examples-for-api-execution.html\nhttps://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enabling-xray.html\nhttps://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html\nhttps://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html\nhttps://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started-client-side-ssl-authentication.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/002.mmd",
+  "diagram_alt": "IAM authorization gates invocation; sampled trace segments then connect the API and function latency.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-iam-policy-examples-for-api-execution.html",
+      "checked_on": "2026-09-18",
+      "supports": "execute-api:Invoke permissions scoped by stage, method, and resource."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enabling-xray.html",
+      "checked_on": "2026-09-18",
+      "supports": "Active stage tracing, sampling, traces, and service maps."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html",
+      "checked_on": "2026-09-18",
+      "supports": "AWS_IAM method authorization requires signed requests and IAM invoke permission."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html",
+      "checked_on": "2026-09-18",
+      "supports": "API keys and usage plans are not IAM authentication or authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started-client-side-ssl-authentication.html",
+      "checked_on": "2026-09-18",
+      "supports": "Backend client certificates authenticate API Gateway to a backend."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced transmission of AWS secret keys with a plausible API-key distractor. Made tracing explicitly sampled and included Lambda participation. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

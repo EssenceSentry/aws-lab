@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: One stable public entry, regional application endpoints
+accDescr: A Route 53 apex alias resolves to Global Accelerator static addresses. A standard accelerator routes to configured regional ALB endpoint groups.
+D["example.com<br/>Route 53 A alias"]:::inputData -->|Resolves to| G["Global Accelerator<br/>Static public addresses"]:::process
+G -->|Configured health-based routing| A["US endpoint group<br/>Regional ALB"]:::output
+G -->|Configured health-based routing| B["Europe endpoint group<br/>Regional ALB"]:::output
+A --> U["US application capacity"]:::process
+B --> E["Europe application capacity"]:::process

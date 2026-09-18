@@ -1,0 +1,57 @@
+{
+  "question_id": "249",
+  "base_record_sha256": "64ec986dbdbaa7aa496cbec7d5c50158b3442ecc5869c44370006a3fb3775710",
+  "record": {
+    "id": "249",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An organization has hundreds of AWS accounts grouped into team OUs. Each team leader must view detailed charges for that team's accounts, without viewing other teams' costs. Finance has approved using each account's current OU for attribution and wants an interactive dashboard.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use AWS RAM to generate a billing report for each OU and share the resulting reports with the team leaders."
+      },
+      {
+        "id": "2",
+        "text": "Export consolidated CUR 2.0 data from the management account to S3. Join usage account IDs to a maintained account-to-OU map in an Athena-backed dataset, and provide QuickSight readers with enforced row-level security for their teams."
+      },
+      {
+        "id": "3",
+        "text": "Create a consolidated QuickSight cost dataset and share it with every leader, relying on a dashboard OU filter that each reader can change to control access."
+      },
+      {
+        "id": "4",
+        "text": "Use Systems Manager OpsCenter to generate consolidated cost line items for each OU and grant leaders access to those operational dashboards."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Billing data supplies the charges, the account map supplies the agreed OU attribution, and dataset row-level security supplies reader-specific authorization. These are three separate functions. Keep the mapping and permissions current as accounts move or leadership changes.\n\n<<1>> assigns billing-report generation to RAM, whose purpose is resource sharing. <<3>> uses an interactive filter as though it were an access-control boundary. <<4>> assigns billing export and cost analysis to an operations-issue service.\n\nUse QuickSight Enterprise row-level security or separately authorized datasets, and do not make restricted readers dataset owners. The underlying S3 and query permissions must also prevent bypass. Current OU attribution can reassign historical charges after an account move; historical ownership instead requires a time-aware mapping.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html\nhttps://docs.aws.amazon.com/quick/latest/userguide/restrict-access-to-a-data-set-using-row-level-security.html\nhttps://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/data-exports.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/249.mmd",
+  "diagram_alt": "An account-to-OU mapping determines attribution, while a separate row-level permissions mapping determines what each leader may read.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html",
+      "checked_on": "2026-09-18",
+      "supports": "Data Exports delivers recurring detailed cost data to S3 and integrates with QuickSight; CUR 2.0 is the recommended detailed export."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/quick/latest/userguide/restrict-access-to-a-data-set-using-row-level-security.html",
+      "checked_on": "2026-09-18",
+      "supports": "Enterprise dataset RLS restricts readers using user/group rules; dataset owners retain full access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/data-exports.html",
+      "checked_on": "2026-09-18",
+      "supports": "Billing exports from management accounts can feed centralized cost analysis."
+    }
+  ],
+  "editorial_notes": [
+    "Modernized to CUR 2.0, made authorization explicit and chose current-OU attribution so account moves have defined meaning."
+  ],
+  "review_status": "authored"
+}

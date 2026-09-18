@@ -1,0 +1,58 @@
+{
+  "question_id": "138",
+  "base_record_sha256": "888447a08949dca016a0f971f36b6e324d1d4d911b03903760d3531dbee5e8b3",
+  "record": {
+    "id": "138",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A brokerage accesses private EC2 applications through an existing Direct Connect connection. The corporate LAN already meets its encryption requirements. The company now needs IPsec protection between its corporate gateway and AWS while retaining Direct Connect as the underlying network path. Public IP addresses for the VPN endpoints are acceptable, and routing can be changed.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a public virtual interface on Direct Connect, but route the Site-to-Site VPN tunnel's outer packets over the public internet."
+      },
+      {
+        "id": "2",
+        "text": "Create a public virtual interface that reaches the AWS public VPN endpoints over Direct Connect. Establish a dynamically routed Site-to-Site VPN between the corporate customer gateway and an AWS VPN gateway, and route the application traffic through that tunnel."
+      },
+      {
+        "id": "3",
+        "text": "Keep only an ordinary private virtual interface to a virtual private gateway. Establish a separate Site-to-Site VPN over the internet and use that VPN for all application traffic."
+      },
+      {
+        "id": "4",
+        "text": "Create an ordinary private virtual interface to a virtual private gateway and use its BGP session as the IPsec encryption mechanism, without configuring a VPN tunnel."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. In this design, the IPsec tunnel uses public VPN endpoint addresses, but its outer packets travel over the Direct Connect public virtual interface. BGP provides dynamic routing for the VPN. IPsec supplies encryption; Direct Connect supplies the underlying path.\n\n<<1>> and <<3>> encrypt traffic over the internet and therefore fail the requirement to retain Direct Connect as the transport for that traffic. <<4>> confuses routing with encryption: a BGP session on an ordinary private virtual interface does not create an IPsec tunnel. Direct Connect does not encrypt traffic by default.\n\nThe encryption boundary is gateway to gateway, not automatically laptop to application. Private-IP VPN over Direct Connect is another supported design, but it uses a transit virtual interface, Direct Connect gateway and Transit Gateway. VPN throughput, packet overhead and failover still need workload testing; adding a tunnel does not guarantee unchanged performance.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway-vpn.html\nhttps://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect.html\nhttps://docs.aws.amazon.com/vpn/latest/s2svpn/private-ip-dx.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/138.mmd",
+  "diagram_alt": "IPsec encrypts the corporate-gateway-to-AWS segment while Direct Connect carries the tunnel packets through a public virtual interface.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway-vpn.html",
+      "checked_on": "2026-09-18",
+      "supports": "Public-VIF reachability allows a dynamically routed IPsec VPN to use Direct Connect as transport."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect.html",
+      "checked_on": "2026-09-18",
+      "supports": "Direct Connect connectivity is not encrypted by default."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/private-ip-dx.html",
+      "checked_on": "2026-09-18",
+      "supports": "Private-IP VPN uses a transit VIF, Direct Connect gateway and Transit Gateway."
+    }
+  ],
+  "editorial_notes": [
+    "Made the gateway-to-gateway encryption boundary part of the scenario rather than implying laptop-to-application encryption.",
+    "Replaced the obsolete implication that private-IP VPN is impossible with an accurate distinction between ordinary private and transit VIF designs."
+  ],
+  "review_status": "authored"
+}

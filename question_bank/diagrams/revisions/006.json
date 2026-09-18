@@ -1,0 +1,47 @@
+{
+  "question_id": "006",
+  "base_record_sha256": "3725fedd26c6aca1ad4e34472f06982001139acf43ab67b5fedfb79121064f36",
+  "record": {
+    "id": "006",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An internal portal runs on EC2 instances and reads confidential objects from an S3 bucket in the same Region. The instances must access S3 without an internet gateway or NAT device. Object access must be limited to the portal’s IAM role and a designated S3 gateway endpoint, even if another identity later receives an S3 permission grant.\n\nThe endpoint is already associated with the portal subnets’ route tables. Which additional configuration meets the access requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Restrict the endpoint policy to the bucket and allow the endpoint in the bucket policy. Add a network ACL rule that references the S3 managed prefix list to block other instances."
+      },
+      {
+        "id": "2",
+        "text": "Allow object access when aws:SourceIp matches the portal instances’ private addresses. Use this condition instead of restricting the requesting IAM role."
+      },
+      {
+        "id": "3",
+        "text": "Grant the portal role the required S3 actions and restrict the endpoint policy to the bucket. Add bucket-policy denies for object requests outside the designated endpoint or from principals other than the portal role, using aws:SourceVpce and aws:PrincipalArn."
+      },
+      {
+        "id": "4",
+        "text": "Restrict the endpoint policy to the bucket and grant the portal role S3 permissions. Leave the bucket policy unrestricted because the endpoint policy governs every possible path to the bucket."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> enforces both the network path and the caller identity. The role supplies permission, the endpoint policy limits requests through that endpoint, and the bucket’s explicit denies prevent access through other paths or principals despite additional grants.\n\n<<1>> uses a prefix list in a network ACL, which is unsupported, and does not reliably enforce the role restriction. <<2>> uses aws:SourceIp for endpoint traffic; aws:VpcSourceIp is the relevant IP condition, and an address is not the required role identity. <<4>> assumes the endpoint policy applies to requests that bypass the endpoint. It does not.\n\nSeparate private routing from authorization. An endpoint policy does not independently grant access. Scope resource-policy denies carefully; encrypted objects using SSE-KMS also require the appropriate KMS permissions.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/006.diagram.json",
+  "diagram_alt": "An authorization table shows that only the portal role through the designated endpoint remains eligible for access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Gateway routing; SourceVpce, VpcSourceIp and PrincipalArn conditions; unsupported prefix-list use in NACLs."
+    }
+  ],
+  "editorial_notes": [
+    "Made explicit-deny enforcement and the threat from later grants part of the stem. All options reviewed for the distinct identity and network requirements. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "An organization permission ceiling is not an IAM grant",
+  "columns": [
+    "Effective SCP path permits action?",
+    "IAM user has action grant?",
+    "Result in this scenario"
+  ],
+  "rows": [
+    [
+      "Yes",
+      "No",
+      "Denied: missing IAM permission"
+    ],
+    [
+      "Yes",
+      "Yes",
+      "Allowed under the stated assumptions"
+    ],
+    [
+      "No",
+      "Yes",
+      "Denied: organization ceiling"
+    ],
+    [
+      "No",
+      "No",
+      "Denied: both requirements absent"
+    ]
+  ],
+  "footnote": "This table is scoped to the described CreateBucket request with no additional grants, boundaries or explicit denies.",
+  "emphasis_rows": [
+    0
+  ]
+}

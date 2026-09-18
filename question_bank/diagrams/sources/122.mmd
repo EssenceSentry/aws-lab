@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Trust and permissions are different gates
+accDescr: A provider principal must be authorized to call AssumeRole and satisfy the audit role's principal and external ID trust conditions. The resulting session has only audit permissions.
+P[Provider principal]:::inputData --> C{Caller may AssumeRole?}:::decision
+C -->|Yes| T{Trusted principal<br/>and customer external ID?}:::decision
+C -->|No| X[Denied]:::warning
+T -->|No| X
+T -->|Yes| S[Temporary audit session]:::output
+S --> R[Read-only audit actions<br/>Specified resources]:::output

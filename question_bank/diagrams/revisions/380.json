@@ -1,0 +1,57 @@
+{
+  "question_id": "380",
+  "base_record_sha256": "c48fcedc0ee979502c7c65574bce65008c410095eeaeb58f52444651c2f25d08",
+  "record": {
+    "id": "380",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A website uses CloudFront to cache catalog responses. Each response depends on color and size query parameters. The application treats these parameter names and values as case-insensitive, and their order has no meaning. Each parameter occurs at most once; the requests contain no signatures or case-sensitive tokens. Clients send equivalent requests with different capitalization and parameter order, fragmenting the cache.\n\nWhich change consolidates these requests into the same cache entries with the lowest edge-processing overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Associate a Lambda@Edge viewer-request function that lowercases the two query parameters and sorts them before cache lookup."
+      },
+      {
+        "id": "2",
+        "text": "Associate a CloudFront Function with the viewer-request event to lowercase the two query parameters and sort them. Include the normalized parameters in the cache policy."
+      },
+      {
+        "id": "3",
+        "text": "Exclude both query parameters from the cache policy but continue forwarding them to the origin through an origin request policy."
+      },
+      {
+        "id": "4",
+        "text": "Place a reverse proxy behind the origin load balancer to lowercase and sort query parameters before the application receives cache-miss requests."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Option <<2>> performs a small, deterministic request transformation before CloudFront computes the cache lookup. Normalize the relevant names and values, sort the parameters, and keep them in the cache key because they change the response. For example, ?Size=M&Color=Blue and ?color=blue&size=m can both become ?color=blue&size=m under the stated application contract.\n\nOption <<1>> can perform this transformation, but Lambda@Edge provides broader capabilities and higher execution overhead than this lightweight CloudFront Functions use case needs. Option <<3>> merges different colors and sizes into the same cache entry, potentially serving incorrect content; forwarding a value to the origin does not make it part of the cache key. Option <<4>> acts after the edge cache lookup, so it cannot prevent the original requests from creating separate CloudFront entries.\n\nCanonicalization is safe only for transformations that preserve application meaning. Do not blindly lowercase signed values, case-sensitive identifiers, or duplicate parameters whose ordering affects processing.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/QueryStringParameters.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/example_cloudfront_functions_normalize_query_string_parameters_section.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/380.mmd",
+  "diagram_alt": "Equivalent query strings converge before cache lookup while a different color keeps a separate representation.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/QueryStringParameters.html",
+      "checked_on": "2026-09-18",
+      "supports": "Parameter order and case affect cache entries; retain parameters that vary the response."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/example_cloudfront_functions_normalize_query_string_parameters_section.html",
+      "checked_on": "2026-09-18",
+      "supports": "Viewer-request CloudFront Function can normalize query-string ordering."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront Functions suitability for lightweight cache-key normalization compared with Lambda@Edge."
+    }
+  ],
+  "editorial_notes": [
+    "Constrained normalization to equivalent case-insensitive parameters and excluded duplicate/signature ambiguity. Made timing before cache lookup decisive. Key 2 unchanged."
+  ],
+  "review_status": "authored"
+}

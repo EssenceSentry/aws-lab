@@ -1,0 +1,20 @@
+flowchart TB
+accTitle: Availability and read scaling use different replicas
+accDescr: Writes reach the primary, which replicates synchronously to a standby and asynchronously to a read replica. CloudFront caches public content and media.
+ Readers[Global readers] --> CF[CloudFront cache]
+ CF -->|article cache miss| App[Application]
+ CF -->|image cache miss| S3[S3 media]
+ Editors[Editors and comments] -->|writes| App
+subgraph A[AZ A]
+ P[RDS primary]
+end
+subgraph B[AZ B]
+ S[RDS standby]
+ R[Read replica]
+end
+ App -->|writes and fresh reads| P
+ App -->|lag-tolerant reads| R
+ P -->|synchronous failover copy| S
+ P -->|asynchronous copy| R
+class Readers,Editors inputData
+class P,S,R,S3 storage

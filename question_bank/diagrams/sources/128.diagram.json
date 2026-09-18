@@ -1,0 +1,34 @@
+{
+  "type": "table",
+  "title": "One gateway: capacity versus a 1,000-TiB requirement",
+  "columns": [
+    "Volume mode",
+    "Per volume × count",
+    "Aggregate",
+    "Capacity test"
+  ],
+  "rows": [
+    [
+      "Cached volumes",
+      "32 TiB × 32",
+      "1,024 TiB",
+      "24 TiB above requirement"
+    ],
+    [
+      "Stored volumes",
+      "16 TiB × 32",
+      "512 TiB",
+      "488 TiB short"
+    ],
+    [
+      "One cached volume",
+      "32 TiB × 1",
+      "32 TiB",
+      "968 TiB short"
+    ]
+  ],
+  "footnote": "The host combines block devices into a filesystem namespace. A gateway does not provide one 1,024-TiB volume.",
+  "emphasis_rows": [
+    0
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "type": "table",
+  "title": "Object lineage after versioning and later PUTs",
+  "columns": [
+    "Object key",
+    "Original version",
+    "Later PUT version",
+    "Final count"
+  ],
+  "rows": [
+    [
+      "NA",
+      "null, before enablement",
+      "Opaque ID A",
+      "2"
+    ],
+    [
+      "LA",
+      "null, before enablement",
+      "Opaque ID B",
+      "2"
+    ],
+    [
+      "EUR",
+      "null, before enablement",
+      "No later PUT",
+      "1"
+    ],
+    [
+      "ASIA",
+      "null, before enablement",
+      "No later PUT",
+      "1"
+    ],
+    [
+      "OCEANIA",
+      "Opaque ID C, after enablement",
+      "Opaque ID D",
+      "2"
+    ]
+  ],
+  "footnote": "A–D are illustrative opaque IDs, not numeric counters. Enabling versioning does not rewrite existing objects.",
+  "emphasis_rows": [
+    0,
+    1,
+    4
+  ]
+}

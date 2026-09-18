@@ -211,6 +211,7 @@ select { appearance: auto; border: 1px solid var(--border); background: var(--su
 .question-toolbar > div { display: flex; gap: 3px; }
 .rich-text { overflow-wrap: anywhere; }
 .rich-text p { white-space: pre-line; margin-bottom: 18px; }
+.rich-text p code { font-size: .9em; background: var(--soft); padding: 2px 4px; border-radius: 4px; white-space: pre-wrap; }
 .question-prompt { font-size: 17px; line-height: 1.7; }
 .question-prompt p { line-height: 1.75; margin-bottom: 19px; }
 .rich-text pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; padding: 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); line-height: 1.65; }

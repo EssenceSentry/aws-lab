@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Photos and metadata take different paths
+accDescr: A signed-in mobile user sends metadata to an API and photos to S3, while published media is read through CloudFront.
+U[Mobile app] -->|Social sign-in| C[Cognito]
+C -->|Identity token| U
+U -->|Authorized metadata request| A[Application API]
+A --> D[(DynamoDB metadata)]
+A -->|Scoped upload authorization| U
+U -->|Upload photo| S[(Private S3 photos)]
+U -->|Read published media| F[CloudFront]
+F -->|Origin access control| S
+class U inputData
+class D,S storage
+class F output

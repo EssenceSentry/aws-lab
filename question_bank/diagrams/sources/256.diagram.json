@@ -1,0 +1,41 @@
+{
+  "type": "table",
+  "title": "Association selects lookup, propagation supplies destinations",
+  "columns": [
+    "Traffic source",
+    "Associated lookup table",
+    "Destination",
+    "Required result"
+  ],
+  "rows": [
+    [
+      "Development VPC A",
+      "Development table",
+      "Development VPC B",
+      "Development route present"
+    ],
+    [
+      "Development VPC A",
+      "Development table",
+      "Production VPC A",
+      "No route to production"
+    ],
+    [
+      "Production VPC A",
+      "Production table",
+      "Production VPC B",
+      "Production route present"
+    ],
+    [
+      "Production VPC A",
+      "Production table",
+      "Development VPC A",
+      "No route to development"
+    ]
+  ],
+  "footnote": "Propagate each attachment only into its own environment table. Remove shared default associations and unintended static or default routes.",
+  "emphasis_rows": [
+    1,
+    3
+  ]
+}

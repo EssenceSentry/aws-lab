@@ -1,0 +1,57 @@
+{
+  "question_id": "096",
+  "base_record_sha256": "2f2b9744ef6c80b0cb60c191c81bd4f1c664a0aea856d2334356f8ec751f1fb6",
+  "record": {
+    "id": "096",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company operates an internet-facing application in two AWS Regions. Each Region has an ALB, an Auto Scaling group, and a local ElastiCache cache. Persistent data is available in either Region, caches can be rebuilt, and either application stack can handle the full workload. The company wants new DNS responses to prefer a low-latency healthy Region and to avoid an ALB whose application targets are unhealthy.\n\nWhich Route 53 configuration best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create latency-based alias records for the regional ALBs in the public hosted zone and set EvaluateTargetHealth to true. Configure the ALB target health checks to reflect application readiness."
+      },
+      {
+        "id": "2",
+        "text": "Create latency-based alias records for the regional ALBs only in a private hosted zone associated with the application VPCs, and remove the public application records."
+      },
+      {
+        "id": "3",
+        "text": "Create latency-based alias records in the public hosted zone with EvaluateTargetHealth set to false. Enable DNSSEC signing to detect an unhealthy regional application."
+      },
+      {
+        "id": "4",
+        "text": "Create equally weighted alias records in the public hosted zone with EvaluateTargetHealth set to true, so both Regions receive the same configured traffic weight."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Latency-based routing selects a regional endpoint using Route 53 latency measurements, and evaluated alias target health excludes an unhealthy ALB while a healthy alternative is available. Meaningful ALB target checks are necessary because routing can only respond to the health signal it receives.\n\n<<2>> makes the records available through the associated private DNS context instead of publishing the required internet-facing name.\n\n<<3>> disables the health evaluation needed for this design. DNSSEC authenticates DNS data; it does not monitor application availability.\n\n<<4>> provides health-aware distribution but selects by configured weights rather than the required latency preference.\n\nDNS failover affects answers to subsequent queries. Existing connections and cached answers may continue to use the previous endpoint until clients reconnect or caches expire. Routing also cannot repair missing data or insufficient capacity in the surviving Region; those prerequisites are explicit in this scenario.\n\nAWS documentation (checked September 18, 2026): [Route 53 latency routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html); [Route 53 alias target health](https://docs.aws.amazon.com/Route53/latest/APIReference/API_AliasTarget.html); [Route 53 healthy record selection](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-how-route-53-chooses-records.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/096.mmd",
+  "diagram_alt": "Route 53 combines regional latency preference with ALB health, while DNS caching limits how quickly clients change destinations.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+      "checked_on": "2026-09-18",
+      "supports": "Latency records choose among configured AWS Regions using AWS latency measurements and resolver or client-subnet information."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/APIReference/API_AliasTarget.html",
+      "checked_on": "2026-09-18",
+      "supports": "EvaluateTargetHealth on ELB aliases uses load balancer target health for routing eligibility."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-how-route-53-chooses-records.html",
+      "checked_on": "2026-09-18",
+      "supports": "Routing policies use recorded endpoint health rather than initiating a new health check for each DNS request."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added data and surviving-capacity prerequisites and distinguished DNSSEC, weighted routing, and health-aware latency routing."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,12 @@
+sequenceDiagram
+accTitle: SMTP encryption precedes authentication
+accDescr: The unchanged SMTP client upgrades its connection with STARTTLS, then authenticates using regional SES SMTP credentials before sending mail.
+participant App as EC2 mail client
+participant SES as Regional SES SMTP
+App->>SES: Connect on TCP 587 and EHLO
+SES-->>App: STARTTLS available
+App->>SES: STARTTLS
+SES-->>App: TLS established
+App->>SES: AUTH with SES SMTP credentials
+SES-->>App: Authenticated
+App->>SES: Submit message

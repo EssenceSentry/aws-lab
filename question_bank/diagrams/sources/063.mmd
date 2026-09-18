@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Two coordinated maintenance workflows
+accDescr: Snapshot scheduling brackets the snapshot point with tested database scripts. Patching follows a separate cluster-aware maintenance sequence. The database team validates both procedures.
+D[Validated EC2 RAC design]:::inputData --> B[DLM backup schedule]:::decision
+D --> P[SSM maintenance window]:::decision
+B --> F[Pre-script<br/>Quiesce and flush]:::output
+F --> S[(EBS snapshot point)]:::storage
+S --> U[Post-script<br/>Resume database writes]:::output
+P --> N[Drain eligible node<br/>Patch and reboot safely]:::output
+N --> H{Cluster healthy?}:::decision
+H -->|Yes| NEXT[Proceed to next node]:::output
+H -->|No| STOP[Stop and investigate]:::warning

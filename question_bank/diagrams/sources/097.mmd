@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Join sensitive-content findings to object-access evidence
+accDescr: Macie content findings and previously retained CloudTrail data events are correlated by bucket and object key to identify recorded retrievals of sensitive objects.
+S[(S3 object contents)]:::storage --> M[Macie discovery]:::process
+M --> F[Bucket, key, sensitive-data finding]:::inputData
+T[(Retained CloudTrail S3 data events)]:::storage --> G[GetObject, identity, time, bucket, key]:::inputData
+F --> J[Correlate bucket and object key]:::process
+G --> J
+J --> O[Recorded accesses to sensitive objects]:::output
+N[Logging must cover the audit period]:::warning -.-> T

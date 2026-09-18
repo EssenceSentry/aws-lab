@@ -1,0 +1,52 @@
+{
+  "question_id": "315",
+  "base_record_sha256": "8bcf965b584dc649f5f27d5e1b8f1ac05fba9d8152b75db3b7b061dccd474728",
+  "record": {
+    "id": "315",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company shares confidential documents with partners through an existing CloudFront distribution. Viewer authentication and authorization already work. The documents are in an S3 bucket that uses bucket owner enforced Object Ownership. Partners must not read objects directly from S3, and other CloudFront distributions must not gain origin access. The company can remove unintended read grants.\n\nWhich origin configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a bucket policy whose Principal is the CloudFront distribution ID and whose Resource is only the bucket ARN, without an object suffix."
+      },
+      {
+        "id": "2",
+        "text": "Use the S3 REST endpoint and an OAC that always signs origin requests. Allow s3:GetObject for cloudfront.amazonaws.com on the object ARNs, conditioned on the exact distribution AWS:SourceArn, and remove unintended read grants."
+      },
+      {
+        "id": "3",
+        "text": "Create an IAM user with read access to the documents and attach that IAM user directly to the CloudFront distribution as its origin identity."
+      },
+      {
+        "id": "4",
+        "text": "Allow s3:GetObject for every principal when the request Referer header contains the public CloudFront hostname, while leaving OAC disabled."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The policy grants object reads to the CloudFront service for this distribution, and OAC supplies signed origin requests. Keep the bucket private and Block Public Access enabled. If the objects use SSE-KMS, provide the required KMS key authorization as well.\n\n<<1>> uses the wrong principal and resource scope. A distribution ID belongs in the distribution ARN condition; GetObject needs object ARNs.\n\n<<3>> is not how OAC is associated with a distribution. There is no attach-an-IAM-user origin identity configuration.\n\n<<4>> trusts a request header that a caller can forge. It does not authenticate the distribution.\n\nAn S3 website endpoint is a custom origin and cannot use this S3 OAC setup. The existing viewer authorization controls who can ask CloudFront for a document; the origin policy controls whether CloudFront may fetch it.\n\nOfficial AWS references (checked September 18, 2026): [Private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html). [S3 request authorization](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/315.diagram.json",
+  "diagram_alt": "A policy mapping connects the service principal, object action, resource and distribution condition to their separate meanings.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC signing, service principal, distribution SourceArn, REST endpoints and SSE-KMS key authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+      "checked_on": "2026-09-18",
+      "supports": "Access depends on authorized requests and credential scope, not knowledge of an object URL."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced an ambiguous generic bucket-policy distractor with a concrete spoofable Referer policy and made viewer authorization an existing prerequisite."
+  ],
+  "review_status": "authored"
+}

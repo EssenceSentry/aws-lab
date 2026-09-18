@@ -1,0 +1,28 @@
+{
+  "type": "table",
+  "title": "Two services, three policy locations",
+  "columns": [
+    "Policy location",
+    "Required grant",
+    "Boundary enforced"
+  ],
+  "rows": [
+    [
+      "Management role identity policy",
+      "List prefix, read objects, decrypt key",
+      "What the caller may request"
+    ],
+    [
+      "Marketing S3 bucket policy",
+      "Read published/ as mgmt_reviewer",
+      "Who may access shared objects"
+    ],
+    [
+      "Marketing KMS key policy",
+      "Decrypt as mgmt_reviewer",
+      "Who may use the encryption key"
+    ]
+  ],
+  "footnote": "All grants are required for these cross-account encrypted reads, and applicable explicit denies still prevail.",
+  "emphasis_rows": []
+}

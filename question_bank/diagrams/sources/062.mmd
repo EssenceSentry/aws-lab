@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Scale requests and reads independently
+accDescr: Replaceable application instances share session state, write to a database primary and send reports to read replicas. A separate synchronous standby provides failover.
+L[Load balancer]:::inputData --> A[Stateless application fleet<br/>Auto Scaling across AZs]:::output
+A <-->|Shared session state| C[(Resilient ElastiCache)]:::storage
+A -->|Writes and current reads| P[(RDS primary)]:::storage
+A -->|Lag-tolerant reports| R[(Read replicas)]:::storage
+P -->|Asynchronous replication| R
+P <-->|Synchronous replication| S[(Other-AZ standby<br/>Failover, no reads)]:::storage

@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Approval rules and execution schedule meet at the patch task
+accDescr: Corporate patch policy becomes a baseline. The maintenance window runs the patch document on managed nodes and produces compliance results.
+ Policy[Corporate approved patches] -->|translate by operating system| Base[Patch Manager baseline]
+ Window[Weekly maintenance window] -->|targets, cutoff, concurrency| Task[AWS-RunPatchBaseline]
+ Base -->|approved patch set| Task
+ Task --> Nodes[Managed EC2 nodes with SSM Agent]
+ Repo[Package repositories] -->|download approved updates| Nodes
+ Nodes --> Report[Patch compliance results]
+class Policy,Window inputData
+class Base storage
+class Report output

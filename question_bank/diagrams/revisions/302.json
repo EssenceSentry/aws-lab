@@ -1,0 +1,62 @@
+{
+  "question_id": "302",
+  "base_record_sha256": "e9039d6af04894c74e24471a5a04f9afa9b5d8897bd2dc435f616b9a3789cc65",
+  "record": {
+    "id": "302",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company replicates new satellite-image objects between S3 buckets in different Regions. Its policy requires every object to reach the destination within 30 minutes, with no exceptions. An architect proposes S3 Replication Time Control (RTC) and an EventBridge rule that directly compares a replication metric with a 30-minute threshold.\n\nWhich assessment is accurate?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Approve the design because RTC guarantees that every object replicates within 15 minutes, making the 30-minute requirement less restrictive."
+      },
+      {
+        "id": "2",
+        "text": "Approve the design after configuring RTC with a 30-minute replication deadline and letting EventBridge poll the metric until it exceeds that deadline."
+      },
+      {
+        "id": "3",
+        "text": "Replace RTC with S3 Transfer Acceleration because accelerated transfers impose a maximum 30-minute delay on cross-Region replicas."
+      },
+      {
+        "id": "4",
+        "text": "Flag the absolute deadline as unmet: RTC covers 99.9 percent within 15 minutes. Use a CloudWatch replication-lag alarm and RTC missed-threshold notifications for visibility, without treating them as a guarantee."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. RTC's documented commitment is 99.9 percent of eligible new objects within 15 minutes, not a hard upper bound for every object. Monitoring can detect replication delays, but cannot establish the strict guarantee in the policy. The requirement remains unresolved and must not be silently relaxed.\n\n<<1>> changes a percentage-based commitment into a universal deadline.\n\n<<2>> invents a configurable 30-minute RTC deadline. It also assigns metric evaluation to the wrong component: a CloudWatch alarm evaluates the metric, and EventBridge can route the resulting alarm-state event.\n\n<<3>> confuses accelerated client transfers with the cross-Region replication process. Transfer Acceleration does not establish the proposed replication deadline.\n\nFor operational monitoring, evaluate the rule's ReplicationLatency metric with Max and a threshold above 1,800 seconds, choosing suitable evaluation periods and missing-data handling. Subscribe to RTC events for objects that miss the fixed 15-minute threshold and those that replicate afterward. Rule-level lag and object-specific missed-threshold events answer different questions. Both help investigate delays; neither makes asynchronous replication satisfy an absolute per-object delivery deadline.\n\nAWS documentation (checked September 18, 2026): [S3 Replication Time Control](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-time-control.html); [S3 replication metric definitions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html); [CloudWatch alarm events](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Acting_Alarm_Changes.html); [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/302.diagram.json",
+  "diagram_alt": "RTC provides a percentage-based commitment, while object events and CloudWatch alarms reveal different kinds of delay without guaranteeing a universal deadline.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-time-control.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 RTC replicates 99.9 percent of eligible new objects within 15 minutes and exposes events for objects that miss that threshold; it is not a maximum delay guarantee for every object."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html",
+      "checked_on": "2026-09-18",
+      "supports": "ReplicationLatency is the maximum lag in seconds for a replication rule and supports the Max statistic; alarms require an appropriate missing-data treatment."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Acting_Alarm_Changes.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudWatch evaluates metrics and sends alarm state-change events to EventBridge, where rules can invoke actions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transfer Acceleration optimizes the client-to-S3 transfer path; it is not a cache of downloadable objects or a cross-Region replication mechanism."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4 and the repaired assessment framing. Retained the strict policy as unresolved rather than weakening it to make RTC appear sufficient. Corrected metric evaluation, fixed RTC threshold, and maximum-rule-lag semantics."
+  ],
+  "review_status": "authored"
+}

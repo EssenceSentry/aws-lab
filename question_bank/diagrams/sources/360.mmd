@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Recovery readiness precedes traffic failover
+accDescr: A prebuilt cross-Region replica is promoted after a failure and writer fencing, then application configuration and readiness checks precede DNS failover to the recovery endpoint.
+A["Prebuilt cross-Region replica"] --> B["Failure detected, old writer fenced"]
+B --> C["Promote replica"]
+C --> D["Writable database ready"]
+D --> E["Configure and validate recovery app"]
+E --> F["Recovery endpoint healthy"]
+F --> G["DNS failover and client reconnect"]
+class A storage
+class B,C,E decision
+class D,F,G output

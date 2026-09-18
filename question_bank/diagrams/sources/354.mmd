@@ -1,0 +1,11 @@
+sequenceDiagram
+accTitle: Share the gateway without sharing route ownership
+accDescr: The network owner shares its gateway and enables automatic acceptance, then staging creates VPC attachments while the owner controls transit-gateway routing.
+participant Net as Network account
+participant Stage as Staging account
+Net->>Stage: RAM share of existing transit gateway
+Note over Net: Auto acceptance and approved TGW routing
+Stage->>Net: Create attachment from staging VPC
+Net-->>Stage: Attachment automatically accepted
+Note over Stage: Configure staging VPC routes
+Note over Net: Own TGW associations and route tables

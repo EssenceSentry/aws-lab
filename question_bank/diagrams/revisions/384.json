@@ -1,0 +1,57 @@
+{
+  "question_id": "384",
+  "base_record_sha256": "7d1862acb3fa6234de2929aac9fd54763466b86069613070001035dfb4d9593a",
+  "record": {
+    "id": "384",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Control Tower to govern a sandbox OU. Its approved sandbox workloads have been tested on burstable EC2 and RDS instances. Developers provision resources directly with IAM roles; delegated workload-provisioning paths are disabled. The company must prevent these roles from using other instance classes or unapproved services, while preserving required networking, logging, security, and Control Tower operations.\n\nWhich approach provides preventive enforcement across the sandbox accounts?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach tested custom SCPs to the sandbox OU. Restrict the permitted EC2 and RDS provisioning paths with their supported instance-type and database-class conditions, block unsupported bypass paths, and retain the required supporting services."
+      },
+      {
+        "id": "2",
+        "text": "Deploy detective AWS Config controls across the sandbox OU. Mark non-burstable instances and unapproved services as noncompliant after they appear."
+      },
+      {
+        "id": "3",
+        "text": "Enable GuardDuty in every sandbox account. Use its threat findings as the authorization control for instance classes and service provisioning."
+      },
+      {
+        "id": "4",
+        "text": "Enable Trusted Advisor cost-optimization checks in every sandbox account. Treat its recommendations as automatic denials of noncompliant provisioning requests."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> establishes an organization-level permissions boundary for the member-account IAM roles. Use service-specific conditions, such as ec2:InstanceType and rds:DatabaseClass, only with actions and resources that support them. Test creation, resizing, restoration, and every other permitted provisioning path; deny paths that cannot enforce the restriction. Preserve supporting operations required by Control Tower, networking, encryption, logging, and security.\n\nAn SCP does not grant access, and an allowed request still needs IAM permission. SCPs also do not restrict management-account principals or service-linked roles. That is why the scenario scopes the rule to sandbox member-account roles and excludes delegated workload-provisioning bypasses. A custom SCP can coexist with Control Tower controls without being an arbitrary new entry in its managed-control catalog.\n\nOption <<2>> detects a violation after provisioning rather than preventing it. Option <<3>> uses threat detection as though it were an API authorization policy. Option <<4>> mistakes cost recommendations for enforcement. Burstable-only is the company's validated sandbox requirement, not a universal recommendation for reducing production costs.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nhttps://docs.aws.amazon.com/service-authorization/latest/reference/list_ec2.html\nhttps://docs.aws.amazon.com/service-authorization/latest/reference/list_rds.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/384.diagram.json",
+  "diagram_alt": "EC2 and RDS require different condition keys and complete provisioning-path coverage, while required supporting services remain permitted.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCP boundaries, member-account applicability, management-account and service-linked-role exceptions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/service-authorization/latest/reference/list_ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Action and resource support for EC2 instance-type conditions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/service-authorization/latest/reference/list_rds.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS DatabaseClass conditions differ from EC2 conditions and vary by action and resource."
+    }
+  ],
+  "editorial_notes": [
+    "Scoped the restriction to tested sandbox workloads and direct member-account IAM provisioning. Required coverage of resize/restore paths and blocked unsupported bypasses. Key 1 unchanged."
+  ],
+  "review_status": "authored"
+}

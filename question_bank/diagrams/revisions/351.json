@@ -1,0 +1,62 @@
+{
+  "question_id": "351",
+  "base_record_sha256": "a2766961059397ae380a116f43ff4b4756b759bd2719d77821e2f7f7d67fe36c",
+  "record": {
+    "id": "351",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "An e-commerce company runs MySQL transactions and a separate PostgreSQL analytics workload on EC2. The company will containerize its stateless applications and requires the Kubernetes API and deployment manifests so that the application tier can later run on another cloud. It accepts AWS-specific managed data services. Compatibility tests have validated Aurora MySQL and a redesigned Redshift analytics model and ingestion pipeline. The Linux containers require no privileged mode, DaemonSets, GPUs, or host storage.\n\nWhich design minimizes host administration and manual database-capacity management while supporting event-driven integration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the containers on ECS with Fargate, use Aurora Serverless v2 for MySQL and Redshift Serverless, and route application events through EventBridge to processing workers."
+      },
+      {
+        "id": "2",
+        "text": "Run the containers in an EC2 Auto Scaling group with a self-managed Kubernetes control plane, use provisioned Aurora MySQL and a provisioned Redshift cluster, and publish application notifications through SNS."
+      },
+      {
+        "id": "3",
+        "text": "Run the containers on EKS with Fargate, use Aurora Serverless v2 for MySQL and Redshift Serverless, and route application events through EventBridge to processing and ingestion workers."
+      },
+      {
+        "id": "4",
+        "text": "Run the containers on EKS with Fargate, use fixed-size provisioned Aurora MySQL instances and a provisioned Redshift cluster, and process events through Kinesis Data Streams consumers."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. EKS retains Kubernetes deployment interfaces while Fargate manages the pod compute infrastructure. Aurora Serverless v2 adjusts database compute within a configured range, and Redshift Serverless manages analytics capacity. EventBridge routes matching events to workers that perform the required processing and ingestion.\n\n<<1>> reduces administration, but ECS does not provide the required Kubernetes API or deployment model.\n\n<<2>> preserves Kubernetes but retains control-plane, worker-host, and provisioned database-capacity administration.\n\n<<4>> meets the container requirement and can implement event processing, but retains the fixed provisioned database capacity the company wants to avoid managing.\n\nKubernetes helps application portability; it does not make AWS managed databases portable. Redshift is an analytical warehouse, not a drop-in PostgreSQL transactional server, and EventBridge does not itself migrate a database or build an ingestion pipeline. The compatibility and pipeline work in the stem is essential.\n\nOfficial AWS references (checked September 18, 2026): [EKS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html). [Aurora serverless capacity](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-administration.html). [Redshift Serverless](https://docs.aws.amazon.com/redshift/latest/gsg/getting-started.html). [EventBridge event buses](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/351.diagram.json",
+  "diagram_alt": "The selected services meet distinct container, compute, analytical, and event-routing requirements while leaving ingestion logic with workers.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/fargate.html",
+      "checked_on": "2026-09-18",
+      "supports": "Fargate runs supported Kubernetes pods without worker-node management and has specific workload limitations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-administration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora dynamically adjusts database compute within configured minimum and maximum capacity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/gsg/getting-started.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed warehouse resources and capacity scale for analytics workloads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html",
+      "checked_on": "2026-09-18",
+      "supports": "Rules match events and deliver them to configured targets for processing."
+    }
+  ],
+  "editorial_notes": [
+    "Made Kubernetes portability explicit and limited it to the application tier; stated that Redshift compatibility and ingestion require deliberate migration work."
+  ],
+  "review_status": "authored"
+}

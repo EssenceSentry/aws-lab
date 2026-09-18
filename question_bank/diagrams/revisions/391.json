@@ -1,0 +1,72 @@
+{
+  "question_id": "391",
+  "base_record_sha256": "21f2a9c7f9439936598df0eeb8f355c06afe09509cb69fd6ef96686e83dc6db3",
+  "record": {
+    "id": "391",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A financial company deploys Lambda functions as ZIP packages with a shared library layer. All functions in scope are active $LATEST deployments and meet Amazon Inspector's runtime, encryption, and package eligibility requirements for both Lambda scan types. The security team requires dependency CVE assessment for every function and its deployed layers, but additional code analysis for data leaks and injection flaws only on production functions. Test functions must retain dependency scanning while being excluded from code scanning.\n\nWhich three actions meet these requirements using managed Inspector capabilities? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Activate Amazon Inspector Lambda standard scanning for the account."
+      },
+      {
+        "id": "2",
+        "text": "Activate Amazon Inspector Lambda code scanning in addition to standard scanning."
+      },
+      {
+        "id": "3",
+        "text": "Create a custom AWS Config rule to unpack every ZIP package and implement dependency CVE detection."
+      },
+      {
+        "id": "4",
+        "text": "Enable GuardDuty Lambda Protection as the dependency and source-code vulnerability scanner."
+      },
+      {
+        "id": "5",
+        "text": "Add InspectorCodeExclusion=LambdaCodeScanning tags to the test functions that must be excluded from code scanning."
+      },
+      {
+        "id": "6",
+        "text": "Deny Amazon Inspector access to each test function with IAM policies instead of using scan-exclusion tags."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2",
+      "5"
+    ],
+    "explanation": {
+      "text": "Options <<1>>, <<2>>, and <<5>> provide the two scan types with the required selective exclusion. Standard scanning assesses application dependencies in eligible Lambda functions and their layers for known package vulnerabilities. Code scanning adds analysis for issues such as data leaks, injection flaws, and weak cryptography; it requires standard scanning to be enabled first. The exact function tag InspectorCodeExclusion=LambdaCodeScanning excludes only that function's code scan, preserving standard dependency scanning.\n\nOption <<3>> builds a custom scanner rather than using the available managed capability. Option <<4>> selects threat detection based on Lambda network activity, which does not replace package CVE or source-code analysis. Option <<6>> attempts to break scanner access instead of selecting the documented per-function code-scan exclusion mechanism and does not reliably preserve the requested dependency coverage.\n\nCheck Inspector coverage rather than equating enabled scanning with universal coverage. Supported runtimes and other eligibility conditions apply, and functions not invoked or updated for 90 days are excluded until activity resumes. Layers are assessed as part of covered deployed functions, not as an unlimited standalone artifact-scanning service. Findings are evidence of detected issues, not proof that unreported code has no vulnerabilities.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/inspector/latest/user/scanning-lambda.html\nhttps://docs.aws.amazon.com/inspector/latest/user/scanning_resources_lambda_code.html\nhttps://docs.aws.amazon.com/inspector/latest/user/scanning_resources_lambda_code_exclude_functions.html\nhttps://docs.aws.amazon.com/guardduty/latest/ug/lambda-protection.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/391.diagram.json",
+  "diagram_alt": "The code-exclusion tag disables code analysis for test functions while retaining their dependency CVE scanning and deployed-layer coverage.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-lambda.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard versus code scanning, layer assessment, supported runtimes, $LATEST and 90-day activity eligibility."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning_resources_lambda_code.html",
+      "checked_on": "2026-09-18",
+      "supports": "Code scanning detects supported source-code issues and requires standard scanning."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning_resources_lambda_code_exclude_functions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Exact InspectorCodeExclusion=LambdaCodeScanning tag for per-function code-scan exclusion."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/lambda-protection.html",
+      "checked_on": "2026-09-18",
+      "supports": "GuardDuty Lambda Protection monitors network activity for threats rather than package CVE scanning."
+    }
+  ],
+  "editorial_notes": [
+    "Made eligibility explicit and used a two-scan coverage matrix to teach selective code exclusion without disabling dependency coverage. Preserved key 1, 2 and 5."
+  ],
+  "review_status": "authored"
+}

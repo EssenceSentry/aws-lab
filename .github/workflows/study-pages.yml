@@ -26,6 +26,10 @@ jobs:
           cache-dependency-path: study_app/package-lock.json
       - run: npm ci
       - run: npm test
+      - name: Validate complete diagram sources and review evidence
+        run: |
+          node --test ../question_bank/diagrams/common.test.mjs
+          node ../question_bank/diagrams/validate.mjs --complete
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser

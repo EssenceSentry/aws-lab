@@ -1,0 +1,63 @@
+{
+  "question_id": "062",
+  "base_record_sha256": "6b044fcc91d5ae05a0f090af82e1a2f44f67c4a648dc321aec9f64b77d0df8af",
+  "record": {
+    "id": "062",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A hospital runs a three-tier web application with unpredictable demand. Users must retain their sessions when an application instance is replaced. Most database traffic consists of read-only reports that can tolerate brief replication lag, and peak report traffic exceeds the capacity of one database instance. The application must also recover automatically from a database Availability Zone failure.\n\nWhich architecture meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Auto Scaling groups for web and application instances, keep sessions on each instance, and deploy an RDS Multi-AZ DB instance without read replicas."
+      },
+      {
+        "id": "2",
+        "text": "Use Auto Scaling groups for web and application instances, keep sessions on each instance, and use an RDS Single-AZ primary with read replicas."
+      },
+      {
+        "id": "3",
+        "text": "Use stateless web and application instances in Auto Scaling groups with CloudWatch-based scaling policies. Store shared sessions in a resilient ElastiCache deployment. Use an RDS Multi-AZ DB instance and direct reporting queries to read replicas."
+      },
+      {
+        "id": "4",
+        "text": "Use stateless web and application instances in Auto Scaling groups with CloudWatch-based scaling policies. Store shared sessions in a resilient ElastiCache deployment. Direct all queries to an RDS Multi-AZ DB instance without read replicas."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> addresses three separate scaling and availability concerns. External session storage lets requests move between application instances. RDS read replicas offload lag-tolerant reads, while a Multi-AZ DB instance provides a synchronous standby for automatic failover. Size and configure the session store for its own availability and recovery needs.\n\n<<1>> retains instance-local sessions and does not offload reports. <<2>> still loses local sessions when instances are replaced and lacks the requested Multi-AZ primary/standby failover design. <<4>> solves session placement and database failover but sends the excessive read workload to the primary.\n\nA standby in an RDS Multi-AZ DB instance deployment does not serve reads. This differs from an RDS Multi-AZ DB cluster, whose reader instances can serve queries. Monitoring alone also does not scale instances; configure scaling policies and route read traffic explicitly.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html\nhttps://docs.aws.amazon.com/wellarchitected/latest/framework/rel_mitigate_interaction_failure_stateless.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/062.mmd",
+  "diagram_alt": "The session store, asynchronous read replicas and synchronous standby solve different problems.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multi-AZ DB instance synchronous standby supports failover but not read traffic."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous read replicas offload read-only queries."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html",
+      "checked_on": "2026-09-18",
+      "supports": "Target tracking uses CloudWatch metrics to adjust Auto Scaling capacity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_mitigate_interaction_failure_stateless.html",
+      "checked_on": "2026-09-18",
+      "supports": "Offloading sessions to ElastiCache allows stateless compute replacement and horizontal scaling."
+    }
+  ],
+  "editorial_notes": [
+    "Made session survival and read capacity explicit so the answer is uniquely justified.",
+    "Qualified the standby limitation to Multi-AZ DB instance deployments."
+  ],
+  "review_status": "authored"
+}

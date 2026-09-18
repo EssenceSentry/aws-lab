@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Source blocking and DDoS resilience are separate controls",
+  "columns": [
+    "Control",
+    "Scope and decision",
+    "Scenario result"
+  ],
+  "rows": [
+    [
+      "NACL rule 50: deny source /32",
+      "Subnet packet filter; evaluated first",
+      "Blocks the identified scanner"
+    ],
+    [
+      "NACL rule 100: allow required traffic",
+      "Reached only if earlier rules do not match",
+      "Preserves legitimate traffic"
+    ],
+    [
+      "Shield Standard",
+      "Automatic common L3/L4 DDoS protection",
+      "Provides the requested baseline"
+    ],
+    [
+      "Shield Advanced",
+      "Additional paid detection/response capabilities",
+      "Requires a separate business need"
+    ]
+  ],
+  "footnote": "Illustrative rule numbers; evaluate both directions because network ACLs are stateless.",
+  "emphasis_rows": [
+    0,
+    2
+  ]
+}

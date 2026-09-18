@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: One remote-access endpoint, redundant target associations
+accDescr: Employee clients authenticate to one Client VPN endpoint. The endpoint has subnet associations in two Availability Zones, with equivalent authorized routes into directly peered application VPCs.
+U["Employee device<br/>VPN client"]:::inputData --> V["One Client VPN endpoint<br/>Authentication and authorization"]:::process
+V --> A["Central VPC<br/>AZ A target subnet"]:::process
+V --> B["Central VPC<br/>AZ B target subnet"]:::process
+A -->|Equivalent allowed routes| P["Existing direct peering<br/>Routes and security rules"]:::reference
+B -->|Equivalent allowed routes| P
+P --> X["Application VPCs<br/>Other accounts in the Region"]:::output

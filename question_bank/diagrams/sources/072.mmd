@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Two controls for the viewer connection
+accDescr: The certificate authenticates the CloudFront hostname and the viewer protocol policy rejects or redirects HTTP. Origin transport is configured independently.
+V[Viewer request]:::inputData --> P{Viewer protocol policy}:::decision
+P -->|HTTP, HTTPS Only| X[403 response]:::warning
+P -->|HTTP, redirect enabled| R[Redirect to HTTPS URL]:::output
+R --> TLS[TLS to cloudfront.net<br/>Default CloudFront certificate]:::output
+P -->|HTTPS| TLS
+TLS --> C[CloudFront content delivery]:::output
+C -.->|Separate transport policy| O[Origin connection]:::inputData

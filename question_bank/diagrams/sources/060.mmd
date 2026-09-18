@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Keep zonal IPv4 egress independent
+accDescr: Each private subnet routes through a public NAT gateway in the same AZ, then through the VPC internet gateway.
+subgraph V["VPC"]
+subgraph A["Availability Zone A"]
+ PA["Private subnet A"] -->|"0.0.0.0/0"| NA["Public NAT gateway A + EIP"]
+end
+subgraph B["Availability Zone B"]
+ PB["Private subnet B"] -->|"0.0.0.0/0"| NB["Public NAT gateway B + EIP"]
+end
+NA -->|"public subnet default route"| I["Internet gateway"]
+NB -->|"public subnet default route"| I
+end
+I --> E["Internet IPv4 APIs"]

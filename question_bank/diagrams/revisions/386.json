@@ -1,0 +1,62 @@
+{
+  "question_id": "386",
+  "base_record_sha256": "7f6ebdf6d0bb5265b1bcf9582ac6343b10617d93bc36bb6b97ac271cf337425c",
+  "record": {
+    "id": "386",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A gaming company has a stable, continuously used EC2 fleet in one instance family and Region. That placement will remain unchanged for the next year. Its Lambda usage is unpredictable and falls to zero during some hours, with no other uncovered compute usage available to absorb a commitment. A continuously running MemoryDB database stores authoritative player state, and its node configuration is expected to remain stable. The EC2 workload cannot tolerate Spot interruptions, and current Lambda latency meets its target.\n\nWhich purchasing strategy best reduces costs without changing workload behavior or committing to unused hourly spend?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Purchase an EC2 Instance Savings Plan for the dependable EC2 baseline and matching MemoryDB reserved-node discounts. Keep the unpredictable Lambda usage on demand."
+      },
+      {
+        "id": "2",
+        "text": "Purchase one Compute Savings Plan for EC2, Lambda, and MemoryDB. Set Lambda reserved concurrency to obtain an additional execution discount and use MemoryDB reservations to provision physical nodes."
+      },
+      {
+        "id": "3",
+        "text": "Move the EC2 fleet to Spot Instances, retain on-demand Lambda pricing, and replace MemoryDB with an ElastiCache cache without changing the application data model."
+      },
+      {
+        "id": "4",
+        "text": "Keep all services on demand and enable Lambda provisioned concurrency continuously to reduce cold starts, leaving the stable EC2 and MemoryDB baselines uncommitted."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> matches commitments to usage that will actually consume them. An EC2 Instance Savings Plan covers a specific instance family in one Region while permitting size, operating-system, and tenancy changes within that scope. MemoryDB reserved nodes provide a billing discount for matching node usage; the database nodes must already exist or be provisioned separately.\n\nLambda is eligible for Compute Savings Plans, but eligibility is not a reason to commit to unpredictable peaks. With zero-usage hours and no other uncovered eligible usage to consume a commitment, leaving that workload on demand avoids paying for unused committed spend. Reassess if a dependable hourly floor develops.\n\nOption <<2>> wrongly includes MemoryDB in Compute Savings Plan coverage. Lambda reserved concurrency is a concurrency allocation and cap, not a pricing discount, and MemoryDB reservations are not physical capacity. Option <<3>> violates the interruption constraint and treats a durable authoritative database as an interchangeable cache. Option <<4>> forgoes discounts on the known baseline and adds provisioned-concurrency charges despite an already-satisfied latency requirement. Commitment terms and actual utilization should still be checked before purchasing.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html\nhttps://docs.aws.amazon.com/memorydb/latest/devguide/nodes.reservednodes.html\nhttps://docs.aws.amazon.com/memorydb/latest/devguide/what-is-memorydb.html\nhttps://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/386.diagram.json",
+  "diagram_alt": "The stable EC2 and MemoryDB baselines support commitments while a Lambda workload with zero-use hours stays on demand.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 Instance and Compute Savings Plan scopes, Lambda eligibility and commitment constraints."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/memorydb/latest/devguide/nodes.reservednodes.html",
+      "checked_on": "2026-09-18",
+      "supports": "MemoryDB reserved nodes are matching billing discounts, not physical nodes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/memorydb/latest/devguide/what-is-memorydb.html",
+      "checked_on": "2026-09-18",
+      "supports": "MemoryDB is a durable in-memory database rather than merely a disposable cache."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reserved concurrency allocates and limits concurrency without a discount; provisioned concurrency incurs charges."
+    }
+  ],
+  "editorial_notes": [
+    "Specified no dependable Lambda hourly floor and no other uncovered compute usage, making on-demand Lambda the defensible commitment choice. Retained MemoryDB durability and billing-versus-capacity distinction. Key 1 unchanged."
+  ],
+  "review_status": "authored"
+}

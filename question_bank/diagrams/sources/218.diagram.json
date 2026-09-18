@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Separate the landing zone from server migration",
+  "columns": [
+    "Responsibility",
+    "What must be supplied"
+  ],
+  "rows": [
+    [
+      "Destination environment",
+      "Accounts, regional VPCs, connectivity and isolated staging/test subnets."
+    ],
+    [
+      "Migration coordination",
+      "MGN global view, source-server configuration and application waves."
+    ],
+    [
+      "Server state movement",
+      "Per-server agents replicate supported disks for test and cutover launches."
+    ],
+    [
+      "Cutover acceptance",
+      "Application validation, write coordination and traffic transfer."
+    ]
+  ],
+  "footnote": "A server-replication agent does not independently provision the complete multi-account network.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

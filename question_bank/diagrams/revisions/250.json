@@ -1,0 +1,57 @@
+{
+  "question_id": "250",
+  "base_record_sha256": "b51f1d796c578ee768bc60b14ee4f6b5655e29a19def68be8ba207afd8789b7b",
+  "record": {
+    "id": "250",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company wants to rightsize a large fleet of memory-intensive EC2 database instances and attached EBS volumes. Many databases use active/passive failover pairs, and no representative utilization baseline exists. The company wants automated recommendations without committing to a support-plan upgrade.\n\nWhich action should the solutions architect take first?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use current CPU utilization to identify lightly used instances and immediately downsize every passive database to the smallest available instance type."
+      },
+      {
+        "id": "2",
+        "text": "Enable EC2 detailed monitoring and assume it automatically supplies guest memory and filesystem usage, then downsize instances after twelve hours."
+      },
+      {
+        "id": "3",
+        "text": "Configure the CloudWatch agent to publish supported guest memory metrics, opt in to Compute Optimizer, and collect representative history. Review eligible EC2 and EBS recommendations against active/passive roles, peaks and tested failover capacity."
+      },
+      {
+        "id": "4",
+        "text": "Purchase Enterprise Support, wait twelve hours for Trusted Advisor recommendations, and apply every suggested reduction without collecting additional workload history."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Compute Optimizer uses utilization history to generate recommendations, and supported memory metrics improve the evidence for memory-intensive workloads. Configure the agent and required metric dimensions; installation alone is insufficient.\n\n<<1>> equates idle standby utilization with low required failover capacity. <<2>> confuses finer standard EC2 metric intervals with collection of guest memory data. <<4>> adds an unnecessary prerequisite and treats a short observation period as enough evidence for every workload.\n\nFor EC2, the documented minimum is 30 hours of CloudWatch data in the usual 14-day lookback. Passing that threshold does not prove a period represents business peaks. A standby must still sustain the active workload after failure. Validate memory, I/O, licensing and recovery requirements before applying changes, and distinguish recommendation eligibility from safe operational sizing.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/compute-optimizer/latest/ug/requirements.html\nhttps://docs.aws.amazon.com/compute-optimizer/latest/ug/ec2-metrics-analyzed.html\nhttps://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/250.diagram.json",
+  "diagram_alt": "The minimum metric threshold, representative workload coverage and standby capacity are separate requirements for safe rightsizing.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 requires at least 30 hours of CloudWatch data over the standard 14-day lookback; resource types have separate requirements."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/ec2-metrics-analyzed.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compute Optimizer accepts supported CloudWatch-agent memory metrics with the InstanceId dimension."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compute Optimizer is opted into and analyzes workload metrics to provide resource optimization recommendations."
+    }
+  ],
+  "editorial_notes": [
+    "Removed false automatic-memory and twelve-hour claims; preserved the passive-database capacity caveat."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: One market record, from Kafka to a connected browser
+accDescr: A Kafka consumer reads over Direct Connect, publishes with KPL to Kinesis, and Lambda sends the update through the WebSocket management API.
+ K[On-premises Kafka] -->|records over Direct Connect| EC[EC2 Kafka consumers]
+ EC -->|KPL publishes records| Stream[Kinesis Data Streams]
+ Stream -->|event-source mapping| L[Lambda processor]
+ Browser[Authorized browser] -->|connect| WS[API Gateway WebSocket API]
+ WS -->|store connection ID| IDs[Connection registry]
+ IDs -->|active IDs| L
+ L -->|PostToConnection| WS
+ WS -->|market update| Browser
+class K inputData
+class Stream,IDs storage
+class Browser output

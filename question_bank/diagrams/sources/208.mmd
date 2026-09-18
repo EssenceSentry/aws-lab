@@ -1,0 +1,12 @@
+stateDiagram-v2
+accTitle: A dispatch scan resumes a durable wait
+accDescr: An order progresses through label preparation to a callback wait, then an authenticated scan permits an idempotent shipped-state update, with timeout recovery as an alternate transition.
+[*] --> Label
+Label: Invoke label-printing integration
+Label --> Waiting
+Waiting: Standard workflow waits for callback
+Waiting --> Shipped: Valid dispatch token returned
+Waiting --> Recovery: Timeout or failure
+Shipped: Idempotent shipped-state update
+Shipped --> [*]
+Recovery: Investigate and recover order

@@ -1,0 +1,54 @@
+{
+  "question_id": "052",
+  "base_record_sha256": "358ce825b9dcf868f5fc0a64ff4d6606ad84ef3f302078dfaac8e6a8e4afd7ae",
+  "record": {
+    "id": "052",
+    "exam_domain": "Design for New Solutions",
+    "question": "A property-search mobile app sends location updates in bursts. Each accepted update must be retained for processing, even when offer-lookup workers are briefly at capacity. An existing lookup service uses a tested geographic-cell index in DynamoDB. The app needs iOS and Android operating-system push notifications, including when it has no active API connection. The company targets notifications within a minute under normal conditions.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Send location updates to an authenticated API and EC2 workers. Query the existing DynamoDB index and deliver alerts only through AppSync subscriptions."
+      },
+      {
+        "id": "2",
+        "text": "Send location updates to API Gateway and invoke Lambda synchronously for each request. Query the existing index and publish through SNS, without retaining work when the worker concurrency limit is reached."
+      },
+      {
+        "id": "3",
+        "text": "Send location updates through an authenticated API to SQS. Use independently scaled workers to query the existing DynamoDB index and publish to registered SNS mobile endpoints through APNs and FCM."
+      },
+      {
+        "id": "4",
+        "text": "Send location updates through an authenticated API to SQS. Use workers to query the existing DynamoDB index and send alerts only through API Gateway WebSocket connections."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Choose <<3>>. SQS retains accepted work while workers catch up, and the workers can scale independently of the ingestion API. The existing geographic-cell index supplies the required lookup path. SNS mobile push uses platform endpoints and services such as APNs and FCM to deliver operating-system notifications.\n\n<<1>> provides application subscription updates, but does not by itself deliver an OS push notification when the app has no active connection. <<2>> has an appropriate push channel but lacks the durable buffer required when processing concurrency is exhausted. <<4>> buffers work, yet WebSocket delivery depends on an active client connection and is not a substitute for APNs or FCM.\n\nA queue and push service do not guarantee a one-minute arrival on every device. Scale for queue age, monitor processing latency and provider responses, and account for offline devices and platform delivery policies. Use event IDs and timestamps to handle duplicate or stale location updates. DynamoDB does not infer proximity from arbitrary coordinates; the explicitly supplied index makes the location queries valid.\n\nAWS documentation (checked September 18, 2026): [SQS standard queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html), [SNS mobile push](https://docs.aws.amazon.com/sns/latest/dg/sns-mobile-application-as-subscriber.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/052.mmd",
+  "diagram_alt": "A durable queue protects accepted location work; APNs and FCM deliver notifications independently of an active app API connection.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "SQS decouples producers and workers; standard queues can deliver duplicate or out-of-order messages."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-mobile-application-as-subscriber.html",
+      "checked_on": "2026-09-18",
+      "supports": "SNS sends platform push notifications using registered endpoints and services including APNs and FCM."
+    }
+  ],
+  "editorial_notes": [
+    "Rebuilt ambiguous distractors: RDS scalability and Pinpoint availability are no longer used as unsupported reasons.",
+    "Made OS push, durable backlog and an existing geographic index explicit; retained correct option 3.",
+    "Qualified the one-minute target because device and push-provider delivery cannot be guaranteed."
+  ],
+  "review_status": "authored"
+}

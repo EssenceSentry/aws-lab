@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Offload the workload that causes the overload
+accDescr: CloudFront serves eligible cached catalog and download requests while checkout, account, and cache misses still reach the measured on-premises capacity.
+A["Promotion traffic"] --> B{"Request behavior"}
+B -->|Catalog and downloads| C["CloudFront cache"]
+B -->|Checkout and account| D["Existing HTTPS application"]
+C -->|Miss or expired| D
+C -->|Hit| E["Edge response"]
+D --> F["Oracle transaction data"]
+class A inputData
+class B decision
+class C,F storage
+class D output
+class E output

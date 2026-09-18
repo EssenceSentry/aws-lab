@@ -1,0 +1,67 @@
+{
+  "question_id": "261",
+  "base_record_sha256": "06878897ee90b0072593f17412648cd6a188430a77f661c83db65dac8f9a5201",
+  "record": {
+    "id": "261",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A retailer runs a multi-AZ EC2 Auto Scaling group behind an ALB and uses an RDS for MySQL Multi-AZ DB instance. Auto Scaling uses ELB health checks. Its HTTP health endpoint queries the shared database. During a traffic surge, repeated catalog reads saturate the database while local web processes remain responsive. Health-check timeouts cause repeated replacement of otherwise functional web instances. Catalog reads can tolerate a short, defined period of staleness.\n\nWhich changes prevent this replacement cycle and reduce the identified database load while preserving end-to-end monitoring? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add ordinary RDS MySQL read replicas and direct all reads to an automatically created shared reader endpoint, without selecting individual replica endpoints."
+      },
+      {
+        "id": "2",
+        "text": "Replace the target health check with a meaningful application-local HTTP endpoint that does not query the shared database. Separately monitor an externally reachable end-to-end endpoint with a Route 53 health check and a CloudWatch alarm that notifies operators."
+      },
+      {
+        "id": "3",
+        "text": "Change the ALB target-group health-check protocol to TCP. Continue using the database-querying HTTP endpoint only for an external alarm."
+      },
+      {
+        "id": "4",
+        "text": "Configure a CloudWatch EC2 recovery alarm action against the RDS instance so high database CPU automatically recovers and reboots the database."
+      },
+      {
+        "id": "5",
+        "text": "Integrate ElastiCache into the catalog read path. Use authorization-appropriate cache keys, a defined expiration or invalidation policy, and database fallback for cache misses."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<5>> are correct. Instance replacement should respond to an instance-local fault. An independent end-to-end check still detects a shared dependency failure without using it to replace every web instance. Caching eligible repeated reads reduces work at the measured bottleneck.\n\n<<1>> proposes an endpoint that ordinary RDS DB-instance read replicas do not share. The application must route to their individual endpoints or supply its own routing layer. RDS Multi-AZ DB clusters and Aurora have different endpoint models.\n\n<<3>> selects an unsupported ALB health-check protocol: ALB target checks use HTTP or HTTPS.\n\n<<4>> applies an EC2 recovery action to the wrong resource type. Rebooting a busy database also does not remove the source of sustained query load.\n\nA static file alone may miss a failed application process, so use a local check that reflects the service's ability to handle requests. Keep synthetic and database alarms, and define cache freshness, eviction behavior and miss capacity. Caching does not eliminate writes or guarantee that every surge will fit.\n\nOfficial AWS references (checked September 18, 2026): [ALB health checks](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html). [Route 53 health monitoring](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html). [Cache-aside behavior](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html). [RDS instance replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/261.diagram.json",
+  "diagram_alt": "Three separate controls distinguish local instance recovery, end-to-end dependency alarms and database read offloading.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported HTTP/HTTPS health checks and target health behavior."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html",
+      "checked_on": "2026-09-18",
+      "supports": "Health checks can be monitored through CloudWatch alarms."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache hit and miss path with freshness policy."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Read replicas serve application-routed reads; Multi-AZ instance standby is a different role."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 2 and 5. Made stale-read tolerance, ELB-health replacement and the measured shared bottleneck explicit; separated local health from business-transaction monitoring."
+  ],
+  "review_status": "authored"
+}

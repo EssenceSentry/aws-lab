@@ -1,0 +1,14 @@
+stateDiagram-v2
+accTitle: Organization membership triggers StackSet deployment
+accDescr: After initial deployment, automatic deployments add stack instances when accounts enter the target scope and apply the configured removal behavior when they leave.
+[*] --> Outside
+state "Account outside target scope" as Outside
+state "Account joins organization or target OU" as Joined
+state "Stack instances in two approved Regions" as Deployed
+state "Configured removal behavior" as Removal
+Outside --> Joined: Membership changes
+Joined --> Deployed: Service-managed automatic deployment
+Deployed --> Removal: Account leaves target scope
+Removal --> Outside: Delete stacks
+Removal --> Retained: Retain resources
+state "Resources retained, no longer managed by StackSet" as Retained

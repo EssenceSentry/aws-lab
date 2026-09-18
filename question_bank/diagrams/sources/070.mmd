@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Evidence gates image approval
+accDescr: Candidate instances undergo application tests and Inspector scans. Only completed passing evidence publishes an approved AMI, and the 30-day schedule starts a new image build.
+S[30-day rebuild schedule]:::inputData --> B[Build new candidate AMI]:::output
+B --> T[Launch isolated test instance]:::inputData
+T --> X[Application tests]:::decision
+T --> I[Inspector scan<br/>Verify coverage and completion]:::decision
+X --> G{Both reviews pass?}:::decision
+I --> G
+G -->|No| F[Repair and rebuild]:::warning
+F --> B
+G -->|Yes| P[Publish approved AMI ID<br/>Protected Parameter Store]:::output
+P --> L[Production launch path]:::output
+L --> R[Running EC2 fleet]:::output
+M[Patch Manager<br/>Approved fleet maintenance]:::decision --> R

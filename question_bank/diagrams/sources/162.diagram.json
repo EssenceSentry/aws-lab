@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Ten PROD reservations, five matching running instances",
+  "columns": [
+    "Account",
+    "Current usage",
+    "Discount result"
+  ],
+  "rows": [
+    [
+      "PROD",
+      "No running instances\n10 reservations in us-west-2",
+      "No current instance usage to cover"
+    ],
+    [
+      "DEV",
+      "5 instances in us-west-2\nAll required attributes match",
+      "5 receive the shared RI discount"
+    ],
+    [
+      "UAT",
+      "5 instances in us-west-1",
+      "No coverage across the Region boundary"
+    ]
+  ],
+  "footnote": "All accounts have sharing enabled. Five reservation equivalents remain unused by this described workload.",
+  "emphasis_rows": [
+    1
+  ]
+}

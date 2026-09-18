@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Detect an unapproved AMI after launch
+accDescr: Launch is allowed, Config records and evaluates the instance, and only noncompliant evaluations produce the selected alert path.
+L["Developer launches EC2"] --> R["Config records instance"]
+R --> E{"AMI ID in regional approved list?"}
+LIST["Security-maintained AMI IDs"] --> E
+E -->|Yes| C["COMPLIANT"]
+E -->|No| N["NON_COMPLIANT"]
+N --> EV["EventBridge compliance event rule"]
+EV --> SNS["SNS notification"]
+class L,LIST inputData
+class E decision
+class N warning
+class C,SNS output

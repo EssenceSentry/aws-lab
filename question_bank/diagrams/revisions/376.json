@@ -1,0 +1,67 @@
+{
+  "question_id": "376",
+  "base_record_sha256": "e62da7105b5d41ca91026cd3a189c2ac7c5be1f543e3f33102c66a12f7a2e8e3",
+  "record": {
+    "id": "376",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations and publishes container images daily. Only IAM roles in its organization may access the repository; CI roles need push access and application roles need pull access. Automated cleanup must leave tagged images untouched and retain the five most recently pushed untagged images. Images are independent, are not archived, and are not referenced by manifest lists. Cleanup within 24 hours is acceptable.\n\nWhich solution meets these requirements with the least operational effort?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a private Amazon ECR repository. Restrict access with aws:PrincipalIsAWSService and run an AWS Glue job to delete older untagged images."
+      },
+      {
+        "id": "2",
+        "text": "Use a public Amazon ECR repository. Add an aws:PrincipalOrgID condition to push permissions and run a Step Functions workflow to delete older untagged images."
+      },
+      {
+        "id": "3",
+        "text": "Use a public Amazon ECR repository. Restrict access with aws:PrincipalIsAWSService and run an ECS scheduled task to delete older untagged images."
+      },
+      {
+        "id": "4",
+        "text": "Use a private Amazon ECR repository. Grant the required role permissions, deny repository access to principals outside the organization using aws:PrincipalOrgID, and apply an untagged-image lifecycle rule with a count of five."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> combines an organization access boundary with native retention. The repository policy's explicit deny for principals outside the expected aws:PrincipalOrgID prevents another allow from bypassing that boundary. Separate permissions still determine which internal roles may push or pull. Each caller also needs ecr:GetAuthorizationToken in an identity policy; a repository policy cannot grant that action.\n\nUse tagStatus=untagged, countType=imageCountMoreThan, countNumber=5, and an expire action. Among matching images, ECR expires older images first. Tagged images do not match this rule. Preview the policy before applying it. Expiration is asynchronous, generally within 24 hours after an image meets the criteria, rather than an instantaneous five-image hard limit.\n\nOption <<1>> tests whether the request is made directly by an AWS service principal, not whether an IAM role belongs to this organization, and adds custom cleanup. Options <<2>> and <<3>> use public repositories, whose public pull access cannot satisfy the private distribution requirement. Their scheduled cleanup also adds work that an ECR lifecycle policy handles.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html\nhttps://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html\nhttps://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html\nhttps://docs.aws.amazon.com/AmazonECR/latest/public/public-repositories.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/376.diagram.json",
+  "diagram_alt": "The lifecycle policy ranks only untagged images, retaining the five newest and expiring older matches while excluding tagged images.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Repository and identity permissions, explicit-deny precedence, and identity permission for GetAuthorizationToken."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html",
+      "checked_on": "2026-09-18",
+      "supports": "PrincipalOrgID identifies the caller organization; PrincipalIsAWSService identifies direct service-principal requests."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html",
+      "checked_on": "2026-09-18",
+      "supports": "Untagged image-count expiration rule."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous lifecycle execution, ordering, preview and manifest-list restrictions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/public/public-repositories.html",
+      "checked_on": "2026-09-18",
+      "supports": "Public ECR repositories permit public pulls; policies control pushes."
+    }
+  ],
+  "editorial_notes": [
+    "Made the organization boundary explicit rather than relying on one conditional allow. Qualified asynchronous retention and removed manifest-list/archive ordering ambiguity. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

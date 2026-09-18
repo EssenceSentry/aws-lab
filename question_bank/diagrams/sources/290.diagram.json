@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "A presigned URL has two independent expiration bounds",
+  "columns": [
+    "Saved URL condition",
+    "Result for a new matching request"
+  ],
+  "rows": [
+    [
+      "URL unexpired and signing credentials valid",
+      "Can succeed if authorization still permits it"
+    ],
+    [
+      "URL expired, signing credentials still valid",
+      "Fails because the URL lifetime ended"
+    ],
+    [
+      "URL unexpired, signing credentials expired",
+      "Fails because the signing session ended"
+    ],
+    [
+      "Issuer process or instance no longer running",
+      "Does not by itself replace the two expiration checks"
+    ]
+  ],
+  "footnote": "Effective expiry is the earlier of URL expiry and credential expiry. Other authorization checks still apply.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

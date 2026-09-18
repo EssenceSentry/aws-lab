@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Live windows and historical storage follow different paths
+accDescr: One branch maintains event-time windows and serves live aggregates, while a separate branch persists raw data and prepares warehouse batches.
+K[("Kinesis event stream")] --> F["Flink: event time and window state"]
+K --> S[("Raw events in S3")]
+F --> D[("DynamoDB live aggregates")]
+D --> V["Dashboard updates"]
+S --> T["Transform and load microbatches"]
+T --> R[("Redshift history")]
+class K,S,D,R storage
+class F,T decision
+class V output

@@ -1,0 +1,12 @@
+sequenceDiagram
+accTitle: The SDK refreshes role credentials before signing S3 requests
+accDescr: The EC2 application obtains temporary role credentials through instance metadata, signs a scoped S3 upload, and refreshes credentials as they approach expiration.
+participant A as EC2 application SDK
+participant M as Instance metadata
+participant S as S3 bucket
+Note over A,M: Instance profile supplies a restricted EC2 role
+A->>M: Request current temporary role credentials
+M-->>A: Access key, secret, token and expiration
+A->>S: Signed PutObject to processed/ object
+S-->>A: Upload result
+A->>M: Refresh credentials before expiration

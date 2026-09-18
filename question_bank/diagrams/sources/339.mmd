@@ -1,0 +1,16 @@
+flowchart TB
+accTitle: Connection reuse occurs at two scopes
+accDescr: Each Lambda execution environment reuses its own client, while RDS Proxy multiplexes eligible clients onto a bounded shared database connection pool.
+subgraph A["Lambda environment A"]
+A1["Invocation 1"]:::inputData --> AC["Reusable client"]
+A2["Invocation 2"]:::inputData --> AC
+end
+subgraph B["Lambda environment B"]
+B1["Invocation 3"]:::inputData --> BC["Separate reusable client"]
+end
+AC --> P["RDS Proxy
+bounded backend pool"]
+BC --> P
+P --> D["Aurora MySQL"]:::storage
+N["Transactions and session pinning
+can limit multiplexing"]:::warning -.-> P

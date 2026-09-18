@@ -1,0 +1,57 @@
+{
+  "question_id": "258",
+  "base_record_sha256": "c7de47857a4769bb3c21b314a3a4d0e0e107a6ae441800a441220f99ce9b4c70",
+  "record": {
+    "id": "258",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A former administrator might retain the private SSH key used for Linux EC2 instances. All affected instances remain reachable through Systems Manager, and the company must revoke that key while preserving a tested recovery path. The fleet's relevant Linux users and authorized key entries are known.\n\nWhich procedure correctly rotates access?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a new EC2 key pair and use Run Command to replace authorized_keys with the downloaded private PEM contents on every affected instance."
+      },
+      {
+        "id": "2",
+        "text": "Generate a new key pair and public-key replacement script, then submit AWS-RunShellScript directly to StartAutomationExecution as though it were an Automation runbook."
+      },
+      {
+        "id": "3",
+        "text": "Delete the old EC2 key-pair resource, create a replacement with the same name, and rely on EC2 to update authorized_keys in all running instances."
+      },
+      {
+        "id": "4",
+        "text": "Generate a new key pair and retain its private key securely. Use Run Command with AWS-RunShellScript to install the public key for the correct users, test access, then remove the former key and verify revocation."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. SSH authorization is enforced by the guest's authorized_keys contents. Systems Manager provides an independent management path for controlled fleet updates. Keep correct file ownership and permissions, inspect each command result, and explicitly verify removal of the former key.\n\n<<1>> installs private material where public keys belong and unnecessarily exposes the replacement secret. <<2>> uses a Command document as an Automation runbook. Automation can invoke it through an aws:runCommand step, but not by treating the document types as interchangeable. <<3>> changes the EC2 key-pair resource without replacing public keys already present in the guest.\n\nAdding a new key alone does not revoke the old one. Check other users, launch templates, images and configuration automation that could restore it, and revoke the former administrator's other credentials through the access-removal process.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/replacing-key-pair.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/run-command.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/automation-action-runcommand.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/258.mmd",
+  "diagram_alt": "The authorization lifecycle includes an explicit revocation step after the replacement has been tested.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/replacing-key-pair.html",
+      "checked_on": "2026-09-18",
+      "supports": "Replacing SSH access requires updating authorized_keys with public material, testing it and removing the old public key."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/run-command.html",
+      "checked_on": "2026-09-18",
+      "supports": "Run Command performs configuration changes on managed nodes at scale."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-action-runcommand.html",
+      "checked_on": "2026-09-18",
+      "supports": "Automation can run Command documents through the aws:runCommand action."
+    }
+  ],
+  "editorial_notes": [
+    "Made revocation mandatory and replaced duplicate private-key mistakes with a realistic EC2-resource-versus-guest-key misconception."
+  ],
+  "review_status": "authored"
+}

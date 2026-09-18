@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Replication commitment and operational signals are different",
+  "columns": [
+    "Mechanism",
+    "What it tells the team",
+    "What it cannot promise"
+  ],
+  "rows": [
+    [
+      "RTC commitment",
+      "99.9% of eligible new objects within 15 minutes",
+      "Every object within 30 minutes"
+    ],
+    [
+      "RTC missed-threshold event",
+      "A particular object exceeded 15 minutes",
+      "A configurable 30-minute RTC deadline"
+    ],
+    [
+      "CloudWatch replication-lag alarm",
+      "The rule lag exceeded 1,800 seconds",
+      "A hard deadline for each individual object"
+    ],
+    [
+      "EventBridge alarm-state routing",
+      "An alarm changed state and needs action",
+      "Direct polling or evaluation of metric values"
+    ]
+  ],
+  "footnote": "The no-exceptions business requirement remains unmet by this proposal. Alerting observes a delay; it does not prevent one.",
+  "emphasis_rows": [
+    0,
+    2
+  ]
+}

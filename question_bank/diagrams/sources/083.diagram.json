@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "One AZ fails: the same load uses two-thirds of the fleet",
+  "columns": [
+    "CPU before failure",
+    "CPU required afterward",
+    "Meets 90% limit?"
+  ],
+  "rows": [
+    [
+      "60%",
+      "60% × 3/2 = 90%",
+      "Yes, under stated assumptions"
+    ],
+    [
+      "75%",
+      "75% × 3/2 = 112.5%",
+      "No"
+    ],
+    [
+      "90%",
+      "90% × 3/2 = 135%",
+      "No"
+    ]
+  ],
+  "footnote": "Assumes equal instance capacity and traffic across three AZs. Capacity must be healthy before the failure.",
+  "emphasis_rows": [
+    0
+  ]
+}

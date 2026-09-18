@@ -1,0 +1,57 @@
+{
+  "question_id": "113",
+  "base_record_sha256": "e073f5fd7be770d43947b7f76bd6bb94dd1483a89ffa65f5c37f1987b88c2ece",
+  "record": {
+    "id": "113",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A travel company's website uses an ALB and an EC2 Auto Scaling group. The company wants HTTPS for public visitors. Developers need operating-system administrator access to the EC2 instances, but only the security team may administer the website's TLS configuration. Developers must not be able to retrieve the TLS private key. The company can terminate visitor TLS at the ALB.\n\nWhich solution meets these requirements with the least key-management effort?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Have the security team request an ACM public certificate with export disabled and attach it to an ALB HTTPS listener. Restrict certificate and listener administration to the security team, and keep the private key off the EC2 instances."
+      },
+      {
+        "id": "2",
+        "text": "Have the security team install the private key on each EC2 instance and make the key file readable only by the root user. Terminate visitor TLS on those instances."
+      },
+      {
+        "id": "3",
+        "text": "Have each EC2 instance download an encrypted private key from S3 and decrypt it locally with its instance role. Restrict direct S3 access to that role."
+      },
+      {
+        "id": "4",
+        "text": "Have the security team store the private key in Secrets Manager and allow the EC2 instance role to retrieve it for local TLS termination. Deny developers direct access to the secret."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. ALB TLS termination keeps the key out of developer-administered hosts. Selecting export disabled prevents export of that ACM certificate's private key, and IAM separation protects certificate and listener administration. Public certificate contents are not the secret; the private key and administration privileges are the protected assets.\n\n<<2>> does not isolate a secret from an operating-system administrator. Developers with root access can read or change the file's permissions.\n\n<<3>> delivers the usable key to a host the developers administer. Encryption at rest and a bucket restriction do not prevent a host administrator from observing the decrypted key or using the host's role.\n\n<<4>> has the same boundary problem: denying a developer's own IAM identity does not isolate a key deliberately exposed to that developer's host.\n\nACM now supports exportable public certificates, so a blanket claim that all ACM public certificates have non-exportable private keys would be incorrect. This design explicitly selects a non-exportable private key.\n\nOfficial AWS references (checked September 18, 2026): [ACM certificate export controls](https://aws.amazon.com/blogs/security/aws-certificate-manager-now-supports-exporting-public-certificates/). [ALB HTTPS listeners](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html). [EC2 role access boundary](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/113.mmd",
+  "diagram_alt": "TLS terminates on the security-managed ALB, keeping its private key outside the developers’ EC2 administration boundary.",
+  "sources": [
+    {
+      "url": "https://aws.amazon.com/blogs/security/aws-certificate-manager-now-supports-exporting-public-certificates/",
+      "checked_on": "2026-09-18",
+      "supports": "Export-enabled public certificates and immutable disable-export choice"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html",
+      "checked_on": "2026-09-18",
+      "supports": "ACM certificates on HTTPS listeners and load balancer TLS termination"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Users with instance access can use credentials associated with the instance role"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1 while modernizing legacy IAM certificate storage to ACM. Corrected obsolete universal non-exportability claims and separated the public certificate from its private key."
+  ],
+  "review_status": "authored"
+}

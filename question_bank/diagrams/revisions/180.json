@@ -1,0 +1,67 @@
+{
+  "question_id": "180",
+  "base_record_sha256": "1b8990c4b27d2b3e0fe175133fff97c73250b4e88b26d647058990220c16af90",
+  "record": {
+    "id": "180",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "Several business units have their own AWS accounts but share EC2 instances, EKS clusters, and Aurora Serverless clusters in a central production account. Developers must be able to delete only resources owned by their business unit. A central provisioning team assigns protected ownership tags, and developers must not be able to change those tags or the access policies.\n\nWhich multi-account access design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create one production role trusted by all business units with deletion permissions for all shared resources. Record the initiating business unit in CloudTrail for later review."
+      },
+      {
+        "id": "2",
+        "text": "Group business-unit accounts into OUs and attach SCPs that allow deletion of resources tagged for each unit. Rely on those SCPs alone to grant cross-account access to production."
+      },
+      {
+        "id": "3",
+        "text": "Create a separate production role for each business unit. Restrict its trust to the corresponding business-unit principals, authorize those principals to assume it, and scope supported deletion actions to that unit's resource ARNs or protected ownership tags. Protect the tags and role policies from developer changes."
+      },
+      {
+        "id": "4",
+        "text": "Create a production role for each business unit with deletion permissions scoped to that unit's resources. Permit every business unit to assume every production role for operational convenience."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The role trust policy and the caller's permissions determine who may assume the role. The production role's permission policy determines which resources that session may delete. Restricting both boundaries and protecting ownership metadata prevents a developer from selecting another unit's role or relabeling another unit's resource.\n\n<<1>> records misuse after it happens but gives every caller the ability to delete another unit's resources. Attribution is not a preventive authorization boundary.\n\n<<2>> uses organization guardrails as though they grant access. OUs group accounts, and SCPs restrict permissions; neither grants a principal cross-account role access or the required resource permissions.\n\n<<4>> scopes resources within each role but leaves role selection unrestricted. A developer can assume another unit's role and gain that unit's deletion permissions.\n\nUse service-appropriate actions and resource conditions: EC2 termination, EKS DeleteCluster, and RDS DeleteDBCluster have their own authorization definitions. Scope related actions as needed and prevent policy or tag changes that bypass ownership checks. EKS cluster deletion through the AWS API is separate from permission to manipulate Kubernetes objects inside a cluster.\n\nAWS documentation (checked September 18, 2026): [Cross-account resource access](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html); [SCP scope and exceptions](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html); [EC2 resource-scoped permissions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ExamplePolicies_EC2.html); [EKS action authorization](https://docs.aws.amazon.com/service-authorization/latest/reference/list_eks.html); [RDS action authorization](https://docs.aws.amazon.com/service-authorization/latest/reference/list_rds.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/180.mmd",
+  "diagram_alt": "Resource-scoped role permissions are insufficient if a developer can assume another unit's role, so both trust and permissions must enforce ownership.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html",
+      "checked_on": "2026-09-18",
+      "supports": "Resource policies permit supported direct cross-account access while role assumption creates a session with role permissions; both caller and resource-side policies matter."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCPs restrict member-account users and roles including root, do not grant permissions, and do not restrict management-account principals or service-linked roles."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ExamplePolicies_EC2.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 instance termination can be scoped to instance resources and protected resource tags."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/service-authorization/latest/reference/list_eks.html",
+      "checked_on": "2026-09-18",
+      "supports": "DeleteCluster supports cluster resource permissions and aws:ResourceTag conditions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/service-authorization/latest/reference/list_rds.html",
+      "checked_on": "2026-09-18",
+      "supports": "DeleteDBCluster supports cluster resources and resource-tag conditions, with permissions evaluated for required resources and related operations."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Made the shared production-account placement and protected ownership assumptions explicit, with distractors that fail either the role trust boundary or the resource permission boundary."
+  ],
+  "review_status": "authored"
+}

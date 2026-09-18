@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Two existing backup artifacts restore directly to EC2 storage
+accDescr: RMAN backups restore the Oracle database while the completed gateway snapshot creates an attached EBS content volume, followed by application validation and cutover.
+A["S3 RMAN backup sets"] --> B["Restore Oracle on prepared EC2"]
+C["Completed gateway snapshot"] --> D["Create and attach EBS content volume"]
+B --> E["Start JBoss and validate recovery point"]
+D --> E
+E --> F["Cut over application traffic"]
+class A,C storage
+class B,D inputData
+class E decision
+class F output

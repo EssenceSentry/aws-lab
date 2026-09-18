@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Keep one client resolver and split queries by namespace
+accDescr: EC2 uses AmazonProvidedDNS. A domain-specific forward rule sends AD queries through an outbound endpoint to directory DNS, while AWS private names resolve in the VPC.
+C[EC2 client]:::inputData --> R[AmazonProvidedDNS]:::decision
+R --> Q{private.example.com<br/>namespace?}:::decision
+Q -->|Yes| F[Associated FORWARD rule<br/>Outbound Resolver endpoint]:::decision
+F --> A[Managed AD DNS servers<br/>Two target IPs]:::output
+Q -->|No, Kinesis private name| K[Private DNS resolution<br/>Interface endpoint IPs]:::output

@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Measure, reduce one unit, then let capacity settle
+accDescr: Three low-CPU periods permit a one-instance decrement only above the group minimum, followed by a cooldown before another simple-scaling action.
+M["Detailed monitoring<br/>CPU: three one-minute periods"] --> C{"All at or below 15 percent?"}
+C -->|No| M
+C -->|Yes| MIN{"Above minimum and cooldown finished?"}
+MIN -->|No| M
+MIN -->|Yes| D["Desired capacity minus one"]
+D --> W["Drain instance and observe cooldown"]
+W --> M
+class M inputData
+class C,MIN decision
+class D output

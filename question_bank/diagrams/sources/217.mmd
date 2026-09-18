@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Change the upload path that carries the bytes
+accDescr: The upload client can send bytes directly over the regional path or through the acceleration edge path to the same S3 bucket, while the web tier remains outside the transfer.
+C["European upload client"] -->|Regional endpoint| I["Long-distance internet path"]
+C -->|Accelerate endpoint| E["Nearby AWS edge location"]
+I --> S[("Same S3 bucket in us-east-1")]
+E -->|Optimized AWS path| S
+class C inputData
+class I warning
+class E decision
+class S storage

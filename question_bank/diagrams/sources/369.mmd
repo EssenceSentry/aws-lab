@@ -1,0 +1,6 @@
+flowchart TB
+accTitle: Replaceable web compute uses independently retained data
+accDescr: An ALB sends requests to the multi-AZ Beanstalk web tier. Each new instance mounts Regional EFS before passing readiness. EFS and Aurora persist independently of replacement of the web environment.
+A[ALB]:::inputData --> W[Beanstalk EC2 web tier<br/>3–50 instances across AZs<br/>Mount EFS before readiness]:::process
+W --> F[(Regional EFS<br/>Shared NFS files<br/>Independent lifecycle)]:::storage
+W --> D[(Aurora PostgreSQL<br/>Cross-AZ replica<br/>Independent lifecycle)]:::storage

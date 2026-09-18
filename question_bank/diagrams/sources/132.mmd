@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Preserve data across the annual application lifecycle
+accDescr: Stack deletion retains the image bucket and snapshots the database before removing its compute. The next contest explicitly reuses or restores those data artifacts.
+D[Contest ends<br/>Delete stack]:::inputData
+D -->|S3 Retain| B[(Original bucket<br/>Images remain)]:::storage
+D -->|RDS Snapshot| S[(Final DB snapshot)]:::storage
+S --> X[Delete DB instance<br/>No idle DB compute]:::output
+B -->|Reference existing bucket| N[Next contest deployment]:::decision
+S -->|Restore from snapshot| N
+N --> R[Application uses preserved data]:::output

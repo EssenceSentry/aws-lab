@@ -1,0 +1,53 @@
+{
+  "question_id": "194",
+  "base_record_sha256": "a520932d30af75a37014bcddb0af294cff8771c5473552971cb871e72b88e4c6",
+  "record": {
+    "id": "194",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company wants to reduce the operating effort of an on-premises web application. It will move the application to Elastic Beanstalk and its compatible relational database to Amazon RDS. The team will adjust deployment packaging and connection settings but preserve the core application architecture and business logic.\n\nWhich migration strategy best describes this plan?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Replatform."
+      },
+      {
+        "id": "2",
+        "text": "Rehost."
+      },
+      {
+        "id": "3",
+        "text": "Repurchase."
+      },
+      {
+        "id": "4",
+        "text": "Refactor or re-architect."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Replatforming changes selected hosting or platform components to gain cloud operational benefits while preserving the application's core architecture. Moving to managed application deployment and a managed relational database fits that scope.\n\n<<2>> moves the workload with less platform change, commonly retaining self-managed software on cloud virtual machines. <<3>> replaces the existing application with a different product, such as a SaaS offering. <<4>> substantially changes application design or code to adopt a new architecture.\n\nClassify the strategy by what changes, not by the amount of testing required. Rehosting still needs configuration and validation, and replatforming is not universally the cheapest choice. The stated platform changes and preserved business logic make the classification here.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/prescriptive-guidance/latest/migration-microsoft-workloads-aws/cloud-paths.html\nhttps://docs.aws.amazon.com/prescriptive-guidance/latest/migration-microsoft-workloads-aws/migrating-net-workloads.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/194.diagram.json",
+  "diagram_alt": "Managed platform adoption with preserved application design is replatforming, distinct from relocating, replacing or redesigning the application.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-microsoft-workloads-aws/cloud-paths.html",
+      "checked_on": "2026-09-18",
+      "supports": "Replatforming moves applications and databases into managed environments while rehosting retains instance-level management."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-microsoft-workloads-aws/migrating-net-workloads.html",
+      "checked_on": "2026-09-18",
+      "supports": "Elastic Beanstalk is a replatform option with limited code change, contrasted with refactoring."
+    }
+  ],
+  "editorial_notes": [
+    "Removed the unsupported universal cost ranking and the claim that rehosting requires no configuration.",
+    "Replaced a long taxonomy recital with a comparison tied to the actual migration changes."
+  ],
+  "review_status": "authored"
+}

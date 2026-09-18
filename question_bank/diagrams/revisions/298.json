@@ -1,0 +1,57 @@
+{
+  "question_id": "298",
+  "base_record_sha256": "08172945acf388b6ab352270ec06b8d61e5952056797f4f14f9952f473aafebe",
+  "record": {
+    "id": "298",
+    "exam_domain": "Design for New Solutions",
+    "question": "A research company runs a Ruby on Rails application and a 16 TiB MySQL database on individual EC2 instances. The database continues to grow. The company needs the application to survive an Availability Zone failure, retain its current Rails runtime, and use managed database operations with automatic storage growth and a ready cross-AZ compute failover target. It wants to discount predictable application capacity while allowing demand-based expansion.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place the Rails tier behind an ALB across two AZs and purchase a commitment for baseline compute. Keep MySQL on EC2 with self-managed replication, failover, backups, and LVM volume expansion."
+      },
+      {
+        "id": "2",
+        "text": "Use RDS MySQL Multi-AZ with storage autoscaling, but put the entire Rails Auto Scaling group and its load-balancer targets in one AZ."
+      },
+      {
+        "id": "3",
+        "text": "Run Rails in a multi-AZ EC2 Auto Scaling group behind an ALB, cover eligible baseline usage with a commitment discount, and use On-Demand capacity for bursts. Migrate to compatible Aurora MySQL with a writer and a ready replica in another AZ."
+      },
+      {
+        "id": "4",
+        "text": "Run Rails in a multi-AZ EC2 Auto Scaling group behind an ALB with a baseline commitment discount. Use RDS MySQL Multi-AZ, disable storage autoscaling, and manually increase storage after capacity alarms."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The application fleet spans AZs while retaining its runtime. Aurora grows its cluster storage as data grows, and a ready replica in another AZ provides a compute promotion target. A commitment discount can cover predictable eligible EC2 usage while additional instances scale with demand.\n\n<<1>> retains database operating-system, replication, backup, and storage-management responsibilities that the scenario explicitly wants managed.\n\n<<2>> protects the database but concentrates all application compute in one failure domain.\n\n<<4>> provides application and database availability, but deliberately leaves storage expansion manual and fails the automatic-growth requirement.\n\nRDS for MySQL does support storage autoscaling when enabled, so manual growth is not an inherent RDS limitation. Aurora's replicated cluster storage and its compute replicas are separate: durable copies of data do not by themselves provide an already-running replacement writer. Check engine compatibility and version-specific storage limits, size compute from measurements, and compare storage and I/O charges. Aurora is the fitting listed design here, not a universal claim that it is the least expensive MySQL service.\n\nAWS documentation (checked September 18, 2026): [Aurora shared storage](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html); [Aurora compute failover](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html); [RDS storage autoscaling](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/298.diagram.json",
+  "diagram_alt": "The application fleet, shared database storage and ready database compute each address a different scaling or failure concern.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora cluster storage grows automatically and spans three AZs independently of compute instance count; size limits vary by engine version."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html",
+      "checked_on": "2026-09-18",
+      "supports": "A ready Aurora Replica in another AZ provides a compute promotion target; durable multi-AZ storage alone is not an already-running replacement writer."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS MySQL can support storage autoscaling when configured, with limits and headroom requirements; manual storage expansion is not inherent to RDS."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Removed stale fixed Aurora size ceilings and the universal lowest-cost claim, acknowledged RDS storage autoscaling, and replaced unrelated Lambda@Edge hosting with a plausible design that fails application AZ resilience."
+  ],
+  "review_status": "authored"
+}

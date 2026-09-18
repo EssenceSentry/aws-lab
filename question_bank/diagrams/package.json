@@ -1,0 +1,15 @@
+{
+  "name": "sap-c02-diagram-sources",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs",
+    "integrate": "node integrate.mjs",
+    "validate": "node validate.mjs"
+  },
+  "engines": {"node": ">=22.18"},
+  "dependencies": {
+    "@iconify-json/logos": "1.2.14",
+    "mermaid": "12.0.0"
+  }
+}

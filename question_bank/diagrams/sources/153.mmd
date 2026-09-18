@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Extract text for search, retain images for viewing
+accDescr: Scanned images remain in S3, their extracted text and object keys enter OpenSearch, and search results identify images delivered by CloudFront.
+S[("S3 page images")] --> T["Textract OCR"]
+T --> I[("OpenSearch: text and image key")]
+I --> Q["Website search results"]
+Q -->|Selected image key| C["CloudFront image delivery"]
+S -->|Original image| C
+class S,I storage
+class T decision
+class Q,C output

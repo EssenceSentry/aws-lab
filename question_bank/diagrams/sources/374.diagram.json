@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "All three checks are needed for the approved research path",
+  "columns": [
+    "Layer",
+    "Accepted condition",
+    "Bypass prevented"
+  ],
+  "rows": [
+    [
+      "Route",
+      "Both subnet route tables use the S3 gateway endpoint",
+      "Unnecessary Internet or NAT route for S3"
+    ],
+    [
+      "Access-point network origin",
+      "Request originates in the approved VPC",
+      "Stolen role credentials used from another network"
+    ],
+    [
+      "Bucket request path",
+      "Research reads use the named access point",
+      "Direct bucket or alternate access-point reads"
+    ],
+    [
+      "Authorization alignment",
+      "IAM, endpoint and resource policies permit the read",
+      "A network route being mistaken for permission"
+    ]
+  ],
+  "footnote": "Access-point restrictions do not automatically change direct bucket permissions. Keep other approved lake-service paths intact.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

@@ -1,0 +1,18 @@
+flowchart TB
+accTitle: Reuse one Direct Connect connection across Regions
+accDescr: An existing connection and private VIF reach a Direct Connect gateway, which has separate regional virtual private gateway associations.
+DC["Texas data center"] --> C["Existing Direct Connect connection"]
+C --> VIF["Private virtual interface"]
+VIF --> G["Direct Connect gateway"]
+subgraph E["us-east-1"]
+  GE["Virtual private gateway"] --> VE["VPC East"]
+end
+subgraph W["us-west-2"]
+  GW["Virtual private gateway"] --> VW["VPC West"]
+end
+G --> GE
+G --> GW
+N["No VPC-to-VPC transit through this gateway"] -.-> G
+class DC inputData
+class VE,VW output
+class N warning

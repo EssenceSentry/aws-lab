@@ -1,0 +1,57 @@
+{
+  "question_id": "364",
+  "base_record_sha256": "0641e901fc264af770b870a98ae1c4d7f5b59a19ec89d6247c272b1fbe5e9e3c",
+  "record": {
+    "id": "364",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A Java application transcodes each newly uploaded S3 video in a single CPU-based job lasting about 40 minutes. The existing EC2 host is frequently idle. The application has a durable idempotency mechanism and can run in a supported container without special hardware.\n\nThe company wants to run concurrent jobs without maintaining worker servers or paying for an always-running worker. Which design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place upload notifications in SQS and process them with an EC2 Auto Scaling worker group that always retains at least one running instance."
+      },
+      {
+        "id": "2",
+        "text": "Run the complete 40-minute transcoding operation inside a Lambda function invoked by the S3 upload notification."
+      },
+      {
+        "id": "3",
+        "text": "Package the application as an ECS task on Fargate. Use the S3 event to invoke a short Lambda launcher that starts one task per accepted job, and monitor task completion and failures for retry."
+      },
+      {
+        "id": "4",
+        "text": "Run the application container on one continuously running EC2 instance that polls the bucket and starts local transcoding processes."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The short launcher starts the work, while a standalone Fargate task runs the long transcoding operation and exits when finished. Fargate manages the worker infrastructure and allows separate jobs to use separate task capacity.\n\n<<1>> is a valid queued-worker design, but retains an always-running EC2 worker and its operating responsibilities. Long polling itself is not the reason to reject SQS.\n\n<<2>> exceeds Lambda's 15-minute invocation limit. That is a runtime limit, not a memory limit, and a container image does not remove it.\n\n<<4>> retains both the single-host bottleneck and idle worker cost.\n\nDo not equate a successful RunTask response with successful video output. Track the task's eventual exit status, validate its output, and retry launch or execution failures through durable job state. Use the existing idempotency mechanism because upload events can be duplicated. Bound concurrent jobs to quotas and downstream capacity, configure task roles and networking, and select task CPU, memory and temporary storage to fit the workload. This design meets the stated operational and idle-worker constraints; it is not a universal claim that Fargate is cheaper than every tuned EC2 or specialized media-service alternative.\n\nAWS documentation (checked September 18, 2026): [ECS standalone tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html); [Lambda function limits](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html); [S3 event notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/364.mmd",
+  "diagram_alt": "The Lambda invocation finishes after launching the task, while the separate Fargate execution continues for 40 minutes and is tracked until completion.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/standalone-tasks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standalone tasks run finite batch work and stop, while Fargate manages the underlying compute infrastructure."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Lambda function invocation is limited to 900 seconds; the configurable memory ceiling exceeds 3 GiB."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 object notifications can invoke Lambda and are delivered at least once, requiring safe duplicate handling."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Removed unsupported universal pricing and automatic-scaling claims, corrected the 15-minute runtime terminology, excluded hardware requirements that Fargate cannot satisfy, and distinguished task acceptance from successful completion."
+  ],
+  "review_status": "authored"
+}

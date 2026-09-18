@@ -1,0 +1,52 @@
+{
+  "question_id": "377",
+  "base_record_sha256": "3f4b79d31c166c0614340b0e0012ad62fb90368f030d08278c726a63ebf03101",
+  "record": {
+    "id": "377",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company runs an API on API Gateway and Lambda in us-east-1, backed by Amazon RDS for MySQL. It has deployed the same API in eu-west-1 to reduce latency for European customers. Reads account for 95% of requests and tolerate replication lag. All writes must continue to use the US database, and the European functions already have secure connectivity to it. The API's Regional custom domains are configured in both Regions.\n\nWhich design reduces European read latency with the least additional database administration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an independent MySQL database in Europe and maintain it with an AWS DMS full-load-and-CDC task. Use Route 53 latency records for the APIs and send European reads to the DMS target."
+      },
+      {
+        "id": "2",
+        "text": "Create an RDS cross-Region read replica in Europe. Use Route 53 latency records for the APIs, route European reads to the replica, and route writes to the US primary."
+      },
+      {
+        "id": "3",
+        "text": "Enable a Multi-AZ DB instance deployment for the US database. Use Route 53 failover records for the APIs and route European reads to the US standby."
+      },
+      {
+        "id": "4",
+        "text": "Create a European MySQL database with an AWS DMS full-load-and-CDC task. Keep a simple Route 53 record pointing every customer to the US API and database."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Option <<2>> uses native asynchronous replication to place a readable copy near the European API. Route 53 latency routing selects an API endpoint based on measured latency, while application code chooses the database endpoint: local replica for reads, US primary for writes. Route 53 does not route individual SQL operations or make the replica writable. Reads that require immediate visibility of a preceding write would also need the primary.\n\nOption <<1>> can replicate data, but operating a separate target and a DMS replication task adds administration when the supported native RDS replica meets the requirements. Option <<3>> confuses high availability with read scaling: the standby of a traditional Multi-AZ DB instance deployment is neither a European replica nor a readable endpoint. Failover routing also prefers the primary endpoint until it is unhealthy rather than selecting the lower-latency healthy Region. Option <<4>> leaves European requests and reads on the US path, so the extra copy does not address their latency.\n\nA nearby replica improves latency only when the application actually sends eligible reads to it and accepts its consistency model.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/377.mmd",
+  "diagram_alt": "Latency routing selects the Regional API; application logic sends European reads locally and writes to the US primary.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Read replicas provide asynchronous read scaling, including supported cross-Region deployments."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+      "checked_on": "2026-09-18",
+      "supports": "Latency records select Regional resources using DNS latency routing."
+    }
+  ],
+  "editorial_notes": [
+    "Explicitly separated API DNS routing from query routing, tolerated replica lag, and required all writes at the primary. Key 2 unchanged."
+  ],
+  "review_status": "authored"
+}

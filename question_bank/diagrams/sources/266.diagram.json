@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Authenticate the connection without confusing its protections",
+  "columns": [
+    "Property",
+    "Relevant control",
+    "Boundary"
+  ],
+  "rows": [
+    [
+      "Initiator identity",
+      "CHAP configured at target and initiator",
+      "Gateway verifies the connecting initiator"
+    ],
+    [
+      "Target identity",
+      "Mutual CHAP with a distinct secret",
+      "Initiator verifies the gateway target"
+    ],
+    [
+      "Captured authentication exchange",
+      "Challenge-response verification",
+      "Helps resist authentication playback"
+    ],
+    [
+      "Payload confidentiality",
+      "Separate protected network transport",
+      "Not supplied merely by enabling CHAP"
+    ]
+  ],
+  "footnote": "The application still uses Volume Gateway block volumes over iSCSI. NFS, SMB and virtual tape are different interfaces.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

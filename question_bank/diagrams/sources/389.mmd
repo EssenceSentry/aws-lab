@@ -1,0 +1,17 @@
+sequenceDiagram
+accTitle: One flow crosses the same stateful appliance in both directions
+accDescr: A Gateway Load Balancer endpoint sends both the outbound and return packet through GWLB and the same firewall. This complete zonal path is deployed in a second AZ for availability.
+participant T as TGW
+participant E as Zonal GWLBE
+participant G as GWLB + firewall
+participant N as Zonal NAT / internet
+Note over T,N: Complete zonal path also deployed in AZ B
+T->>E: Outbound packet
+E->>G: Inspect through selected firewall
+G->>E: Return inspected packet
+E->>N: Continue outbound route
+N->>E: Return packet
+E->>G: Same flow, same firewall
+G->>E: Return inspected packet
+E->>T: Route back to spoke
+Note over T,G: TGW appliance mode and symmetric routes preserve flow affinity

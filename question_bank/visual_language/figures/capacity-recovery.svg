@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="540" viewBox="0 0 920 540" role="img" aria-labelledby="title desc">
+<title id="title">Running headroom and unused reserved capacity</title><desc id="desc">Q213: Each of three AZs has 20 running and 10 unused reserved slots. Losing AZ A leaves 40 running. Launching 10 into each surviving AZ restores 60. Reservation is not already-running capacity.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="black"/></marker><pattern id="hatch" patternUnits="userSpaceOnUse" width="10" height="10"><path d="M0,10 L10,0" stroke="black" stroke-width="1"/></pattern></defs>
+<rect width="920" height="540" fill="white"/>
+<g font-family="Arial, sans-serif" fill="black" stroke="none">
+<text x="30" y="38" font-size="24" font-weight="bold" text-anchor="start">Q213 · Reserved slots do not serve traffic until instances launch</text>
+<text x="30" y="70" font-size="17" font-weight="normal" text-anchor="start">Each bar has 30 matching slots: solid = running; dashed outline = unused reservation.</text>
+<text x="275" y="112" font-size="18" font-weight="bold" text-anchor="middle">Before failure</text>
+<text x="525" y="112" font-size="18" font-weight="bold" text-anchor="middle">Immediately after</text>
+<text x="775" y="112" font-size="18" font-weight="bold" text-anchor="middle">After recovery launches</text>
+<text x="35" y="174" font-size="20" font-weight="bold" text-anchor="start">AZ A</text>
+<rect x="170" y="145" width="140" height="44" fill="black"/>
+<text x="240.0" y="173" fill="white" font-size="17" text-anchor="middle">20</text>
+<rect x="310" y="145" width="70" height="44" fill="white" stroke="black" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="345" y="174" font-size="17" font-weight="normal" text-anchor="middle">10</text>
+<rect x="420" y="145" width="210" height="44" fill="url(#hatch)" stroke="black"/>
+<rect x="453" y="152" width="144" height="30" fill="white"/>
+<text x="525" y="174" font-size="16" font-weight="bold" text-anchor="middle">Unavailable</text>
+<rect x="670" y="145" width="210" height="44" fill="url(#hatch)" stroke="black"/>
+<rect x="703" y="152" width="144" height="30" fill="white"/>
+<text x="775" y="174" font-size="16" font-weight="bold" text-anchor="middle">Unavailable</text>
+<text x="35" y="266" font-size="20" font-weight="bold" text-anchor="start">AZ B</text>
+<rect x="170" y="237" width="140" height="44" fill="black"/>
+<text x="240.0" y="265" fill="white" font-size="17" text-anchor="middle">20</text>
+<rect x="310" y="237" width="70" height="44" fill="white" stroke="black" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="345" y="266" font-size="17" font-weight="normal" text-anchor="middle">10</text>
+<rect x="420" y="237" width="140" height="44" fill="black"/>
+<text x="490.0" y="265" fill="white" font-size="17" text-anchor="middle">20</text>
+<rect x="560" y="237" width="70" height="44" fill="white" stroke="black" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="595" y="266" font-size="17" font-weight="normal" text-anchor="middle">10</text>
+<rect x="670" y="237" width="210" height="44" fill="black"/>
+<text x="775.0" y="265" fill="white" font-size="17" text-anchor="middle">30</text>
+<text x="35" y="358" font-size="20" font-weight="bold" text-anchor="start">AZ C</text>
+<rect x="170" y="329" width="140" height="44" fill="black"/>
+<text x="240.0" y="357" fill="white" font-size="17" text-anchor="middle">20</text>
+<rect x="310" y="329" width="70" height="44" fill="white" stroke="black" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="345" y="358" font-size="17" font-weight="normal" text-anchor="middle">10</text>
+<rect x="420" y="329" width="140" height="44" fill="black"/>
+<text x="490.0" y="357" fill="white" font-size="17" text-anchor="middle">20</text>
+<rect x="560" y="329" width="70" height="44" fill="white" stroke="black" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="595" y="358" font-size="17" font-weight="normal" text-anchor="middle">10</text>
+<rect x="670" y="329" width="210" height="44" fill="black"/>
+<text x="775.0" y="357" fill="white" font-size="17" text-anchor="middle">30</text>
+<text x="275" y="442" font-size="21" font-weight="bold" text-anchor="middle">60 running</text>
+<text x="525" y="442" font-size="21" font-weight="bold" text-anchor="middle">40 running</text>
+<text x="775" y="442" font-size="21" font-weight="bold" text-anchor="middle">60 running</text>
+<text x="30" y="482" font-size="19" font-weight="bold" text-anchor="start">Time matters: the approved recovery window permits new launches.</text>
+<text x="30" y="514" font-size="17" font-weight="normal" text-anchor="start">For uninterrupted peak service, the remaining capacity would need to be running already.</text>
+</g></svg>

@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Build a complete comparison from complementary cost inputs",
+  "columns": [
+    "Input",
+    "What it establishes",
+    "What must still be added"
+  ],
+  "rows": [
+    [
+      "Inventory and utilization",
+      "Current footprint and observed demand",
+      "Current facilities, staffing and other cost inputs"
+    ],
+    [
+      "Migration Evaluator baseline",
+      "Projected EC2, EBS and OS-license costs",
+      "Target-specific services outside that scope"
+    ],
+    [
+      "Target architecture estimate",
+      "EKS, workers, databases, storage and network",
+      "Usage, availability and growth assumptions"
+    ],
+    [
+      "TCO comparison",
+      "Equivalent time horizon and service level",
+      "One-time migration and recurring operating costs"
+    ]
+  ],
+  "footnote": "Quick Insights is a baseline, not a complete EKS and database TCO. Preserve the required node count and price all material target components.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

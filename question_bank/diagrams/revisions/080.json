@@ -1,0 +1,53 @@
+{
+  "question_id": "080",
+  "base_record_sha256": "3424b79b041662db2a05291a3df2c636eac42939813e61201544ca5b3c9fbec1",
+  "record": {
+    "id": "080",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company processes independent image jobs on one EC2 instance. Images and results are stored on its EBS volume, and a daily run now takes 20 hours. Arrival rates vary sharply, and the company wants more workers during backlogs and fewer workers when demand falls. Jobs can be retried safely after a worker failure.\n\nWhich design provides the most effective elastic processing?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep the images on the existing EBS volume, publish job notifications to SNS, and scale worker instances from the number of SNS notifications sent."
+      },
+      {
+        "id": "2",
+        "text": "Store source images and results in S3. Place image object keys in SQS and use an Auto Scaling group of workers to process the queue. Scale from backlog per in-service worker, with a target based on acceptable queue delay and average processing time."
+      },
+      {
+        "id": "3",
+        "text": "Keep the images on the existing EBS volume and publish jobs only to SNS. Scale worker instances from an SQS queue metric without routing jobs to a queue."
+      },
+      {
+        "id": "4",
+        "text": "Store source images and results in S3 and send jobs to SQS, but scale worker instances only from the count of SNS notifications sent."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> separates shared durable objects from the workers and uses SQS to track unfinished work. A backlog-per-worker metric relates pending work to processing capacity. For target tracking, a useful target is acceptable queue delay divided by average processing time per job. Workers use the queued object key to read and write S3 data.\n\n<<1>> retains a storage dependency on the original instance and measures notifications rather than pending work. <<3>> adds no queue that corresponds to its proposed scaling metric. <<4>> has a suitable data and work path but scales from an unrelated metric that cannot show the remaining backlog.\n\nChoose visibility timeouts for actual processing duration, make output writes idempotent, and manage repeated failures through a dead-letter and redrive process. Use instance scale-in protection or safe shutdown behavior for active jobs. Local EBS can still serve as scratch space; shared authoritative inputs and outputs belong in S3.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html\nhttps://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/080.mmd",
+  "diagram_alt": "A capacity feedback loop uses remaining queue work per worker rather than the number of notifications sent.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Backlog-per-instance metric, latency/processing-time target and protection of busy workers."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "At-least-once queue delivery requires safe retries."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced raw notification counts with the documented backlog-per-instance target tracking metric.",
+    "Added explicit object references, durable shared storage and retry-safe processing."
+  ],
+  "review_status": "authored"
+}

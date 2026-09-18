@@ -1,0 +1,37 @@
+{
+  "type": "table",
+  "title": "Separate local recovery, dependency monitoring and load reduction",
+  "columns": [
+    "Signal or path",
+    "Control",
+    "Effect"
+  ],
+  "rows": [
+    [
+      "Application-local HTTP health",
+      "ALB target check + ASG ELB health",
+      "Replace locally failed instances"
+    ],
+    [
+      "End-to-end HTTP transaction",
+      "Route 53 check + CloudWatch/SNS",
+      "Alert on shared dependency failure"
+    ],
+    [
+      "Repeated eligible catalog read",
+      "ElastiCache with freshness policy",
+      "Avoid repeated database queries"
+    ],
+    [
+      "Cache miss or required fresh read",
+      "Database access",
+      "Preserve correct fallback behavior"
+    ]
+  ],
+  "footnote": "Do not make every web instance look locally broken merely because their shared database is slow.",
+  "emphasis_rows": [
+    0,
+    1,
+    2
+  ]
+}

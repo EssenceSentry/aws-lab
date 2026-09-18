@@ -1,0 +1,62 @@
+{
+  "question_id": "149",
+  "base_record_sha256": "5e07f1eeb95c589d128dd5b86821f399492d86377f4148efbde57be371a0fe48",
+  "record": {
+    "id": "149",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "Before a product launch, a company load-tests its ALB and EC2 web fleet with RDS for MySQL. The bottleneck is repeated read-only customer-profile queries; writes and static-asset delivery have sufficient capacity. Profile reads may be briefly stale, while writes and reads requiring immediate consistency must use the primary. The team can change read routing and add a cache, but cannot redesign the relational schema before launch.\n\nWhich changes address the bottleneck? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Migrate the relational profile model to Amazon Keyspaces and rewrite the queries for the Cassandra data model."
+      },
+      {
+        "id": "2",
+        "text": "Partition the profile schema across independent RDS instances and rewrite the application to route queries by shard."
+      },
+      {
+        "id": "3",
+        "text": "Add a CloudFront distribution that caches only the already-fast static assets and leave database access unchanged."
+      },
+      {
+        "id": "4",
+        "text": "Add an ElastiCache cache with suitable availability, authorization-aware keys, and expiration or invalidation. Cache eligible repeated profile reads to reduce database demand."
+      },
+      {
+        "id": "5",
+        "text": "Add RDS MySQL read replicas and route eligible read-only queries to them. Monitor replication lag and retain primary routing for writes and consistency-sensitive reads."
+      }
+    ],
+    "correct_option_ids": [
+      "4",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<4>> and <<5>> are correct. A cache avoids repeated database work for reusable results. Read replicas add capacity for remaining reads that tolerate asynchronous replication. The application must actually use the cache and replica endpoints to obtain these benefits.\n\n<<1>> changes the database model and query implementation, exceeding the migration scope.\n\n<<2>> can distribute database load, but requires the schema and routing redesign that the deadline excludes. Sharding is not inherently invalid or always more expensive.\n\n<<3>> optimizes a component that testing shows is not the bottleneck.\n\nUse cache keys that preserve customer authorization boundaries and define freshness behavior. Replica lag and cache expiration can expose older values, so keep consistency-sensitive requests on the primary. An ordinary Multi-AZ DB instance standby provides availability rather than serving these read queries.\n\nOfficial AWS references (checked September 18, 2026): [Database caching](https://aws.amazon.com/caching/database-caching/). [RDS read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html). [RDS Multi-AZ standby](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/149.mmd",
+  "diagram_alt": "Caching avoids database queries, while replicas absorb remaining stale-tolerant reads and the primary retains writes.",
+  "sources": [
+    {
+      "url": "https://aws.amazon.com/caching/database-caching/",
+      "checked_on": "2026-09-18",
+      "supports": "Caching repeated reads reduces database access and latency"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous read replicas and application read routing"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standby availability role does not provide read scaling"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 4 and 5. Added stale-read tolerance and no-schema-redesign constraints; removed mandatory replica-per-AZ and blanket cache-versus-sharding cost claims."
+  ],
+  "review_status": "authored"
+}

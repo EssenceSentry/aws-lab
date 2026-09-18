@@ -1,0 +1,48 @@
+{
+  "question_id": "054",
+  "base_record_sha256": "1bf887663235f3a2eddab7f4e420de88abaf6ce4d5c0d61b283855a649639090",
+  "record": {
+    "id": "054",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An application connects to an Amazon RDS Multi-AZ DB instance deployment through its database endpoint hostname. During maintenance, an OS update triggers failover from the primary to the standby in another Availability Zone.\n\nWhich behavior should the application be designed to handle?",
+    "options": [
+      {
+        "id": "1",
+        "text": "The original primary private IP address moves to the standby, and all established database connections continue without interruption."
+      },
+      {
+        "id": "2",
+        "text": "The primary database only reboots in place, while the standby remains unavailable to application connections throughout the maintenance event."
+      },
+      {
+        "id": "3",
+        "text": "RDS creates a new replacement database from a snapshot, and the application must be reconfigured with a new endpoint hostname."
+      },
+      {
+        "id": "4",
+        "text": "RDS promotes the standby and updates the existing endpoint DNS record. The application resolves that hostname again and re-establishes its database connections."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Choose <<4>>. For an RDS Multi-AZ DB instance failover, RDS changes the endpoint DNS mapping to the promoted standby. The application keeps using the same hostname, but existing connections must be re-established. Connection pools should detect failures, retry appropriately and avoid caching an old address indefinitely.\n\n<<1>> incorrectly describes a private-IP move and uninterrupted sessions. <<2>> omits the standby promotion that the stem explicitly says occurs. A reboot is not a complete description of failover. <<3>> describes a restore-based recovery workflow rather than promotion of the existing synchronized standby.\n\nA stable endpoint name abstracts a changing database host; it does not preserve established TCP sessions or guarantee zero interruption. Re-resolve DNS and reconnect, then apply transaction-aware retry logic so a lost response does not cause a duplicate business operation. These details refer to the Multi-AZ DB instance deployment type, not every RDS or Aurora topology.\n\nAWS documentation (checked September 18, 2026): [RDS failover and DNS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/054.mmd",
+  "diagram_alt": "Failover changes the endpoint DNS mapping and requires a new connection, despite an unchanged hostname.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS changes the DB endpoint DNS mapping to the standby and clients must re-establish connections."
+    }
+  ],
+  "editorial_notes": [
+    "Kept correct option 4 and specified the Multi-AZ DB instance deployment type.",
+    "Added DNS caching and transaction-aware retries; avoided claiming that a stable hostname preserves sessions."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Buffer a brief write burst
+accDescr: Producers durably enqueue records while controlled workers drain the backlog into DynamoDB. Messages are removed only after successful writes.
+P[Bursty record arrivals]:::inputData --> Q[(SQS backlog)]:::storage
+Q --> W[Workers with bounded concurrency]:::process
+W --> D[(DynamoDB table)]:::storage
+D --> R{Write succeeded?}:::decision
+R -->|Yes| A[Delete SQS message]:::output
+R -->|Transient failure| B[Backoff and retry]:::warning
+B --> W
+N[Average drain rate must exceed average arrivals]:::reference -.-> Q

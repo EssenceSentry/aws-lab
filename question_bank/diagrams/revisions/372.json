@@ -1,0 +1,57 @@
+{
+  "question_id": "372",
+  "base_record_sha256": "c4c270d88393bdd5ac75a2c498d249066e23506089170d2768d2c5d12aed4b49",
+  "record": {
+    "id": "372",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A trading platform uses EC2 behind an ALB, RDS for SQL Server, and an S3 reports bucket in one Region. Read-only market analysis burdens the production database. The company wants to retain SQL Server, offload those queries, and prepare regional recovery from continuously replicated database and report data.\n\nThe source uses a supported Enterprise Edition version and instance class, and both Regions support cross-Region replicas. Which design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a cross-Region SQL Server read replica for analytics and configure S3 CRR with required backfill. Copy application AMIs and prepare recovery infrastructure. During disaster recovery, promote the replica, launch and validate the application, and switch its database and bucket endpoints."
+      },
+      {
+        "id": "2",
+        "text": "Create a SQL Server read replica for analytics in the production Region and keep all application images, database replicas, and report copies only in that Region."
+      },
+      {
+        "id": "3",
+        "text": "Copy hourly database snapshots and application AMIs to another Region and enable S3 CRR, but leave ad hoc analytics on the production writer and recover the database from the latest snapshot."
+      },
+      {
+        "id": "4",
+        "text": "Prepare a cross-Region SQL Server replica, copied application AMIs and S3 CRR, but keep the analysis team connected to the production writer during normal operation."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The supported cross-Region replica provides both a read-only analytics destination and a database that can be promoted for regional recovery. S3 replication and copied application artifacts cover separate state needed to restore the complete platform.\n\n<<2>> offloads reads but leaves the recovery copies within the same regional failure domain.\n\n<<3>> provides periodic recovery points rather than continuously replicated database state and does not offload the analytics that burdens production.\n\n<<4>> prepares regional recovery but leaves the identified read workload on the writer.\n\nRDS SQL Server cross-Region replicas are supported for the specified configurations; a blanket statement that SQL Server has no such replicas is outdated. Size the analytics replica so queries do not prevent it from applying changes, and monitor lag. Replication is asynchronous, so the design reduces possible data loss without promising zero loss. Validate server-level login and object synchronization, regional KMS permissions, database promotion, application configuration and traffic switching. Live S3 CRR does not automatically copy all previously existing objects, so include backfill and verify completeness. AMIs alone do not recreate networking, permissions or every runtime dependency.\n\nAWS documentation (checked September 18, 2026): [RDS SQL Server replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.ReadReplicas.html); [RDS asynchronous read replication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html); [S3 replication and existing data](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-what-is-isnot-replicated.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/372.mmd",
+  "diagram_alt": "The cross-Region SQL Server replica serves analytics before a disaster and is promoted for recovery, while report objects follow their own replication path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.ReadReplicas.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported RDS SQL Server Enterprise Edition configurations offer cross-Region read replicas and promotion; replicas need sufficient capacity and some server-level objects need separate synchronization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Read replicas offload queries and asynchronously receive source changes, so promotion and disaster recovery can have replication lag and possible data loss."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-what-is-isnot-replicated.html",
+      "checked_on": "2026-09-18",
+      "supports": "Live replication handles eligible new objects, while previously existing objects require a backfill such as S3 Batch Replication."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Kept current SQL Server support prerequisites, made continuous database replication and read offload explicit, and added S3 backfill and asynchronous-replication caveats."
+  ],
+  "review_status": "authored"
+}

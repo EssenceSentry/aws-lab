@@ -1,0 +1,62 @@
+{
+  "question_id": "170",
+  "base_record_sha256": "030d1b45948fd1af781a06d1a0519b1ffd06202b6f7a39656aeb036df32eef18",
+  "record": {
+    "id": "170",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A financial company uses EC2, RDS, S3, CloudFront, and IAM across all enabled Regions of one AWS account. It needs a durable audit history of resource-management API activity from the console, SDKs, and CLI. The logs must be confidential, cryptographically verifiable for tampering, and retained without deletion for the company's fixed retention period.\n\nWhich solution provides the required controls?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a multi-Region CloudTrail trail that includes global service events and management events. Deliver logs to a restricted S3 bucket using SSE-KMS, enable log-file integrity validation and validate the digests, and apply Object Lock compliance retention to the delivered log versions."
+      },
+      {
+        "id": "2",
+        "text": "Collect application and operating-system logs with the CloudWatch agent in every Region. Encrypt the log groups with KMS and use them as the complete history of AWS resource-management API calls."
+      },
+      {
+        "id": "3",
+        "text": "Create a single-Region CloudTrail trail in us-east-1 with global service events. Encrypt its restricted S3 destination, validate its log digests, and apply Object Lock compliance retention."
+      },
+      {
+        "id": "4",
+        "text": "Create a multi-Region CloudTrail trail with global service events and a restricted SSE-KMS S3 destination. Use S3 versioning alone for immutable retention, without log-file integrity validation."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. CloudTrail supplies the API audit history, including the relevant regional and global-service management activity. SSE-KMS and access policies protect confidentiality. Signed digest validation supplies evidence of modification or deletion, and Object Lock compliance mode protects retained object versions from deletion or overwrite during the configured period.\n\n<<2>> collects useful workload telemetry but does not automatically capture every AWS control-plane API action, such as an IAM policy update made through the console.\n\n<<3>> protects the logs it collects but misses management activity in other Regions. Global-service event inclusion is not equivalent to multi-Region coverage.\n\n<<4>> omits cryptographic log validation and confuses recoverable versions with immutable retention. Privileged users can delete ordinary versions when authorized.\n\nEnabling integrity validation causes digest delivery; verification must still be performed. A trail need not be split by console, SDK, or CLI. Add appropriate data-event selectors separately when object or other data-plane operations must also be audited.\n\nAWS documentation (checked September 18, 2026): [CloudTrail Region and global-service coverage](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html); [CloudTrail log integrity validation](https://docs.aws.amazon.com/en_en/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html); [CloudTrail SSE-KMS encryption](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html); [S3 Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/170.diagram.json",
+  "diagram_alt": "Four distinct controls cover audit scope, confidentiality, tamper evidence, and retention.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multi-Region trails record events in enabled Regions and include global service events, while event selection determines operation coverage."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/en_en/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudTrail delivers signed digest files when integrity validation is enabled, and a subsequent validation procedure checks log changes or deletion."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html",
+      "checked_on": "2026-09-18",
+      "supports": "SSE-KMS permissions control log confidentiality and the selected KMS key must be in the log bucket Region."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compliance-mode retention prevents protected object versions from being overwritten or deleted during the retention period, including by root."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced nonexistent CloudWatch trails with plausible incomplete alternatives and made cryptographic validation and immutable retention explicit."
+  ],
+  "review_status": "authored"
+}

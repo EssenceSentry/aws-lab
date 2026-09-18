@@ -1,0 +1,47 @@
+{
+  "question_id": "023",
+  "base_record_sha256": "e19f73740e556051dc94e91d363a8468563018e2fc4e9b791e3bd7b43c9a88f3",
+  "record": {
+    "id": "023",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company serves several HTTPS applications through an Application Load Balancer in us-west-1. The ALB uses public certificates managed by AWS Certificate Manager (ACM). The company is deploying an ALB in each of three additional AWS Regions and will keep the same application hostnames.\n\nWhat should a solutions architect do before routing users to the new ALBs?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an asymmetric AWS KMS key in each destination Region and use its key ARN as the HTTPS listener certificate."
+      },
+      {
+        "id": "2",
+        "text": "Create a multi-Region AWS KMS key and associate its replica key ARN with each ALB HTTPS listener."
+      },
+      {
+        "id": "3",
+        "text": "Request the required certificates in ACM in us-west-1 and associate those certificate ARNs with the ALBs in every destination Region."
+      },
+      {
+        "id": "4",
+        "text": "Request and validate the required certificates in ACM in each destination Region. Associate each issued certificate with the ALB in that Region and verify HTTPS before shifting traffic."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Correct: <<4>>. An ALB must use a certificate that exists in the same Region. Request certificates covering the application hostnames in every destination Region, complete validation, and configure and test the HTTPS listeners before changing traffic routing.\n\n<<1>> and <<2>> are incorrect because KMS keys are cryptographic keys, not TLS certificates that an ALB listener can use. Multi-Region KMS replication does not create regional ACM certificates.\n\n<<3>> fails the same-Region requirement: an ACM certificate ARN in us-west-1 cannot be attached directly to an ALB in another Region.\n\nThe hostname can stay the same across regional certificates. CloudFront has a different rule: its viewer certificate must be in us-east-1. That global-service exception does not apply to regional ALBs.\n\nOfficial AWS references (checked 2026-09-18):\n[ACM certificate scope](https://aws.amazon.com/certificate-manager/faqs/)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/023.mmd",
+  "diagram_alt": "Separate ACM resources cover the same hostname; certificate attachment remains within each ALB Region.",
+  "sources": [
+    {
+      "url": "https://aws.amazon.com/certificate-manager/faqs/",
+      "checked_on": "2026-09-18",
+      "supports": "Certificates must be in the resource Region; CloudFront uses us-east-1"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved key and regional-certificate concept; removed obsolete absolute statements about certificate exportability and private-certificate pricing. Added validation before traffic cutover."
+  ],
+  "review_status": "authored"
+}

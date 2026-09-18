@@ -1,0 +1,47 @@
+{
+  "question_id": "163",
+  "base_record_sha256": "830dbd0a5c460c7ae9af4cefa887a85817ced79cc434ce6a1ee755444c718a44",
+  "record": {
+    "id": "163",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "Employees need to access a private ERP application in AWS while traveling and working from home. Their source IP addresses change frequently. The application must have no public endpoint, and only authenticated, authorized employees may reach its private network. The company wants a managed remote-access solution with minimal appliance administration.\n\nWhich network design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create Direct Connect from the headquarters to the VPC and give traveling employees the private IP address of the ERP application."
+      },
+      {
+        "id": "2",
+        "text": "Place the ERP application behind an internet-facing ALB with an HTTPS certificate and allow inbound HTTPS from all addresses."
+      },
+      {
+        "id": "3",
+        "text": "Create a Site-to-Site VPN from the headquarters router to the VPC and distribute that router's tunnel settings to each employee laptop."
+      },
+      {
+        "id": "4",
+        "text": "Create an AWS Client VPN endpoint with employee authentication, appropriate authorization rules and routes, and VPC target-network associations. Keep the ERP in private subnets and provide employees with the supported VPN client configuration."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. AWS Client VPN provides managed TLS-based remote access from individual devices. Authentication establishes employee identity, authorization rules permit the required network, and routes and security groups control access to the private ERP. The application itself does not need a public endpoint.\n\n<<1>> connects a fixed site to AWS. It does not give a roaming laptop a connection to the headquarters private network.\n\n<<2>> encrypts traffic but publishes the application endpoint to the internet. TLS server authentication alone does not authenticate or authorize employees.\n\n<<3>> configures a network-to-network tunnel, not the requested per-user remote-access service. A Site-to-Site VPN customer-gateway configuration is not a Client VPN profile.\n\nA subnet label alone does not determine whether a server is publicly reachable. Evaluate addressing, routes, load-balancer exposure, and security rules together. Managed Client VPN removes appliance maintenance, but endpoint associations and active client connections still incur charges.\n\nAWS documentation (checked September 18, 2026): [AWS Client VPN](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/163.mmd",
+  "diagram_alt": "Employees authenticate to a managed remote-access VPN before authorized traffic reaches the private ERP endpoint.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed TLS remote access uses an OpenVPN client, authentication, authorization rules, routes, and VPC target-network associations."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Modernized the legacy self-managed SSL VPN choice to AWS Client VPN and corrected the claim that every server in a public subnet is automatically internet accessible."
+  ],
+  "review_status": "authored"
+}

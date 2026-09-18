@@ -1,0 +1,58 @@
+{
+  "question_id": "019",
+  "base_record_sha256": "ca3ce68ca0e64d01075cce55fb3c6ca096921552f9577d9b680b489627dc3aae",
+  "record": {
+    "id": "019",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A security team observes port scans from one public IPv4 address against internet-facing EC2 instances in several subnets. It needs to deny that source at the subnet boundary immediately. The company also requires baseline protection against common network- and transport-layer DDoS attacks and wants to avoid a paid security subscription unless it is needed for those requirements.\n\nWhich approach best meets the requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add an inbound network ACL deny rule for the source /32 in each affected subnet’s ACL, with a lower rule number than matching allow rules. Use the automatic AWS Shield Standard protections already included for AWS customers."
+      },
+      {
+        "id": "2",
+        "text": "Add the source address to an AWS WAF IP set and associate a blocking web ACL with an ALB in front of the application. Use Shield Standard for baseline DDoS protection."
+      },
+      {
+        "id": "3",
+        "text": "Block the address in each instance’s host firewall and enable GuardDuty and Patch Manager. Use the resulting findings and patch compliance as the DDoS mitigation control."
+      },
+      {
+        "id": "4",
+        "text": "Add an explicit deny rule to every instance security group and use AWS Config to discard packets that match the denied source."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> places an explicit IP deny at the requested subnet boundary. Network ACLs evaluate the lowest-numbered matching rule first. Shield Standard automatically provides baseline protection against common network- and transport-layer DDoS attacks without a paid subscription.\n\n<<2>> filters web requests at the ALB. It does not install the required subnet-boundary deny or block arbitrary port scans against the instances’ public addresses. <<3>> can block traffic at a host, but does not implement the required subnet-boundary control; threat detection and patching are not substitutes for DDoS mitigation. <<4>> proposes security-group deny rules, which do not exist, and treats AWS Config as a packet-filtering service.\n\nShield Advanced adds capabilities beyond this baseline and may be justified by other requirements. A network ACL deny targets a source address; it is not by itself protection against a distributed attack. Preserve required return-traffic rules because ACLs are stateless.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html\nhttps://docs.aws.amazon.com/waf/latest/developerguide/ddos-standard-summary.html\nhttps://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/019.diagram.json",
+  "diagram_alt": "The NACL rule order blocks a specific source, while Shield Standard supplies the distinct baseline DDoS control.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html",
+      "checked_on": "2026-09-18",
+      "supports": "Subnet-level allow/deny, lowest-numbered first-match evaluation, and stateless return traffic."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-standard-summary.html",
+      "checked_on": "2026-09-18",
+      "supports": "Automatic Shield Standard coverage for common network- and transport-layer DDoS attacks without additional charge."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html",
+      "checked_on": "2026-09-18",
+      "supports": "WAF inspects web requests at supported protected resources, not arbitrary subnet packets."
+    }
+  ],
+  "editorial_notes": [
+    "Substantive answer-content correction: stable choice 1 now uses Shield Standard instead of requiring Advanced. Current AWS documentation explicitly provides the stated baseline at no additional charge. Added cost and subnet-boundary constraints; answer ID unchanged.",
+    "Root review replaced the unrelated Route 53/Macie distractor with a plausible WAF layer mismatch."
+  ],
+  "review_status": "authored"
+}

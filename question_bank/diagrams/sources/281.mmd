@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Managed delivery separates ingestion from search
+accDescr: JSON events are normalized and buffered by Firehose, then indexed in OpenSearch, with exhausted delivery failures retained separately for controlled redelivery.
+A["JSON events"] --> B["Firehose buffer + Lambda transform"]
+B --> C["OpenSearch index"]
+C --> D["Search and dashboard refresh"]
+B -->|Delivery retries exhausted| E["S3 failed records"]
+E -.->|Investigate and redeliver| B
+class A inputData
+class B decision
+class C,E storage
+class D output

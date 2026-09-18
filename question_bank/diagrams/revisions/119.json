@@ -1,0 +1,57 @@
+{
+  "question_id": "119",
+  "base_record_sha256": "bdc792e620744047b0a99f0d31385f70c6983f24d756440a6ee1c3a7d3aef612",
+  "record": {
+    "id": "119",
+    "exam_domain": "Design for New Solutions",
+    "question": "A law firm wants employees to use existing Active Directory credentials to access legal documents in S3. The firm already operates a trusted SAML 2.0 identity provider. Each employee must be able to list and access only that employee's assigned object prefix. The solution must avoid creating long-lived AWS credentials for employees. No other policies grant access to the bucket.\n\nWhich actions should the architect take? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure SAML federation to an IAM role so employees obtain temporary AWS credentials. Have the trusted identity provider supply a protected, unique employee identifier as a session tag."
+      },
+      {
+        "id": "2",
+        "text": "Use the trusted employee session tag in the role's S3 policy. Restrict ListBucket with an s3:prefix condition and restrict object actions to that employee's prefix ARN. Prevent employees from choosing or overriding another employee's identifier."
+      },
+      {
+        "id": "3",
+        "text": "Grant the federated role access to every object in the bucket and hide other employees' folders in the client interface."
+      },
+      {
+        "id": "4",
+        "text": "Create an IAM user and access key for every employee, and synchronize their IAM console passwords with Active Directory."
+      },
+      {
+        "id": "5",
+        "text": "Create one shared IAM user for the application and distribute its access keys to all employees, using separate S3 folder names for organization."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<2>> are correct. Federation exchanges trusted SAML authentication for temporary role credentials. The role can use a trusted session tag to scope each employee's S3 requests without creating a separate IAM user or long-lived access key.\n\nTwo policy scopes are required: `s3:ListBucket` applies to the bucket ARN with an allowed-prefix condition, while object actions such as `s3:GetObject` and `s3:PutObject` apply to object ARNs under that prefix. Configure the role's SAML trust and required `sts:TagSession` permission, and ensure the identity provider controls the employee identifier. A user-selectable prefix tag would defeat isolation.\n\n<<3>> provides interface filtering, not authorization; direct API calls would retain broad access.\n\n<<4>> introduces long-lived AWS identities and credentials instead of federation.\n\n<<5>> loses per-user isolation and distributes a shared long-lived secret.\n\nDo not copy a policy using `${aws:username}` into this federated-role design: that variable is not available for IAM role sessions. Use an appropriate trusted identity attribute.\n\nOfficial AWS references (checked September 18, 2026): [STS session tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html). [S3 home-prefix policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_s3_home-directory-console.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/119.mmd",
+  "diagram_alt": "Trusted federation attributes scope both S3 listing and object permissions, rather than relying on folder names or client-side hiding.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html",
+      "checked_on": "2026-09-18",
+      "supports": "SAML principal tags, role trust requirements, and principal-tag authorization"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_s3_home-directory-console.html",
+      "checked_on": "2026-09-18",
+      "supports": "Bucket-prefix versus object-resource permissions and aws:username absence for IAM roles"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 1 and 2. Replaced legacy directory synchronization with SAML role federation and a protected session-tag prefix, explicitly avoiding aws:username for role sessions."
+  ],
+  "review_status": "authored"
+}

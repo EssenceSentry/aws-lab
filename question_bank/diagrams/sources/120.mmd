@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Publishing an AMI value is not the instance rollout
+accDescr: A tested AMI updates a stable Parameter Store key, then a stack change set resolves it into a launch-template version and an update policy replaces instances.
+AMI["Image pipeline validates regional AMI"] --> P[("Parameter Store: approved AMI key")]
+P -->|Resolve current value during stack operation| C["Create and inspect change set"]
+C --> E["Execute stack update"]
+E --> L["New launch-template version"]
+L --> U["Configured Auto Scaling update policy"]
+U --> I["Replace instances with approved AMI"]
+N["Parameter change alone leaves existing hosts unchanged"] -.-> P
+class AMI inputData
+class P storage
+class C decision
+class I output
+class N warning

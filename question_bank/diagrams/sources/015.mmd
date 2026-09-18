@@ -1,0 +1,21 @@
+sequenceDiagram
+accTitle: Acknowledge durable intake before asynchronous storage
+accDescr: The API acknowledges the pledge after SQS accepts it. Workers write idempotently and delete only after success, allowing safe retries.
+participant User as Donor
+participant API as Pledge API
+participant Q as SQS queue
+participant Worker
+participant DB as DynamoDB
+User->>API: Pledge with request ID
+API->>Q: SendMessage
+Q-->>API: Durably accepted
+API-->>User: Pledge received
+Worker->>Q: ReceiveMessage
+Q-->>Worker: Pledge
+Worker->>DB: Idempotent write by request ID
+alt Write succeeds or already exists
+ DB-->>Worker: Success
+ Worker->>Q: DeleteMessage
+else Transient write failure
+ Note over Q,Worker: Message becomes visible again for retry
+end

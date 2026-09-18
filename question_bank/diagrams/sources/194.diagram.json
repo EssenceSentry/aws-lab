@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Classify the change, not the destination cloud",
+  "columns": [
+    "Strategy",
+    "What changes",
+    "Example"
+  ],
+  "rows": [
+    [
+      "Replatform",
+      "Hosting and selected platform services",
+      "Existing app → Beanstalk; database → RDS"
+    ],
+    [
+      "Rehost",
+      "Infrastructure location",
+      "Existing software stack → EC2"
+    ],
+    [
+      "Repurchase",
+      "Application product",
+      "Existing application → SaaS replacement"
+    ],
+    [
+      "Refactor / re-architect",
+      "Core design or code",
+      "Monolith → redesigned service architecture"
+    ]
+  ],
+  "footnote": "Packaging, configuration and testing are compatible with replatforming when the core application design is preserved.",
+  "emphasis_rows": [
+    0
+  ]
+}

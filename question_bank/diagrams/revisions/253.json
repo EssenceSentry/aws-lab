@@ -1,0 +1,52 @@
+{
+  "question_id": "253",
+  "base_record_sha256": "101d58a0f6555ccdb351eed44c1f165ab2e586696e7bbd5916431c76c6268c7f",
+  "record": {
+    "id": "253",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company will deploy a stateless .NET application as Linux containers. It needs an internet-facing service that tolerates an Availability Zone failure and a highly available SQL Server database. The team wants managed infrastructure and must keep database credentials out of container images and plaintext task definitions. Startup environment injection is acceptable.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run both the application and a single SQL Server container as Fargate services. Enable service scaling and put a SecureString parameter ARN in environment[].value to inject the password."
+      },
+      {
+        "id": "2",
+        "text": "Run the application as a multi-AZ ECS Fargate service behind an ALB and use a supported RDS for SQL Server Multi-AZ deployment. Put the Secrets Manager reference in secrets[].valueFrom and authorize the task execution role to retrieve and decrypt it."
+      },
+      {
+        "id": "3",
+        "text": "Run the application on Fargate and launch independent SQL Server EC2 instances in an Auto Scaling group. Put a Parameter Store ARN in environment[].value and rely on instance replacement for database failover."
+      },
+      {
+        "id": "4",
+        "text": "Use RDS for SQL Server Multi-AZ and a self-managed Kubernetes cluster. Put a Secrets Manager ARN in a pod's ordinary environment value and mount an empty volume, relying on Kubernetes to retrieve the secret automatically."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The application runs across AZs while RDS manages supported SQL Server database failover. ECS uses the task execution role to resolve secrets[] references when starting containers, keeping the password out of the image and ordinary task-definition values. Startup network access to Secrets Manager is also required.\n\n<<1>> does not turn one stateful database container into a replicated database and uses a literal environment value. <<3>> confuses replacement of independent machines with coordinated database replication and repeats the secret-injection error. <<4>> lacks an actual Kubernetes-to-Secrets-Manager integration; a secret ARN and an empty volume are not sufficient.\n\nThe injected password is still available inside the container environment to the application and sufficiently privileged inspection. Rotation requires replacement tasks or runtime refresh. Database Multi-AZ and application multi-AZ deployment address different components, and clients must retry connections after failover.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerMultiAZ.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/253.mmd",
+  "diagram_alt": "The execution role retrieves credentials for startup; the running container uses the injected value, which does not refresh automatically.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "ECS injects secrets through containerDefinitions[].secrets using execution-role access; injected values do not refresh automatically after rotation."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerMultiAZ.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported RDS for SQL Server Multi-AZ deployments manage standby synchronization and failover behind a stable endpoint."
+    }
+  ],
+  "editorial_notes": [
+    "Used parallel deployment choices and separated stateful database availability from container or instance replacement."
+  ],
+  "review_status": "authored"
+}

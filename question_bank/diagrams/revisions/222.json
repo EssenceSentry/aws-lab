@@ -1,0 +1,57 @@
+{
+  "question_id": "222",
+  "base_record_sha256": "a7cce43973a618674eb044d22c4c2661963d4768278b215b3ee7fafa0319e37b",
+  "record": {
+    "id": "222",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "An analytics portal currently stores uploaded files on a NAS and queues processing jobs. Each job is indivisible and can run for 30 minutes. Upload volume is high during business hours and low overnight. The application can use object storage and does not require a shared filesystem or a specific broker protocol.\n\nWhich migration design minimizes idle infrastructure while preserving reliable processing?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store files in S3 and enqueue object keys in SQS. Invoke one Lambda function per message and perform the entire 30-minute job in that invocation."
+      },
+      {
+        "id": "2",
+        "text": "Store files in EFS and enqueue jobs in a provisioned Amazon MQ broker. Scale EC2 workers with demand and retain the broker and filesystem overnight."
+      },
+      {
+        "id": "3",
+        "text": "Store files in S3 and enqueue object keys in SQS. Keep a fixed EC2 worker fleet sized for the daytime peak running continuously."
+      },
+      {
+        "id": "4",
+        "text": "Store files in S3 and enqueue object keys in SQS. Run EC2 workers in an Auto Scaling group using backlog per instance, adjust message visibility for long jobs, and protect busy workers during scale-in."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. S3 separates durable file storage from the worker lifecycle, and SQS carries job references. Queue-driven scaling adds workers for the daytime backlog and reduces idle capacity afterward. A backlog-per-instance target should reflect processing time and acceptable queue delay.\n\n<<1>> exceeds the 15-minute limit of a single Lambda invocation. A different decomposed workflow could use Lambda, but the stated jobs cannot be split.\n\n<<2>> can process the workload, but retains a provisioned broker and a shared filesystem without a requirement for either capability. The SQS/S3 design avoids that unnecessary baseline infrastructure.\n\n<<3>> uses suitable storage and queuing, but pays for peak worker capacity during the quiet period.\n\nStore object keys, not large files, in messages. Delete a message only after its output is committed, maintain a sufficient visibility timeout or heartbeat, and make retries idempotent. Scale-in protection protects work in progress; it does not eliminate the need to recover from instance failure.\n\nAWS documentation (checked September 18, 2026): [Queue-driven EC2 scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html); [Lambda invocation timeout](https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html); [SQS visibility and retries](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/222.mmd",
+  "diagram_alt": "File durability is independent of worker capacity, and the queue message is acknowledged only after processing commits its output.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Backlog per instance relates queue work to capacity, and scale-in protection prevents terminating busy workers."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "checked_on": "2026-09-18",
+      "supports": "An individual Lambda invocation has a maximum timeout of 900 seconds, or 15 minutes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "checked_on": "2026-09-18",
+      "supports": "Long-running consumers can extend message visibility, delete messages after successful processing, and handle duplicate delivery idempotently."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Removed the mismatched MQ/SQS distractor, replaced raw queue-length target tracking with backlog per instance, and specified indivisible long jobs and no filesystem dependency."
+  ],
+  "review_status": "authored"
+}

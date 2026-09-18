@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: Historical attribution and reader authorization are distinct joins
+accDescr: Consolidated account-level billing joins dated OU membership, then row-level permissions restrict which unit rows a reader can retrieve.
+C["CUR line items
+account ID + usage time"]:::inputData
+M["OU membership history
+account ID + valid dates"]:::storage
+C --> J["Join on account
+and effective period"]
+M --> J
+J --> D["Cost dataset with historical OU"]:::storage
+P["Reader group → allowed OU"]:::inputData --> R{"Row-level security"}:::decision
+D --> R
+R --> A["Unit A reader
+Unit A rows only"]:::output
+R --> B["Unit B reader
+Unit B rows only"]:::output

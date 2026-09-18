@@ -1,0 +1,52 @@
+{
+  "question_id": "321",
+  "base_record_sha256": "fd5b017d65e6434023dadb97bb19bf5ba3ab9bf88e7412b6d5b30eabc12c8d4d",
+  "record": {
+    "id": "321",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company must migrate historical Oracle tables from its data center into an Oracle database already configured on an existing Amazon EC2 instance. The historical tables will occupy a new 4 TiB EBS data volume. They are queried infrequently by large sequential scans that require 30 MiB/s of sustained throughput. Testing confirms that HDD latency is acceptable. Transaction logs and active tables remain on separate SSD volumes, and the EC2 instance has sufficient EBS bandwidth.\n\nWhich migration and storage combination meets the requirements at the lowest storage cost?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use AWS DMS to load the historical tables into the existing Oracle target. Store their data files on a new Provisioned IOPS SSD (io2) volume."
+      },
+      {
+        "id": "2",
+        "text": "Use AWS DMS to load the historical tables into the existing Oracle target. Store their data files on a new Cold HDD (sc1) volume."
+      },
+      {
+        "id": "3",
+        "text": "Use AWS Transform MGN to replicate the source server to a new EC2 instance. Store the historical data on a Throughput Optimized HDD (st1) volume."
+      },
+      {
+        "id": "4",
+        "text": "Use AWS Transform MGN to replicate the source server to a new EC2 instance. Store the historical data on a General Purpose SSD (gp3) volume."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Option <<2>> matches both decisions. AWS DMS migrates the selected database data into a supported, configured Oracle target. The administrator must attach and prepare the EBS volume and place the destination tables' data files there; DMS does not choose an EBS volume or install Oracle.\n\nAt 4 TiB, sc1 has a baseline throughput of 48 MiB/s, above the specified 30 MiB/s requirement without relying on burst credits. Its cost and I/O profile fit this explicitly infrequent, sequential workload. This does not make sc1 a general recommendation for transactional Oracle databases: small random I/O and latency-sensitive work favor SSDs.\n\nOption <<1>> supports the migration but purchases provisioned IOPS that this workload does not need. Option <<3>> uses server replication to create another server instead of loading the existing target, and st1 is intended for more frequent throughput workloads. Option <<4>> also follows the wrong server-migration path and provides SSD performance that is unnecessary under the stated tests.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Oracle.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/321.diagram.json",
+  "diagram_alt": "At four TiB, sc1 baseline throughput exceeds the thirty MiB/s scan requirement without burst credits.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html",
+      "checked_on": "2026-09-18",
+      "supports": "sc1 sequential cold-data use, baseline and burst rates at 4 TiB, and instance throughput limits."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Oracle.html",
+      "checked_on": "2026-09-18",
+      "supports": "Oracle is a supported DMS target with target database prerequisites."
+    }
+  ],
+  "editorial_notes": [
+    "Made the unusual sc1 database use defensible with explicit historical sequential I/O, separate SSD hot data, and a baseline-throughput constraint. Preserved key 2."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Prevention, findings management and response are separate
+accDescr: Control Tower governs member accounts, Security Hub CSPM centralizes covered findings, and EventBridge invokes explicitly configured response workflows.
+C[Control Tower controls]:::decision -->|Prevent and detect| A[Governed member accounts]:::inputData
+A -->|Supported findings| H[Security Hub CSPM<br/>Security member account]:::decision
+P[Central configuration<br/>Account / OU policies<br/>Home + linked Regions]:::inputData --> H
+H --> E{EventBridge rule<br/>Finding matches?}:::decision
+E -->|Yes| R[Authorized response workflow]:::output
+R --> V[Verify remediation result]:::output

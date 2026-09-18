@@ -1,0 +1,58 @@
+{
+  "question_id": "069",
+  "base_record_sha256": "8c2e3f4aabbc22e05186bfe5aba279e69193bc3d8f82e7d55cd98e19eca6b1c1",
+  "record": {
+    "id": "069",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company uses a versioned S3 general purpose bucket and wants its application to upload and retrieve new object versions with server-side encryption using customer-provided keys (SSE-C). The bucket is already configured to allow SSE-C writes, and the company will retain a secure mapping of object versions to keys.\n\nWhich implementation requirements apply? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use the secure WebSocket protocol to send the encryption key to Amazon S3 before uploading an object."
+      },
+      {
+        "id": "2",
+        "text": "Set x-amz-server-side-encryption-customer-key-MD5 to AES256 to select the encryption algorithm."
+      },
+      {
+        "id": "3",
+        "text": "Include the SSE-C algorithm header set to AES256, the base64-encoded 256-bit key, and the base64-encoded MD5 digest of that key in the applicable upload and retrieval requests."
+      },
+      {
+        "id": "4",
+        "text": "Upload and retrieve SSE-C objects only through the Amazon S3 console so that the console can retain the encryption keys."
+      },
+      {
+        "id": "5",
+        "text": "Use HTTPS for SSE-C requests. When using a presigned URL, include the required SSE-C headers in the signed request and supply the matching headers when making the request."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> supplies the three SSE-C header values: the algorithm, the key, and a digest that checks key transmission integrity. <<5>> provides the required HTTPS transport and the headers needed when invoking a presigned request. A bare presigned URL in a browser is insufficient for SSE-C.\n\n<<1>> substitutes WebSockets for the S3 HTTPS API. <<2>> confuses the algorithm field with the key-MD5 field. <<4>> is incorrect because the S3 console does not support SSE-C operations and S3 does not retain the supplied encryption key.\n\nKeep each version’s key independently recoverable; losing it makes that version unreadable. Enabling SSE-C does not convert older SSE-S3 versions. Also distinguish permission to use SSE-C from a bucket default: affected new and existing buckets block SSE-C writes by default from April 2026, and applications must explicitly unblock them when required.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/specifying-s3-c-encryption.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/069.diagram.json",
+  "diagram_alt": "A field-role comparison distinguishes the encryption algorithm, secret key, integrity digest and HTTPS transport.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html",
+      "checked_on": "2026-09-18",
+      "supports": "HTTPS, key custody, version mapping, console limitation and April 2026 SSE-C blocking defaults."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/specifying-s3-c-encryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "Required header roles and presigned URL usage."
+    }
+  ],
+  "editorial_notes": [
+    "Retained current SSE-C default-blocking caveat and made unblocking a completed prerequisite.",
+    "Constrained scope to new versions so enabling SSE-C is not mistaken for re-encrypting historical versions."
+  ],
+  "review_status": "authored"
+}

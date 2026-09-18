@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Fleet recovery and traffic insertion are separate",
+  "columns": [
+    "Mechanism",
+    "Responsibility"
+  ],
+  "rows": [
+    [
+      "Launch template and Auto Scaling",
+      "Recreate, register, replace, and scale appliances"
+    ],
+    [
+      "GWLB target group",
+      "Health-aware distribution to appliance targets"
+    ],
+    [
+      "GWLB endpoint and routes",
+      "Insert inspection into both traffic directions"
+    ],
+    [
+      "Appliance state handling",
+      "Vendor-specific draining and session recovery"
+    ]
+  ],
+  "footnote": "An available replacement appliance does not automatically inherit failed session state.",
+  "emphasis_rows": [
+    0,
+    2
+  ]
+}

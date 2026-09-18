@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Minimum TTL 0 does not mean no caching",
+  "columns": [
+    "Origin response",
+    "Default / maximum TTL",
+    "Resulting freshness limit"
+  ],
+  "rows": [
+    [
+      "Mutable: max-age=300",
+      "86,400 s / 86,400 s",
+      "300 s = 5 minutes"
+    ],
+    [
+      "Approved: max-age=86400",
+      "86,400 s / 86,400 s",
+      "86,400 s = 1 day"
+    ],
+    [
+      "No cache-age header",
+      "86,400 s / 86,400 s",
+      "Default applies: 1 day"
+    ]
+  ],
+  "footnote": "All rows use minimum TTL 0. Expiration leads to origin revalidation on a later request. Early eviction is possible.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

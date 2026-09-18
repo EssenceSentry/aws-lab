@@ -1,0 +1,52 @@
+{
+  "question_id": "214",
+  "base_record_sha256": "6e5f3ff9b56800e27d6fd69f9bb67c01fdf13caf137baee7858f9605e57c70d9",
+  "record": {
+    "id": "214",
+    "exam_domain": "Design for New Solutions",
+    "question": "A mobile application lets customers upload and download documents directly from a private S3 bucket. It needs managed sign-up and sign-in plus temporary AWS credentials, without a custom credential broker or an IAM identity per customer. Unauthenticated access is disabled. AWS permissions must limit each signed-in identity to private/<identity-id>/, using the Cognito identity-pool identity ID rather than the user-pool subject.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Embed one shared IAM user access key in the mobile application, grant it access to every document, and hide other customers’ prefixes in the interface."
+      },
+      {
+        "id": "2",
+        "text": "Use a Cognito user pool for sign-in and an identity pool for temporary credentials. Restrict the authenticated role trust to the intended pool and authenticated identities. Scope object actions to private/${cognito-identity.amazonaws.com:sub}/* and ListBucket to the matching prefix."
+      },
+      {
+        "id": "3",
+        "text": "Use a Cognito user pool and build a custom credential broker that creates and maintains a separate IAM role for every customer before returning STS credentials."
+      },
+      {
+        "id": "4",
+        "text": "Use Cognito user and identity pools with an authenticated role permitting private/*, and have the mobile application choose the current customer’s prefix."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The user pool authenticates the customer, the identity pool supplies temporary role credentials, and the IAM policy scopes those credentials to that identity's object prefix. Listing uses the bucket ARN with a prefix condition; object actions use the corresponding object ARN.\n\n<<1>> exposes a shared long-lived credential and grants cross-customer access regardless of the interface.\n\n<<3>> can implement isolation, but requires the custom broker and per-customer IAM roles that the design excludes.\n\n<<4>> authenticates users but grants them access to other users' documents. A client-selected prefix is not an authorization boundary.\n\nThe policy variable resolves to the identity-pool identity ID, not the `sub` in the original user-pool JWT. Trust conditions should restrict the pool's `aud` and authenticated `amr`. Keep bucket policies and any KMS permissions consistent with the same least-privilege boundary; a broader independent grant can undermine the intended isolation.\n\nOfficial AWS references (checked September 18, 2026): [Per-identity S3 permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_s3_cognito-bucket.html). [Identity pool roles](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/214.mmd",
+  "diagram_alt": "Temporary credentials carry a server-enforced identity prefix, so choosing a different prefix in the client does not grant access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_s3_cognito-bucket.html",
+      "checked_on": "2026-09-18",
+      "supports": "Object resource scope, ListBucket prefix and identity-pool sub"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html",
+      "checked_on": "2026-09-18",
+      "supports": "Temporary credentials and aud/amr trust restrictions"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2 and previous per-identity permission repair. Replaced direct-JWT-as-S3-credentials misuse with a technically workable custom-broker design that violates the stated operational constraints."
+  ],
+  "review_status": "authored"
+}

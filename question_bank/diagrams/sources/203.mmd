@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Cacheable traffic leaves the constrained origin path
+accDescr: After WAF inspection, cache hits are served at the edge, while misses and dynamic requests reach the existing HTTPS origin.
+V["Viewer request"] --> W["WAF inspection"]
+W --> C{"Safe cache hit?"}
+C -->|Yes| E["Serve cached public image"]
+C -->|No or dynamic| O["On-premises HTTPS origin"]
+O --> D["Booking logic or image response"]
+class V inputData
+class W,C decision
+class E,D output
+class O storage

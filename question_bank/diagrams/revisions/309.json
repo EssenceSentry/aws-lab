@@ -1,0 +1,62 @@
+{
+  "question_id": "309",
+  "base_record_sha256": "25f7548fdb89d9e663e61561b7e2d2f5d7966223e71fa9950ba8a6de185d6b9d",
+  "record": {
+    "id": "309",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "Millions of temperature sensors send MQTT messages to a custom domain backed by one EC2-hosted broker. Broker overload has caused outages. The application maps each message to a DynamoDB item, and the company wants managed ingestion with less broker administration. Device firmware can support the required TLS, SNI, and authentication settings while retaining the custom domain.\n\nWhich migration best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Install Greengrass on a larger EC2 instance and run the same custom broker there, retaining one server for all sensor connections and DynamoDB writes."
+      },
+      {
+        "id": "2",
+        "text": "Use AWS IoT Core MQTT with a configured custom domain, server certificate, device authentication, and IoT policies. Point DNS to the service endpoint and use a DynamoDBv2 rule action with the required key fields and IAM role."
+      },
+      {
+        "id": "3",
+        "text": "Operate a broker cluster behind an NLB and manage its session replication, storage, upgrades, capacity, and failover on an EC2 Auto Scaling group."
+      },
+      {
+        "id": "4",
+        "text": "Add random publishing delays to sensor firmware and divide devices between two fixed EC2 brokers in different Regions, retaining manual capacity and failover management."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. IoT Core provides the managed MQTT ingestion layer, and the rule action can write the mapped payload directly to DynamoDB without an unnecessary processing function. The custom-domain configuration and device authorization must be completed along with the DNS change.\n\n<<1>> relocates the bottleneck to another single broker host and retains its administration. Greengrass is not a replacement name for the managed IoT Core broker endpoint.\n\n<<3>> can form a valid resilient architecture, but operating the broker cluster and its coordination mechanisms retains the management burden the company wants to reduce. An NLB or shared filesystem alone does not create a coherent MQTT cluster.\n\n<<4>> smooths bursts and divides load, but does not supply managed capacity or automatic recovery for the custom brokers.\n\nConfigure the server certificate and IoT domain configuration, ensure clients send matching SNI, and grant devices only the required topic permissions. A CNAME by itself does not establish TLS identity or authorization. The DynamoDBv2 rule result must contain the table's key attributes, and its role needs write permission. Plan rule-error handling, quotas, device buffering and retries. MQTT QoS 1 can produce duplicate deliveries, so use stable message identities and an idempotent storage design; broker acknowledgement is not a guarantee that the downstream database write succeeded.\n\nAWS documentation (checked September 18, 2026): [IoT Core custom domains](https://docs.aws.amazon.com/iot/latest/developerguide/iot-custom-endpoints-configurable-custom.html); [IoT DynamoDBv2 rule action](https://docs.aws.amazon.com/iot/latest/developerguide/dynamodb-v2-rule-action.html); [IoT rule actions and failures](https://docs.aws.amazon.com/iot/latest/developerguide/iot-create-rule.html); [IoT MQTT delivery](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/309.mmd",
+  "diagram_alt": "TLS identity, device authorization, rule mapping, and database-write recovery remain distinct responsibilities after replacing the self-managed broker.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-custom-endpoints-configurable-custom.html",
+      "checked_on": "2026-09-18",
+      "supports": "A custom domain requires appropriate ACM server certificates, an IoT domain configuration, matching TLS SNI and DNS routing; a CNAME alone does not configure identity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/iot/latest/developerguide/dynamodb-v2-rule-action.html",
+      "checked_on": "2026-09-18",
+      "supports": "DynamoDBv2 writes the rule result using a role authorized for PutItem, and the result must contain the table key attributes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-create-rule.html",
+      "checked_on": "2026-09-18",
+      "supports": "IoT rules route messages to service actions and can use an error action to handle rule-action failures."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html",
+      "checked_on": "2026-09-18",
+      "supports": "IoT Core supports MQTT QoS 0 and 1, with QoS 1 requiring acknowledgement and allowing repeated delivery; TLS clients must supply supported identity and connection settings."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Retained the earlier custom-domain repair and made firmware compatibility explicit. Replaced invented Greengrass endpoint behavior with a credible self-hosted alternative. Clarified rule key mapping and lack of an end-to-end exactly-once guarantee."
+  ],
+  "review_status": "authored"
+}

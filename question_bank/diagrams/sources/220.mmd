@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Check both vendor identity and customer context
+accDescr: A vendor AssumeRole request must satisfy the trusted principal and expected external ID before STS issues credentials whose actions are bounded by the permission policy.
+R["Vendor AssumeRole request"] --> P{"Trusted vendor principal?"}
+P -->|No| D["Deny"]
+P -->|Yes| E{"Expected customer ExternalId?"}
+E -->|No| D
+E -->|Yes| T["STS temporary role credentials"]
+T --> A["Only actions allowed by role policy"]
+class R inputData
+class P,E decision
+class D warning
+class T,A output

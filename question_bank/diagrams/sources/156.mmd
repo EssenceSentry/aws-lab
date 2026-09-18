@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: A worker attempt is disposable, the data is durable
+accDescr: Batch schedules an attempt using S3 inputs, retries eligible interruptions, and persists completed output back to S3.
+Q["Batch queued job"] --> W["Spot worker attempt"]
+S[("S3 durable inputs")] --> W
+W --> C{"Attempt completes?"}
+C -->|No, retry eligible| Q
+C -->|Yes| O[("Commit idempotent S3 output")]
+class Q inputData
+class S,O storage
+class C decision

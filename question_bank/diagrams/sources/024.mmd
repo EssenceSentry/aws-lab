@@ -1,0 +1,14 @@
+sequenceDiagram
+accTitle: Cross-account private DNS association
+accDescr: The zone owner authorizes a VPC, its owner then creates the association before that VPC can resolve zone records.
+participant Z as Central DNS account
+participant R as Route 53
+participant V as VPC owning account
+participant A as Application in VPC
+Z->>R: Authorize zone + VPC association
+V->>R: Associate VPC with zone
+R-->>V: Association established
+Z->>R: Delete unused authorization
+A->>R: Query through VPC Resolver
+R-->>A: Private record answer
+Note over V,A: DNS support and hostnames enabled

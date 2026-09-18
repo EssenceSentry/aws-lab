@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: One API record supports both durable audit and prompt routing
+accDescr: Management-account Organizations activity is recorded by CloudTrail. The trail retains the audit record while EventBridge in us-east-1 selects required operations and routes details to security through SNS.
+A[Organizations API activity<br/>Management account]:::inputData --> C[CloudTrail<br/>Caller and request details]:::process
+C --> S[(Protected audit-log storage)]:::storage
+C --> E[EventBridge in us-east-1<br/>Match required operations]:::decision
+E --> N[SNS security notification]:::output
+R[CreateAccountResult<br/>Separate completion event]:::reference -.->|Match separately if required| E

@@ -1,0 +1,57 @@
+{
+  "question_id": "241",
+  "base_record_sha256": "603847a73b48330045bf48188560f3272f3303767ff28b2d150a0b9d9fee0298",
+  "record": {
+    "id": "241",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company will migrate supported VMware virtual machines to EC2 during an approved maintenance window. It must retain the installed guest applications and configuration, and replace an on-premises SMB logging and backup share with a managed Windows-compatible file system. Import compatibility and software licensing have been verified.\n\nWhich migration plan addresses both the servers and the shared storage?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Copy VMware snapshot files and the SMB data to an S3 File Gateway share. Select the uploaded snapshot objects directly as EC2 AMIs."
+      },
+      {
+        "id": "2",
+        "text": "Import supported VMware images through VM Import/Export, then copy the SMB files to S3 and have the applications mount the S3 bucket directly as an SMB share."
+      },
+      {
+        "id": "3",
+        "text": "Import supported VMware images from S3 through VM Import/Export and launch the resulting AMIs. Use DataSync to copy the SMB files and required metadata to FSx for Windows File Server, then validate and cut over the clients."
+      },
+      {
+        "id": "4",
+        "text": "Register the VMware guests with Systems Manager, then use that registration to create EC2 AMIs automatically with AWS Backup. Copy the SMB files to FSx for Windows File Server."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. VM Import/Export handles compatible VM images, while DataSync transfers file data to an SMB file system. They solve separate migration problems. Test the imported guests, configure Active Directory and file permissions, and perform a final consistent copy before switching clients.\n\n<<1>> treats stored snapshot files as AMIs without an import operation. <<2>> handles the compute migration but an S3 bucket does not itself expose an SMB share. <<4>> mistakes Systems Manager enrollment for an image-conversion workflow. Registration alone does not produce an EC2 AMI.\n\nUse a supported image format such as OVA or stream-optimized VMDK; an OVF descriptor alone is not a guest disk. Import may require platform-specific preparation and driver changes, so retaining an application does not remove the need for compatibility testing.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html\nhttps://docs.aws.amazon.com/datasync/latest/userguide/create-fsx-location.html\nhttps://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/241.mmd",
+  "diagram_alt": "VM image import and SMB file migration converge when imported EC2 applications mount the new FSx share.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vm-import/latest/userguide/prerequisites.html",
+      "checked_on": "2026-09-18",
+      "supports": "VM Import/Export requires supported guest operating systems, architectures and disk/container formats such as OVA or stream-optimized VMDK."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/create-fsx-location.html",
+      "checked_on": "2026-09-18",
+      "supports": "DataSync uses SMB to transfer FSx for Windows files and requires suitable permissions and Active Directory relationships to preserve Windows ACLs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "An S3 File Gateway provides the SMB/NFS protocol interface in front of S3; a bare bucket is not an SMB share."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the two-part migration objective, made guest compatibility explicit and removed the implication that Systems Manager registration converts VMs."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "title": "Two independent restrictions on object access",
+  "columns": [
+    "Request principal",
+    "Network path",
+    "Bucket result"
+  ],
+  "rows": [
+    [
+      "Portal role",
+      "Designated endpoint",
+      "Eligible: IAM and endpoint grants still required"
+    ],
+    [
+      "Portal role",
+      "Any other path",
+      "Explicit deny: wrong endpoint"
+    ],
+    [
+      "Another role",
+      "Designated endpoint",
+      "Explicit deny: wrong principal"
+    ],
+    [
+      "Another role",
+      "Any other path",
+      "Explicit deny: both restrictions fail"
+    ]
+  ],
+  "footnote": "These are the stated bucket restrictions, not a universal formula for all IAM policy evaluation.",
+  "emphasis_rows": [
+    0
+  ]
+}

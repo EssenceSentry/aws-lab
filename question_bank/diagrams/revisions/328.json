@@ -1,0 +1,52 @@
+{
+  "question_id": "328",
+  "base_record_sha256": "9c3409cfef83d9d8719b466bb3079ecf0597d2130291fee2831e620bd2ccabf0",
+  "record": {
+    "id": "328",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An EC2 Auto Scaling group replaces unhealthy application instances and scales in after traffic peaks. Instances send logs to CloudWatch Logs every 5 minutes, so recent local records can be lost during termination. The instances are Systems Manager managed nodes and are normally reachable when scale-in starts. The operations team wants an automated final log upload before normal termination, in addition to continuous shipping.\n\nWhich solution best meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use an EventBridge termination event to invoke a user-data script that copies local logs to S3 after the instance has entered the terminated state."
+      },
+      {
+        "id": "2",
+        "text": "Reduce the log-shipping interval to 1 minute and increase ALB deregistration delay. Ask operators to connect by SSH and retrieve the remaining logs during scale-in."
+      },
+      {
+        "id": "3",
+        "text": "Add an EC2_INSTANCE_TERMINATING lifecycle hook. Use EventBridge and an orchestrated Lambda workflow to run an SSM command that uploads logs to S3, monitor command success and send heartbeats, then complete the lifecycle action with CONTINUE."
+      },
+      {
+        "id": "4",
+        "text": "Use a terminating lifecycle hook to invoke an SSM command. Immediately complete the lifecycle action with ABANDON so the instance remains paused while the command runs."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "Option <<3>> adds a bounded Terminating:Wait period for the final copy. The workflow must wait for the Run Command execution to succeed, not merely for SendCommand to return a command ID. Heartbeats extend the wait within the hook's limits, and CONTINUE releases the hook after the upload completes. Use idempotent handling and a defined failure policy.\n\nOption <<1>> runs too late: a terminated instance cannot execute user data or upload its local files. Option <<2>> reduces the potential loss window but neither guarantees a final flush nor automates it; ALB draining is not a log-upload completion signal. Option <<4>> misinterprets ABANDON. For a termination hook, both ABANDON and CONTINUE allow termination; ABANDON also skips remaining hooks.\n\nWith the default termination behavior, an expired or abandoned hook does not indefinitely preserve the instance. An unreachable or abruptly failed instance may never upload its logs, so continuous remote shipping remains the primary protection.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/run-command.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/328.mmd",
+  "diagram_alt": "A finite termination wait surrounds the final log upload and command-success check; timeout remains a loss path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Termination wait, EventBridge, heartbeat limits, default best-effort behavior, and ABANDON versus CONTINUE."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/run-command.html",
+      "checked_on": "2026-09-18",
+      "supports": "Run Command remotely executes commands on managed nodes."
+    }
+  ],
+  "editorial_notes": [
+    "Added command-success monitoring and default hook failure limits, without implying ABANDON holds termination. Key 3 retained."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Test deployed infrastructure before promotion
+accDescr: A private GitHub source starts a pipeline that provisions an isolated CloudFormation stack, runs CodeBuild integration tests, gates promotion and cleans up on success or failure.
+G["Private GitHub commit<br/>Authorized connection"]:::inputData --> C["CloudFormation actions<br/>Create and execute test change set"]:::process
+C --> T["CodeBuild integration tests<br/>Against isolated resources"]:::process
+T --> P{"Tests pass?"}:::decision
+P -->|Yes| R["Candidate eligible<br/>for production promotion"]:::output
+P -->|No| B["Block promotion<br/>Retain diagnostic report"]:::error
+C -.->|Provisioning failure| X["Failure cleanup"]:::warning
+B --> X
+R --> Y["Success cleanup"]:::process

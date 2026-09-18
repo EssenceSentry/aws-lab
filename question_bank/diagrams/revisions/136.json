@@ -1,0 +1,58 @@
+{
+  "question_id": "136",
+  "base_record_sha256": "7196f2f9292261371d8f1d10845936d908ee5a33496d33dadf720dc36b69f7f4",
+  "record": {
+    "id": "136",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company is retiring a photo-voting application deployed with CloudFormation. The teardown runbook will delete the stack. The original S3 bucket and all submitted images must remain immediately accessible. The RDS database needs only a restorable backup, and its compute must be removed. The stack deletion must complete without a custom process that empties or copies the bucket.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Set the RDS DeletionPolicy to Snapshot. Enable replication to another S3 bucket, but leave the original bucket's DeletionPolicy as Delete."
+      },
+      {
+        "id": "2",
+        "text": "Set DeletionPolicy to Retain for both the RDS database and the S3 bucket."
+      },
+      {
+        "id": "3",
+        "text": "Set the S3 bucket's DeletionPolicy to Snapshot and the RDS database's DeletionPolicy to Delete."
+      },
+      {
+        "id": "4",
+        "text": "Set the RDS database's DeletionPolicy to Snapshot and the S3 bucket's DeletionPolicy to Retain."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Snapshot saves the database data before removing the RDS instance, while Retain preserves the original bucket and its objects. The retained data and snapshot continue to incur storage charges.\n\n<<1>> does not preserve the original bucket through the intended policy, and a nonempty bucket prevents automatic deletion rather than being silently removed. Replication also does not change the source bucket's deletion behavior. <<2>> leaves database compute provisioned. <<3>> requests an unsupported S3 snapshot policy and fails to preserve the database backup explicitly.\n\nThe lifecycle trigger is deletion of the stack, not deletion of a template file from source control. DeletionPolicy also applies when a resource is removed from a stack template during an update. For an old physical resource replaced by an update, configure UpdateReplacePolicy separately. A retained bucket remains outside the deleted stack's management scope.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatereplacepolicy.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-rds-dbinstance.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/136.diagram.json",
+  "diagram_alt": "Bucket retention preserves live objects, while an RDS snapshot preserves recoverable data without retaining the database instance.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html",
+      "checked_on": "2026-09-18",
+      "supports": "DeletionPolicy governs stack deletion and removal of a resource, with S3 retention and snapshot support distinctions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatereplacepolicy.html",
+      "checked_on": "2026-09-18",
+      "supports": "UpdateReplacePolicy governs the old physical resource when an update replaces it."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-rds-dbinstance.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS instance deletion can preserve a snapshot while deleting instance compute."
+    }
+  ],
+  "editorial_notes": [
+    "Separated actual stack deletion from deleting a template file and distinguished replacement policy from deletion policy.",
+    "Repaired the inherited claim that a nonempty S3 source bucket would be deleted automatically."
+  ],
+  "review_status": "authored"
+}

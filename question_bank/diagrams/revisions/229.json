@@ -1,0 +1,62 @@
+{
+  "question_id": "229",
+  "base_record_sha256": "11c81e8b06ca035c0f985b38d8eb24bbe5130f8c2ab9be918b9f27afbbe594c4",
+  "record": {
+    "id": "229",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A loan application uses a self-managed SQL Server database on EC2. At noon, an incident leaves no recoverable transactions after 10:30 a.m. The recovery design must address both database corruption and loss of the database's Availability Zone. The target RPO is 10 minutes and the RTO is two hours within the same Region.\n\nWhich backup design provides the best basis for meeting these objectives, subject to measured recovery testing?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Keep database-consistent hourly full backups in S3 Standard and archive the complete transaction-log chain there every five minutes. Monitor durable log completion and automate restoring a valid backup and replaying logs in another AZ."
+      },
+      {
+        "id": "2",
+        "text": "Use only synchronous replication to another AZ and immediately apply every database change to the replica, without retaining recoverable historical backups."
+      },
+      {
+        "id": "3",
+        "text": "Keep the only full backups on EBS volumes in the database AZ, and archive transaction logs to S3 every five minutes."
+      },
+      {
+        "id": "4",
+        "text": "Keep the only full backups in S3 Glacier Deep Archive and use Standard retrieval during recovery. Archive transaction logs to S3 Standard every five minutes."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Recovery needs both a usable base backup and an unbroken sequence of logs. Keeping them outside the failed AZ supports restoration elsewhere, while frequent completed log archival reduces the amount of recent work exposed to loss. Replay can stop at a known good point before corruption.\n\n<<2>> improves availability but can replicate logical corruption. A current replica alone does not supply a historical recovery point.\n\n<<3>> leaves the required base backup in the same AZ failure boundary. Transaction logs alone do not recreate the database.\n\n<<4>> requires archive retrieval before database restoration. Deep Archive Standard retrieval typically takes hours, conflicting with a two-hour total recovery objective.\n\nThe stated incident exposes 90 minutes of transactions, exceeding the target. A five-minute schedule does not prove a five-minute RPO: measure the last durable, usable log and transfer completion. RTO includes provisioning, retrieval, restoration, replay, validation, and application recovery. Cross-Region S3 replication can add protection, but its asynchronous lag must be budgeted separately if regional disaster recovery is later required.\n\nAWS documentation (checked September 18, 2026): [Database backup and log recovery](https://docs.aws.amazon.com/prescriptive-guidance/latest/sql-server-ec2-ha-dr/options-considerations.html); [Database recovery scenarios](https://docs.aws.amazon.com/prescriptive-guidance/latest/sql-server-ec2-ha-dr/dr-scenarios.html); [Archive retrieval latency](https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html); [S3 replication behavior](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/229.diagram.json",
+  "diagram_alt": "The last usable transaction determines data exposure, while the full recovery workflow determines outage duration.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/sql-server-ec2-ha-dr/options-considerations.html",
+      "checked_on": "2026-09-18",
+      "supports": "A native full/differential backup plus frequently archived transaction logs enables granular recovery, with RPO and RTO dependent on the actual recovery process."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/sql-server-ec2-ha-dr/dr-scenarios.html",
+      "checked_on": "2026-09-18",
+      "supports": "Restoring a database into another AZ requires infrastructure provision, a recoverable base, and transaction-log replay, and timing depends on size and backup frequency."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html",
+      "checked_on": "2026-09-18",
+      "supports": "Glacier Deep Archive Standard retrieval typically takes up to 12 hours and Bulk up to 48 hours; archived objects need restoration before access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 live replication is asynchronous; its timing must be included in a cross-Region recovery-point objective."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Specified self-managed SQL Server and an AZ/corruption recovery scope, removed an implied guarantee from asynchronous cross-Region replication, and made both timing objectives depend on measured recovery."
+  ],
+  "review_status": "authored"
+}

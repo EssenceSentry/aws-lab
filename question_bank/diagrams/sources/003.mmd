@@ -1,0 +1,16 @@
+stateDiagram-v2
+accTitle: Retain the old environment for rollback
+accDescr: Blue continues serving while green is prepared. After a CNAME swap blue remains available for a reverse swap.
+state "Blue v1 serves, green v2 deploys" as Prepare
+state "Green v2 tested, blue v1 serves" as Ready
+state "Green v2 serves, blue v1 retained" as Cutover
+state "Blue v1 serves again" as Rollback
+[*] --> Prepare
+Prepare --> Ready: Validation passes
+Ready --> Cutover: Swap environment CNAMEs
+Cutover --> Rollback: Error detected, reverse swap
+Cutover --> [*]: Release accepted and old traffic drained
+note right of Cutover
+ DNS caches delay traffic movement.
+ Keep both environments reachable.
+end note

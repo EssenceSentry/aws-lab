@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Account concurrency after the new reservation",
+  "columns": [
+    "Allocation",
+    "Concurrent executions",
+    "Available to other functions?"
+  ],
+  "rows": [
+    [
+      "Critical-function reservations",
+      "700",
+      "No, exclusive to those functions"
+    ],
+    [
+      "Transformation reservation and cap",
+      "100",
+      "No, even while idle"
+    ],
+    [
+      "Remaining unreserved pool",
+      "1,000 − 700 − 100 = 200",
+      "Shared by unreserved functions"
+    ],
+    [
+      "Measured unreserved peak",
+      "150 of the 200 available",
+      "50 units of measured headroom"
+    ]
+  ],
+  "footnote": "A reservation does not prewarm execution environments. Event backlog still needs age, retry and failure monitoring.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

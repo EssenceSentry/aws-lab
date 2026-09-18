@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Convert behavior before applying migrated data
+accDescr: SCT assessment and manual resolution create a tested PostgreSQL schema. DMS then loads data and applies captured changes before validation and cutover.
+O[(Oracle schema and code)]:::storage --> S[SCT assessment<br/>and supported conversion]:::decision
+S --> M[Resolve conversion items<br/>Test PostgreSQL behavior]:::decision
+M --> P[(Prepared PostgreSQL target)]:::storage
+D[(Oracle rows and change logs)]:::storage --> L[DMS full load + CDC]:::inputData
+L --> P
+P --> V[Reconcile, catch up<br/>Controlled cutover]:::output

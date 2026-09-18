@@ -1,0 +1,53 @@
+{
+  "question_id": "183",
+  "base_record_sha256": "9e8e0693a42cd8ff7b1dd8d53a678030b687a7f6d27e7ad004bbf956c1c06919",
+  "record": {
+    "id": "183",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An unversioned S3 bucket contains four configuration objects: NA, LA, EUR and ASIA. The company enables S3 Versioning and waits for the setting to propagate. It then uploads a new object named OCEANIA. Later, it replaces the contents of NA, LA and OCEANIA with one PUT request per object. EUR and ASIA are unchanged, and no versions are deleted.\n\nWhich statements describe the final object versions? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "The original versions of NA and LA are assigned version ID 1 when versioning is enabled."
+      },
+      {
+        "id": "2",
+        "text": "EUR and ASIA each receive a new opaque version ID when the bucket's versioning setting changes."
+      },
+      {
+        "id": "3",
+        "text": "NA, LA and OCEANIA each have two versions. The original versions of NA and LA retain the null version ID."
+      },
+      {
+        "id": "4",
+        "text": "The latest versions of NA and LA retain the null version ID because those object keys existed before versioning was enabled."
+      },
+      {
+        "id": "5",
+        "text": "EUR and ASIA each still have one version with the null version ID."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<5>> are correct. Enabling versioning leaves existing objects unchanged, including their null version IDs. Each subsequent PUT creates a new version with an S3-generated opaque ID. NA and LA therefore have an old null version and a new generated-ID version. OCEANIA has two generated-ID versions because both writes occurred after versioning was enabled.\n\n<<1>> incorrectly assumes numeric sequence IDs. <<2>> incorrectly treats a bucket setting change as a rewrite of unchanged objects. <<4>> applies the original version's null ID to later PUTs, which instead create new versions.\n\nVersion identity belongs to a particular stored version, not permanently to the key. The visible latest object can change while earlier versions remain retrievable. Tag-only changes do not create new object versions, which is why the scenario specifies PUT replacements.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/versioning-workflows.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/183.diagram.json",
+  "diagram_alt": "Existing null versions remain, while each PUT after enablement adds a distinct opaque-ID version.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/versioning-workflows.html",
+      "checked_on": "2026-09-18",
+      "supports": "Existing null versions are unchanged on enablement, later PUTs create opaque IDs, and tag-only changes do not create versions."
+    }
+  ],
+  "editorial_notes": [
+    "Repaired the implication that enabling versioning causes existing objects to acquire null IDs; they already have them.",
+    "Specified PUTs, propagation completion and no deletion so the version counts are unambiguous."
+  ],
+  "review_status": "authored"
+}

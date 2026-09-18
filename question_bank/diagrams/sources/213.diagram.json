@@ -1,0 +1,27 @@
+{
+  "type": "table",
+  "title": "Capacity after losing one Availability Zone",
+  "columns": [
+    "Phase",
+    "Healthy running capacity and available slots"
+  ],
+  "rows": [
+    [
+      "Normal operation",
+      "3 × 20 = 60 running, plus 10 unused reserved slots per zone."
+    ],
+    [
+      "One zone unavailable",
+      "2 × 20 = 40 running, plus 2 × 10 = 20 surviving reserved slots."
+    ],
+    [
+      "Recovery launches complete",
+      "2 × 30 = 60 running in the healthy zones."
+    ]
+  ],
+  "footnote": "Reservations in the failed zone do not move to another zone. Recovery still takes the tested launch time.",
+  "emphasis_rows": [
+    1,
+    2
+  ]
+}

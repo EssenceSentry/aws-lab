@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Decouple durable media from dynamic compute
+accDescr: CloudFront sends media requests to private S3 and dynamic requests to an ALB-backed compute fleet, so changing compute capacity no longer replicates the media library.
+C["CloudFront request routing"] -->|Media paths| S[("Private S3 media objects")]
+C -->|Dynamic paths| L["ALB"]
+L --> A["EC2 application Auto Scaling"]
+S -.-> M["Independent of web-instance lifecycle"]
+class C,L decision
+class S storage
+class A,M output

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="900" viewBox="0 0 1100 900" role="img" aria-labelledby="title desc">
+<title id="title">Two global ingress addresses and three Regional stacks</title>
+<desc id="desc">Global Accelerator sends TCP and UDP connections to healthy Regional NLB and EC2 stacks. Each stack uses a local DynamoDB replica. Dotted bidirectional arrows show asynchronous replication among all three Regions.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6B737C"/></marker></defs>
+<g font-family="Arial, sans-serif" fill="#1C1E21" text-anchor="middle" font-size="25">
+<rect x="340" y="25" width="420" height="86" fill="#E8F2F8" stroke="#0072B2" stroke-width="2"/>
+<text x="550" y="61">Clients allowlist the same</text><text x="550" y="94">two static IPv4 addresses</text>
+<path d="M550 111 V158" fill="none" stroke="#6B737C" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="280" y="160" width="540" height="95" fill="#F3F5F7" stroke="#56616B" stroke-width="2"/>
+<text x="550" y="197" font-weight="bold">Standard Global Accelerator</text><text x="550" y="234">TCP + UDP to healthy endpoints</text>
+
+<g fill="none" stroke="#6B737C" stroke-width="2" marker-end="url(#arrow)">
+<path d="M380 255 V320 H190 V369"/><path d="M550 255 V369"/><path d="M720 255 V320 H910 V369"/>
+</g>
+<rect x="40" y="370" width="300" height="120" fill="#F3F5F7" stroke="#56616B" stroke-width="2"/>
+<text x="190" y="407" font-weight="bold">us-east-1</text><text x="190" y="443">Network Load Balancer</text><text x="190" y="477">EC2 Auto Scaling fleet</text>
+<path d="M190 490 V557" fill="none" stroke="#6B737C" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="575" width="260" height="112" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<ellipse cx="190" cy="687" rx="130" ry="18" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<rect x="61" y="666" width="258" height="20" fill="#EEEAE2"/>
+<ellipse cx="190" cy="575" rx="130" ry="18" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<text x="190" y="628">DynamoDB replica</text><text x="190" y="665" font-size="22">Local reads and writes</text>
+<rect x="400" y="370" width="300" height="120" fill="#F3F5F7" stroke="#56616B" stroke-width="2"/>
+<text x="550" y="407" font-weight="bold">eu-west-1</text><text x="550" y="443">Network Load Balancer</text><text x="550" y="477">EC2 Auto Scaling fleet</text>
+<path d="M550 490 V557" fill="none" stroke="#6B737C" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="420" y="575" width="260" height="112" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<ellipse cx="550" cy="687" rx="130" ry="18" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<rect x="421" y="666" width="258" height="20" fill="#EEEAE2"/>
+<ellipse cx="550" cy="575" rx="130" ry="18" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<text x="550" y="628">DynamoDB replica</text><text x="550" y="665" font-size="22">Local reads and writes</text>
+<rect x="760" y="370" width="300" height="120" fill="#F3F5F7" stroke="#56616B" stroke-width="2"/>
+<text x="910" y="407" font-weight="bold">ap-southeast-1</text><text x="910" y="443">Network Load Balancer</text><text x="910" y="477">EC2 Auto Scaling fleet</text>
+<path d="M910 490 V557" fill="none" stroke="#6B737C" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="780" y="575" width="260" height="112" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<ellipse cx="910" cy="687" rx="130" ry="18" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<rect x="781" y="666" width="258" height="20" fill="#EEEAE2"/>
+<ellipse cx="910" cy="575" rx="130" ry="18" fill="#EEEAE2" stroke="#8C6D31" stroke-width="2"/>
+<text x="910" y="628">DynamoDB replica</text><text x="910" y="665" font-size="22">Local reads and writes</text>
+<g fill="none" stroke="#6B737C" stroke-width="2" stroke-dasharray="7 5" marker-start="url(#arrow)" marker-end="url(#arrow)">
+<path d="M323 632 H417"/><path d="M683 632 H777"/><path d="M190 708 V785 H910 V708"/>
+</g>
+<rect x="220" y="827" width="660" height="50" fill="#E5F4F1"/>
+<text x="550" y="860" font-size="23">Dotted arrows: asynchronous replication (MREC)</text>
+</g></svg>

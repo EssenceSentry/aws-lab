@@ -1,0 +1,52 @@
+{
+  "question_id": "038",
+  "base_record_sha256": "ce9cd7f4806452c341ec25d9102f805ed44fc64afe518f7a967c43f67e0defcd",
+  "record": {
+    "id": "038",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company wants three million mobile users to share preferences across devices. Each user has one 4 KB preference document accessed by user ID, with no relational queries. Users sign in through social identity providers. The mobile application must access its user's preferences without embedded long-term AWS credentials, and the company wants minimal infrastructure administration.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store each document in S3 and its object key in DynamoDB. Give the authenticated mobile role unrestricted read and write permissions to the table and bucket so the application can enforce user isolation."
+      },
+      {
+        "id": "2",
+        "text": "Store one item per user in DynamoDB. Use a Cognito identity pool with social federation to obtain temporary role credentials, and restrict permitted DynamoDB operations with a LeadingKeys condition tied to the authenticated user's identity."
+      },
+      {
+        "id": "3",
+        "text": "Store preferences in an RDS MySQL database behind a custom EC2 authentication service. Operate and scale the service and database to support the user population."
+      },
+      {
+        "id": "4",
+        "text": "Store preferences in an RDS MySQL database with read replicas. Embed a shared database username and password in the mobile application and have clients enforce row ownership."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. A small key-addressed document fits a DynamoDB item. Cognito identity pools exchange supported identity tokens for temporary AWS credentials. An IAM policy restricts the allowed actions and partition keys so each identity accesses only its own preferences.\n\n<<1>> adds an unnecessary object lookup and, more seriously, relies on untrusted client code to enforce access isolation. S3 plus metadata can be valid for larger objects, but broad permissions are not a security boundary.\n\n<<3>> can implement secure access, yet adds custom authentication infrastructure and relational database administration for a key-value workload. RDS is not inherently unable to store preferences.\n\n<<4>> distributes reusable credentials and trusts client-side checks; read replicas also do not accept preference writes.\n\nAuthentication identifies the user; IAM authorization restricts the data the resulting role session may access. Use a stable identity mapping across devices, scoped actions, and a ForAllValues condition for dynamodb:LeadingKeys. Do not allow unrestricted scans through another policy.\n\nOfficial AWS references (checked 2026-09-18):\n[Cognito identity pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html)\n[DynamoDB fine-grained access](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/specifying-conditions.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/038.mmd",
+  "diagram_alt": "Temporary credentials authenticate requests; an IAM partition-key condition enforces per-user data access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html",
+      "checked_on": "2026-09-18",
+      "supports": "Federated identity tokens exchanged for temporary AWS credentials"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/specifying-conditions.html",
+      "checked_on": "2026-09-18",
+      "supports": "LeadingKeys IAM condition restricts item access by partition key"
+    }
+  ],
+  "editorial_notes": [
+    "Modernized direct federation through Cognito identity pools and distinguished authentication from IAM item authorization. Removed false assertion that MySQL privileges cannot control access. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

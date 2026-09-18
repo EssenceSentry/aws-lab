@@ -1,0 +1,52 @@
+{
+  "question_id": "068",
+  "base_record_sha256": "a47bf3bbc8f4478b9ddf4674e763c1fb492ea7421a7702a1623d04405b900634",
+  "record": {
+    "id": "068",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company has two interconnected data centers. Applications in an AWS VPC depend on systems reachable through either data center. A single Site-to-Site VPN connection currently terminates on one customer gateway device in the first data center and uses a virtual private gateway attached to the VPC. Both VPN tunnels are configured.\n\nWhich change removes the customer gateway device and first data center as single points of connectivity failure?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy a separate customer gateway device with an independent internet connection in the second data center. Create another Site-to-Site VPN connection to the existing virtual private gateway and configure routing through both connections."
+      },
+      {
+        "id": "2",
+        "text": "Deploy a NAT gateway in the second data center and use it as the termination point for an additional AWS VPN tunnel."
+      },
+      {
+        "id": "3",
+        "text": "Create another virtual private gateway in a second Availability Zone and attach it to the same VPC while retaining the existing customer gateway device."
+      },
+      {
+        "id": "4",
+        "text": "Create a second virtual private gateway, attach it concurrently to the same VPC, and connect a second customer gateway device to it."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> adds an independent on-premises failure domain while reusing the managed virtual private gateway. Each VPN connection has two tunnels, and routing must advertise the necessary prefixes through both customer gateways. The data-center network must also maintain access to the dependencies through the surviving location.\n\n<<2>> treats a NAT gateway as a VPN customer gateway device; these are different functions, and an AWS NAT gateway is a VPC resource. <<3>> retains the failing on-premises device and incorrectly treats a virtual private gateway as a customer-selected zonal resource. <<4>> assumes that two virtual private gateways can be attached concurrently to one VPC.\n\nTwo tunnels protect against AWS-side tunnel endpoint failures, but both can fail together if they share one customer gateway device, internet connection or data center.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-redundant-connection.html\nhttps://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-limits.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/068.mmd",
+  "diagram_alt": "Two tunnels on one device share its failure domain; a second site and device provide an independent path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-redundant-connection.html",
+      "checked_on": "2026-09-18",
+      "supports": "A second customer gateway and VPN connection can use the same virtual private gateway for redundancy."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "Only one virtual private gateway can attach to a VPC at a time."
+    }
+  ],
+  "editorial_notes": [
+    "Made second-site dependency reachability and independent uplink explicit."
+  ],
+  "review_status": "authored"
+}

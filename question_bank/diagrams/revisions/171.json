@@ -1,0 +1,52 @@
+{
+  "question_id": "171",
+  "base_record_sha256": "fc6f29d54c45085861a3051247911fbd61fb29f020ccde0090c043682aeb0b7c",
+  "record": {
+    "id": "171",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations with all features enabled. A central account owns resources that AWS Resource Access Manager supports sharing. The company wants to automate sharing with entire organizational units, including future member accounts, without ordinary invitation exchanges. RAM organization integration has not yet been enabled.\n\nWhich setup correctly enables this capability?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a general-purpose cross-account IAM role in each member account and configure the automation to assume those roles instead of enabling RAM integration."
+      },
+      {
+        "id": "2",
+        "text": "From an authorized principal in the management account, run aws ram enable-sharing-with-aws-organization. Then create RAM resource shares for the supported resources and the intended OU principals with appropriate permissions."
+      },
+      {
+        "id": "3",
+        "text": "Create the AWSServiceRoleForResourceAccessManager role manually, change its trust policy to allow the company's automation, and use it as the automation's cross-account execution role."
+      },
+      {
+        "id": "4",
+        "text": "Run only aws organizations enable-aws-service-access for ram.amazonaws.com. Create OU resource shares without running the RAM integration operation or creating its required service-linked role."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The RAM operation enables organization sharing and creates the service-linked role that RAM uses to read organization structure. After integration, resource shares can name the intended organization or OUs, and ordinary invitation exchange is unnecessary for those shares. Resource selection, principals, and share permissions still require configuration.\n\n<<1>> creates a different cross-account automation pattern. It does not enable RAM organization principals or automatically establish resource shares.\n\n<<3>> repurposes a service-linked role that only RAM is intended to assume. Use an ordinary least-privilege execution role for custom automation.\n\n<<4>> enables only the Organizations side. AWS specifically requires the RAM console or its integration command to ensure that the RAM service-linked role is created.\n\nThe equivalent Enable sharing with AWS Organizations action in the RAM console is valid. The distinction is the RAM integration workflow versus an incomplete Organizations-only step, not console versus CLI.\n\nAWS documentation (checked September 18, 2026): [Enable RAM organization sharing](https://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html); [RAM integration CLI operation](https://docs.aws.amazon.com/cli/latest/reference/ram/enable-sharing-with-aws-organization.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/171.mmd",
+  "diagram_alt": "RAM performs its required initialization before the owner creates a share whose principals are organization members.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html",
+      "checked_on": "2026-09-18",
+      "supports": "The RAM integration operation creates its service-linked role, requires all Organizations features and the management account, and enables organization or OU shares without ordinary invitations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cli/latest/reference/ram/enable-sharing-with-aws-organization.html",
+      "checked_on": "2026-09-18",
+      "supports": "enable-sharing-with-aws-organization creates the RAM service-linked role and must run from the management account."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced the ambiguous RAM-console distractor, since the console is a valid equivalent, with the documented incomplete Organizations-only trusted-access operation."
+  ],
+  "review_status": "authored"
+}

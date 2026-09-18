@@ -1,0 +1,62 @@
+{
+  "question_id": "310",
+  "base_record_sha256": "3067e12b933ed00413a9afd486316cb1ae01d248c7e696f37d07842faf40952d",
+  "record": {
+    "id": "310",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company is building an inbound contact center for thousands of callers. Customers must be able to describe routine requests in natural speech, answer follow-up questions, and complete actions such as balance inquiries or password resets during the call. Existing business APIs perform those actions after verifying the caller's identity and authorization.\n\nWhich architecture provides the required conversational self-service?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Amazon Connect flows with a Lex V2 bot for speech recognition, intent detection, and dialog. Use Lambda fulfillment to invoke the authorized business APIs and return results to the conversation."
+      },
+      {
+        "id": "2",
+        "text": "Use Amazon Connect with touch-tone menus only, and invoke Lambda functions based on keypad selections to access the authorized business APIs."
+      },
+      {
+        "id": "3",
+        "text": "Use Amazon Connect with Polly-generated prompts and Lambda business functions, but provide no speech-understanding or dialog component to interpret caller requests."
+      },
+      {
+        "id": "4",
+        "text": "Record calls with Amazon Connect, transcribe and analyze the recordings after each call, and invoke business APIs from the completed post-call analysis."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Connect handles the contact flow, Lex V2 interprets speech and gathers the information needed to fulfill an intent, and Lambda connects that intent to the authorized business operation. The result returns within the interactive conversation.\n\n<<2>> supports a useful IVR pattern but does not meet the requirement for natural-speech requests and follow-up dialog.\n\n<<3>> produces spoken output without the component that recognizes the request and manages the conversation. Text-to-speech is a different capability from speech recognition and intent understanding.\n\n<<4>> can support analytics and follow-up work, but processing after the call does not fulfill the request during the live interaction.\n\nDefine supported intents and required slots, attach the fulfillment function to the appropriate Lex V2 alias and language, and test misunderstandings, missing inputs, API errors, and transfer to an agent. Intent recognition does not authenticate a caller: enforce identity and authorization before exposing a balance or changing credentials. Give the function narrowly scoped backend access and avoid logging sensitive account data unnecessarily. Text-analysis services can provide useful language insights, but do not by themselves supply the complete live voice dialog and fulfillment workflow.\n\nAWS documentation (checked September 18, 2026): [Connect and Lex integration](https://docs.aws.amazon.com/connect/latest/adminguide/amazon-lex.html); [Amazon Lex V2 capabilities](https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html); [Lex V2 Lambda integration](https://docs.aws.amazon.com/lexv2/latest/dg/lambda.html); [Amazon Polly text to speech](https://docs.aws.amazon.com/polly/latest/dg/what-is.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/310.mmd",
+  "diagram_alt": "The dialog gathers an intent and required fields before the backend authorizes and performs the action, then returns the result during the same call.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/connect/latest/adminguide/amazon-lex.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Connect flow can integrate a Lex bot for intents, slots, self-service interactions and transfer to an agent."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lex V2 provides automatic speech recognition, natural language understanding and dialog management."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lexv2/latest/dg/lambda.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Lambda function associated with a Lex V2 bot alias and language can validate inputs and fulfill the selected intent at configured conversation stages."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Polly converts text into speech rather than recognizing the caller intent or managing the requested conversation."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced unrelated or discontinued service combinations with plausible Connect patterns that fail speech, dialog, or live-response requirements. Corrected the false claim that text-analysis services lack all language-understanding capabilities and separated intent recognition from caller authorization."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "294",
+  "base_record_sha256": "223577dc0a50001db26ee2632c143adb5fc74246ad60097988b6cb525696d557",
+  "record": {
+    "id": "294",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company must migrate a 25 TB MySQL database to compatible Aurora MySQL within three weeks. The only data-center link to AWS is a 50 Mbps VPN, and the required baseline transfer is about 25 TB after any usable compression. Retained binary-log changes average 10 GB per day. A nearby Data Transfer Terminal reservation, compatible transport equipment, and a rehearsed S3 restore are available within the schedule.\n\nWhich approach minimizes application downtime while meeting the transfer constraint?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Copy the complete database VM image to S3 over the VPN, import it to EC2, and begin replication after the initial copy finishes."
+      },
+      {
+        "id": "2",
+        "text": "Use DMS full load plus change data capture over the existing VPN to move the complete baseline and ongoing changes directly to Aurora."
+      },
+      {
+        "id": "3",
+        "text": "Create a consistent supported XtraBackup baseline with its matching binlog position, upload it to S3 at the reserved Data Transfer Terminal, and restore Aurora. Apply retained binlogs over the VPN, then pause writes briefly for final catch-up, validation, and cutover."
+      },
+      {
+        "id": "4",
+        "text": "Stop all application writes before creating the baseline, transfer it through Data Transfer Terminal, and leave the application stopped until the Aurora restore and validation are complete."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Bulk transfer at the terminal avoids the constrained data-center uplink, while retained binlogs bring the restored baseline forward without keeping the source application offline throughout transport and restoration. The exact baseline log position connects the two phases without missing or replaying an arbitrary range of changes.\n\n<<1>> still sends the entire baseline over the bottleneck and changes the target to a self-managed EC2 database.\n\n<<2>> is a useful online migration pattern when bandwidth is adequate, but DMS cannot bypass the stated link capacity. At ideal decimal-unit line rate, 25 TB × 8 ÷ 50 Mbps is about 46.3 days, already longer than three weeks.\n\n<<4>> avoids the bandwidth bottleneck but unnecessarily includes transport and restore time in the application outage.\n\nVerify source and target versions, supported backup format and size, S3 permissions, restore duration, and objects that need separate migration. Retain binlogs throughout backup, travel, upload, restore, and catch-up, and measure actual log generation rather than equating it with database size growth. The terminal supplies network access, not database conversion or automatic replication. Cut over only after final synchronization and validation, with a tested rollback plan.\n\nAWS documentation (checked September 18, 2026): [Data Transfer Terminal requirements](https://docs.aws.amazon.com/datatransferterminal/latest/userguide/tech-requirements.html); [Aurora MySQL physical import from S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Migrating.ExtMySQL.S3.html); [Aurora external binlog replication](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Replication.MySQL.SettingUp.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/294.mmd",
+  "diagram_alt": "The bulk baseline bypasses the slow VPN, while a log stream reconciles changes before a short final cutover.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/datatransferterminal/latest/userguide/tech-requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "Customers bring compatible storage and network equipment to a reserved terminal and upload to AWS services such as S3 over the facility connection."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Migrating.ExtMySQL.S3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported Percona XtraBackup files in S3 can initialize Aurora MySQL after version, format and size compatibility checks; user accounts and other database objects need separate migration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Replication.MySQL.SettingUp.html",
+      "checked_on": "2026-09-18",
+      "supports": "A restored baseline can receive binlog changes from a compatible external MySQL source starting at the matching recorded log position."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced the unrelated RDS backup-replication reference with terminal, Aurora physical-import and binlog documentation. Made reservation, restore compatibility and timing assumptions explicit, and distinguished binlog volume from daily database growth."
+  ],
+  "review_status": "authored"
+}

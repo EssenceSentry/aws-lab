@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Four assets that must not be conflated",
+  "columns": [
+    "Asset",
+    "Meaning and storage"
+  ],
+  "rows": [
+    [
+      "Video file",
+      "Original or compatible rendition in S3, analyzed asynchronously."
+    ],
+    [
+      "Face representation",
+      "Rekognition collection vector, not an image file."
+    ],
+    [
+      "Person mapping",
+      "Studio catalog links returned face IDs to known people."
+    ],
+    [
+      "Display still",
+      "MAM extracts a frame, S3 stores it, catalog retains its key."
+    ]
+  ],
+  "footnote": "A match ID does not create a picture or supply an unconfigured real-world identity.",
+  "emphasis_rows": [
+    1,
+    3
+  ]
+}

@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: Environment gates the patch rollout
+accDescr: Development and test have separate baseline associations and receive installation now; production remains held until testing succeeds.
+D[Development group] --> DB[Development baseline]
+T[Test group] --> TB[Test baseline]
+P[Production group] --> PB[Production baseline]
+DB --> I[Install in development and test]
+TB --> I
+I --> C{Application tests pass?}
+C -->|No| H[Hold production]
+C -->|Yes| A[Approve and target production]
+PB --> A
+A --> PI[Production installation]
+class D,T,P inputData
+class C decision
+class H warning
+class PI output

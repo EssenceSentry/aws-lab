@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Static delivery and user authorization are separate paths
+accDescr: CloudFront reads application assets from a private S3 origin. Independently, the browser exchanges an OIDC token for scoped credentials and signs calls to user-data services.
+B[Browser React application]:::external -->|Download assets over HTTPS| C[CloudFront]:::process
+C -->|OAC-signed origin read| A[(Private S3 app assets)]:::storage
+B -->|Authenticate| I[OIDC provider]:::external
+I -->|Identity token| B
+B -->|Token exchange| T[STS web identity federation]:::process
+T -->|Temporary scoped credentials| B
+B -->|Signed user-data requests| D[(S3 photos and DynamoDB captions)]:::storage

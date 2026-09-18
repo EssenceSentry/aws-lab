@@ -1,0 +1,52 @@
+{
+  "question_id": "117",
+  "base_record_sha256": "38a8c292873d1713161f2ed51b30004c77707a077feebf4e86009a1fcb018ea0",
+  "record": {
+    "id": "117",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company repeatedly loses access to EC2 instances because of guest operating-system network, firewall, or RDP misconfigurations. Monitoring already identifies eligible instances and can start Systems Manager Automation. The affected Linux and Windows instances use supported, non-Marketplace AMIs with unencrypted EBS root volumes. Stopping and restarting an instance is approved, and no required data exists only on instance store volumes.\n\nWhich repair action requires the least custom automation?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Trigger EC2 automatic recovery for a failed system status check and rely on replacement hardware to correct guest firewall and RDP configuration."
+      },
+      {
+        "id": "2",
+        "text": "Invoke the AWSSupport-ExecuteEC2Rescue Automation runbook with the required IAM permissions and a helper-instance subnet in the same Availability Zone that can reach Systems Manager endpoints."
+      },
+      {
+        "id": "3",
+        "text": "Open a Session Manager session to every impaired instance and run repair commands, even when its guest network configuration prevents the agent from reaching Systems Manager."
+      },
+      {
+        "id": "4",
+        "text": "Write a Lambda-based workflow that stops the instance, creates a backup, attaches its root volume to a helper instance, performs offline repairs, and restores the volume."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. `AWSSupport-ExecuteEC2Rescue` uses the AWS-maintained rescue workflow to diagnose and, where supported, repair common guest connectivity problems. It stops the instance, creates a backup AMI, and uses an offline helper workflow rather than requiring a working session to the impaired guest.\n\n<<1>> addresses underlying infrastructure failures detected by system status checks. Moving the instance to healthy hardware does not fix its persistent guest configuration.\n\n<<3>> depends on the connectivity that the failure can remove. Session Manager is useful when the agent remains connected, but is not a general offline-repair mechanism.\n\n<<4>> can implement the mechanism but requires substantially more custom maintenance than the existing runbook.\n\nThis runbook is not a guarantee that every failure is repairable. Its documented restrictions include unsupported encrypted root volumes; stop/start can lose instance-store data and change an automatically assigned public IPv4 address. Validate eligibility, backups, permissions, and helper networking before execution.\n\nOfficial AWS references (checked September 18, 2026): [ExecuteEC2Rescue runbook](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-executeec2rescue.html). [EC2Rescue helper workflow](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-startec2rescueworkflow.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/117.mmd",
+  "diagram_alt": "The managed rescue path repairs an eligible instance’s root volume through a helper while the affected guest is stopped.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-executeec2rescue.html",
+      "checked_on": "2026-09-18",
+      "supports": "Repair scope, encrypted-root restriction, stop/start effects, backup and IAM/network prerequisites"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-startec2rescueworkflow.html",
+      "checked_on": "2026-09-18",
+      "supports": "Offline root-volume repair through a helper instance and Marketplace restriction"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Explicitly constrained supported AMIs, unencrypted EBS root volumes, allowed downtime, and instance-store consequences; separated guest repair from host recovery."
+  ],
+  "review_status": "authored"
+}

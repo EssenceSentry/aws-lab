@@ -1,0 +1,52 @@
+{
+  "question_id": "275",
+  "base_record_sha256": "d6c2965ade457e05e9aeb61599f885bcb7c448f1057030e80f324ac95972ba45",
+  "record": {
+    "id": "275",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A photo service stores paid images in S3. Third-party websites embed the public object URLs, allowing visitors to retrieve images without purchasing them. The service must authorize each buyer, provide short-lived download access, and prevent direct public S3 access while retaining edge caching.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deny requests from the IP addresses of the third-party web servers in the S3 bucket policy."
+      },
+      {
+        "id": "2",
+        "text": "Move the images to encrypted EBS volumes on EC2 and publish their download paths through a public load balancer."
+      },
+      {
+        "id": "3",
+        "text": "Keep S3 private, serve images through CloudFront with origin access control, and have the application issue short-lived CloudFront signed URLs only after verifying a purchase."
+      },
+      {
+        "id": "4",
+        "text": "Replicate the images to public S3 buckets in additional Regions and route users to the nearest copy."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The application decides entitlement, CloudFront verifies the signed URL and its time limit, and the private-origin policy prevents bypassing CloudFront through a public S3 URL. Authorized requests can still use the edge cache.\n\n<<1>> targets the wrong source. With ordinary hotlinking, the visitor's browser requests the image; the third-party web server does not necessarily fetch it.\n\n<<2>> protects stored bytes but leaves the public download endpoint without buyer authorization.\n\n<<4>> improves geographic distribution without restricting access.\n\nA signed URL is a bearer capability. A recipient can share it during its validity window, and downloaded images can be copied. Short lifetimes reduce exposure, but this design is access control rather than copy protection.\n\nOfficial AWS references (checked September 18, 2026): [CloudFront signed URLs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html). [Private S3 origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/275.mmd",
+  "diagram_alt": "Purchase authorization controls URL issuance, signature validation controls viewers, and OAC prevents direct origin bypass.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html",
+      "checked_on": "2026-09-18",
+      "supports": "Application entitlement checks, trusted key groups and time-limited viewer access"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC with a restrictive bucket policy prevents public origin bypass"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced invalid S3 security-group advice and clarified the bearer-token limit of signed URLs."
+  ],
+  "review_status": "authored"
+}

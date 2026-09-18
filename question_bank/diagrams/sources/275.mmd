@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Viewer authorization and origin protection are separate gates
+accDescr: Purchase verification produces a short-lived URL, CloudFront validates that URL, and only CloudFront can fetch the protected image from S3.
+A["Buyer requests image"] --> B{"Purchase verified?"}
+B -->|No| C["No download URL"]
+B -->|Yes| D["Short-lived signed URL"]
+D --> E{"CloudFront signature and expiry check"}
+E -->|Valid| F["CloudFront cache"]
+F -->|Cache miss, OAC| G["Private S3 origin"]
+H["Public S3 URL"] -. blocked .-> G
+class A,H inputData
+class B,E decision
+class C warning
+class D,F output
+class G storage

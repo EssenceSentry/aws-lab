@@ -1,0 +1,52 @@
+{
+  "question_id": "141",
+  "base_record_sha256": "cce526cc703310c93017d065e2859a7257da230d8645f5982dd52636b710cfda",
+  "record": {
+    "id": "141",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company will run CRM microservices as separate Amazon ECS tasks on EC2. Each microservice needs its own security groups and network-flow visibility, and must receive only the AWS API permissions it requires. Long-lived access keys must not be distributed to containers.\n\nWhich task configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use bridge networking with a narrowly scoped task IAM role for each microservice. Apply the network security groups to the shared container instances."
+      },
+      {
+        "id": "2",
+        "text": "Use awsvpc networking and task security groups. Put all application permissions in the task execution role and omit the task IAM role."
+      },
+      {
+        "id": "3",
+        "text": "Use awsvpc networking and task security groups. Inject a narrowly scoped IAM user access key into each container at launch."
+      },
+      {
+        "id": "4",
+        "text": "Use awsvpc networking with security groups on each task ENI. Assign a narrowly scoped task IAM role to each microservice and use its temporary credentials for application API calls."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. `awsvpc` gives each task a network interface to which security groups apply and from which VPC Flow Logs can be collected. A task IAM role supplies application permissions independently of the EC2 container instance role, without distributing long-lived keys.\n\n<<1>> scopes API access correctly but keeps network controls at the shared host interface rather than providing each task's required network boundary.\n\n<<2>> confuses two roles. The execution role authorizes ECS startup activities such as pulling images and retrieving injected secrets; it is not the application's task role.\n\n<<3>> meets the network requirement but violates the prohibition on long-lived access keys.\n\nThese controls are per task. Containers within one task share its network stack and task role. On EC2, task roles and networking do not create a complete isolation boundary from a compromised host or colocated containers; host and instance-metadata protections still matter.\n\nOfficial AWS references (checked September 18, 2026): [ECS task networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking-awsvpc.html). [ECS task IAM roles](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/141.mmd",
+  "diagram_alt": "A task ENI controls network access while a separate task role scopes application API permissions.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking-awsvpc.html",
+      "checked_on": "2026-09-18",
+      "supports": "Per-task ENI, security groups, VPC Flow Logs, and shared networking within a task"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html",
+      "checked_on": "2026-09-18",
+      "supports": "Application credentials, execution-role distinction, and EC2 container isolation limits"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Replaced ambiguous container-level isolation with separate-task requirements and distinguished task, execution, and instance roles."
+  ],
+  "review_status": "authored"
+}

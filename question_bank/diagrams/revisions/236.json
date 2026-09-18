@@ -1,0 +1,62 @@
+{
+  "question_id": "236",
+  "base_record_sha256": "f872ce0397ef9e96a4229607d369b384974f8e881e9ebcdb598044c599500b10",
+  "record": {
+    "id": "236",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An application retrieves its RDS for MySQL application-user password from an encrypted S3 file. The next CloudFormation deployment must generate a random password, store it in a managed secret, and rotate it every 90 days. An existing database bootstrap step can create or update the least-privilege application user with the generated password.\n\nWhich design meets the requirements with the least custom rotation code and scheduling overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Secrets Manager secret with GenerateSecretString, apply it through the existing bootstrap step, and attach database connection metadata. Use a CloudFormation RotationSchedule with a supported hosted MySQL rotation Lambda and a rate(90 days) schedule."
+      },
+      {
+        "id": "2",
+        "text": "Generate a password in a deployment script and store it as a Parameter Store SecureString. Implement a custom Lambda function to update both the database user and parameter, and invoke it through an EventBridge schedule every 90 days."
+      },
+      {
+        "id": "3",
+        "text": "Create a generated Secrets Manager secret and apply it through the existing bootstrap step. Write a custom MySQL rotation Lambda and invoke it directly from an EventBridge schedule every 90 days."
+      },
+      {
+        "id": "4",
+        "text": "Create a generated Secrets Manager secret and apply it through the existing bootstrap step. Rotate only its KMS encryption key every 90 days, leaving the database user and stored password unchanged."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Secrets Manager owns the secret version lifecycle and rotation schedule, and a supported hosted MySQL rotation Lambda avoids implementing the database-specific rotation workflow from scratch. Use the CloudFormation Secrets Manager transform required for HostedRotationLambda and ensure the database attachment exists before creating the rotation schedule.\n\n<<2>> can be implemented, but requires custom password generation, secret-version handling, database update logic, and scheduling. Parameter Store does not supply the named Secrets Manager rotation resource.\n\n<<3>> can also work if implemented correctly, but unnecessarily rebuilds the supported rotation implementation and scheduling integration.\n\n<<4>> changes encryption key material, not the database password. The application credential would remain unchanged and violate the rotation requirement.\n\nGenerating a secret does not create the MySQL user or automatically apply its password. The bootstrap step establishes that initial valid credential; SecretTargetAttachment supplies connection details rather than creating database users. Rotation then creates a pending value, applies it to the database, tests authentication, and promotes the tested version to AWSCURRENT. Configure the rotation function's database connectivity and permissions, and ensure the application refreshes credentials after rotation.\n\nAWS documentation (checked September 18, 2026): [CloudFormation secret rotation](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-secretsmanager-rotationschedule.html); [CloudFormation rotation rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-secretsmanager-rotationschedule-rotationrules.html); [Secrets Manager Lambda rotation steps](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_lambda-functions.html); [KMS key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/236.mmd",
+  "diagram_alt": "The credential becomes current only after the generated password is applied to the database and successfully tested.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-secretsmanager-rotationschedule.html",
+      "checked_on": "2026-09-18",
+      "supports": "RotationSchedule supports hosted rotation Lambdas with the Secrets Manager transform; a database attachment supplies connection metadata and must precede rotation setup."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-secretsmanager-rotationschedule-rotationrules.html",
+      "checked_on": "2026-09-18",
+      "supports": "RotationRules supports rate-based ScheduleExpression values, including a days interval, or AutomaticallyAfterDays as an alternative."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_lambda-functions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Rotation generates a pending credential, applies it to the database, tests it, and promotes the tested version to AWSCURRENT."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+      "checked_on": "2026-09-18",
+      "supports": "KMS rotation replaces cryptographic key material, not the application password stored in an encrypted secret or in the database."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced an invented Parameter Store RotationSchedule with a viable custom implementation distractor, made initial database-user provisioning explicit, and clarified that database attachment and KMS key rotation do not themselves change a database password."
+  ],
+  "review_status": "authored"
+}

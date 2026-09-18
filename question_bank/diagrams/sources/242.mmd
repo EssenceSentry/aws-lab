@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Three independent database connection requirements
+accDescr: Startup credential resolution, task-to-database ingress and writer discovery must all succeed.
+SECRET[Secrets Manager password]:::storage -->|secrets valueFrom at startup| TASK[Fargate application]:::inputData
+TASK -->|TCP 3306 from task SG| RULE{Aurora SG permits task SG?}:::decision
+RULE -->|yes| HOST[Cluster writer hostname]
+HOST -->|before failover| A[Writer A]:::storage
+HOST -->|after failover and reconnect| B[Promoted writer B]:::storage
+RULE -->|no| BLOCK[Connection blocked]:::warning

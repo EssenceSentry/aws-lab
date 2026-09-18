@@ -1,0 +1,52 @@
+{
+  "question_id": "208",
+  "base_record_sha256": "c9b11bc88ceb93641a1cf2c3ef29310ead79e1d7f6f962aa82d9520d2658096d",
+  "record": {
+    "id": "208",
+    "exam_domain": "Design for New Solutions",
+    "question": "A warehouse application currently advances orders when employees reply to emails. Shipping an order can take several days. The company wants a serverless workflow that invokes an existing label-printing service, waits durably for an authenticated dispatch scan, and then marks the order shipped. Duplicate scan events must not repeat business side effects. The company wants the least custom orchestration code.\n\nWhich design should it use?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run a Batch job for each shipping stage and maintain a custom DynamoDB coordinator that polls job state and scan records to decide which stage to submit next."
+      },
+      {
+        "id": "2",
+        "text": "Use SQS and Lambda for each task, and implement a custom order-state engine in DynamoDB with scheduled polling for missing dispatch scans."
+      },
+      {
+        "id": "3",
+        "text": "Persist each order in DynamoDB and start a Step Functions Standard execution. Invoke the label-printing integration and wait in a callback task. An authenticated scan handler returns the stored task token with SendTaskSuccess, after which an idempotent workflow task marks the order shipped."
+      },
+      {
+        "id": "4",
+        "text": "Start a Step Functions Express execution for each order and keep it running in a polling loop until a dispatch scan appears, even when shipping takes several days."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A Standard workflow preserves orchestration state while waiting for an external event. The callback token identifies the waiting task; the scan handler returns it, and the workflow continues to its explicit shipped-state update.\n\n<<1>> can run compute jobs, but adds a custom coordinator for a process dominated by human waiting.\n\n<<2>> uses valid serverless components, but requires the durable state transitions and wait logic to be built and maintained by the application.\n\n<<4>> exceeds the Express execution limit of five minutes. Express also does not support the callback integration pattern.\n\nKeep task tokens in protected server-side state associated with the order. Authenticate and authorize scans, configure timeouts and recovery, and make printer calls and status updates idempotent. Retrying a callback or a downstream state update must not create a second shipment. The workflow still needs a real integration with the physical printer or warehouse service.\n\nOfficial AWS references (checked September 18, 2026): [Callback task tokens](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html). [Workflow types](https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/208.mmd",
+  "diagram_alt": "The external scan resumes a defined waiting state, followed by an explicit shipment update and a separate timeout path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html",
+      "checked_on": "2026-09-18",
+      "supports": "Task waits until SendTaskSuccess or SendTaskFailure receives its token"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard long-running state and Express duration and integration limits"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Made the shipped-state update an explicit post-callback workflow task and added idempotency to avoid treating a callback as an arbitrary execution-completion API."
+  ],
+  "review_status": "authored"
+}

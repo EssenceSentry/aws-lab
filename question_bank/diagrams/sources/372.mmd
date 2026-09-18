@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: A secondary Region supports analytics now and recovery later
+accDescr: The production SQL Server database asynchronously replicates to a secondary used for analytics. S3 reports have an independent replication path. During a disaster the database is promoted and prepared application resources use the recovery copies.
+P[(Primary SQL Server<br/>Production Region)]:::storage -->|Asynchronous replication| R[(Read replica<br/>Recovery Region)]:::storage
+A[Analytics queries]:::inputData --> R
+S[(Primary S3 reports)]:::storage -->|CRR and existing-data backfill| T[(Recovery S3 reports)]:::storage
+R -->|Promote during disaster recovery| D[Recovery application<br/>Prepared images and infrastructure]:::process
+T --> D

@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Cutover launches from a caught-up replica
+accDescr: Source root and data disks replicate to staging, testing precedes a final write freeze and catch-up, and a fresh cutover launch becomes the production writer.
+S["Source root and data disks"] --> R[("Continuously replicated staging disks")]
+R --> T["Test application and dependencies"]
+T --> F["Freeze source writes and verify catch-up"]
+F --> C["Launch fresh cutover instances"]
+C --> P["Validate and move production traffic"]
+class S inputData
+class R storage
+class T,F decision
+class C,P output

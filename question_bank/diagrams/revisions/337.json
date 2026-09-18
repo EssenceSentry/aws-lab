@@ -1,0 +1,57 @@
+{
+  "question_id": "337",
+  "base_record_sha256": "f4c1a569fecd26e7eb89197014be314cb5093345bd521e538a22e39d71365d7b",
+  "record": {
+    "id": "337",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company manages supported Windows and Linux servers on premises and on EC2. Different teams currently use separate patch tools. All servers can reach their operating-system repositories and the required Systems Manager endpoints. The company wants one process to scan and install approved OS patches, plus a consolidated report showing compliance with its patch baselines.\n\nWhich TWO actions meet these requirements with the least custom development? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Configure the servers as Systems Manager managed nodes with the appropriate agent, registration and permissions. Use Patch Manager baselines and scheduled patch operations."
+      },
+      {
+        "id": "2",
+        "text": "Write a custom AWS Config rule to inspect each server's installed packages. Build remediation scripts and a separate report generator around the Config findings."
+      },
+      {
+        "id": "3",
+        "text": "Write custom patch-installation Automation documents and schedule them with EventBridge. Use OpsCenter operational items as the authoritative patch-baseline report."
+      },
+      {
+        "id": "4",
+        "text": "Use Patch Manager compliance views and patch-compliance report exports to review missing patches and baseline status for the managed fleet."
+      },
+      {
+        "id": "5",
+        "text": "Use Amazon Inspector vulnerability findings as the patch-baseline report and rely on those findings to install the approved updates automatically."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "Options <<1>> and <<4>> use the same managed-node and patch-baseline model for execution and reporting. Patch Manager can scan for missing approved patches and install them on supported EC2 and hybrid nodes. Compliance views and exported reports show the resulting baseline status. Configure the proper registration and access for on-premises nodes, and keep SSM Agent and repository connectivity healthy.\n\nOption <<2>> rebuilds capabilities that Patch Manager already provides. Config can complement patch compliance, but custom package collection and reporting add development work. Option <<3>> can orchestrate commands, but OpsCenter operational items are not a replacement for Patch Manager's patch-compliance records. Option <<5>> confuses vulnerability assessment with baseline-based patch installation and compliance reporting.\n\nA scan reports compliance at the time it runs; it does not install patches unless an installation operation is requested. Plan maintenance windows, reboot behavior, concurrency, and error thresholds. Patch Manager also does not perform arbitrary major operating-system upgrades.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-compliance-reports.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/337.mmd",
+  "diagram_alt": "Scanning and installation use the same approved baseline, and refreshed compliance records feed the consolidated report.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "Hybrid and EC2 patching, scans, baselines, reports, scheduling and major-version limitations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-compliance-reports.html",
+      "checked_on": "2026-09-18",
+      "supports": "Patch Manager provides patch compliance reporting."
+    }
+  ],
+  "editorial_notes": [
+    "Removed irrelevant Security Hub setup and unsupported absolute statements about Inspector platform coverage. Kept baseline-compliance versus vulnerability-scan distinction; keys 1 and 4 retained."
+  ],
+  "review_status": "authored"
+}

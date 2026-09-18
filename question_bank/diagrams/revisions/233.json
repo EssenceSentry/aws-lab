@@ -1,0 +1,67 @@
+{
+  "question_id": "233",
+  "base_record_sha256": "4562e089aae5046916c81bcbb280fa2801e2d6e2414612b863ee8003fe87587b",
+  "record": {
+    "id": "233",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company is moving an internal Docker application to AWS. Its team operates ECS on EC2, and the stateless front end can tolerate Spot interruptions. The MySQL database has a predictable, continuously running baseline for the next three years. Documents are larger than 1 MB, read frequently for 90 days, then rarely retrieved with up to 12 hours of retrieval delay acceptable. Each document version must be protected from deletion for five years.\n\nWhich design best matches these workload characteristics while minimizing unnecessary compute and storage spending?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run ECS tasks on Spot Instances, use an Aurora Serverless v2 database, and store documents on EBS volumes attached to the container hosts. Delete files with a cron job after five years."
+      },
+      {
+        "id": "2",
+        "text": "Run ECS tasks on Spot Instances with draining enabled, cover eligible baseline RDS for MySQL usage with Reserved DB Instances, and store documents in S3. Use five-year Object Lock compliance retention, transition to S3 Glacier Deep Archive after 90 days, and clean up versions after retention expires."
+      },
+      {
+        "id": "3",
+        "text": "Run ECS tasks and the RDS database entirely at On-Demand rates. Keep documents in S3 Standard with five-year Object Lock compliance retention and no storage-class transitions."
+      },
+      {
+        "id": "4",
+        "text": "Run containers on an EKS cluster with Spot worker nodes, pay On-Demand rates for the RDS database, and store documents in S3 Glacier Instant Retrieval after 90 days with five-year Object Lock compliance retention."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Interruption-tolerant compute can use Spot capacity, while Reserved DB Instances discount eligible steady RDS usage. The document access pattern fits an online initial period followed by archival storage. Deep Archive standard retrieval typically completes within 12 hours, and compliance-mode Object Lock protects each retained version against premature deletion.\n\n<<1>> places durable business documents on container-host block storage and provides no immutable retention control. A scheduled deletion job does not prevent earlier deletion. Aurora Serverless v2 can suit variable demand, but does not repair this storage requirement.\n\n<<3>> preserves the documents but pays for unused flexibility in predictable database usage and keeps rarely accessed data in the frequent-access storage class.\n\n<<4>> can operate the application, but introduces a different orchestrator and leaves both the database commitment discount and the permitted archival retrieval delay unused.\n\nSpot draining needs replacement capacity and does not guarantee uninterrupted tasks. A Reserved DB Instance is a billing benefit, not an availability mechanism. Object Lock remains in force across lifecycle transitions. Configure version-aware expiration and cleanup after retention, because a delete marker is not permanent deletion of a protected version. Validate total cost with actual retrieval volume, transition charges, and archive minimum-duration rules.\n\nAWS documentation (checked September 18, 2026): [ECS Spot Instance draining](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/spot-instance-draining-linux-container.html); [RDS Reserved DB Instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html); [Archive retrieval latency](https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html); [S3 Object Lock retention](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html); [Object Lock and lifecycle actions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/233.mmd",
+  "diagram_alt": "The storage class changes after 90 days, while the same object version remains protected until its five-year retention date.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/spot-instance-draining-linux-container.html",
+      "checked_on": "2026-09-18",
+      "supports": "The ECS agent can respond to Spot termination notices by draining tasks, but replacement capacity and interruption handling remain necessary."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reserved DB Instances provide billing discounts for matching usage over committed terms, without themselves changing availability or reserving physical capacity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html",
+      "checked_on": "2026-09-18",
+      "supports": "Glacier Deep Archive Standard retrieval typically takes up to 12 hours and Bulk up to 48 hours; archived objects need restoration before access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html",
+      "checked_on": "2026-09-18",
+      "supports": "Compliance-mode fixed retention protects individual object versions from deletion or overwrite before their retain-until date."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lifecycle transitions preserve Object Lock, while expiration cannot permanently delete a still-protected version; delete markers remain possible."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added explicit Spot tolerance, stable database usage, archive retrieval tolerance and version retention requirements. Replaced lifecycle-only retention with Object Lock and clarified that ECS on EC2 still leaves host management to the team."
+  ],
+  "review_status": "authored"
+}

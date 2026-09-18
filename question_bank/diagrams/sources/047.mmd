@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Buffer bursts and provision sustained capacity
+accDescr: Durable ingestion removes synchronous request pressure, while bounded stream consumers drain work at a rate the DynamoDB table can sustain.
+M["Meter burst"] --> A["API Gateway"] --> K[("Kinesis backlog")]
+K -->|"durable acceptance"| ACK["API response"]
+K -->|"batches"| L["Lambda consumers
+bounded parallelism"]
+L -->|"item writes"| D[("DynamoDB
+sufficient WCUs")]
+D -.->|"throttle: backoff and retry"| L
+K -.-> I["Monitor iterator age"]
+I -.-> L

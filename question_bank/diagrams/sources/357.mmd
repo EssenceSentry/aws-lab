@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Eliminate unrelated hours and columns
+accDescr: A dashboard request for two recent hours and selected fields first prunes time partitions and then projects columns from Parquet files.
+A["Query: recent hours, few fields"] --> B["Prune hourly partitions"]
+B --> C["Read selected Parquet columns"]
+C --> D["Aggregate dashboard results"]
+B -.-> E["Other hours skipped"]
+C -.-> F["Other columns skipped"]
+class A inputData
+class B,C decision
+class D output
+class E,F storage

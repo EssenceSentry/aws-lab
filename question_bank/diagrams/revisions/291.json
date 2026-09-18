@@ -1,0 +1,72 @@
+{
+  "question_id": "291",
+  "base_record_sha256": "e0b584121de8afeb82b55d5988a00a83b61ecc1a0c3158f2e67989a14d2ef5b1",
+  "record": {
+    "id": "291",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A retailer is migrating its web application and MySQL database from a data center to AWS. The application tier must scale across Availability Zones, the database must have managed cross-AZ failover, and frequently requested static content must be cached near global users. The retailer also wants managed HTTP-request filtering and less database administration.\n\nWhich combination meets these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the web tier in an EC2 Auto Scaling group across at least two Availability Zones behind an ALB, and migrate MySQL to an RDS Multi-AZ DB instance."
+      },
+      {
+        "id": "2",
+        "text": "Run the web tier across two Availability Zones and operate the MySQL primary, replication, backups, patching, and failover software on EC2."
+      },
+      {
+        "id": "3",
+        "text": "Serve static objects directly through an S3 Transfer Acceleration endpoint and rely on that feature to provide a global cache of the objects."
+      },
+      {
+        "id": "4",
+        "text": "Place a private S3 REST origin for static assets and the ALB origin for dynamic requests behind CloudFront. Use appropriate cache behaviors, OAC for S3, and a WAF web ACL on the distribution."
+      },
+      {
+        "id": "5",
+        "text": "Run the web tier across two Availability Zones behind an ALB with Global Accelerator, and use a Single-AZ RDS MySQL database without a standby."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<4>> are correct. The web fleet scales across failure domains, and RDS manages the database standby and failover. CloudFront handles global static-content caching, while its WAF web ACL filters HTTP requests before they reach the origins. OAC permits the static bucket to remain private.\n\n<<2>> can provide database availability, but retains the database administration that the managed RDS design reduces.\n\n<<3>> improves a transfer path to S3 rather than storing reusable edge-cache copies. It does not satisfy the explicit caching requirement.\n\n<<5>> can improve network routing to the ALB, but leaves the database without the required cross-AZ standby and omits content caching.\n\nThese controls address different concerns: caching reduces repeated origin work, WAF applies configured request rules, and Multi-AZ protects database availability. None replaces the others. Test WAF rules before blocking production traffic, configure dynamic paths to avoid caching personalized content, and prevent direct origin access from bypassing the intended protection. The traditional RDS Multi-AZ standby is not a read-scaling target.\n\nAWS documentation (checked September 18, 2026): [RDS Multi-AZ standby deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html); [CloudFront caching](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html); [Private S3 origins with OAC](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html); [Resources protected by AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html); [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/291.mmd",
+  "diagram_alt": "Edge caching and request filtering complement a scalable web fleet and a separate cross-AZ database failover mechanism.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Multi-AZ RDS DB instance has a synchronous standby in another Availability Zone with managed failover, but that standby does not serve reads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront serves cached objects at edge locations and fetches cache misses from the configured origin."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Origin access control authorizes CloudFront reads from private S3 REST origins; it is not supported for S3 website endpoints."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html",
+      "checked_on": "2026-09-18",
+      "supports": "Web ACLs protect CloudFront distributions and supported regional HTTP resources such as ALBs, not NLBs or S3 buckets directly."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transfer Acceleration optimizes the client-to-S3 transfer path; it is not a cache of downloadable objects or a cross-Region replication mechanism."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 4. Added explicit edge-cache and managed database-failover constraints, corrected private S3 access to require OAC, and avoided treating Multi-AZ as read scaling or Global Accelerator as object caching."
+  ],
+  "review_status": "authored"
+}

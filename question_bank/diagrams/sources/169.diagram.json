@@ -1,0 +1,26 @@
+{
+  "type": "table",
+  "title": "A sensor query can span a weekly table boundary",
+  "columns": [
+    "Weekly table",
+    "Partition-key condition",
+    "Sort-key condition"
+  ],
+  "rows": [
+    [
+      "Previous calendar week",
+      "sensor_id = S-104",
+      "timestamp BETWEEN start and week_end"
+    ],
+    [
+      "Current calendar week",
+      "sensor_id = S-104",
+      "timestamp BETWEEN week_start and now"
+    ]
+  ],
+  "footnote": "Merge and sort both query results. Retire a fully expired week by deleting its table; keep the current week and eight complete prior weeks.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

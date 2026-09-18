@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Durable video processing survives worker interruption
+accDescr: Fargate serves the application, S3 holds durable video data, retryable Spot workers normalize jobs, and asynchronous Rekognition results return after completion.
+WEB["Web containers on Fargate"] -->|Upload| S3[("S3 video objects")]
+WEB -->|Video key| Q[("SQS normalization jobs")]
+Q --> W["EC2 Spot worker"]
+W -->|Read and checkpoint| S3
+W -->|Normalized video key| R["Start Rekognition job"]
+R --> C["Completion notification"]
+C --> G["Get analysis results"]
+W -.->|Interrupted job becomes available again| Q
+class WEB inputData
+class S3,Q storage
+class C inputData
+class G output

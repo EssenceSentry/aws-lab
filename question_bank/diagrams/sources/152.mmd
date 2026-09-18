@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Validate committed inserts through the change stream
+accDescr: DynamoDB records a committed item change, Lambda polls the stream, and the handler processes only insert records using the new image.
+W["ECS writes result"] --> D[("DynamoDB table")]
+D --> S[("Stream with NewImage")]
+S --> L["Lambda event source mapping"]
+L --> E{"INSERT record?"}
+E -->|Yes| V["Idempotent result validation"]
+E -->|No| I["Skip validation"]
+class W inputData
+class D,S storage
+class E decision
+class V,I output

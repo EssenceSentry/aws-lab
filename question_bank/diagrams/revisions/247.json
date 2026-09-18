@@ -1,0 +1,62 @@
+{
+  "question_id": "247",
+  "base_record_sha256": "8d7c02b7d5a878f2b68c22a6a3c907492791a0f2f177018f5593482abb6f62c8",
+  "record": {
+    "id": "247",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is migrating Windows applications to AWS. An on-premises SMB share contains 1 TB and gains about 5 GB daily. It remains the sole write source until cutover. Windows consumers in AWS need an SMB file system and can accept one daily refresh plus transfer time. Direct Connect, Active Directory connectivity and transfer permissions are available.\n\nWhich migration approach meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create FSx for Windows File Server. Use DataSync for the initial SMB copy and scheduled daily incremental transfers, keep AWS consumers read-only, and finish with a write freeze, final transfer and validated cutover."
+      },
+      {
+        "id": "2",
+        "text": "Create EFS, copy the files daily with DataSync, and mount the EFS endpoint directly as the existing Windows SMB share."
+      },
+      {
+        "id": "3",
+        "text": "Copy the files daily to S3 and replace the Windows applications' SMB mounts with a Transfer Family SFTP endpoint without changing the applications."
+      },
+      {
+        "id": "4",
+        "text": "Replace the on-premises share with an S3 File Gateway share and treat its cached files as an independent authoritative copy that remains automatically coherent with a separately writable FSx share."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. FSx for Windows supplies SMB access and DataSync moves files and supported metadata from the authoritative source. The daily schedule matches the stated freshness tolerance, provided task duration and source write behavior are considered.\n\n<<2>> substitutes an NFS filesystem for an SMB requirement. <<3>> substitutes SFTP for an application that still requires an SMB mount. <<4>> assumes automatic coherence between separately writable file systems; those products do not establish that relationship by themselves.\n\nScheduled transfer is not synchronous replication. A change just after a completed run can wait roughly a day plus the next task duration. At final cutover, stop source writes, transfer the remaining changes, verify permissions and content, and switch the authoritative write location. Coordinate reader access during transfers if a consistent batch view is required. Data volume alone does not establish migration duration.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/datasync/latest/userguide/create-fsx-location.html\nhttps://docs.aws.amazon.com/fsx/latest/WindowsGuide/migrate-files-to-fsx-datasync.html\nhttps://docs.aws.amazon.com/datasync/latest/userguide/task-scheduling.html\nhttps://docs.aws.amazon.com/datasync/latest/userguide/datasync-large-migration-running-tasks.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/247.mmd",
+  "diagram_alt": "A daily one-way copy tolerates stale reads during coexistence; a final write freeze and verified transfer establish the new authoritative filesystem.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/create-fsx-location.html",
+      "checked_on": "2026-09-18",
+      "supports": "DataSync uses SMB to transfer FSx for Windows files and requires suitable permissions and Active Directory relationships to preserve Windows ACLs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/migrate-files-to-fsx-datasync.html",
+      "checked_on": "2026-09-18",
+      "supports": "DataSync migrates on-premises files or files between FSx systems, including migration from Single-AZ to a new Multi-AZ file system."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/task-scheduling.html",
+      "checked_on": "2026-09-18",
+      "supports": "DataSync can run periodic scheduled transfers, including daily task execution."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/datasync-large-migration-running-tasks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Migration uses initial and incremental transfers, source read-only cutover, final delta transfer, validation and client switching."
+    }
+  ],
+  "editorial_notes": [
+    "Retained the sole-writer and daily-freshness clarification and replaced the misleading bidirectional-replication wording."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "273",
+  "base_record_sha256": "bf0671466bba0939ccfe88d16366d3732501e6fce12c3b6b97a5e4fedd9c0bb2",
+  "record": {
+    "id": "273",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A game's registration site runs on EC2 instances behind an Application Load Balancer. Serving static images and scripts consumes most instance CPU. The build pipeline already produces mobile and desktop variants under separate object prefixes. Legacy clients request the same asset paths, so the server must select a variant from User-Agent without changing client URLs. The team has a tested Lambda@Edge device classifier.\n\nWhich design removes static-asset serving from EC2 and safely caches both variants?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use ALB HTTP-header rules to route mobile and desktop asset requests to separate EC2 target groups."
+      },
+      {
+        "id": "2",
+        "text": "Store the variants in a private S3 bucket behind CloudFront. Run the classifier on viewer requests and rewrite each asset URI to its device-specific prefix before cache lookup. Restrict S3 access with origin access control."
+      },
+      {
+        "id": "3",
+        "text": "Create Route 53 geolocation records that send each geographic area to either the mobile asset origin or the desktop asset origin."
+      },
+      {
+        "id": "4",
+        "text": "Store the variants in S3 behind CloudFront, forward User-Agent to S3, and use the unchanged asset URI as the only cache key."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Rewriting the URI before lookup creates a distinct cache identity for each prebuilt variant. S3 supplies the selected object, removing that work from the registration instances. Normalizing many User-Agent strings into a small set of variants also avoids unnecessary cache fragmentation.\n\n<<1>> can route HTTP headers, but EC2 still serves the assets and bears their load.\n\n<<3>> selects by geography, which does not identify device type.\n\n<<4>> neither selects the variant object path nor separates the cached variants. Forwarding a header does not make an S3 object dynamically change its contents.\n\nViewer-request Lambda@Edge runs before cache lookup. The classifier here reads the incoming User-Agent itself; it must not assume that CloudFront-generated device headers are available at that event. Keep dynamic registration endpoints on their separate application behavior.\n\nOfficial AWS references (checked September 18, 2026): [Lambda@Edge event order](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudfront-trigger-events.html). [CloudFront-generated request headers](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-at-edge-function-restrictions.html). [Restricting S3 origin access](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/273.mmd",
+  "diagram_alt": "One legacy URL becomes two device-specific paths before caching, preventing variant mixing.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudfront-trigger-events.html",
+      "checked_on": "2026-09-18",
+      "supports": "Viewer request runs before cache lookup, unlike origin request"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-at-edge-function-restrictions.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront adds its generated request headers after the viewer-request event"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC and a distribution-scoped bucket policy protect the S3 origin"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Made device selection an actual URI rewrite before lookup rather than implying that forwarding User-Agent changes an S3 object."
+  ],
+  "review_status": "authored"
+}

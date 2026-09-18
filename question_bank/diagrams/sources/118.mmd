@@ -1,0 +1,16 @@
+sequenceDiagram
+accTitle: Acknowledge durable intake, delete after database completion
+accDescr: Queue acceptance precedes the client acknowledgment, and the consumer deletes the message only after idempotent database processing succeeds.
+participant A as EC2 application
+participant Q as SQS
+participant C as Rate-controlled consumer
+participant D as On-premises database
+A->>Q: Send request with unique ID
+Q-->>A: Successful submission
+Note over A: Acknowledge queued request to client
+C->>Q: Receive request
+Q-->>C: Message and receipt handle
+C->>D: Apply update idempotently by request ID
+D-->>C: Completion confirmed
+C->>Q: Delete message
+Note over C,D: Retry after failure must not apply the update twice

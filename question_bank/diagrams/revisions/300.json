@@ -1,0 +1,57 @@
+{
+  "question_id": "300",
+  "base_record_sha256": "e1ef1cae8625704d581cd81e2f4c91d20bc2add06390b40179db8936bc600d65",
+  "record": {
+    "id": "300",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "Remote workers cannot start new desktop sessions because the existing 10 TiB FSx for Windows File Server profile share is full. The file system supports in-place capacity increases, is below its maximum capacity, and meets the throughput requirements for scaling. The company wants to restore capacity and automatically act before future growth fills the share again, without migrating profiles to a new share.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a larger FSx file system, copy all profiles, update every client path, and send an SNS warning whenever the replacement approaches capacity."
+      },
+      {
+        "id": "2",
+        "text": "Increase the current file system capacity now. Alarm on FreeStorageCapacity with adequate headroom, route the alarm state change through EventBridge to Lambda, and call UpdateFileSystem to increase capacity subject to growth limits and update status."
+      },
+      {
+        "id": "3",
+        "text": "Keep storage capacity unchanged and schedule data deduplication alone as the guarantee that unique new profile data will always fit."
+      },
+      {
+        "id": "4",
+        "text": "Enable automatic SSD IOPS provisioning on the existing file system and rely on the additional I/O capacity to expand its available storage bytes."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. FSx can grow the existing filesystem, preserving the share rather than requiring profile migration. CloudWatch evaluates free capacity; an alarm state change can invoke automation that validates current state and requests a larger StorageCapacity through the FSx API. Immediate expansion addresses today's incident, and an early threshold addresses recurring growth.\n\n<<1>> introduces the migration and client-path changes that the scenario excludes.\n\n<<3>> can reduce duplicate data but cannot guarantee space for continued growth, particularly when new files contain unique data.\n\n<<4>> changes I/O performance rather than the number of provisioned storage bytes.\n\nExpansion is one-way and is not instantaneous. Each increase must meet the minimum growth requirement, and another increase cannot proceed until the documented cooldown and storage-optimization conditions are satisfied. Use idempotent automation, an upper cost/capacity bound, sufficient lead time, and failure alerts. Recalculate absolute alarm thresholds after resizing when the intended policy is percentage-based. A persistently alarming metric is not a continuous stream of new state-change events, so monitor unsuccessful or insufficient expansions explicitly.\n\nAWS documentation (checked September 18, 2026): [FSx storage capacity changes](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-storage-configuration.html); [Automating FSx capacity growth](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/automate-storage-capacity-increase.html); [CloudWatch alarm events](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Acting_Alarm_Changes.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/300.mmd",
+  "diagram_alt": "An early alarm initiates a checked capacity increase on the same file system, with explicit handling when expansion cannot proceed.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-storage-configuration.html",
+      "checked_on": "2026-09-18",
+      "supports": "FSx Windows can expand existing capacity in place by at least 10 percent, cannot shrink it, and requires time between increases and storage optimization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/automate-storage-capacity-increase.html",
+      "checked_on": "2026-09-18",
+      "supports": "AWS documents an alarm and Lambda pattern to increase FSx capacity when free capacity falls below a threshold and adjust the alarm after growth."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Acting_Alarm_Changes.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudWatch evaluates metrics and sends alarm state-change events to EventBridge, where rules can invoke actions."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added an immediate recovery action, scaling prerequisites and guardrails. Replaced a nonexistent dynamically-allocate switch with the real but insufficient automatic-IOPS setting."
+  ],
+  "review_status": "authored"
+}

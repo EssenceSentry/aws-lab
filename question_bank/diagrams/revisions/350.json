@@ -1,0 +1,47 @@
+{
+  "question_id": "350",
+  "base_record_sha256": "33a42a16be202156d2fde651e9f3a77bd08baf42092e821e65e224fba3299379",
+  "record": {
+    "id": "350",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations with all features enabled. It must centrally record CloudTrail management events from every current and future member account in all enabled AWS Regions. Account owners must not be able to alter the central logging configuration. The organization has prepared a central S3 bucket and the required permissions.\n\nWhich solution meets these requirements with the least ongoing administration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run a scheduled Lambda function that enumerates accounts and Regions, assumes a role in each account, and creates or updates an account-level trail when it finds a missing one."
+      },
+      {
+        "id": "2",
+        "text": "From the management account or a CloudTrail delegated administrator, create and start a multi-Region organization trail for management events, enable the required trusted access, and deliver its logs to the central S3 bucket."
+      },
+      {
+        "id": "3",
+        "text": "Have each account owner create a multi-Region account trail. Attach an SCP that prevents stopping those trails, and repeat the onboarding procedure when a new account joins."
+      },
+      {
+        "id": "4",
+        "text": "Run an EC2 instance that polls Organizations for new accounts and deploys account-level CloudTrail stacks into each account and enabled Region."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. An organization trail centrally applies logging to organization members, including accounts that join later. Member accounts can view the trail but cannot change or delete it. A multi-Region trail covers enabled Regions, subject to the organization's Region enablement and trail configuration. Bucket permissions and successful delivery still need verification.\n\n<<1>> and <<4>> can automate account-level trails, but require custom discovery, deployment, retries, and ongoing maintenance for a capability provided by an organization trail.\n\n<<3>> can prevent selected changes after a trail exists. An SCP does not create the trail, configure delivery, or onboard future accounts automatically.\n\nManagement-event logging does not automatically enable every data-event category. Configure additional event selectors when services such as S3 object access also require auditing.\n\nOfficial AWS references (checked September 18, 2026): [Creating an organization trail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/350.diagram.json",
+  "diagram_alt": "An organization trail follows account membership automatically while keeping trail administration centralized.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html",
+      "checked_on": "2026-09-18",
+      "supports": "Organization trails cover current and newly added accounts, support multi-Region logging, and cannot be modified by member accounts."
+    }
+  ],
+  "editorial_notes": [
+    "Narrowed the audit requirement to management events and enabled Regions, avoiding the false claim that a default trail records every API/data event."
+  ],
+  "review_status": "authored"
+}

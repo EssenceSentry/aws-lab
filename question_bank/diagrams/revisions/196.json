@@ -1,0 +1,58 @@
+{
+  "question_id": "196",
+  "base_record_sha256": "62617a3894299130bb03a377a50e98c1110868f40d72d2f69ccb31c52978b66e",
+  "record": {
+    "id": "196",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A logistics application uses EC2 web and application tiers, S3 objects and a DynamoDB database. It will run primarily in us-east-1 with a ready standby in us-west-1. The business accepts a measured, nonzero replication lag. The standby must accept new data during an outage, and automatic failback must wait until the primary application and required data are ready. The application already coordinates write ownership during regional transitions.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy independent regional stacks through CloudFormation StackSets. Use DynamoDB global tables with multi-Region eventual consistency and two-way S3 replication, including required existing-object and metadata replication. Configure Route 53 failover with automated readiness checks that keep the primary unhealthy until recovery and data reconciliation complete."
+      },
+      {
+        "id": "2",
+        "text": "Deploy independent regional stacks and Route 53 failover records. Replace DynamoDB with Aurora global database and configure only one-way S3 replication from primary to standby."
+      },
+      {
+        "id": "3",
+        "text": "Deploy both application tiers in each Region, replace DynamoDB with a cross-Region RDS MySQL read replica, and require an operator to change DNS after every outage and recovery."
+      },
+      {
+        "id": "4",
+        "text": "Deploy both application tiers in each Region and use CloudFront origin failover. Keep independent DynamoDB tables with daily backups and one-way S3 replication from primary to standby."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Regional stacks provide ready compute, global tables replicate the NoSQL data, and two-way S3 replication carries new objects written while either Region is active. Automated readiness checks delay the primary's healthy signal until the application and required data can safely serve traffic again.\n\n<<2>> changes the specified NoSQL database model and omits reverse object replication for standby writes. <<3>> also changes the database model and requires manual routing changes. <<4>> substitutes periodic backups for ongoing database replication and does not provide the required complete application and data failback process.\n\nMREC global tables and S3 replication are asynchronous, so neither promises identical regional data at every instant. Replicate existing S3 objects separately when needed, configure replica metadata synchronization as required, and verify catch-up. Route 53 changes DNS answers; caches and existing connections delay traffic movement. A healthy server alone is insufficient evidence for safe failback.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-types.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/196.mmd",
+  "diagram_alt": "The recovered primary stays out of service until data and application readiness permit automated failback.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html",
+      "checked_on": "2026-09-18",
+      "supports": "Current global tables support regional reads/writes with explicit MREC or MRSC consistency modes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 replication is asynchronous, two-way rules support failover writes, and existing objects need on-demand replication."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-types.html",
+      "checked_on": "2026-09-18",
+      "supports": "Failover routing prefers healthy primary resources and otherwise uses the standby."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced the impossible instantaneous-identical-data expectation with accepted asynchronous replication lag.",
+    "Made standby writes, coordinated write ownership and readiness-gated failback explicit, including existing S3 object replication."
+  ],
+  "review_status": "authored"
+}

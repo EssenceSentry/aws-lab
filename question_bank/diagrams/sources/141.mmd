@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Network access and API permission are separate controls
+accDescr: Each microservice task has an ENI for security groups and flow logs, plus a task role for its AWS API permissions.
+T["One microservice task"] --> N["Task ENI"]
+T --> R["Task IAM role"]
+N --> S["Security groups and Flow Logs"]
+R --> A["Allowed AWS API actions"]
+class T inputData
+class N,R decision
+class S,A output

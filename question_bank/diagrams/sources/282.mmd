@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Regional independence needs a complete surviving path
+accDescr: Health-aware DNS selects a regional API and its local writable replica, with asynchronous replication between the two data stores and tested capacity in each Region.
+A["Route 53 latency + target health"] --> B["Region A: ALB and Fargate"]
+A --> C["Region B: ALB and Fargate"]
+B --> D["Region A: writable replica"]
+C --> E["Region B: writable replica"]
+D <-->|Async MREC replication| E
+F["Each Region tested for full failover load"] -.-> B
+F -.-> C
+class A decision
+class B,C output
+class D,E storage
+class F warning

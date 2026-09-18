@@ -1,0 +1,57 @@
+{
+  "question_id": "323",
+  "base_record_sha256": "f4b6383d111b4859953a47568de7af707139cfda4830f18353799a605e15c685",
+  "record": {
+    "id": "323",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is modernizing an application that uses IBM WebSphere, Db2 LUW, and IBM MQ on premises. It wants managed database and broker operations while retaining WebSphere on EC2. A pilot has validated conversion of the database to Aurora PostgreSQL and adaptation of the JMS clients to ActiveMQ. The company will not redesign messaging around Amazon SQS APIs. WebSphere sessions are externalized, and its deployment and licensing support a multi-AZ Auto Scaling group.\n\nWhich migration plan best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Rehost WebSphere and Db2 on EC2 with AWS Transform MGN. Replace IBM MQ with Amazon SQS Standard queues and adapt the producers and consumers."
+      },
+      {
+        "id": "2",
+        "text": "Convert the Db2 schema with AWS SCT and migrate data with AWS DMS to Aurora PostgreSQL. Run WebSphere in a multi-AZ Auto Scaling group behind an ALB and migrate the validated JMS integration to a highly available Amazon MQ for ActiveMQ broker."
+      },
+      {
+        "id": "3",
+        "text": "Rehost WebSphere and Db2 on EC2 with AWS Transform MGN. Run WebSphere behind an ALB and migrate the validated JMS integration to Amazon MQ for ActiveMQ."
+      },
+      {
+        "id": "4",
+        "text": "Convert the Db2 schema with AWS SCT and migrate data with AWS DMS to Aurora PostgreSQL. Run WebSphere behind an ALB and replace IBM MQ with Amazon SQS FIFO queues."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Option <<2>> implements the validated modernization boundaries: managed Aurora for the database, managed Amazon MQ for messaging, and independently scalable WebSphere compute. AWS SCT assists schema and code conversion, while DMS moves data and can capture ongoing Db2 changes when prerequisites are satisfied. Validate the converted application and reconcile data before cutover.\n\nOption <<1>> retains database administration on EC2 and requires the excluded SQS redesign. Option <<3>> preserves more of the original database deployment but fails the managed-database requirement. Option <<4>> modernizes the database but still changes messaging to SQS; FIFO ordering does not make SQS an ActiveMQ or IBM MQ replacement with identical broker semantics.\n\nAurora is not a drop-in Db2 engine, and Amazon MQ runs ActiveMQ or RabbitMQ, not IBM MQ. The completed compatibility pilot and planned client changes are what make this migration viable. Rehosting alone does not supply those conversions.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DB2.html\nhttps://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html\nhttps://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/323.mmd",
+  "diagram_alt": "Database schema and data follow separate conversion and migration paths, while messaging requires a validated broker compatibility change.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DB2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Db2 LUW source support and CDC prerequisites."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "Schema conversion assessment, supported Db2 targets, and manual conversion work."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "Amazon MQ manages ActiveMQ Classic and RabbitMQ brokers rather than IBM MQ."
+    }
+  ],
+  "editorial_notes": [
+    "Added verified compatibility and operational constraints so key 2 is uniquely supportable. Removed implication of automatic Db2/IBM MQ compatibility and automatic license entitlement."
+  ],
+  "review_status": "authored"
+}

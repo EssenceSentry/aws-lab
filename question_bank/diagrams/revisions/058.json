@@ -1,0 +1,53 @@
+{
+  "question_id": "058",
+  "base_record_sha256": "91831b9ec284ff6506390a896ef39a8939b706e2f84e43b6597d3d74fcdc1b41",
+  "record": {
+    "id": "058",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company stores application objects in Amazon S3 and uses HTTPS for uploads and downloads. It wants AWS to manage encryption at rest without administering a customer-managed KMS key or performing encryption in the application.\n\nWhich description correctly explains server-side encryption with Amazon S3 managed keys (SSE-S3)?",
+    "options": [
+      {
+        "id": "1",
+        "text": "The application supplies its own encryption key in each upload and download request, and S3 uses that key without retaining it after the request."
+      },
+      {
+        "id": "2",
+        "text": "S3 encrypts each object with a unique data key and encrypts that key with S3-managed key material. S3 manages the encryption and key rotation."
+      },
+      {
+        "id": "3",
+        "text": "The customer creates a KMS key and grants callers permission to decrypt it, while S3 uses the key for server-side object encryption."
+      },
+      {
+        "id": "4",
+        "text": "The application obtains a plaintext data key, encrypts the object locally, and uploads the ciphertext and encrypted data key to S3."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Choose <<2>>. SSE-S3 performs encryption inside the S3 service. Object data is encrypted with a unique key, and that key is itself protected by S3-managed key material. The customer does not manage a KMS key or receive the plaintext data key for this operation.\n\n<<1>> describes the customer-provided-key model associated with SSE-C, not SSE-S3. <<3>> describes SSE-KMS using a customer-managed KMS key, which provides a separate key-policy and decryption authorization boundary. <<4>> describes client-side envelope encryption: the application encrypts the bytes before uploading them.\n\nS3 already applies baseline server-side encryption to new uploads. Choosing a different mode changes key control and authorization capabilities. Encryption at rest does not replace S3 access policies: an authorized read of an SSE-S3 object returns decrypted data. HTTPS protects the transport connection separately. The general principle is to distinguish where encryption occurs from who owns and authorizes use of the keys.\n\nAWS documentation (checked September 18, 2026): [S3 managed encryption](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html), [S3 SSE-KMS permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/058.mmd",
+  "diagram_alt": "Object encryption and data-key protection both occur inside S3; the application sends data over HTTPS without handling a plaintext encryption key.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "SSE-S3 encrypts each object with a unique key protected by an S3-managed key; new uploads receive baseline encryption."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "SSE-KMS downloads require KMS decryption permission in addition to S3 access."
+    }
+  ],
+  "editorial_notes": [
+    "Removed unrelated Mountpoint details and made key-management responsibilities the decision.",
+    "Replaced vague API-key and multi-factor terminology with the concrete SSE-C, SSE-KMS and client-side distinctions."
+  ],
+  "review_status": "authored"
+}

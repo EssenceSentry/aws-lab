@@ -1,0 +1,52 @@
+{
+  "question_id": "359",
+  "base_record_sha256": "d19d34329c142be88295655c3b9747add5dc94dbe1d64d68680e8e6e3bfc39b9",
+  "record": {
+    "id": "359",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations with all features enabled. In its member-account OU, only approved supervisory roles may perform IAM administration. Other member-account IAM users and workload roles must be blocked from IAM actions even if they receive a broad identity policy. The restriction must automatically cover future accounts placed in the OU. The supervisory roles already have appropriate identity permissions, and their creation, trust policies, and assumption permissions are centrally protected. Management-account access and service-linked roles are governed separately.\n\nWhich approach provides the required central restriction?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Attach an SCP to the member-account OU that explicitly denies IAM actions unless aws:PrincipalArn matches an approved supervisory role ARN. Retain the necessary SCP allow coverage and the supervisors' identity-based permissions."
+      },
+      {
+        "id": "2",
+        "text": "Attach a permissions boundary that excludes IAM actions to each existing non-supervisory user and role, without enforcing boundary attachment for newly created identities."
+      },
+      {
+        "id": "3",
+        "text": "Attach an SCP directly to each non-supervisory IAM user and role, leaving the supervisory roles without that attachment."
+      },
+      {
+        "id": "4",
+        "text": "Create an IAM administration role and grant the supervisory team permission to assume it, without changing policies or restrictions for other principals."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. An OU-attached SCP can impose an explicit deny on affected member-account principals, including those with broad identity policies. An exception based on aws:PrincipalArn can identify the approved supervisory roles. For an assumed role, this context key contains the IAM role ARN, not its STS session ARN.\n\n<<2>> can limit individual identities, but the described process does not cover future identities automatically and does not provide the requested OU-wide guardrail.\n\n<<3>> uses an unsupported attachment point. SCPs attach to organization roots, OUs, or accounts, not IAM users and roles.\n\n<<4>> grants a controlled administrative path but does not remove existing administrative paths for other principals.\n\nAn SCP sets a permission ceiling and grants nothing. Supervisors still need identity permissions and must remain allowed by all applicable controls. Protect the exempt roles from unauthorized creation, assumption, and modification. SCPs do not restrict the management account or service-linked roles, which the stem handles separately.\n\nOfficial AWS references (checked September 18, 2026): [Service control policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html). [Principal ARN condition key](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principalarn).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/359.mmd",
+  "diagram_alt": "An approved role bypasses this particular SCP deny but still needs an IAM grant and permission from all other applicable controls.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCPs centrally limit member-account permissions, grant nothing, and exclude management-account principals and service-linked roles."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principalarn",
+      "checked_on": "2026-09-18",
+      "supports": "For assumed-role requests, aws:PrincipalArn identifies the IAM role ARN rather than the STS session ARN."
+    }
+  ],
+  "editorial_notes": [
+    "Made the SCP an explicit deny with protected role exceptions and retained independent IAM grants; scoped out documented SCP exceptions."
+  ],
+  "review_status": "authored"
+}

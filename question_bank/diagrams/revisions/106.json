@@ -1,0 +1,62 @@
+{
+  "question_id": "106",
+  "base_record_sha256": "7dbaeb4d7f1830ed634c6f8d7da69f9b5d9529e62ef3932499e62ef7001dfa33",
+  "record": {
+    "id": "106",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A media company wants to reduce operating effort and processing cost for its video service. Its server-rendered web application already runs in containers and must be retained. A custom normalization step can run for 30 minutes per video and supports checkpoints and retries. Amazon Rekognition supports the required video-label analysis. The company can retain EC2 workers for normalization but wants to stop managing web-server hosts and replace third-party categorization software.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the web containers on Amazon ECS with Fargate. Store videos and static assets in S3 and deliver cacheable content through CloudFront. Queue normalization jobs in SQS for diversified EC2 Spot workers, then start asynchronous Rekognition analysis and retrieve results after completion."
+      },
+      {
+        "id": "2",
+        "text": "Run the web containers on Amazon ECS with Fargate. Store videos in S3 and process each complete normalization job in one Lambda invocation before starting asynchronous Rekognition analysis."
+      },
+      {
+        "id": "3",
+        "text": "Host the existing server-rendered application entirely as an S3 static website. Use SQS and EC2 Spot workers for normalization and Rekognition for analysis."
+      },
+      {
+        "id": "4",
+        "text": "Run the web containers on a self-managed EC2 fleet. Store videos in S3, process normalization on an On-Demand-only EC2 fleet, and retain the third-party categorization software."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Fargate removes web-host management, S3 separates durable content from worker lifetimes, and interruption-tolerant normalization can use Spot capacity. Rekognition's stored-video workflow is asynchronous: start a supported analysis job, consume its completion notification, and retrieve the results.\n\n<<2>> exceeds Lambda's 15-minute maximum invocation duration for the stated 30-minute task. Lambda could orchestrate the job, but cannot execute that entire task in one invocation.\n\n<<3>> removes the compute required by the retained server-rendered application. S3 can host static assets, but this proposal provides no server-side runtime.\n\n<<4>> retains both web-host operations and the third-party software, and forgoes the stated opportunity to use interruption-tolerant capacity.\n\nSpot workers need durable checkpoints, suitable SQS visibility handling, and idempotent retries. A lower Spot price is useful only when the workload tolerates interruption and available capacity.\n\nOfficial AWS references (checked September 18, 2026): [Fargate and Lambda](https://docs.aws.amazon.com/decision-guides/latest/decision-guides/fargate-or-lambda.html). [Lambda timeout](https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html). [Rekognition stored-video analysis](https://docs.aws.amazon.com/rekognition/latest/dg/video.html). [EC2 Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/106.mmd",
+  "diagram_alt": "Queues and durable objects decouple the web tier, interruption-tolerant normalization, and asynchronous video analysis.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/fargate-or-lambda.html",
+      "checked_on": "2026-09-18",
+      "supports": "Fargate container execution without server management"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "checked_on": "2026-09-18",
+      "supports": "Maximum invocation duration is 900 seconds"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/video.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous Start, completion notification, and Get result workflow"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+      "checked_on": "2026-09-18",
+      "supports": "Spare capacity pricing and interruption considerations"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Added retained server rendering and a non-Lambda-length normalization task so otherwise valid serverless alternatives have explicit limits."
+  ],
+  "review_status": "authored"
+}

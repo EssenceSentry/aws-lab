@@ -1,0 +1,52 @@
+{
+  "question_id": "015",
+  "base_record_sha256": "b1bc24f723d1cad86586597ac5f0f398c95fc4f037ad495b2db250456917dee4",
+  "record": {
+    "id": "015",
+    "exam_domain": "Design for New Solutions",
+    "question": "A charity expects short, unpredictable bursts of donation-pledge submissions after television advertisements. Each pledge is an independent record identified by a request ID. The website may acknowledge durable receipt immediately and finish validation and storage asynchronously. Payment processing is handled separately. The charity wants to absorb bursts without provisioning its database for every instantaneous peak and to minimize database administration.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Write every pledge synchronously to DynamoDB and add CloudFront caching for the static website files. Use the cache to absorb bursts of pledge writes."
+      },
+      {
+        "id": "2",
+        "text": "Queue pledges in SQS and process them into an Oracle database on a single large EC2 instance. Manage database patching, backups, and recovery on that instance."
+      },
+      {
+        "id": "3",
+        "text": "Write every pledge synchronously to a fixed-size RDS instance with Provisioned IOPS. Add read replicas when the pledge-write rate increases."
+      },
+      {
+        "id": "4",
+        "text": "Put pledge records in an SQS queue. Scale EC2 workers to process the backlog and write idempotently to DynamoDB with appropriately configured write capacity. Delete each message only after its write succeeds."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> decouples arrival rate from processing rate. SQS durably holds accepted work, workers drain the backlog at a sustainable rate, and DynamoDB removes server-level database administration. Use request IDs for idempotency because a standard queue can deliver a message more than once.\n\n<<1>> improves delivery of static files but does not buffer write requests. <<2>> buffers work, yet introduces the database operations and single-instance recovery burden the charity wants to avoid. Hosting databases on EC2 is supported; it is simply a poor fit for these constraints. <<3>> does not buffer bursts, and read replicas do not increase primary write capacity.\n\nA queue shifts work in time; it does not eliminate required throughput. Monitor backlog age, provision sufficient sustained write capacity, and handle repeated failures with retries and a dead-letter queue.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html\nhttps://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/015.mmd",
+  "diagram_alt": "Durable intake acknowledgement precedes worker processing; successful idempotent persistence precedes message deletion.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "Durable multi-AZ buffering, decoupling, at-least-once delivery, and possible reordering."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html",
+      "checked_on": "2026-09-18",
+      "supports": "DynamoDB write capacity must meet sustained write requirements and can be scaled."
+    }
+  ],
+  "editorial_notes": [
+    "Made asynchronous acknowledgement and independent records explicit. Removed unsupported blanket claims about EC2 databases and relational cost. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

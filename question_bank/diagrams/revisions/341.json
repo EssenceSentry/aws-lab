@@ -1,0 +1,52 @@
+{
+  "question_id": "341",
+  "base_record_sha256": "36aa4cb5a72b74a2549324d1c9182b93dc6448416d3df32e366ea9e19482e860",
+  "record": {
+    "id": "341",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company runs a .NET REST API as a monolith on EC2. Different operations have different scaling needs, and traffic includes long quiet periods and short peaks. The company has approved refactoring. Tests confirm that the operations are stateless, finish within seconds, and fit Lambda resource and concurrency limits. A measured cost comparison favors on-demand execution for this workload. Clients must retain the existing API domain.\n\nWhich redesign minimizes ongoing compute-infrastructure administration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Put the monolith in an EC2 Auto Scaling group behind an ALB, scale by an appropriate request metric, and point the existing Route 53 record to the ALB."
+      },
+      {
+        "id": "2",
+        "text": "Put the monolith behind an ALB and a standard Global Accelerator, retain an EC2 Auto Scaling group, and update the domain to use the accelerator."
+      },
+      {
+        "id": "3",
+        "text": "Containerize the monolith on EKS with EC2 Spot worker nodes, configure an ingress controller, and point the domain to the ingress endpoint."
+      },
+      {
+        "id": "4",
+        "text": "Split the API operations into Lambda functions behind an API Gateway REST API, configure the existing custom domain and certificate, and update its Route 53 alias to the API endpoint."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The operations can scale independently while AWS manages the execution infrastructure. API Gateway preserves the HTTP interface and custom domain. The stated tests establish workload fit and cost suitability.\n\n<<1>> is a valid way to scale a monolith with little refactoring, but retains server and whole-application capacity management.\n\n<<2>> improves global network entry, but also retains the EC2 operational model and does not split the operations' scaling boundaries.\n\n<<3>> introduces Kubernetes and worker-node administration without a requirement for that control.\n\nLambda is not universally cheaper or suitable for every monolith. Check duration, state, dependencies, cold starts, downstream limits, and concurrency before choosing it. Route 53 multivalue responses are DNS answers, not a per-request replacement for an application load balancer.\n\nOfficial AWS references (checked September 18, 2026): [Lambda execution limits](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html). [API Gateway application interface](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/amazon-api-gateway.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/341.diagram.json",
+  "diagram_alt": "A comparison shows the different units of scaling and infrastructure responsibility rather than implying every workload belongs on Lambda.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "Function duration, resources, concurrency and scaling limits constrain workload fit"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/amazon-api-gateway.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed API endpoints and regional or edge entry options"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added approved refactoring, stateless short operations and measured cost evidence, while acknowledging that ALB and Auto Scaling are a valid monolith alternative."
+  ],
+  "review_status": "authored"
+}

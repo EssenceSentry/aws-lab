@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: Parallelize across photos and within each photo
+accDescr: A Map state runs photo workflows concurrently, and each photo workflow forks independent rules then joins their results before updating the catalog.
+B["Batch of photo keys"] --> M["Map: concurrent photo workflows"]
+M --> P["One photo"]
+P --> A["Extract image properties"]
+P --> C["Extract labels"]
+P --> D["Extract other metadata"]
+A --> J["Join all rule results"]
+C --> J
+D --> J
+J --> E[("Update photo catalog entry")]
+class B,P inputData
+class J decision
+class E storage

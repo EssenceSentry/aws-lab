@@ -1,0 +1,57 @@
+{
+  "question_id": "004",
+  "base_record_sha256": "14dd7496c04e08e0e80735b052930354a9cfa2a2fd9a4394b9186a3227bb4650",
+  "record": {
+    "id": "004",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company is migrating a Linux application to an EC2 Auto Scaling group across two Availability Zones. Its license is bound to a network adapter’s MAC address, and the vendor takes 15 hours to issue a license. The application can use an attached secondary adapter for licensing. New license inventory must be usable without rebuilding the AMI.\n\nThe application accepts only database IP addresses. There are no stable database DNS names, but the database replacement workflow publishes the current addresses. New and running application instances must pick up those updates.\n\nWhich actions meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Pre-create secondary ENIs in each required Availability Zone and obtain a license for each MAC address. Store the license files in S3. At launch, atomically claim an available ENI and license, attach that ENI in the instance’s AZ, and release it safely when the instance is retired."
+      },
+      {
+        "id": "2",
+        "text": "Pre-create licensed ENIs and embed their complete license inventory in the application AMI. Require each new instance to select a license only from the files baked into that AMI."
+      },
+      {
+        "id": "3",
+        "text": "Resolve the database hostnames once during instance bootstrap and write the returned addresses to the application configuration."
+      },
+      {
+        "id": "4",
+        "text": "Have the database replacement workflow invoke Lambda to update Systems Manager Parameter Store. Retrieve the parameters during bootstrap and through a controlled refresh process that updates running applications."
+      },
+      {
+        "id": "5",
+        "text": "Create an AMI from a licensed instance and configure Auto Scaling to launch that image. Rely on the AMI to reproduce the original instance’s adapter MAC address."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "Select <<1>> and <<4>>. An ENI retains its attributes, including its MAC address, when reattached to a compatible instance in the same AZ. A prelicensed pool avoids waiting for issuance during scale-out. Parameter Store provides current configuration independently of the AMI; the replacement workflow supplies the updates.\n\n<<2>> ties available license files to an AMI version, violating the requirement to extend inventory without rebuilding images. <<3>> assumes stable DNS names that the scenario does not provide and never refreshes running clients. <<5>> copies the software image, not the original ENI or its MAC identity.\n\nENI inventory limits scale-out capacity. Claim pairs atomically, preserve the ENI after instance termination, and ensure the application uses that adapter. Parameter Store does not discover database addresses or reconfigure applications by itself.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/004.mmd",
+  "diagram_alt": "An ENI carries the license identity across instance replacement; an independent configuration path supplies database addresses.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html",
+      "checked_on": "2026-09-18",
+      "supports": "ENI attributes persist across attachments and attachment is constrained to the same Availability Zone."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+      "checked_on": "2026-09-18",
+      "supports": "Centralized named configuration, runtime retrieval, updates, and IAM control."
+    }
+  ],
+  "editorial_notes": [
+    "Added explicit constraints to resolve the original competing valid AMI/DNS choices. Added AZ-local allocation, atomic claims, and live configuration refresh. Answer IDs unchanged."
+  ],
+  "review_status": "authored"
+}

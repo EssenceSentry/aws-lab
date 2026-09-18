@@ -1,0 +1,52 @@
+{
+  "question_id": "357",
+  "base_record_sha256": "8e1b5a57ffef0c3a0f93db6864add34f53fe952029a9d98335d6a4763c57027d",
+  "record": {
+    "id": "357",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company stores VPC Flow Logs in S3 as gzip-compressed text and queries them with Redshift Spectrum. A dashboard reads only a few columns from recent hourly intervals, but measurements show that it scans large amounts of log data. All log records must be retained. The company wants to improve new-log storage efficiency and reduce dashboard scanning without deploying a custom conversion service. Existing retained logs can remain unchanged.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create replacement flow-log delivery in Parquet format with hourly partitions and suitable prefixes. Register the format and partitions in the external table catalog, and filter dashboard queries on the partition columns while selecting only required fields."
+      },
+      {
+        "id": "2",
+        "text": "Keep text-format delivery and add a scheduled job that recompresses each gzip object with another compression algorithm, retaining the same row-oriented layout and query predicates."
+      },
+      {
+        "id": "3",
+        "text": "Distribute new text logs among additional S3 buckets and configure the dashboard to query every bucket for each request."
+      },
+      {
+        "id": "4",
+        "text": "Run a Glue crawler more frequently over the existing text layout, but leave the file format, partition strategy, and dashboard queries unchanged."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Native Parquet output lets Spectrum read selected columns, while hourly partition predicates exclude unrelated time intervals. The catalog must describe the new format and expose the partitions. Coordinate the delivery transition to avoid a logging gap and retain historical records as required.\n\n<<2>> can alter compression but adds a custom processing job and retains a row format that cannot skip unneeded columns in the same way.\n\n<<3>> changes storage locations without giving the query a way to exclude irrelevant data; scanning all buckets retains the problem.\n\n<<4>> updates metadata discovery, but a crawler alone does not rewrite text as Parquet or make unchanged queries prune hourly partitions.\n\nParquet size savings depend on the workload; very small flow-log batches can be larger because of file overhead. Verify scan bytes, partition pruning, and file sizes rather than assuming a universal performance multiplier. This change improves newly delivered data and does not retroactively convert history.\n\nOfficial AWS references (checked September 18, 2026): [Flow log file formats](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3-path.html). [Spectrum query performance](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-external-performance.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/357.mmd",
+  "diagram_alt": "Partition predicates skip unrelated hours, and Parquet projection skips unneeded columns within the selected files.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3-path.html",
+      "checked_on": "2026-09-18",
+      "supports": "Flow Logs supports gzip-compressed Parquet and hourly partitions, with a small-file size caveat."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-external-performance.html",
+      "checked_on": "2026-09-18",
+      "supports": "Columnar projection and predicates on partition columns reduce the data scanned."
+    }
+  ],
+  "editorial_notes": [
+    "Narrowed optimization to future delivery so retained history need not be deleted or silently converted; avoided guaranteed compression or query-speed multipliers."
+  ],
+  "review_status": "authored"
+}

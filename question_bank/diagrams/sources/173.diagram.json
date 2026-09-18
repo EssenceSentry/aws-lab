@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Same denied API, different calling principal",
+  "columns": [
+    "Caller in workload account",
+    "SCP applies?",
+    "Effect of matching SCP deny"
+  ],
+  "rows": [
+    [
+      "Ordinary administrator role",
+      "Yes",
+      "Call is denied"
+    ],
+    [
+      "Member-account root user",
+      "Yes, subject to documented exceptions",
+      "No general creator exemption"
+    ],
+    [
+      "AWSServiceRoleForECS",
+      "No: service-linked role",
+      "Service-linked permissions govern the call"
+    ]
+  ],
+  "footnote": "Inspect the request principal. A task or application execution role is not automatically a service-linked role.",
+  "emphasis_rows": [
+    2
+  ]
+}

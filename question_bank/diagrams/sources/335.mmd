@@ -1,0 +1,16 @@
+sequenceDiagram
+accTitle: Platform authentication happens inside the webhook handler
+accDescr: A public function URL permits invocation, but the handler verifies the third-party signature before processing, rejecting invalid requests.
+participant P as Social platform
+participant U as Function URL
+participant L as Lambda handler
+P->>U: HTTPS POST and platform signature
+U->>U: NONE auth and resource policy
+U->>L: Invoke handler
+L->>L: Verify signature and replay rules
+alt Valid request
+L->>L: Process idempotently
+L-->>P: Success response
+else Invalid request
+L-->>P: Reject request
+end

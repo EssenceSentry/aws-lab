@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { Check, ChevronRight, X, ZoomIn } from "lucide-react";
 import { resolveOptionReferences } from "./option-references.ts";
+import { tokenizeRichText } from "./rich-text.ts";
 import { DOMAINS, eligibleQuestions } from "./core.ts";
 import type { Progress, Question, SessionConfig } from "./core.ts";
 
@@ -38,11 +39,10 @@ export function DomainMark({ name }: { name: string }) {
 }
 
 function LinkedText({ text }: { text: string }) {
-  const chunks = text.split(/(https?:\/\/[^\s]+)/g);
-  return <>{chunks.map((chunk, i) => {
-    if (!/^https?:\/\//.test(chunk)) return <span key={i}>{chunk}</span>;
-    const url = chunk.replace(/[.,;]+$/, "");
-    return <span key={i}><a href={url} target="_blank" rel="noopener noreferrer">{url}</a>{chunk.slice(url.length)}</span>;
+  return <>{tokenizeRichText(text).map((token, i) => {
+    if (token.type === "link") return <a key={i} href={token.href} target="_blank" rel="noopener noreferrer">{token.text}</a>;
+    if (token.type === "code") return <code key={i}>{token.text}</code>;
+    return <span key={i}>{token.text}</span>;
   })}</>;
 }
 

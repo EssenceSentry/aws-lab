@@ -1,0 +1,57 @@
+{
+  "question_id": "286",
+  "base_record_sha256": "76cfa40059c8185184aac15943d8264f1b5d9340b7124194c9deabd81e798cfb",
+  "record": {
+    "id": "286",
+    "exam_domain": "Design for New Solutions",
+    "question": "A publisher has 20 TB of scanned documents and expects the archive to reach 50 TB in three years. Readers need an interactive website with full-text search across the document contents and access to the original scans. The service must tolerate an Availability Zone failure, and the small operations team wants to avoid managing a search engine on its own servers.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store the scans on EFS and deploy an OCR pipeline and a self-managed search cluster on EC2 instances across Availability Zones."
+      },
+      {
+        "id": "2",
+        "text": "Store the scans and search index on EBS volumes attached to one large EC2 instance, and host the website on that instance."
+      },
+      {
+        "id": "3",
+        "text": "Store original scans in S3, extract their text with Amazon Textract, and index text and metadata in a suitably sized Multi-AZ OpenSearch Service domain. Run the website in a load-balanced Elastic Beanstalk environment across Availability Zones."
+      },
+      {
+        "id": "4",
+        "text": "Store scans in S3 and run the website across Availability Zones, using S3 ListObjects requests against object-name prefixes as the document-content search engine."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. S3 retains original documents, Textract turns scanned text into machine-readable data, and OpenSearch supplies the searchable index. A properly configured Multi-AZ search domain and load-balanced application environment address the Availability Zone requirement.\n\n<<1>> can satisfy the functional requirements, but leaves search-cluster operations with the small team.\n\n<<2>> makes one instance and its Availability Zone a dependency for the archive, index, and website. Multiple disks do not remove that failure domain.\n\n<<4>> can find objects by key prefix, but does not search words inside scanned pages.\n\nObject storage, text extraction, indexing, and the website are separate responsibilities. Size the search index from extracted text, mappings, replicas, and query workload rather than simply equating its size to the original scan archive. Validate OCR quality and keep index entries linked to stable source-object identifiers.\n\nOfficial AWS references (checked September 18, 2026): [Textract document text extraction](https://docs.aws.amazon.com/textract/latest/dg/what-is.html). [Managed OpenSearch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html). [Elastic Beanstalk environment types](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-types.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/286.mmd",
+  "diagram_alt": "The visual distinguishes preserved scan bytes from extracted searchable text and connects search results back to original documents.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Converts text from scanned images and PDFs into searchable machine-readable text"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed search infrastructure and Multi-AZ node placement"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-types.html",
+      "checked_on": "2026-09-18",
+      "supports": "Load-balanced environments provide scalable application instances across Availability Zones"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Added the missing OCR-to-index ingestion mechanism, explicit AZ resilience, and a defensible operations constraint instead of unsupported universal cost claims."
+  ],
+  "review_status": "authored"
+}

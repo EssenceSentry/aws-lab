@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Ongoing data replication over a private encrypted path
+accDescr: DMS reads the RDS source and retained binlogs, performs a full load then CDC, and applies changes to an on-premises MySQL target through a VPN. Analysts have a separate read-only account.
+subgraph AWS[AWS private network]
+ R[(RDS MySQL<br/>Source tables and binlogs)]:::storage -->|Read source with TLS| D[DMS<br/>Full load then CDC]:::output
+end
+D -->|TLS over Site-to-Site IPsec VPN| T[(On-premises MySQL<br/>DMS applies writes)]:::storage
+A[Analytics users]:::inputData -->|Read-only account| T
+L[Retain logs through interruptions]:::warning -.-> R

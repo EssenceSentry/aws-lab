@@ -1,0 +1,53 @@
+{
+  "question_id": "127",
+  "base_record_sha256": "7f8cc3bd09cb6069a3402e94efcec7fe7ebc90484f91d627780aebde992c6556",
+  "record": {
+    "id": "127",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An Auto Scaling group runs EC2 application instances in three Availability Zones behind an Application Load Balancer. The instances in one zone receive no requests. They are registered in the correct target group, the listener forwards to that group, and their processes and network rules pass independent checks. The affected targets show the state unused with reason Target.NotInUse.\n\nWhich configuration should the solutions architect check first?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Whether the affected Availability Zone is enabled through a subnet mapping on the Application Load Balancer."
+      },
+      {
+        "id": "2",
+        "text": "Whether cross-zone load balancing is disabled on the target group, even though the affected Availability Zone is enabled on the load balancer."
+      },
+      {
+        "id": "3",
+        "text": "Whether the Auto Scaling group uses EC2 health checks instead of Elastic Load Balancing health checks."
+      },
+      {
+        "id": "4",
+        "text": "Whether target-group stickiness is causing established clients to continue using instances in other Availability Zones."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Registering a target is insufficient when its Availability Zone is not enabled on the ALB. Target.NotInUse can also mean that no listener uses the target group, but the stem rules out that case. Check the ALB subnet mappings for the missing zone.\n\n<<2>> can change which healthy, eligible targets a load balancer node reaches; it does not explain why an enabled-zone target is marked unused with this reason. <<3>> affects how Auto Scaling detects unhealthy instances for replacement, not whether the ALB enables an Availability Zone. <<4>> can influence request distribution but does not place targets in the unused state.\n\nDiagnose target eligibility separately from traffic balance. An ALB spans enabled zones in a VPC, and an Auto Scaling group can span multiple zones. EC2-Classic guidance does not apply.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/en_en/elasticloadbalancing/latest/application/target-group-health-checks.html\nhttps://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/127.mmd",
+  "diagram_alt": "An ALB target in a disabled Availability Zone remains unused even when registration and application checks succeed.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/en_en/elasticloadbalancing/latest/application/target-group-health-checks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Target.NotInUse indicates an unused target group or an Availability Zone not enabled on the load balancer."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html",
+      "checked_on": "2026-09-18",
+      "supports": "Target-group cross-zone and stickiness settings affect routing among eligible targets."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced obsolete EC2-Classic explanation and implausible multi-AZ distractors with ALB-specific diagnostic alternatives.",
+    "Added Target.NotInUse evidence and ruled out the alternative unused-target-group cause."
+  ],
+  "review_status": "authored"
+}

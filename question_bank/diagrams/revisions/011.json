@@ -1,0 +1,72 @@
+{
+  "question_id": "011",
+  "base_record_sha256": "12baa9bca75e864f3c9fc95ca5e2efc479bfe9d02e45071d09ccb868b0067047",
+  "record": {
+    "id": "011",
+    "exam_domain": "Design for New Solutions",
+    "question": "A publisher is building a global news website. Editors frequently update articles, readers post comments, and read traffic greatly exceeds write traffic. The relational database must survive an Availability Zone failure, and public article reads must scale independently of writes. Images must have durable shared storage, and global readers need low-latency delivery.\n\nWhich components should the architecture include? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use CloudFront to cache public articles and media. Configure cache lifetimes and invalidation or versioned URLs to meet the publisher’s freshness requirements."
+      },
+      {
+        "id": "2",
+        "text": "Use an RDS MySQL Multi-AZ DB instance deployment for availability, separate read replicas for suitable read traffic, and S3 for images and other shared media."
+      },
+      {
+        "id": "3",
+        "text": "Use an RDS MySQL Multi-AZ DB instance deployment and direct article queries to its synchronous standby instance to scale reads."
+      },
+      {
+        "id": "4",
+        "text": "Use Lambda for article requests and keep the authoritative article and comment records in each execution environment’s temporary storage."
+      },
+      {
+        "id": "5",
+        "text": "Keep the authoritative media collection on an EBS RAID 0 array attached to one EC2 instance, and serve that instance directly to all readers."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2"
+    ],
+    "explanation": {
+      "text": "Select <<1>> and <<2>>. CloudFront reduces repeated origin reads and delivery distance. The RDS primary handles writes; its synchronous standby provides failover, separate asynchronous read replicas serve suitable queries, and S3 stores shared media.\n\n<<3>> confuses the standby in a Multi-AZ DB instance deployment with a readable replica. <<4>> uses temporary execution storage as an authoritative database. <<5>> concentrates media availability in one instance and AZ; striping does not create redundant storage.\n\nAvailability, read scaling, durability, and content freshness require different controls. Read replicas can lag, so route reads needing immediate consistency appropriately. Cache public content deliberately and refresh changed articles. The unreadable-standby distinction here applies to a Multi-AZ DB instance deployment, not every RDS cluster architecture.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html\nhttps://docs.aws.amazon.com/lambda/latest/dg/configuration-ephemeral-storage.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/011.mmd",
+  "diagram_alt": "A standby supplies availability, a separate read replica supplies read capacity, and edge caching serves repeated public reads.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "checked_on": "2026-09-18",
+      "supports": "Synchronous standby provides failover and does not serve reads."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Separate asynchronous read replicas offload read traffic."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache lifetime trades freshness against origin load and latency."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 offers shared scalable object storage and general purpose bucket storage options across AZs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-ephemeral-storage.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda temporary storage is unique to each execution environment."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced invented Lambda Auto-Healing and Oracle RAC distractions with credible persistence and replica-role mistakes. Removed irrelevant age statistics. Answer IDs unchanged."
+  ],
+  "review_status": "authored"
+}

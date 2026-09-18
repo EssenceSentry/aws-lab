@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Two different IAM questions
+accDescr: The role trust policy admits EC2 as the assuming service, while a separate permissions policy authorizes GetObject on selected S3 object resources.
+E["EC2 service"] --> T{"Trust permits sts:AssumeRole?"}
+T -->|ec2.amazonaws.com allowed| R["Application role session"]
+R --> P{"Permissions allow GetObject on this object?"}
+P -->|Yes| S[("Requested S3 object")]
+P -->|No| D["Access denied"]
+L["ListBucket only lists keys"] -.-> P
+class E inputData
+class T,P decision
+class S storage
+class D,L warning

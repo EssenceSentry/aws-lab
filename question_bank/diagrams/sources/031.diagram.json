@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "Match the commitment to the workload",
+  "columns": [
+    "Workload slice",
+    "Mechanism",
+    "Boundary"
+  ],
+  "rows": [
+    [
+      "Steady EKS nodes",
+      "Compute Savings Plan",
+      "Discount can follow families and Regions"
+    ],
+    [
+      "Interruptible bursts",
+      "Spot workers",
+      "Spare capacity; retry interrupted jobs"
+    ],
+    [
+      "Steady database use",
+      "Eligible RDS reservation",
+      "Billing benefit; no automatic scaling"
+    ],
+    [
+      "Temporary write peak",
+      "Planned DB resize",
+      "Extra capacity may be On-Demand"
+    ]
+  ],
+  "footnote": "Commit to baseline usage; provision and validate capacity separately.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

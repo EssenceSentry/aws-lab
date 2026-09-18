@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "One business rule, separate authorization checks",
+  "columns": [
+    "Request family",
+    "Policy test",
+    "Required coverage"
+  ],
+  "rows": [
+    [
+      "EC2 provisioning",
+      "Supported ec2:InstanceType condition",
+      "Launch and permitted resize paths"
+    ],
+    [
+      "RDS provisioning",
+      "Supported rds:DatabaseClass condition",
+      "Create, restore and modify paths"
+    ],
+    [
+      "Supporting services",
+      "Explicit approved operations",
+      "Keep governance and networking functional"
+    ],
+    [
+      "Other workload services",
+      "Organization restriction",
+      "Deny before provisioning"
+    ]
+  ],
+  "footnote": "Apply tested SCPs to the sandbox OU. Unsupported provisioning paths must be blocked; SCPs do not grant IAM permissions.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

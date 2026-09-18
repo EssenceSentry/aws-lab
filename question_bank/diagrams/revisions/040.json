@@ -1,0 +1,52 @@
+{
+  "question_id": "040",
+  "base_record_sha256": "f33c268dc62933272c44beda18b45a12cdcd01b2d5885504bf1cd2eafc36d88a",
+  "record": {
+    "id": "040",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs an increasing number of ECS tasks on Fargate On-Demand in one AWS account and Region. Task sizes vary. Operations needs an SNS notification when concurrently running Fargate vCPUs exceed 75% of the applicable quota. The team wants to avoid custom metric publishers and manual updates when the quota changes.\n\nWhich solution is the most operationally efficient?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use the SampleCount statistic for ECS CPUUtilization as the number of running vCPUs. Divide it by the Fargate quota and create a CloudWatch alarm."
+      },
+      {
+        "id": "2",
+        "text": "Select the AWS/Usage ResourceCount metric with Service=Fargate, Type=Resource, Resource=vCPU, and Class=Standard/OnDemand. Alarm on 100*m1/SERVICE_QUOTA(m1) greater than 75 and notify an SNS topic."
+      },
+      {
+        "id": "3",
+        "text": "Request a larger Fargate quota and configure an AWS Health event rule to publish an SNS notification whenever consumption reaches 75% of the new quota."
+      },
+      {
+        "id": "4",
+        "text": "Publish a custom count of running ECS tasks, divide it by a manually configured task limit, and alarm when that percentage exceeds 75."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. Fargate publishes account usage as ResourceCount in AWS/Usage. The dimensions select On-Demand vCPU consumption, and SERVICE_QUOTA returns the associated quota for the usage metric. A metric-math alarm can notify SNS without maintaining a separate publisher or hard-coded quota value.\n\n<<1>> is incorrect because SampleCount counts samples included in a metric statistic; it is not the number of allocated vCPUs. CPUUtilization also measures utilization rather than quota consumption.\n\n<<3>> changes the ceiling but does not create the requested usage-threshold monitor. AWS Health is not a replacement for this CloudWatch usage alarm.\n\n<<4>> uses task count, which diverges from vCPU usage when task sizes differ, and adds custom maintenance.\n\nMatch the metric dimensions and quota scope. Fargate Spot uses a separate class and quota, so monitor it separately if introduced. Set the alarm period and evaluation policy deliberately; crossing 75% does not guarantee enough capacity remains until someone responds.\n\nOfficial AWS references (checked 2026-09-18):\n[Fargate usage metrics](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/monitoring-fargate-usage.html)\n[CloudWatch quota alarms](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Quotas-Visualize-Alarms.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/040.diagram.json",
+  "diagram_alt": "A numerical example shows why allocated vCPU usage divided by its matching quota determines the alarm.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/monitoring-fargate-usage.html",
+      "checked_on": "2026-09-18",
+      "supports": "ResourceCount dimensions distinguish vCPU usage and On-Demand versus Spot"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Quotas-Visualize-Alarms.html",
+      "checked_on": "2026-09-18",
+      "supports": "SERVICE_QUOTA expression supports percentage-based usage alarms"
+    }
+  ],
+  "editorial_notes": [
+    "Removed irrelevant ECS Anywhere plans, specified On-Demand/account/Region scope and variable task sizes, and corrected the original explanation of SampleCount. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

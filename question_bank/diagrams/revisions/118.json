@@ -1,0 +1,57 @@
+{
+  "question_id": "118",
+  "base_record_sha256": "8cc2d3b9861503db42d97d2f96d2c4eebb35e37aee11587a5600e1ddda4fd64b",
+  "record": {
+    "id": "118",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An EC2 application accepts write requests for an on-premises database over a 10 Gbps Direct Connect connection. Measurements show that database write capacity, not network bandwidth, is the bottleneck during short bursts. The database has spare capacity between bursts. The application can report that a request is queued before the database applies it, and updates are idempotent and do not require ordering. Expected outages and backlogs fit within the configured queue retention period.\n\nWhich change absorbs bursts without losing acknowledged requests when an application instance fails?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase Direct Connect bandwidth and continue sending every write synchronously to the database."
+      },
+      {
+        "id": "2",
+        "text": "Place each request with a unique identifier in an SQS standard queue and acknowledge it after successful submission. Use rate-controlled consumers to apply the update idempotently and delete the message only after the database confirms completion."
+      },
+      {
+        "id": "3",
+        "text": "Increase the web Auto Scaling group's maximum size so that more instances can issue concurrent database writes."
+      },
+      {
+        "id": "4",
+        "text": "Acknowledge requests after buffering them in each application instance's memory, then flush the buffer when database latency decreases."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. SQS decouples the request-arrival rate from the database's processing rate. Durable queue acceptance allows a prompt acknowledgment, and consumers can drain the backlog at a sustainable rate. Deleting only after a confirmed database update avoids discarding work prematurely.\n\n<<1>> increases capacity in a component that is not the measured bottleneck.\n\n<<3>> can increase pressure on the already saturated database rather than absorb it.\n\n<<4>> can lose acknowledged requests when an instance fails before flushing its buffer.\n\nSQS standard queues can deliver a message more than once, including after a consumer commits but fails before deletion. Use the unique request identifier to make the database operation idempotent. Monitor message age, retries, and dead-letter queues, and choose retention long enough for recovery and draining. Buffering does not increase sustained database capacity or by itself establish a cross-Region disaster-recovery RPO.\n\nOfficial AWS references (checked September 18, 2026): [SQS delivery and redundancy](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html). [SQS queue parameters](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-queue-parameters.html). [SQS message deletion](https://docs.aws.amazon.com/cli/latest/reference/sqs/delete-message.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/118.mmd",
+  "diagram_alt": "A queue accepts durable work before acknowledgment; the consumer commits idempotently before deleting the message.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html",
+      "checked_on": "2026-09-18",
+      "supports": "Redundant storage, possible duplicate delivery, and idempotent consumer requirement"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-queue-parameters.html",
+      "checked_on": "2026-09-18",
+      "supports": "Visibility timeout and configurable bounded message retention"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cli/latest/reference/sqs/delete-message.html",
+      "checked_on": "2026-09-18",
+      "supports": "Explicit deletion with receipt handle and potential repeated delivery"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced vague strict-RPO and BASE claims with explicit asynchronous acceptance, measured bottleneck, idempotency, spare drain capacity, and bounded outage assumptions; corrected bandwidth units."
+  ],
+  "review_status": "authored"
+}

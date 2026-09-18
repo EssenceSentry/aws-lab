@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Remove remote authentication and retry an eligible origin failure
+accDescr: A personalized GET passes local token checks before the primary origin is tried, with a secondary attempt on configured errors and no shared response cache.
+A["Personalized GET with JWT"] --> B{"Local signature and claims valid?"}
+B -->|No| C["Reject request"]
+B -->|Yes| D["Primary origin, no shared cache"]
+D -->|503 or 504| E["Ready secondary origin"]
+D -->|Success| F["Return user's response"]
+E --> F
+class A inputData
+class B decision
+class C warning
+class D,E storage
+class F output

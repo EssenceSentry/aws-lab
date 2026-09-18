@@ -1,0 +1,62 @@
+{
+  "question_id": "178",
+  "base_record_sha256": "121404a8c2ef457b636bb081b708ca31de697da6190d09b7fd9b60ef9fcc127d",
+  "record": {
+    "id": "178",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A media company shares S3 objects, KMS cryptographic operations, and OpenSearch domain APIs with approved principals in other AWS accounts. Callers must use their existing credentials without assuming a role in the resource account. Network reachability is already configured. Security also needs ongoing evaluation of the shared resources' policy configurations against approved-account rules.\n\nWhich approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Grant callers identity-based IAM permissions in their own accounts and leave the resource policies without cross-account permissions. Use AWS Config rules to evaluate the resource configurations."
+      },
+      {
+        "id": "2",
+        "text": "Create cross-account roles in the resource account, grant the required service permissions, and require callers to assume those roles. Use AWS Config rules to evaluate the policies."
+      },
+      {
+        "id": "3",
+        "text": "Configure the bucket, key, and domain resource policies to authorize approved external principals, with corresponding permissions in the caller accounts. Use appropriate AWS Config recording and managed or custom rules to evaluate the relevant policy configurations."
+      },
+      {
+        "id": "4",
+        "text": "Attach SCP allow statements for the shared resources to the caller accounts, without adding cross-account resource permissions. Use AWS Config rules to evaluate compliance with the approved-account list."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. For supported operations, resource-based policies allow direct cross-account requests using the caller's current identity. The resource account authorizes the external principal, and the caller account supplies the corresponding identity permissions. AWS Config rules can evaluate the relevant configurations when the required resource recording and managed or custom checks are configured.\n\n<<1>> supplies only one side of cross-account authorization. A caller-account allow does not independently authorize access to another account's resources.\n\n<<2>> is a valid cross-account pattern, but the assumed-role session uses the target role's permissions and fails the requirement to keep the existing caller identity for these requests.\n\n<<4>> mistakes a permissions boundary for an access grant. SCPs limit available permissions and cannot replace either the resource-side permission or the caller's identity policy.\n\nAn account principal delegates authority to that account rather than identifying one employee. Scope allowed principals and actions carefully, and honor applicable explicit denies. KMS cross-account access is limited to supported operations and needs key-policy and IAM permissions. OpenSearch network and fine-grained authorization controls remain relevant. A generic check of IAM policies alone does not audit every bucket, key, and domain policy.\n\nAWS documentation (checked September 18, 2026): [Cross-account resource access](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html); [Cross-account KMS permissions](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html); [AWS Config rule evaluation](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html); [SCP scope and exceptions](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/178.mmd",
+  "diagram_alt": "Caller permissions and resource permissions jointly authorize direct access, while Config evaluates configuration rather than granting access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html",
+      "checked_on": "2026-09-18",
+      "supports": "Resource policies permit supported direct cross-account access while role assumption creates a session with role permissions; both caller and resource-side policies matter."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cross-account KMS use requires key-policy and caller-account IAM permissions and is limited to supported operations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed and custom Config rules evaluate resource configurations with resource coverage and recording permissions that must be configured."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCPs restrict member-account users and roles including root, do not grant permissions, and do not restrict management-account principals or service-linked roles."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced service-linked-role and Systems Manager mismatches with plausible one-sided authorization failures, and made Config resource-policy coverage explicit."
+  ],
+  "review_status": "authored"
+}

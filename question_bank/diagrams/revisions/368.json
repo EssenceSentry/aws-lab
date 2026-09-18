@@ -1,0 +1,62 @@
+{
+  "question_id": "368",
+  "base_record_sha256": "f314ac3bb43d798075e31e4c16405b51d17cb813ef5a15df63cf19dd7fed233a",
+  "record": {
+    "id": "368",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is moving 18 Java and Node.js applications from virtual machines to AWS. Most run only for weekly reconciliation or quarter-end reporting. Tasks need up to 3 GiB of memory, and one unsplittable Java report runs for 2–4 hours. Jobs may wait a few minutes for capacity to start.\n\nThe company wants one container deployment platform, demand-based compute capacity, and no commitment to rarely used peak capacity. Which listed solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the Java applications on fixed EC2 fleets and Node.js applications on App Runner, using separate deployment and scaling processes for the two platforms."
+      },
+      {
+        "id": "2",
+        "text": "Containerize all applications on ECS with EC2 capacity. Scale services or launch report tasks as needed, and use an Auto Scaling group capacity provider with managed scaling and task-aware CPU and memory requirements."
+      },
+      {
+        "id": "3",
+        "text": "Package each application as a Lambda container image, run the complete report in one invocation, and configure provisioned concurrency for all functions throughout the month."
+      },
+      {
+        "id": "4",
+        "text": "Run all application containers on an EC2 fleet and purchase commitments for the full quarter-end peak capacity, retaining that capacity between reporting periods."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. ECS provides one container platform for both runtimes and supports the long report as a task. Demand creates task requirements, and the capacity provider adjusts the EC2 fleet to place those tasks. This avoids committing to the rarely used peak simply because it appears in the scaling maximum.\n\n<<1>> retains separate platforms and operating processes, contrary to the standardization requirement.\n\n<<3>> exceeds Lambda's 15-minute invocation limit for the unsplittable report. A container image does not remove that limit. The 3 GiB memory requirement is not the exclusion, because Lambda supports more memory than that.\n\n<<4>> pays for or commits to peak capacity that the stated usage does not justify.\n\nTask-count scaling and container-instance scaling are separate controls. Define resource requests that fit the selected instance types, configure capacity-provider limits, and avoid competing policies that independently change the same fleet's desired capacity. Collect memory metrics if using custom host-memory policies; memory utilization is not a default EC2 metric. A memory-only policy cannot substitute for task-aware capacity provisioning. Scale down unused capacity where startup latency permits, protect running long tasks during scale-in, and compare measured costs before choosing commitments. Fargate is also a candidate for evaluation, but is not one of the listed designs.\n\nAWS documentation (checked September 18, 2026): [ECS service scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html); [ECS cluster capacity scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html); [Lambda function limits](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html); [Additional host metrics with the CloudWatch agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/368.mmd",
+  "diagram_alt": "The application determines task demand, while the capacity provider separately supplies enough EC2 resources to place those tasks.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Each ECS service can scale its desired task count using its own demand metrics; service scaling is distinct from EC2 cluster capacity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "An Auto Scaling group capacity provider with managed scaling adds or removes EC2 capacity according to ECS task resource requirements, separately from service desired-count scaling."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "A Lambda function invocation is limited to 900 seconds; the configurable memory ceiling exceeds 3 GiB."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html",
+      "checked_on": "2026-09-18",
+      "supports": "The CloudWatch agent collects host-level metrics such as memory utilization beyond the default EC2 metric set."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced an unsupported universal cheapest claim with explicit standardization, long-runtime and peak-commitment constraints. Corrected Lambda memory versus timeout limits and distinguished ECS service scaling from task-aware EC2 capacity scaling."
+  ],
+  "review_status": "authored"
+}

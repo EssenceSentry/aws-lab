@@ -1,0 +1,17 @@
+sequenceDiagram
+accTitle: Query initial state, then receive mutation-driven updates
+accDescr: A viewer subscribes to an authorized topic, and a comment mutation persists data and causes AppSync to push the matching update.
+participant V as Topic viewer
+participant A as AppSync
+participant W as Comment author
+participant D as DynamoDB
+V->>A: Query initial comments
+A->>D: Read topic data
+D-->>A: Current comments
+A-->>V: Initial state
+V->>A: Subscribe to authorized topic
+W->>A: Create-comment mutation
+A->>D: Persist comment
+D-->>A: Mutation result
+A-->>V: Matching subscription update
+Note over A,D: Direct table writes alone do not trigger this subscription

@@ -1,0 +1,40 @@
+{
+  "type": "table",
+  "title": "Choose a baseline by its permission set",
+  "columns": [
+    "Managed policy",
+    "Broad workload changes",
+    "DescribeOrganization",
+    "Fit for this baseline"
+  ],
+  "rows": [
+    [
+      "PowerUserAccess",
+      "Yes",
+      "Explicitly allowed",
+      "Closest offered fit"
+    ],
+    [
+      "AdministratorAccess",
+      "Yes",
+      "Allowed",
+      "Adds general administration"
+    ],
+    [
+      "SystemAdministrator",
+      "Selected job-function actions",
+      "Not included",
+      "Missing a required action"
+    ],
+    [
+      "ReadOnlyAccess",
+      "No",
+      "Allowed",
+      "Cannot provision workloads"
+    ]
+  ],
+  "footnote": "Managed policies can change. PowerUserAccess is a broad starting point, not proof of exact least privilege.",
+  "emphasis_rows": [
+    0
+  ]
+}

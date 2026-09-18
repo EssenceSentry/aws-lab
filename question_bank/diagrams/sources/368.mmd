@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Scale tasks and their EC2 capacity through separate controls
+accDescr: Reconciliation demand launches tasks or increases service desired counts. Their CPU and memory placement requirements drive an ECS capacity provider, which adjusts the EC2 Auto Scaling fleet. Completed work frees capacity for managed scale-in.
+D[Reconciliation or reporting demand]:::inputData --> T[Launch report tasks<br/>or scale ECS service tasks]:::process
+T --> R[Task placement requirements<br/>CPU and memory]:::process
+R --> C[Capacity provider managed scaling]:::decision
+C --> E[EC2 Auto Scaling capacity<br/>Place pending tasks]:::process
+E --> F[Tasks finish<br/>Free capacity can scale in]:::output

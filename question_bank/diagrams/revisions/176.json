@@ -1,0 +1,57 @@
+{
+  "question_id": "176",
+  "base_record_sha256": "c0795eac3249198c9f65350da7423b08ac9924960165df663a110917882f8cd7",
+  "record": {
+    "id": "176",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company runs EC2 and RDS workloads in several AWS Regions and manages access through IAM. Security needs durable audit records of management API activity across every enabled Region, including global-service events. Logs must be readable only by authorized auditors, encrypted with a customer managed KMS key, and independently verifiable for alteration after delivery.\n\nWhich design meets all of these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a single-Region trail in us-east-1 that includes global-service events. Send management events to a restricted S3 bucket with SSE-KMS, enable signed digest delivery, and schedule integrity validation."
+      },
+      {
+        "id": "2",
+        "text": "Create a multi-Region trail with global-service management events and a restricted SSE-KMS S3 destination. Use SNS log-delivery notifications as the sole evidence that delivered files have not been altered."
+      },
+      {
+        "id": "3",
+        "text": "Create a multi-Region trail with global-service management events. Use a restricted S3 bucket with SSE-S3 encryption, enable signed digest delivery, and schedule integrity validation."
+      },
+      {
+        "id": "4",
+        "text": "Create a multi-Region trail that records management events and includes global-service events. Deliver to a restricted S3 bucket using the customer managed KMS key, permit CloudTrail delivery and authorized auditor decryption, and enable and regularly perform log-file integrity validation."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Multi-Region coverage and global-service inclusion address different event sources. Restricted S3 access and the KMS key policy protect confidentiality. CloudTrail log-file integrity validation supplies signed digest files, and a separate validation process uses them to detect changes to the delivered log history.\n\n<<1>> includes global services but omits management activity for regional resources outside the single trail Region. Including IAM events does not make a single-Region trail multi-Region.\n\n<<2>> reports delivery, not subsequent integrity. An SNS notification cannot cryptographically establish that a log object is unchanged.\n\n<<3>> encrypts the objects, but fails the explicit customer managed KMS key requirement. SSE-S3 and SSE-KMS are distinct encryption choices.\n\nEnable digest delivery and actually validate it; enabling the feature does not run validation automatically. Encryption does not establish tamper evidence, and tamper detection does not itself prevent deletion. Trail event collection covers supported API activity regardless of whether the caller used the console, an SDK, or the CLI, so those interfaces do not require separate trails.\n\nAWS documentation (checked September 18, 2026): [CloudTrail Region and global-service coverage](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html); [CloudTrail SSE-KMS encryption](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html); [CloudTrail log integrity validation](https://docs.aws.amazon.com/en_en/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/176.mmd",
+  "diagram_alt": "A multi-Region trail captures the required sources, while access controls and digest validation separately address confidentiality and integrity.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multi-Region trails record events in enabled Regions and include global service events, while event selection determines operation coverage."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/encrypting-cloudtrail-log-files-with-aws-kms.html",
+      "checked_on": "2026-09-18",
+      "supports": "SSE-KMS permissions control log confidentiality and the selected KMS key must be in the log bucket Region."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/en_en/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudTrail delivers signed digest files when integrity validation is enabled, and a subsequent validation procedure checks log changes or deletion."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Separated Region coverage, KMS confidentiality, and cryptographic integrity, and replaced interface-specific trails with plausible designs missing one stated control."
+  ],
+  "review_status": "authored"
+}

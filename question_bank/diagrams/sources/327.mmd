@@ -1,0 +1,19 @@
+flowchart TB
+accTitle: Shared subnet, separate resource ownership
+accDescr: The management account enables RAM organization sharing, the network owner shares a subnet to an OU, and participants own their application resources inside that subnet.
+M["Management account
+enable RAM organization sharing"]:::inputData
+M -.-> R["RAM share
+principal: Customers OU"]
+subgraph N["Network account owns VPC"]
+V["VPC, subnet and route tables"]:::storage
+S["Shared private subnet"]:::storage
+V --> S
+end
+S --> R
+R --> A["Participant account A
+creates its EC2 instances"]:::output
+R --> B["Participant account B
+creates its EC2 instances"]:::output
+A -.->|Placement| S
+B -.->|Placement| S

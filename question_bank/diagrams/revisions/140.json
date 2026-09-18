@@ -1,0 +1,53 @@
+{
+  "question_id": "140",
+  "base_record_sha256": "d91178c39a79227bc25b453a75a07461d592502ff77b424793dde94f62435bd8",
+  "record": {
+    "id": "140",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is migrating a Java application and MongoDB database to AWS. It must preserve the application's code and general architecture, although deployment and connection settings can change. A completed compatibility test confirms that the application's commands, drivers and behavior work with the selected Amazon DocumentDB version. The application and database must remain recoverable after a single Availability Zone fails, with database compute already available in another zone.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the Java application in an EC2 Auto Scaling group behind an ALB across multiple Availability Zones. Migrate to an instance-based DocumentDB cluster with a primary and at least one replica in another Availability Zone."
+      },
+      {
+        "id": "2",
+        "text": "Containerize the Java application with App2Container and deploy it to a multi-AZ EKS cluster. Replace MongoDB with DynamoDB tables."
+      },
+      {
+        "id": "3",
+        "text": "Deploy the Java application through Elastic Beanstalk across multiple Availability Zones. Replace MongoDB with an Aurora MySQL cluster and replicas."
+      },
+      {
+        "id": "4",
+        "text": "Run the Java application in a multi-AZ EC2 Auto Scaling group behind an ALB. Use a DocumentDB cluster with one primary instance and no replicas, relying on its replicated storage for database compute failover."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct under the stated compatibility test. The application tier spans zones, and a DocumentDB replica in a different zone provides an existing instance that can be promoted when the primary fails. The application must reconnect and retry through the appropriate cluster endpoint during failover.\n\n<<2>> changes the database API and data model to DynamoDB, requiring application changes despite the container tooling. <<3>> similarly changes the database to a relational engine; a managed Java deployment does not remove that incompatibility. <<4>> confuses storage durability with compute availability. Replicated storage does not create a running replica in another zone, and a single-instance cluster must attempt to recreate its primary after failure.\n\nDocumentDB compatibility is workload-specific, not a guarantee for every MongoDB application. Validate supported APIs, operators, indexes, drivers and behavior for the selected version. The scenario explicitly supplies that evidence; without it, a no-code-change migration to DocumentDB would not be established.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/documentdb/latest/devguide/mongo-apis.html\nhttps://docs.aws.amazon.com/documentdb/latest/devguide/failover.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/140.mmd",
+  "diagram_alt": "An existing replica in another Availability Zone is promoted after a primary failure, and the application reconnects to the promoted instance.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/mongo-apis.html",
+      "checked_on": "2026-09-18",
+      "supports": "DocumentDB implements a defined set of MongoDB-compatible APIs and has compatibility differences."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/failover.html",
+      "checked_on": "2026-09-18",
+      "supports": "Replica promotion provides failover, while a single-instance cluster must recreate its primary."
+    }
+  ],
+  "editorial_notes": [
+    "Made the existing DocumentDB compatibility assessment central and stated that deployment settings may change without code changes.",
+    "Distinguished cross-AZ storage replication from pre-provisioned replica compute and removed implied zero-interruption guarantees."
+  ],
+  "review_status": "authored"
+}

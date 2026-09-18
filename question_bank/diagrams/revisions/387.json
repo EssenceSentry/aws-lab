@@ -1,0 +1,57 @@
+{
+  "question_id": "387",
+  "base_record_sha256": "3fcff78955fc969b2cab39e717c58882f415a4361bb766254062edb0c850a702",
+  "record": {
+    "id": "387",
+    "exam_domain": "Design for New Solutions",
+    "question": "A team runs a machine-learning pipeline as a JSONPath Step Functions Standard workflow. It needs prompt email alerts when a Task, Map, or Parallel state fails after its configured retries are exhausted, and when an execution fails outside those states' catchers. Alerts must identify the failing execution and provide its original diagnostic input. Authorized references to durably stored input are acceptable instead of embedding large or sensitive payloads.\n\nWhich design provides the required error coverage and preserves diagnostic input?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an SNS topic with a confirmed email subscription. Add States.Runtime catchers to the workflow states and route them to an SNS publishing task, relying on those catchers for all execution failures."
+      },
+      {
+        "id": "2",
+        "text": "Match failed Standard executions with EventBridge and email only the event payload. Rely on the event to always contain complete input and to be delivered for every failure without reconciliation."
+      },
+      {
+        "id": "3",
+        "text": "Enable X-Ray and add States.ALL catchers to the workflow states. Leave each catcher at its default ResultPath and email its output, relying on States.ALL to cover every error."
+      },
+      {
+        "id": "4",
+        "text": "Preserve input in an object envelope and durable references. Use an explicit States.DataLimitExceeded catcher and a final States.ALL catcher with ResultPath $.error, then publish to SNS. Add external FAILED/TIMED_OUT monitoring, delivery retries, and reconciliation for failures outside local catchers."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Option <<4>> preserves evidence and covers two failure scopes. For a caught state error, ResultPath=$.error adds the error to the existing input object before the SNS publishing task runs. Without that setting, the catcher's default replaces the input with the error. Preserve each state's diagnostic input or reference before execution, and retain the original execution reference separately when it differs.\n\nStates.ALL must be alone in its catcher and placed last. It does not catch States.DataLimitExceeded or States.Runtime. Current Step Functions documentation permits an explicitly named DataLimitExceeded catcher; Runtime errors terminate the execution and need the external path. Standard-workflow failure and timeout events can trigger alerts through EventBridge. Their delivery is best effort and input can be omitted for size, so use durable references, notification retries, reconciliation, and duplicate suppression. SNS email is asynchronous rather than an instantaneous-delivery guarantee.\n\nOption <<1>> relies on an uncatchable runtime error and misses ordinary task failures. Option <<2>> assumes guaranteed event delivery and complete payloads. Option <<3>> loses the original input and overstates States.ALL coverage; tracing is diagnostic evidence, not an email notification mechanism. After notifying about an unrecoverable caught failure, end with a Fail state if the execution should retain failed status.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html\nhttps://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html\nhttps://docs.aws.amazon.com/step-functions/latest/dg/eventbridge-integration.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/387.mmd",
+  "diagram_alt": "Local errors are merged into preserved input, while external failures use monitored execution status and durable diagnostic references.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Task/Map/Parallel catchers, retry ordering, States.ALL exclusions, explicitly catchable DataLimitExceeded and uncatchable Runtime."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html",
+      "checked_on": "2026-09-18",
+      "supports": "JSONPath catcher ResultPath preserves original input when adding the error under a field."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/eventbridge-integration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard-only execution events, FAILED/TIMED_OUT matching, best-effort delivery and size-related payload omission."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the repaired catch-all exceptions, explicitly allowed durable input references, and replaced literal immediate/all-errors claims with two-scope monitoring and reconciliation. Key 4 unchanged."
+  ],
+  "review_status": "authored"
+}

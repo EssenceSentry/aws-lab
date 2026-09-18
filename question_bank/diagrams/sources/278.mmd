@@ -1,0 +1,11 @@
+sequenceDiagram
+accTitle: Membership and administrative access require separate setup
+accDescr: After an invitation is accepted, member administrators create role trust and permissions, and the authorized management role assumes that member role.
+participant M as Management account
+participant A as Existing member account
+M->>A: Send organization invitation
+A->>M: Accept invitation
+Note over A: Create admin role and trust designated caller
+Note over M: Allow caller to assume member role
+M->>A: STS AssumeRole
+A-->>M: Temporary role credentials

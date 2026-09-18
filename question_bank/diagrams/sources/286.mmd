@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: A scan becomes searchable through text extraction and indexing
+accDescr: Original scans remain in S3, extracted text and identifiers populate OpenSearch, and the website queries the index before retrieving an authorized original.
+A["Original scans in S3"] --> B["Textract text extraction"]
+B --> C["Text + metadata + object ID"]
+C --> D["Multi-AZ OpenSearch index"]
+E["Multi-AZ website"] -->|Search words| D
+D -->|Matching object IDs| E
+E -->|Read selected original| A
+class A,D storage
+class B,C inputData
+class E output

@@ -1,0 +1,28 @@
+{
+  "type": "table",
+  "title": "Purchase model and failure capacity solve different problems",
+  "columns": [
+    "Capacity layer",
+    "Provisioning choice",
+    "Design requirement"
+  ],
+  "rows": [
+    [
+      "Required service baseline",
+      "On-Demand\nEligible RI discount applies",
+      "Spread across AZs"
+    ],
+    [
+      "Failure headroom",
+      "On-Demand headroom, healthy before failure",
+      "Surviving AZs can meet the target"
+    ],
+    [
+      "Flexible burst capacity",
+      "Diversified Spot pools",
+      "Application tolerates interruption"
+    ]
+  ],
+  "footnote": "A low purchase price does not guarantee replacement availability. Validate the surviving fleet under peak load.",
+  "emphasis_rows": []
+}

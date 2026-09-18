@@ -1,0 +1,57 @@
+{
+  "question_id": "338",
+  "base_record_sha256": "bcc1cbd25db44187afcf9a3fe8d041766c46dfba566b3aa89041983e8592cd96",
+  "record": {
+    "id": "338",
+    "exam_domain": "Design for New Solutions",
+    "question": "A retailer loads a new dataset into Amazon OpenSearch Service each week. Indexes are actively queried for 7 days, then queried rarely until deletion at 90 days. Older queries can wait for a cold index to be attached before searching. Complete copies of the processed datasets are also kept in a customer-owned S3 bucket for 7 years; audit retrieval is rare and can wait at least 48 hours. Each source object is large enough for archival storage to be economical.\n\nThe domain supports UltraWarm and cold storage. Capacity tests show that a smaller hot tier can handle indexing and the most recent week's searches. Which design is most cost-effective?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Reduce hot nodes to the tested capacity and retain an appropriately sized UltraWarm tier. Use ISM to move older indexes from hot to UltraWarm and then cold, deleting them at 90 days. Transition the independent S3 dataset copies to Glacier Deep Archive after 90 days."
+      },
+      {
+        "id": "2",
+        "text": "Keep the existing hot-node count and add UltraWarm capacity. Delete both the OpenSearch indexes and the S3 dataset copies after 90 days."
+      },
+      {
+        "id": "3",
+        "text": "Reduce hot nodes and move older indexes through UltraWarm to cold with ISM. Retain the independent S3 dataset copies in S3 Standard-IA for the full 7 years."
+      },
+      {
+        "id": "4",
+        "text": "Replace every hot data node with UltraWarm nodes. Index new records directly into UltraWarm, query detached cold indexes directly, and archive the S3 dataset copies after 90 days."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> separates the interactive index lifecycle from long-term data retention. Hot nodes still ingest new data. Completed indexes move through UltraWarm before cold storage; a cold index must be attached to UltraWarm for queries. Right-sizing the hot tier reduces persistent compute and attached-storage costs. The separate S3 copies remain available for the full retention period, with Deep Archive matching their rare access and tolerant restore deadline.\n\nOption <<2>> violates the 7-year retention requirement and leaves unnecessary hot capacity. Option <<3>> preserves the data but pays for immediate-access storage that the audit workload does not require. Option <<4>> gives UltraWarm an unsupported indexing role and treats cold storage as directly queryable compute. UltraWarm indexes are read-only, and cold storage has no attached compute until reattached.\n\nApply S3 lifecycle rules to the company's dataset bucket, not OpenSearch's service-managed internal storage. Deep Archive requires a restore before reading and has a 180-day minimum storage duration, which the 7-year retention comfortably exceeds.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/opensearch-service/latest/developerguide/cold-storage.html\nhttps://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/338.mmd",
+  "diagram_alt": "Deleting an aged OpenSearch index does not delete the independent seven-year S3 archive; cold search requires a warm attachment.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cold-storage.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cold requires UltraWarm, attachment before querying, and supported hot-to-warm-to-cold ISM transitions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html",
+      "checked_on": "2026-09-18",
+      "supports": "Hot indexing versus read-only UltraWarm and tier cost purpose."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "checked_on": "2026-09-18",
+      "supports": "Deep Archive delayed access and 180-day minimum duration versus Standard-IA immediate access."
+    }
+  ],
+  "editorial_notes": [
+    "Added explicit reattachment tolerance, independent processed-data copies, long retention and tested hot capacity. Corrected unsupported direct hot-to-cold, cold-node, and UltraWarm indexing assumptions; key 1 retained."
+  ],
+  "review_status": "authored"
+}

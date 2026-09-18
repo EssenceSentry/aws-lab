@@ -1,0 +1,62 @@
+{
+  "question_id": "237",
+  "base_record_sha256": "6ea56f8b2de606bd5538be8a76f186a2c0d1c6a082fdd01bd7c81c2728d0f34c",
+  "record": {
+    "id": "237",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An educational mobile application uses API Gateway, Lambda, and DynamoDB. Short exam-submission bursts exceed the table's write capacity, although average traffic fits its existing capacity. Students can receive an acceptance receipt once a submission is durably queued and obtain the grading result asynchronously within a few minutes. Immutable exam images also load slowly for users worldwide.\n\nWhich design absorbs the bursts without maintaining peak write capacity continuously and improves static-asset delivery?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Provision DynamoDB continuously for the full burst peak and keep synchronous submission processing. Store images in S3 and have clients download them directly from the bucket."
+      },
+      {
+        "id": "2",
+        "text": "Place S3 images behind CloudFront, but keep the existing synchronous Lambda-to-DynamoDB submission path and its current capacity unchanged."
+      },
+      {
+        "id": "3",
+        "text": "Have the API durably enqueue submissions in SQS before acknowledging acceptance. Process them with idempotent Lambda consumers at bounded concurrency, write results to DynamoDB, and serve S3 images through CloudFront."
+      },
+      {
+        "id": "4",
+        "text": "Migrate submissions to RDS for MySQL with a Multi-AZ standby and read replicas, keep synchronous writes without a queue, and serve S3 images through CloudFront."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. SQS separates acceptance from completion, allowing the system to absorb a short input burst and process it at a rate the database can sustain. Lambda event-source concurrency limits and batch sizing help control the drain rate. CloudFront caches the images near viewers, using S3 as the durable origin.\n\n<<1>> spends continuously on peak database capacity and omits edge caching for the images.\n\n<<2>> improves image delivery but leaves the documented write-burst bottleneck unchanged.\n\n<<4>> adds a database migration without providing the required buffering. A Multi-AZ standby addresses availability, and read replicas do not distribute the application's writes across independent writers.\n\nA queue does not increase the table's write capacity or imply immediate grading. Return an accepted submission identifier, then expose completion or failure through a status API or notification. Use stable submission IDs for idempotency because SQS/Lambda processing can repeat. Monitor queue age, retries, dead-letter handling, and the end-to-end result delay. If sustained arrivals exceed processing capacity, the backlog will keep growing and additional capacity is required.\n\nAWS documentation (checked September 18, 2026): [Lambda processing of SQS queues](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html); [SQS event-source concurrency limits](https://docs.aws.amazon.com/lambda/latest/api/API_ScalingConfig.html); [CloudFront cache hits and origin fetches](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html); [RDS read replicas and standbys](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/237.mmd",
+  "diagram_alt": "Queue acceptance provides a fast receipt while bounded workers produce results later, and image requests use an independent edge cache.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda polls SQS, deletes successfully processed messages, and can deliver duplicates; handlers must be idempotent and handle retry failures."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/api/API_ScalingConfig.html",
+      "checked_on": "2026-09-18",
+      "supports": "MaximumConcurrency limits concurrent Lambda invocations for an SQS event source using standard polling mode."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront serves cached objects from edge locations and fetches missing content from configured origins, including S3 and HTTP servers."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "MySQL read replicas serve separately routed reads using asynchronous replication; a conventional Multi-AZ DB-instance standby cannot serve reads."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Integrated the asynchronous acknowledgment assumption into the scenario, replaced invalid CloudFront Functions asset hosting with a plausible partial fix, and specified idempotency, bounded concurrency and backlog monitoring."
+  ],
+  "review_status": "authored"
+}

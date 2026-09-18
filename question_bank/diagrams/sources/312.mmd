@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Separate reporting reads from transactional writes
+accDescr: After a validated migration, transactions use the RDS MySQL primary while reporting uses provisioned read replicas with acceptable lag.
+W[Transactional application]:::inputData --> P[(RDS MySQL Multi-AZ<br/>Primary endpoint)]:::storage
+R[Month-end reporting]:::inputData --> A[(Read replica A)]:::storage
+R --> B[(Read replica B)]:::storage
+P -. asynchronous replication .-> A
+P -. asynchronous replication .-> B
+N[Provision before peak<br/>Check readiness and lag]:::reference -.-> R

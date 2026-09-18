@@ -1,0 +1,33 @@
+{
+  "type": "table",
+  "title": "Audit coverage and log protection are separate controls",
+  "columns": [
+    "Requirement",
+    "Control",
+    "What it establishes"
+  ],
+  "rows": [
+    [
+      "Regional and global API history",
+      "Multi-Region CloudTrail\nManagement + global service events",
+      "Relevant account activity is collected"
+    ],
+    [
+      "Confidentiality",
+      "SSE-KMS and restricted policies",
+      "Only authorized readers decrypt logs"
+    ],
+    [
+      "Tamper evidence",
+      "Signed digests and validation",
+      "Modification or deletion can be detected"
+    ],
+    [
+      "Immutable retention",
+      "S3 Object Lock compliance mode",
+      "Protected versions cannot be deleted early"
+    ]
+  ],
+  "footnote": "Encryption does not replace digest validation, and versioning alone does not enforce immutable retention.",
+  "emphasis_rows": []
+}

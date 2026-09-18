@@ -1,0 +1,62 @@
+{
+  "question_id": "270",
+  "base_record_sha256": "007a889fe4a79c41d235687e8eaeac92d62d1a2fa1556265257c5321bdc64e1b",
+  "record": {
+    "id": "270",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A weather service publishes a complete forecast every 15 minutes as immutable S3 tile objects. Clients fetch only the tiles they need. Each refresh must discover the current published forecast from the origin, and all tiles displayed together must belong to that forecast version. Large unchanged tiles should remain cacheable at CloudFront edges. The S3 origin must remain private.\n\nWhich publication and caching design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Overwrite tiles at their existing URLs and cache every URL for 15 minutes. Treat the common TTL as a guarantee that all edge locations switch versions simultaneously."
+      },
+      {
+        "id": "2",
+        "text": "Write and verify the complete tile set under a new versioned path before updating a small latest manifest. Disable CloudFront caching for the manifest with zero minimum, default and maximum TTLs, and send no-store for browser caches. Have clients pin the manifest version, cache its immutable tile URLs, and use OAC with a restricted S3 bucket policy."
+      },
+      {
+        "id": "3",
+        "text": "Enable S3 Versioning, overwrite the same tile keys and retain long CloudFront TTLs. Rely on bucket versioning alone to update every CloudFront cache key."
+      },
+      {
+        "id": "4",
+        "text": "Update the latest manifest after each tile is produced, allowing it to reference a forecast whose remaining tiles are still being generated. Cache the manifest and tiles for one day."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. An uncached manifest identifies one completed forecast version, while immutable versioned URLs allow its large tiles to remain cached. Publishing the manifest only after verification prevents clients from selecting an incomplete tile set.\n\n<<1>> mistakes cache expiration for a coordinated publication event. Individual objects and edge caches can refresh at different times.\n\n<<3>> confuses S3 object version history with client-visible versioned URLs. Bucket versioning does not automatically change CloudFront cache keys or invalidate old responses.\n\n<<4>> exposes an incomplete forecast and then caches that discovery response, violating both completeness and refresh requirements.\n\nThe CachingDisabled policy uses zero for all three TTL values. A zero minimum alone does not disable caching. Ensure browsers and other intermediaries also avoid caching the manifest. Use OAC request signing and a policy scoped to the intended distribution. Retain old tiles while clients can reference them, and coordinate concurrent publishers. This pattern establishes version consistency, not a fixed end-user latency guarantee.\n\nOfficial AWS references (checked September 18, 2026): [Managed cache policies](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html). [Versioned filenames](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/UpdatingExistingObjects.html). [Private S3 origin with OAC](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html). [S3 consistency](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/270.mmd",
+  "diagram_alt": "A publication and retrieval sequence separates the uncached version manifest from cacheable immutable tiles delivered through a private S3 origin.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html",
+      "checked_on": "2026-09-18",
+      "supports": "CachingDisabled uses zero minimum, default and maximum TTL; positive minimum can override no-store."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/UpdatingExistingObjects.html",
+      "checked_on": "2026-09-18",
+      "supports": "Versioned URL paths differ from S3 bucket versioning and avoid waiting for old cached URLs to expire."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC signing and bucket permissions allow private origin access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "Strong read-after-write for new and overwritten objects."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2 and previous repaired publication model. Tightened wording and added an explicit bucket-policy requirement; retained cache, concurrency and old-version qualifications."
+  ],
+  "review_status": "authored"
+}

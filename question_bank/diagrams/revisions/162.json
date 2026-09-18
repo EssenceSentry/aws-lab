@@ -1,0 +1,57 @@
+{
+  "question_id": "162",
+  "base_record_sha256": "f3ee0fb2c3d8df792e7784eedd39b488d4fd1bd1c8d4337099674c9f3df6370c",
+  "record": {
+    "id": "162",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An AWS organization contains PROD, DEV, and UAT accounts. Organization-wide EC2 Reserved Instance discount sharing is enabled for all three accounts. PROD owns 10 zonal Reserved Instances in us-west-2 but has no running instances. DEV runs five instances in us-west-2 that match every billing attribute required by those reservations. UAT runs five otherwise matching instances in us-west-1.\n\nWhich current usage receives the Reserved Instance discount?",
+    "options": [
+      {
+        "id": "1",
+        "text": "The five matching DEV instances receive the discount. The UAT instances do not."
+      },
+      {
+        "id": "2",
+        "text": "The five UAT instances receive the discount. DEV must purchase its own reservations."
+      },
+      {
+        "id": "3",
+        "text": "All five DEV instances and all five UAT instances receive the discount because their instance types match."
+      },
+      {
+        "id": "4",
+        "text": "Neither account receives the discount because only PROD can consume reservations that PROD purchased."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. With sharing enabled, unused reservation discounts can apply to eligible matching usage in another member account. DEV satisfies the stated matching conditions. UAT is in a different Region, so the us-west-2 reservations do not cover its usage. Five matching running instances consume five reservation equivalents; the remaining commitment is not used by the described workload.\n\n<<2>> excludes the matching account and includes an account in the wrong Region.\n\n<<3>> treats instance type as the only matching attribute. Region remains a required boundary even when discounts are shared.\n\n<<4>> ignores organization-wide discount sharing. Purchasing an RI does not require all covered instances to run in the purchaser's account.\n\nDistinguish the billing discount from capacity placement. Regional and zonal RIs have different flexibility rules, and sharing a discount does not automatically share the purchasing account's zonal capacity reservation. An RI is a pricing commitment, not a special running instance.\n\nAWS documentation (checked September 18, 2026): [EC2 RI billing sharing](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidatedbilling-other.html); [Zonal and regional reservations](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/con-bill-blended-rates.html); [Reservation discount sharing preferences](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/162.diagram.json",
+  "diagram_alt": "Only matching DEV usage consumes the shared reservation discount because UAT is in another Region.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidatedbilling-other.html",
+      "checked_on": "2026-09-18",
+      "supports": "Unused EC2 reservations can discount eligible matching usage in other accounts on the consolidated bill."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/con-bill-blended-rates.html",
+      "checked_on": "2026-09-18",
+      "supports": "Regional reservation discounts apply within a Region, while zonal reservations have additional scope and matching requirements."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html",
+      "checked_on": "2026-09-18",
+      "supports": "The management account can enable or disable sharing for specified accounts and configure organization-wide or group-based sharing."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Removed distracting purchase API details and ambiguous cross-account AZ names while keeping the zonal reservation and explicit matching assumptions."
+  ],
+  "review_status": "authored"
+}

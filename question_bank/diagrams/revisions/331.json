@@ -1,0 +1,57 @@
+{
+  "question_id": "331",
+  "base_record_sha256": "a948d90c4677c5c8b02c6e5653bfc901576bd589bc1e3777801588da6c7b38f8",
+  "record": {
+    "id": "331",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company organizes its AWS member accounts into business-unit OUs. Each unit's finance readers need detailed usage and cost analysis for their own accounts, but must not see other units' costs. Accounts occasionally move between OUs, and historical costs must remain attributed to the unit that owned the account when the usage occurred.\n\nWhich reporting design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create a Cost and Usage Report in one member account per OU. Use that account's report as the source for a dashboard covering all sibling accounts in the OU."
+      },
+      {
+        "id": "2",
+        "text": "Export consolidated Cost and Usage Report data from the management account to S3. Join usage account IDs to a dated account-to-OU mapping, then publish QuickSight dashboards with row-level security for business-unit readers."
+      },
+      {
+        "id": "3",
+        "text": "Use Trusted Advisor recommendations from the management account as the source of billing line items. Group the recommendations by each account's current OU and publish the results to finance readers."
+      },
+      {
+        "id": "4",
+        "text": "Export consolidated Cost and Usage Report data to S3 and publish one shared QuickSight dataset. Add an editable OU filter to the dashboard and allow each reader to select a business unit."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Option <<2>> solves both attribution and authorization. Consolidated billing data identifies the usage account. A maintained mapping with effective dates associates each usage period with the correct historical OU. QuickSight row-level security then restricts finance readers to their authorized units; keep unrestricted dataset ownership with trusted reporting administrators.\n\nOption <<1>> does not turn a member account's report into an OU-wide report. Option <<3>> substitutes optimization recommendations for detailed billing records and also rewrites history when accounts move. Option <<4>> offers a convenience filter that readers can change; it is not an access-control boundary.\n\nAn Organizations hierarchy is not automatically a complete, historical cost-allocation dimension in every billing line item. Preserve account membership history and join it deliberately. Use dataset security or separately scoped datasets to enforce who can see the resulting rows.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/cur/latest/userguide/cur-consolidated-billing.html\nhttps://docs.aws.amazon.com/quick/latest/userguide/restrict-access-to-a-data-set-using-row-level-security.html\nhttps://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/331.mmd",
+  "diagram_alt": "A temporal account-to-OU join assigns historical costs, and a separate row-level security rule controls reader access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/cur-consolidated-billing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Member reports are limited to their own account; organization billing reports provide the central reporting context."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/quick/latest/userguide/restrict-access-to-a-data-set-using-row-level-security.html",
+      "checked_on": "2026-09-18",
+      "supports": "RLS limits reader rows; dataset owners retain full visibility."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html",
+      "checked_on": "2026-09-18",
+      "supports": "Management-account CUR 2.0 includes all member-account costs and usage, with account identity and tag data."
+    }
+  ],
+  "editorial_notes": [
+    "Made historical OU attribution and reader isolation explicit. Replaced implausible service combinations with reporting-scope and authorization distractors; key 2 unchanged."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,52 @@
+{
+  "question_id": "223",
+  "base_record_sha256": "a20c589d41045f4ecef5f33177f8896ab4b4d4fa09e7f6c1edc56a7fff1c3555",
+  "record": {
+    "id": "223",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An enterprise is integrating acquired companies whose employees reside in multiple self-managed Active Directory domains and forests. It already operates AWS Managed Microsoft AD with private connectivity to those directories. Employees need one portal for AWS Organizations accounts and supported SAML business applications, using their existing credentials. The team wants to avoid operating new federation servers.\n\nWhich design meets these requirements with the least administration?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy and maintain a new AD FS farm, configure SAML federation separately for the AWS accounts, and maintain application relying-party integrations."
+      },
+      {
+        "id": "2",
+        "text": "Use IAM Identity Center with AWS Organizations, connect it to AWS Managed Microsoft AD, configure the necessary two-way trusts to the self-managed directories, and assign directory groups to permission sets and supported applications."
+      },
+      {
+        "id": "3",
+        "text": "Connect IAM Identity Center to one AD Connector attached to a single acquired domain, and use it to discover users from all other domains and forests."
+      },
+      {
+        "id": "4",
+        "text": "Use IAM Identity Center with AWS Managed Microsoft AD, but establish only one-way trusts that permit authentication from the self-managed directories."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Identity Center centralizes account and application assignments. For its Managed AD integration, two-way trust supports both authentication and the directory metadata access needed to synchronize users and groups. Existing group membership can drive the assigned access.\n\n<<1>> can provide federation, but introduces the federation-server operations and account-by-account integration work the enterprise wants to avoid. Form-based sign-in does not inherently invalidate SSO.\n\n<<3>> exceeds AD Connector's Identity Center scope. That integration accesses users and groups in the domain to which the connector attaches, rather than discovering all trusted domains or forests. AD Connector is a valid alternative for suitable single-domain requirements.\n\n<<4>> omits the reverse trust required by Identity Center for this integration. A trust direction that suffices for a different Windows use case does not necessarily satisfy Identity Center.\n\nConfigure DNS, network reachability, trust permissions, and group assignments. Directory authentication establishes identity; permission sets and application assignments determine the access that identity receives.\n\nAWS documentation (checked September 18, 2026): [Identity Center with self-managed AD](https://docs.aws.amazon.com/singlesignon/latest/userguide/connectonpremad.html); [Identity Center workforce access](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/223.mmd",
+  "diagram_alt": "Two-way directory trust supports Identity Center authentication and metadata access, while assignments authorize account and application access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/connectonpremad.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed AD integration requires two-way trust for Identity Center, while AD Connector supports only its directly connected domain for this integration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+      "checked_on": "2026-09-18",
+      "supports": "Identity Center centralizes workforce account and application assignments using an existing identity source."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Added the multi-domain/forest constraint and existing Managed AD context, corrected the false claim that AD Connector cannot coexist with application SSO, and removed the assertion that forms defeat SSO."
+  ],
+  "review_status": "authored"
+}

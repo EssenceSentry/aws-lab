@@ -1,0 +1,47 @@
+{
+  "question_id": "213",
+  "base_record_sha256": "c3bb859d0a0945fd614d6fe3de1681188da93906ac64f0ed6a090090d2fface1",
+  "record": {
+    "id": "213",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An application runs 20 identical EC2 instances in each of three Availability Zones and requires 60 healthy instances at peak. After one zone fails, the approved recovery window allows tested automation to launch 10 instances in each surviving zone. The company requires matching launch capacity to be reserved before an incident. Quotas are approved, and finance accepts charges for unused reserved capacity but no new one-year or three-year commitment.\n\nWhich approach meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase the Auto Scaling maximum to 90 and purchase a Compute Savings Plan to cover the additional usage during recovery."
+      },
+      {
+        "id": "2",
+        "text": "Configure a diversified Spot fleet for 20 replacement instances and request that capacity when a zone fails."
+      },
+      {
+        "id": "3",
+        "text": "Create active, immediate-use On-Demand Capacity Reservations for 30 matching instances in each zone. Use 20 slots per zone during normal operation and preserve the other 10 for the recovery workflow."
+      },
+      {
+        "id": "4",
+        "text": "Purchase new one-year zonal Reserved Instances for the additional matching capacity in every zone, and configure recovery launches to use it."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Each surviving zone retains 20 running instances and has 10 unused matching reserved slots. Launching those replacements restores 60 instances across the two healthy zones without relying solely on capacity available at incident time.\n\n<<1>> supplies a discount and a scaling limit, not a capacity reservation.\n\n<<2>> diversifies capacity risk but does not reserve the recovery slots.\n\n<<4>> can provide a zonal capacity benefit, but violates the prohibition on a new annual commitment. Regional Reserved Instances do not provide that capacity benefit.\n\nReservations must be active, match the required zone and instance attributes, and remain available to this workload. Immediate-use reservations have no fixed term, but unused capacity is charged. This reserves launch capacity; it does not provide already-running headroom or guarantee the full application's recovery time.\n\nOfficial AWS references (checked September 18, 2026): [Capacity Reservation behavior](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/213.diagram.json",
+  "diagram_alt": "The two surviving zones each contribute ten pre-reserved launch slots, restoring forty running instances to sixty.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Immediate-use term, attribute matching, capacity versus discount and zonal RI distinctions"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3 and the earlier defensible analogous replacement. Kept the recovery-window and no-term constraints that distinguish launch reservations from running spare instances or zonal RIs."
+  ],
+  "review_status": "authored"
+}

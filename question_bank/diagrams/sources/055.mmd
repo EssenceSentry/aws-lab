@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Versioned infrastructure and independent content delivery
+accDescr: One reviewed template revision produces separate shared and application stacks across environments, while a CloudFront distribution caches origin content.
+V["Versioned templates + revision ID"] --> C["Review change sets"]
+C --> S["Shared stack
+VPC + data resources"]
+C --> A["Application stack
+compute + distribution"]
+S -->|"exported resource references"| A
+A --> D["Development / production deployments"]
+A --> F["CloudFront distribution"]
+U["Users"] --> F
+F -->|"cache miss"| O["Application / S3 origin"]
+F -->|"cache hit"| U

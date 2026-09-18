@@ -1,0 +1,52 @@
+{
+  "question_id": "347",
+  "base_record_sha256": "475e27e5063e8841eac6fe24e09704a1bb890e59f3c0575fb8b503d6a0f53c74",
+  "record": {
+    "id": "347",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A legacy application on EC2 sends email through an on-premises SMTP relay. The application supports SMTP authentication and STARTTLS, but the company will not rewrite its mail-sending code. The company has verified its sending domain in Amazon SES, obtained appropriate sending access, and allowed outbound TCP port 587.\n\nHow should a solutions architect configure the application to send email through SES?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create SES SMTP credentials for the sending Region. Configure the regional SES SMTP endpoint, port 587, and STARTTLS, and store the SMTP credentials securely."
+      },
+      {
+        "id": "2",
+        "text": "Attach an IAM role with SES permissions to the EC2 instance. Send its temporary access key ID and secret access key directly as SMTP credentials to the regional SES endpoint over TLS."
+      },
+      {
+        "id": "3",
+        "text": "Create a long-term IAM access key with SES permissions. Use the access key ID and the unmodified secret access key as the SMTP username and password on port 587."
+      },
+      {
+        "id": "4",
+        "text": "Replace the SMTP mail-sending integration with an AWS SDK call to the SES API, and authorize the API calls through the EC2 instance role."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. SES exposes regional SMTP endpoints and requires an encrypted connection. Port 587 supports STARTTLS. The application must authenticate with SES SMTP credentials for that Region.\n\n<<2>> is incorrect because temporary IAM role credentials are not supported as SES SMTP credentials. An instance role is appropriate for SES API calls, not direct SMTP authentication.\n\n<<3>> supplies the wrong password. An SES SMTP password differs from the IAM secret access key. A supported derivation process can convert a long-term IAM secret into an SMTP password; passing the secret unchanged does not perform that conversion.\n\n<<4>> is a valid way to send mail through the SES API without embedded long-term credentials, but requires the code change that the scenario excludes.\n\nChoose the authentication mechanism for the interface being used: SMTP credentials for SMTP, or IAM authorization for API calls.\n\nOfficial AWS references (checked September 18, 2026): [Connecting to SES SMTP](https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html). [SES SMTP credentials](https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/347.mmd",
+  "diagram_alt": "The SMTP client establishes TLS before supplying regional SES SMTP credentials and submitting a message.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html",
+      "checked_on": "2026-09-18",
+      "supports": "SES SMTP connections require TLS and support STARTTLS on port 587."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html",
+      "checked_on": "2026-09-18",
+      "supports": "Regional SMTP passwords differ from IAM secrets and cannot be derived from temporary credentials."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved SMTP migration intent while making SDK use an otherwise valid alternative that fails the no-rewrite requirement."
+  ],
+  "review_status": "authored"
+}

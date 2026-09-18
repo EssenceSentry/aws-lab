@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Optimize the two measured latency sources
+accDescr: Static assets are served from edge caches while repeated flight queries use a versioned result cache. Publishing a new data version changes the query cache namespace.
+U[Global browser]:::external -->|Static asset request| E[CloudFront edge cache]:::storage
+E -->|Cache miss| S[(S3 versioned assets)]:::storage
+U -->|Flight data request| W[Regional web tier]:::process
+W --> C{Current-version result cached?}:::decision
+C -->|Yes| R[Return result]:::output
+C -->|No| D[(RDS flight data)]:::storage
+D -->|App caches query result| K[(ElastiCache query results)]:::storage
+K --> R
+P[Publish next data version]:::inputData -.->|New cache-key version| C

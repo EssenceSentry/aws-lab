@@ -1,0 +1,41 @@
+{
+  "type": "table",
+  "title": "Audit controls answer different questions",
+  "columns": [
+    "Control",
+    "Question answered",
+    "Mechanism"
+  ],
+  "rows": [
+    [
+      "Organization trail",
+      "Whose activity?",
+      "Management and member accounts"
+    ],
+    [
+      "Multi-Region scope",
+      "Which locations?",
+      "Enabled Regions"
+    ],
+    [
+      "Object Lock compliance",
+      "Can retained versions be deleted?",
+      "365-day enforced retention"
+    ],
+    [
+      "Integrity validation",
+      "Were delivered files changed?",
+      "Validate signed digest chain"
+    ],
+    [
+      "Delivery monitoring",
+      "Are new logs arriving?",
+      "Check delivery and configuration"
+    ]
+  ],
+  "footnote": "Encryption protects confidentiality; it does not establish coverage, immutability or successful delivery.",
+  "emphasis_rows": [
+    2,
+    3
+  ]
+}

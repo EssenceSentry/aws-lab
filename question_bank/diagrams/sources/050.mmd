@@ -1,0 +1,17 @@
+stateDiagram-v2
+accTitle: Accepted does not mean paid
+accDescr: An order is durably queued before processing, and idempotency prevents redelivery from creating a second order.
+[*] --> Authenticated
+Authenticated --> Accepted: Validate order, enqueue in SQS
+Accepted: Pending status returned to customer
+Accepted --> Processing: Worker receives message
+Processing --> Completed: Payment succeeds, persist result
+Processing --> Retry: Transient downstream error
+Retry --> Processing: Redelivery with same order ID
+Processing --> Rejected: Permanent business failure
+Completed --> [*]
+Rejected --> [*]
+note right of Processing
+Idempotent operations
+reuse the order ID
+end note

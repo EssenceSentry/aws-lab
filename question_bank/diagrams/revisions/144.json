@@ -1,0 +1,52 @@
+{
+  "question_id": "144",
+  "base_record_sha256": "28a60e9b87f850f009715b98445f0d021a7fcee71e87669e40515f29c253f40d",
+  "record": {
+    "id": "144",
+    "exam_domain": "Design for New Solutions",
+    "question": "A WordPress container on ECS Fargate requires a database password in an environment variable. The password must not appear in plaintext in the task definition. The company requires scheduled database-credential rotation using a managed secret lifecycle, and accepts replacing tasks after rotation. It wants the least custom credential-management code.\n\nWhich design should the architect use?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store the password as a Parameter Store SecureString and reference it through the container secrets property. Rely on KMS key rotation to change the database password."
+      },
+      {
+        "id": "2",
+        "text": "Store the password in the task definition environment property. Encrypt the task-definition source file in S3 and restrict access to that file."
+      },
+      {
+        "id": "3",
+        "text": "Store the password in Secrets Manager and configure database-credential rotation. Reference the secret ARN through the container secrets property, grant the execution role the required retrieval and decryption permissions, and deploy replacement tasks after rotation."
+      },
+      {
+        "id": "4",
+        "text": "Store the password in Secrets Manager and configure rotation. Grant retrieval permission only to the task IAM role, while configuring ECS to inject the secret at startup through the secrets property."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. ECS uses the task execution role to retrieve a referenced secret during task startup, so the task definition contains its reference rather than its plaintext value. Secrets Manager can rotate the database credential; new tasks then receive the current value.\n\n<<1>> supports encrypted storage and injection but confuses KMS key rotation with database-password rotation. Rotating an encryption key does not update the database's credential.\n\n<<2>> protects the source file but still registers a plaintext environment value in the task definition.\n\n<<4>> grants the wrong role for this injection path. The task role authorizes application API calls; startup injection requires execution-role permissions. An application that fetches secrets at runtime would use the task role instead.\n\nInjected environment variables remain accessible inside the container and to sufficiently privileged diagnostic tools. Rotation does not refresh an existing process's environment; task replacement must be coordinated with the credential-rotation strategy.\n\nOfficial AWS references (checked September 18, 2026): [ECS secret injection](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html). [Secret rotation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/144.mmd",
+  "diagram_alt": "A rotated secret is injected only when a new task starts; existing task environments retain their startup values.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "Execution-role retrieval, ARN references, environment visibility, and task restart on rotation"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+      "checked_on": "2026-09-18",
+      "supports": "Rotation updates a secret and the corresponding database or service credential"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Distinguished credential rotation from encryption-key rotation, execution from task role, and startup injection from live refresh."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,18 @@
+sequenceDiagram
+accTitle: CloudFront substitutes the body only after an origin error
+accDescr: A normal response passes through, while an origin 502 causes CloudFront to obtain an independent S3 error page and preserve the 502 status.
+participant U as Viewer
+participant C as CloudFront
+participant A as ALB origin
+participant S as Private S3
+U->>C: Request application
+C->>A: Forward request
+alt Origin succeeds
+A-->>C: 200 and application body
+C-->>U: 200 and application body
+else Origin returns 502
+A-->>C: 502
+C->>S: Error-page path, signed by OAC
+S-->>C: Branded HTML
+C-->>U: 502 and branded HTML
+end

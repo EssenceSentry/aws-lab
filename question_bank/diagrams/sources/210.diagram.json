@@ -1,0 +1,27 @@
+{
+  "type": "table",
+  "title": "Assign each workload to a feasible transfer path",
+  "columns": [
+    "Workload",
+    "Path and required premise"
+  ],
+  "rows": [
+    [
+      "Critical VMs",
+      "MGN online replication, measured seed plus churn fits 12 Mbps."
+    ],
+    [
+      "Noncritical VMs",
+      "Quiesced exports, reserved Terminal upload, supported VM import."
+    ],
+    [
+      "All 40 TB over the existing link",
+      "At least about 309 days, longer than three months."
+    ]
+  ],
+  "footnote": "Terminal access, transport, image validation, and the shutdown window are part of the plan.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "question_id": "018",
+  "base_record_sha256": "db3086f5e801f3a3a9645836e9074f9eb932e80403a072828e39a540ab427258",
+  "record": {
+    "id": "018",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs a Node.js application on EC2 instances and on-premises Linux servers. Database credentials are already stored as a SecureString parameter encrypted with a customer managed KMS key. The company wants automated application deployments to both environments. Servers must retrieve the credential over TLS using scoped, temporary AWS credentials, and deployment artifacts must not contain the plaintext secret.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Elastic Beanstalk to manage both EC2 and on-premises servers. Install SSM Agent on all servers and give the Beanstalk service role permission to read the parameter."
+      },
+      {
+        "id": "2",
+        "text": "Use CodeDeploy for both environments, but install only SSM Agent on the targets. Configure a CodeDeploy service role and expect that role to provide runtime AWS credentials to every server."
+      },
+      {
+        "id": "3",
+        "text": "Install CodeDeploy agents and configure a CodeDeploy service role. Use an EC2 instance-profile role and supported, periodically refreshed IAM role-session credentials for registered on-premises targets. Give runtime identities scoped parameter-read and KMS-decrypt permissions and retrieve the secret with the AWS SDK over TLS."
+      },
+      {
+        "id": "4",
+        "text": "Download the decrypted parameter during the build and package it in the application bundle. Use CodeDeploy agents and temporary target credentials to install that bundle on both environments."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> separates deployment orchestration from target authentication and runtime secret access. CodeDeploy supports EC2 and registered on-premises targets. EC2 can use instance-profile credentials; on-premises registration supports refreshed IAM role-session credentials. SecureString values are encrypted with KMS and retrieved with the relevant permissions.\n\n<<1>> assumes Elastic Beanstalk manages on-premises application servers. <<2>> substitutes SSM Agent for the required CodeDeploy agent and mistakes a service role for target credentials. <<4>> puts the plaintext database secret into deployment artifacts, violating the stated custody requirement.\n\nA CodeDeploy service role and an application runtime identity have different responsibilities. The AWS SDK can retrieve parameters without SSM Agent. Protect the returned plaintext in process memory and avoid logging it. Secrets Manager is appropriate when dedicated secret rotation and lifecycle features are required.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/codedeploy/latest/userguide/register-on-premises-instance-iam-session-arn.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/secure-string-parameter-kms-encryption.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/018.mmd",
+  "diagram_alt": "CodeDeploy orchestration does not replace the separate temporary identities used by target applications to read encrypted configuration.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/register-on-premises-instance-iam-session-arn.html",
+      "checked_on": "2026-09-18",
+      "supports": "CodeDeploy on-premises registration with periodically refreshed STS role-session credentials."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/secure-string-parameter-kms-encryption.html",
+      "checked_on": "2026-09-18",
+      "supports": "SecureString KMS encryption, authorized decryption, and TLS protection."
+    }
+  ],
+  "editorial_notes": [
+    "Made existing SecureString use and temporary credentials explicit. Removed SSM Agent as a prerequisite for SDK parameter reads and distinguished the service role from target identities. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

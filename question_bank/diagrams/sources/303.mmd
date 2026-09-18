@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Preventive access controls and drift response run on separate paths
+accDescr: An S3 access attempt encounters Block Public Access and disabled ACL authorization. Separately, access-control API changes are logged and routed to alerting and scoped configuration restoration.
+P[Access attempt]:::inputData --> G[Block Public Access<br/>ACL authorization disabled]:::process
+G --> D[Reject public authorization paths]:::output
+C[Access-control API change]:::inputData --> T[CloudTrail and EventBridge<br/>Relevant management and data events]:::process
+T --> N[SNS security alert]:::warning
+T --> R[Scoped remediation<br/>Restore approved settings]:::process
+R -.->|Configuration restored| G

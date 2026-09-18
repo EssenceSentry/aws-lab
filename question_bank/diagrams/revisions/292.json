@@ -1,0 +1,67 @@
+{
+  "question_id": "292",
+  "base_record_sha256": "6ec661f9c28175c7f61e68445ef24f441890dd622c5911115ad48c21bf7b328b",
+  "record": {
+    "id": "292",
+    "exam_domain": "Design for New Solutions",
+    "question": "A gaming company is moving a custom UDP player-matching service to an EC2 Auto Scaling group across Availability Zones. The UDP application protocol cannot change. The network policy requires subnet-level filtering that permits the application's traffic and the load balancer's health checks while denying other unnecessary traffic. Shield Advanced protection is already configured.\n\nWhich actions should the architect take? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a Network Load Balancer with a UDP listener and a matching target group, and publish a Route 53 alias record to the NLB DNS name."
+      },
+      {
+        "id": "2",
+        "text": "Use an Application Load Balancer with an HTTPS listener and send the unchanged UDP application packets to that listener."
+      },
+      {
+        "id": "3",
+        "text": "Associate a WAF web ACL with the NLB and use it to permit UDP while rejecting other transport protocols."
+      },
+      {
+        "id": "4",
+        "text": "Configure network ACLs for the NLB and target subnets to permit required UDP traffic, appropriate TCP/HTTP/HTTPS health checks, and the corresponding return traffic. Deny other unnecessary traffic."
+      },
+      {
+        "id": "5",
+        "text": "Use a CloudFront distribution in front of the load balancer to proxy the unchanged custom UDP protocol."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<4>> are correct. An NLB supports a UDP listener for the existing protocol. The subnet ACLs provide the requested network-layer filtering, but their rules must permit both the application path and the health-check path in the required directions.\n\n<<2>> substitutes an HTTP application load balancer for a custom UDP endpoint. An HTTPS listener does not accept arbitrary UDP application packets.\n\n<<3>> uses WAF outside its supported resource and protocol scope. WAF evaluates web requests and cannot be attached to an NLB as a generic UDP firewall.\n\n<<5>> treats an HTTP content-delivery service as a transparent custom UDP proxy.\n\nNLB health checks for a UDP service use TCP, HTTP, or HTTPS. Make the health-check endpoint reflect actual application health instead of simply proving that a TCP port is open. ACLs are stateless, so return and ephemeral-port traffic must be considered explicitly. An alias to the NLB DNS name uses its managed set of addresses rather than pinning users to one zonal IP. NLB security groups can provide additional controls, but do not replace this scenario's required subnet ACL policy.\n\nAWS documentation (checked September 18, 2026): [NLB protocol support](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html); [NLB health checks](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-health-checks.html); [NLB subnet network ACL requirements](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html); [Resources protected by AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/292.diagram.json",
+  "diagram_alt": "UDP service traffic, non-UDP health checks and return traffic require separate allowances in stateless subnet ACLs.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "NLB target groups support UDP, and Route 53 alias target health can reflect the load balancer target groups."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-health-checks.html",
+      "checked_on": "2026-09-18",
+      "supports": "UDP services use TCP, HTTP or HTTPS health checks, ideally tied to actual UDP service health."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html",
+      "checked_on": "2026-09-18",
+      "supports": "NLB and target subnet ACLs must permit listener, health-check and return traffic in the relevant directions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html",
+      "checked_on": "2026-09-18",
+      "supports": "Web ACLs protect CloudFront distributions and supported regional HTTP resources such as ALBs, not NLBs or S3 buckets directly."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 1 and 4. Repaired DNS to use an NLB alias and made subnet-level filtering an explicit requirement. Retained necessary health-check and return exceptions instead of an unsafe deny-all-non-UDP rule."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,52 @@
+{
+  "question_id": "264",
+  "base_record_sha256": "8a315908205eae9683a233ee50aad66a3e84d6307e7688bde0d9341798142977",
+  "record": {
+    "id": "264",
+    "exam_domain": "Design for New Solutions",
+    "question": "After an application deployment, new On-Demand instances in an EC2 Auto Scaling group fail the ALB health check and are quickly terminated by Auto Scaling. The instances remain reachable through Systems Manager Session Manager, but termination interrupts investigation. Existing central logs do not explain the failure. An incident window allows a brief suspension of automated termination while operators retain sufficient healthy serving capacity.\n\nWhich action most directly preserves the existing failing instances for immediate diagnosis?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable more verbose application logging for the next deployment while leaving the current termination behavior unchanged."
+      },
+      {
+        "id": "2",
+        "text": "Enable EC2 API termination protection on the failing instances and rely on it to block Auto Scaling health-check replacement."
+      },
+      {
+        "id": "3",
+        "text": "Create a separate instance from the application image and reproduce the problem there, allowing the original failing instances to terminate."
+      },
+      {
+        "id": "4",
+        "text": "Temporarily suspend the Auto Scaling Terminate process, connect to a failing instance with Session Manager, and capture the evidence. Resume the process after the controlled investigation."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Suspending `Terminate` prevents Auto Scaling from performing its instance terminations while the existing machine can be examined. Session Manager provides the already-configured management channel.\n\n<<1>> may improve later evidence, but does not preserve the current failing machine.\n\n<<2>> confuses EC2 API termination protection with Auto Scaling behavior. That protection does not prevent Auto Scaling from terminating an unhealthy instance.\n\n<<3>> can help reproduce a defect, but adds setup and loses the exact instance state that operators need immediately.\n\nThis is a temporary diagnostic measure, not a repair. It also suspends normal scale-in and can affect other scaling processes. Track the suspension, preserve sufficient serving capacity, and restore automation promptly. A narrower suspension of ReplaceUnhealthy may be appropriate in another incident, but is not one of the proposed actions. Neither approach protects against every external termination cause.\n\nOfficial AWS references (checked September 18, 2026): [Suspend Auto Scaling processes](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-suspend-resume-processes.html). [EC2 termination protection](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingDisableAPITermination.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/264.mmd",
+  "diagram_alt": "A temporary diagnostic workflow preserves failing instance state and explicitly restores Auto Scaling termination after evidence collection.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-suspend-resume-processes.html",
+      "checked_on": "2026-09-18",
+      "supports": "Terminate process controls scale-in and health-related terminations; process suspension is intended for bounded troubleshooting."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingDisableAPITermination.html",
+      "checked_on": "2026-09-18",
+      "supports": "API termination protection does not prevent Auto Scaling health replacement or scale-in."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added On-Demand, working Session Manager, approved short incident window, healthy-capacity and explicit resume assumptions; distinguished preservation from repair."
+  ],
+  "review_status": "authored"
+}

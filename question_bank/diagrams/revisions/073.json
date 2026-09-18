@@ -1,0 +1,47 @@
+{
+  "question_id": "073",
+  "base_record_sha256": "732de0a887ee27706fbbd1c11f4eed251ce27587a0762291363b393e7f753bf3",
+  "record": {
+    "id": "073",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses a Storage Gateway stored volume to expose a 5 TB filesystem to an on-premises application through iSCSI. Scheduled snapshots have completed successfully in AWS. After a data-center outage, both the application server and gateway are unavailable. The company wants to recover the filesystem on an EC2 instance from the latest completed snapshot.\n\nWhich recovery procedure should it use?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Locate the gateway’s internal S3 objects and mount their bucket directly as the EC2 instance’s original filesystem."
+      },
+      {
+        "id": "2",
+        "text": "Attach the unavailable on-premises gateway’s iSCSI volume directly to the EC2 instance without restoring a snapshot."
+      },
+      {
+        "id": "3",
+        "text": "Restore the gateway snapshot directly into an EFS filesystem and mount that filesystem on the EC2 instance."
+      },
+      {
+        "id": "4",
+        "text": "Create an EBS volume from the completed gateway snapshot in the EC2 instance’s Availability Zone. Attach the volume and mount the recovered filesystem."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> uses the supported block-storage recovery path. Stored Volume Gateway keeps primary data on premises and asynchronously creates EBS snapshots in AWS. A completed snapshot can create an EBS volume that an EC2 recovery instance can attach and mount. Validate filesystem compatibility and application recovery steps.\n\n<<1>> assumes the service’s internal storage is an ordinary, directly readable S3 file bucket. <<2>> depends on the failed gateway and local disks remaining available. <<3>> assumes EFS can directly restore an EBS-format volume snapshot.\n\nThe recoverable point is the latest successfully completed snapshot. The outage does not make unsent local writes available in AWS, and recovery cannot depend on creating a new snapshot from the unavailable site.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/073.mmd",
+  "diagram_alt": "The recovery path starts at an already completed cloud snapshot, while unsent local writes remain unavailable.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Stored volumes keep local primary data, back up as EBS snapshots and can restore to EC2-attached EBS volumes."
+    }
+  ],
+  "editorial_notes": [
+    "Made pre-outage completed snapshots explicit to remove the impossible post-outage snapshot step."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Collect and query metrics separately from logs
+accDescr: One configured agent sends guest metrics and log events to different CloudWatch stores; a report workflow queries both and saves results.
+E[Windows and Linux EC2] --> A[Configured CloudWatch agent]
+A -->|Memory and filesystem metrics| M[CloudWatch Metrics]
+A -->|Application log events| L[CloudWatch Logs]
+M -->|Metric retrieval| R[Monthly report workflow]
+L -->|Logs Insights query| R
+R -->|Write completed results| S[(S3 reports)]
+SS[Systems Manager] -.->|Install and configure| A
+class E,SS inputData
+class M,L,S storage
+class R output

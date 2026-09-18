@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Independent controls for protected cached reports",
+  "columns": [
+    "Control",
+    "Decision it governs"
+  ],
+  "rows": [
+    [
+      "Viewer TLS certificate and policy",
+      "Whether the browser can use an unencrypted connection"
+    ],
+    [
+      "Authorization and cache key",
+      "Who may read a report and which response variant matches"
+    ],
+    [
+      "Origin freshness header plus TTL bounds",
+      "How long a matching cached report can be reused"
+    ],
+    [
+      "Origin HTTPS policy",
+      "Encryption on the separate CloudFront-to-origin connection"
+    ]
+  ],
+  "footnote": "Correct transport settings do not establish authorization or cache freshness.",
+  "emphasis_rows": [
+    0,
+    2
+  ]
+}

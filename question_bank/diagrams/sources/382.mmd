@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: A direct port filter can miss a transitive dependency
+accDescr: The entry server calls a worker, which calls a rules server. All three belong in the validated move group, although the rules server is not directly connected to the entry server.
+subgraph G["Validated move group"]
+A["Entry server"]:::inputData -->|"TCP 1000"| B["Worker"]
+B -->|"TCP 1000"| C["Rules server"]
+end
+F["Direct neighbors of Entry"]:::inputData -.-> B
+F -.->|"Misses transitive link"| C
+V["Inventory coverage + owner review"]:::decision --> G
+G --> W["Schedule together in a wave"]:::output

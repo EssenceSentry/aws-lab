@@ -1,0 +1,13 @@
+flowchart TB
+accTitle: Authorize the destination key before snapshot copying
+accDescr: A destination snapshot copy grant permits encryption with its customer managed KMS key. Redshift copies source snapshots to that Region for later restoration.
+subgraph SRC[Source Region]
+C[Encrypted Redshift cluster]:::process --> S[(Source snapshot)]:::storage
+end
+subgraph DST[Destination Region more than 500 miles away]
+K[Customer managed KMS key]:::storage --> G[Snapshot copy grant]:::reference
+D[(Destination encrypted snapshot)]:::storage --> R[Restore new Redshift cluster]:::process
+end
+G -.->|Authorizes destination encryption| D
+S -->|Managed cross-Region snapshot copy| D
+R --> O[Recovery after restore and validation]:::output

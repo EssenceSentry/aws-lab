@@ -1,0 +1,53 @@
+{
+  "question_id": "189",
+  "base_record_sha256": "68c31b191a230b13bce0efbde210d0df408ee04ec021ef3b300cb19b58ab9150",
+  "record": {
+    "id": "189",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An existing identity broker on EC2 authenticates employees against an on-premises LDAP directory and maps each employee to an approved AWS role. The company has no SAML or OIDC provider. The broker may use only its EC2 instance-role credentials; persistent IAM user keys are prohibited. It must issue temporary AWS credentials to authenticated employees.\n\nWhich credential exchange meets these constraints?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Authorize the broker's instance role to call AssumeRole on approved roles that trust it. After validating the LDAP identity and role mapping, sign the call with instance-role credentials and return the resulting role-session credentials."
+      },
+      {
+        "id": "2",
+        "text": "Call AssumeRole with the employee's LDAP username and password as the AWS API credentials, without signing as an AWS principal."
+      },
+      {
+        "id": "3",
+        "text": "Call GetFederationToken with the broker's temporary instance-role credentials after the LDAP login succeeds."
+      },
+      {
+        "id": "4",
+        "text": "Create an IAM user for each employee and configure IAM to validate that user's password directly against the existing LDAP server."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The broker uses LDAP to authenticate the employee, then uses its own authorized AWS role session to call STS. The trusted mapping chooses an approved target role, and both caller permissions and target trust must permit the assumption.\n\n<<2>> treats an LDAP password as an AWS request-signing credential. <<3>> selects an API that requires long-term caller credentials rather than the temporary role credentials available here. <<4>> assumes ordinary IAM users provide a direct LDAP password-validation integration.\n\nGetFederationToken is valid in other architectures, but it does not satisfy this caller constraint. Assuming another role from an existing role session is role chaining and limits the new session to at most one hour. Return and protect all three credential components: access key, secret key and session token.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html\nhttps://docs.aws.amazon.com/STS/latest/APIReference/API_GetFederationToken.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/189.mmd",
+  "diagram_alt": "Employee authentication uses LDAP, while the STS request is signed by the EC2 broker role and returns a time-limited chained session.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "checked_on": "2026-09-18",
+      "supports": "Authorized role sessions can assume another role and chained sessions have a one-hour limit."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetFederationToken.html",
+      "checked_on": "2026-09-18",
+      "supports": "GetFederationToken requires long-term caller credentials rather than temporary role credentials."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the repaired API choice and caller-credential constraint.",
+    "Replaced meta-commentary about the earlier repair with a direct teaching explanation and explicit role-chaining duration."
+  ],
+  "review_status": "authored"
+}

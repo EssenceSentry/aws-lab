@@ -1,0 +1,72 @@
+{
+  "question_id": "010",
+  "base_record_sha256": "ef2c5dc774d9fb2633da205482c23a5f7f899dc406c7dd0d26d76b6d809ccddb",
+  "record": {
+    "id": "010",
+    "exam_domain": "Design for New Solutions",
+    "question": "A financial-data provider processes market feeds in an on-premises Apache Kafka cluster. It wants to forward the output into Kinesis Data Streams and push near-real-time updates to authorized browser clients. Its AWS application already uses API Gateway WebSocket APIs. The primary link between the data center and AWS must avoid the public internet and support predictable network performance.\n\nWhich actions form a suitable solution? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Provision redundant Direct Connect connectivity and the required private virtual interfaces and routing between the data center and the AWS VPC."
+      },
+      {
+        "id": "2",
+        "text": "Run Kafka consumers on EC2 and use the Kinesis Client Library to publish their output records into Kinesis Data Streams."
+      },
+      {
+        "id": "3",
+        "text": "Run Kafka consumers on an EC2 Auto Scaling group and use the Kinesis Producer Library to publish records into Kinesis Data Streams. Coordinate Kafka consumer groups and handle retries."
+      },
+      {
+        "id": "4",
+        "text": "Configure a Lambda event-source mapping for the stream. Track authorized WebSocket connection IDs and have the function call the API Gateway Management API PostToConnection operation to send updates."
+      },
+      {
+        "id": "5",
+        "text": "Create an AppSync GraphQL API and send callbacks to the existing API Gateway WebSocket clients by using the AppSync @connections endpoint."
+      },
+      {
+        "id": "6",
+        "text": "Use Site-to-Site VPN tunnels over the public internet as the only data-center connection and rely on encryption to provide predictable dedicated-link performance."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "3",
+      "4"
+    ],
+    "explanation": {
+      "text": "Select <<1>>, <<3>>, and <<4>>. Direct Connect supplies a private network path; redundant connections address link resilience. Kafka consumers become Kinesis producers through KPL. A Lambda event-source mapping reads the stream, and the function sends updates to established WebSocket connections through PostToConnection.\n\n<<2>> reverses the Kinesis libraries: KCL is for consuming stream records, not publishing them. <<5>> assigns API Gateway’s @connections mechanism to AppSync and does not address the existing API. <<6>> encrypts traffic but still uses the public internet, contrary to the primary-path requirement.\n\nThe stream event source and the client connection lifecycle are separate. Authorize connections, retain their IDs, grant the sender connection-management permissions, and remove stale IDs. Configure retry and duplicate handling; dedicated connectivity alone does not guarantee application latency.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html\nhttps://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-kpl.html\nhttps://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html\nhttps://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/010.mmd",
+  "diagram_alt": "Kafka consumption, Kinesis production, stream processing, and WebSocket callbacks are separate steps.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html",
+      "checked_on": "2026-09-18",
+      "supports": "Direct Connect private connectivity and private virtual interfaces."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-kpl.html",
+      "checked_on": "2026-09-18",
+      "supports": "KPL writes producer records; KCL consumes records."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lambda event-source mappings read Kinesis records and invoke functions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html",
+      "checked_on": "2026-09-18",
+      "supports": "Authenticated PostToConnection callbacks to established WebSocket connections."
+    }
+  ],
+  "editorial_notes": [
+    "Made public-internet avoidance and the existing WebSocket API explicit to resolve viable alternatives. Corrected KCL/KPL and AppSync/API Gateway ownership. Answer IDs unchanged."
+  ],
+  "review_status": "authored"
+}

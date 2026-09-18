@@ -1,0 +1,52 @@
+{
+  "question_id": "033",
+  "base_record_sha256": "0e292037409f0f1eedf62a1d83456f3f151cae559e4eb20e7cb78efb1025b7e4",
+  "record": {
+    "id": "033",
+    "exam_domain": "Design for New Solutions",
+    "question": "A global mobile marketplace runs regional APIs and needs low-latency access to order-event metadata. Each event has a globally unique ID and is written in one Region. Users in other Regions may see a short replication delay. Payment settlement uses a separate authoritative system; this metadata store does not require cross-Region atomic transactions. The team wants local reads and writes without operating a custom replication service.\n\nWhich design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create independent DynamoDB tables in each Region and use custom Lambda consumers to copy writes, handle retries, and prevent replication loops."
+      },
+      {
+        "id": "2",
+        "text": "Create a DynamoDB global table with multi-Region eventual consistency and replicas in the required supported Regions. Have each API read and write its local replica."
+      },
+      {
+        "id": "3",
+        "text": "Use CloudFormation StackSets to create identical DynamoDB tables in each Region and rely on StackSets to synchronize the data written to those tables."
+      },
+      {
+        "id": "4",
+        "text": "Write metadata as objects to S3 buckets and configure cross-Region replication. Replace key-based database operations with object listings and custom metadata indexes."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Correct: <<2>>. DynamoDB global tables provide managed multi-active replication, allowing the regional APIs to use local replicas. The stated tolerance for replication delay and single-Region ownership of each event fit multi-Region eventual consistency (MREC).\n\n<<1>> can be built, but adds the replication, failure-handling, and loop-prevention code the team wants to avoid.\n\n<<3>> synchronizes infrastructure deployment, not application records written into the tables.\n\n<<4>> replicates objects but adds custom indexing to reproduce the stated database access pattern.\n\nDo not infer cross-Region transactional guarantees from multi-Region replication. MREC can expose writes at different times in different Regions and requires conflict-aware design when multiple Regions modify the same item. DynamoDB also offers multi-Region strong consistency with its own supported configurations; choose the mode from the actual consistency requirements.\n\nOfficial AWS references (checked 2026-09-18):\n[DynamoDB global tables](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html)\n[Global-table replication and transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables-CoreConcepts.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/033.mmd",
+  "diagram_alt": "MREC local acknowledgement precedes guaranteed visibility in another Region; the application permits this delay.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed multi-Region local reads and writes; MREC and MRSC modes"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables-CoreConcepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "MREC replication delay and transactional atomicity limited to the source Region"
+    }
+  ],
+  "editorial_notes": [
+    "Removed ambiguous financial-transaction guarantees by separating order metadata from settlement and stating eventual consistency and unique event ownership. Replaced unrelated Control Tower/Connect distractor with infrastructure-versus-data replication. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

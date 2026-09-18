@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Bound queue age before sending a location offer
+accDescr: A durable queue separates mobile ingestion from processing. Workers discard stale locations and send eligible offers through the device platform's mobile push service.
+M[Authenticated location event and timestamp]:::inputData --> Q[(SQS)]:::storage
+Q --> W[Scaled EC2 workers]:::process
+W --> F{Location still fresh?}:::decision
+F -->|No| X[Discard stale event]:::warning
+F -->|Yes| D[(DynamoDB nearby offers)]:::storage
+D -->|Worker publishes matching offer| S[SNS mobile endpoint]:::process
+S --> P[Platform push service]:::external
+P --> U[User device]:::output
+A[Monitor backlog age and total latency]:::reference -.-> W

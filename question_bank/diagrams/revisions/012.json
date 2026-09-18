@@ -1,0 +1,52 @@
+{
+  "question_id": "012",
+  "base_record_sha256": "60727c92ed4dd2552ca7b966fafdb9005f6c72c950b3d4eec561295d75e077a7",
+  "record": {
+    "id": "012",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A stateless application runs on 25 EC2 On-Demand Instances across three Availability Zones behind a Network Load Balancer. The fixed fleet is underused off peak and saturates during events. Load tests and usage forecasts establish that at least five instances are needed continuously and up to 30 instances meet forecast peak demand with the required latency. The five-instance baseline and instance configuration are expected to remain stable for three years.\n\nThe application is not designed to tolerate Spot interruptions. Which solution best balances performance and cost?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use an Auto Scaling group with a minimum of five and maximum of 30 instances, a tested CPU target-tracking policy, and scheduled pre-scaling for known events. Purchase matching three-year Reserved Instances for the five-instance baseline and use On-Demand pricing for excess usage."
+      },
+      {
+        "id": "2",
+        "text": "Use a fixed fleet of 25 Spot Instances behind the NLB. Enable EBS optimization and rely on the purchase discount to offset peak-period performance degradation."
+      },
+      {
+        "id": "3",
+        "text": "Use a fixed fleet of 30 Spot Instances behind the NLB. Configure interrupted instances to stop so the full serving capacity remains available until demand falls."
+      },
+      {
+        "id": "4",
+        "text": "Use an Auto Scaling group with a minimum of 15 and maximum of 25 instances. Purchase three-year Reserved Instances for all 15 baseline instances and use CPU target tracking."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> matches the commitment to the measured usage floor and adds capacity when demand rises. Target tracking adjusts the fleet, while scheduled scaling prepares for predictable events. Reserved Instances apply a billing discount to matching usage; they are not a separate type of running server.\n\n<<2>> retains insufficient peak capacity and introduces interruption risk. <<3>> adds peak capacity but cannot promise that interrupted Spot instances continue serving. <<4>> commits to more continuous capacity than required and caps the fleet below the tested peak need.\n\nUse measured latency and headroom to choose scaling targets, warm-up settings, and limits. Average CPU alone cannot prove a safe minimum fleet size. Savings Plans are another commitment model, but are outside the listed alternatives.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/012.diagram.json",
+  "diagram_alt": "A capacity table separates the five-instance commitment from variable capacity that reaches 30 instances at the tested peak.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html",
+      "checked_on": "2026-09-18",
+      "supports": "CPU target tracking, proportional utilization metrics, headroom, and warm-up."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reserved Instances are matching-use billing discounts with one- or three-year commitments."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced the unsafe inference that 25 instances at 20% CPU prove five are sufficient with explicit load-test evidence. Clarified RI billing versus capacity. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

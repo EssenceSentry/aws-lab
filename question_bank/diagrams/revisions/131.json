@@ -1,0 +1,53 @@
+{
+  "question_id": "131",
+  "base_record_sha256": "309feb12505b44501acc673b22698e7cc918843b22ec864f25702770b43326de",
+  "record": {
+    "id": "131",
+    "exam_domain": "Design for New Solutions",
+    "question": "A photo-sharing mobile application will serve millions of users. An existing backend authenticates users and maintains a trusted mapping from each user to an S3 object prefix. Mobile clients must upload and download directly from S3, and long-term AWS keys must not be embedded in the app. Bucket policies do not grant users additional access.\n\nWhich credential flow should the company implement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Have the backend validate the user and request a short-lived STS role session with a session policy restricted to that user's prefix. Return the temporary credentials and obtain a new authorized session before they expire."
+      },
+      {
+        "id": "2",
+        "text": "Create one IAM user with access to every user prefix and embed its access key and secret key in the app. Use the app interface to hide other users' objects."
+      },
+      {
+        "id": "3",
+        "text": "Have the backend issue STS credentials at registration and store that one credential set permanently in the app, without implementing credential renewal."
+      },
+      {
+        "id": "4",
+        "text": "Create a separate IAM user for every registered mobile user and provision long-term access keys into each installation of the app."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Authentication establishes the user, and the backend's trusted mapping determines the permitted S3 prefix. The backend assumes an authorized role with a session policy that narrows access for that session. The mobile client receives an access key, secret key and session token, then uses those temporary credentials for direct S3 requests.\n\n<<2>> exposes shared credentials with access to all users' data; interface restrictions do not enforce S3 authorization. <<3>> fails after the credentials expire: STS credentials cannot be made permanent by storing them. <<4>> creates a large population of long-lived IAM credentials and does not satisfy the prohibition on embedding such keys.\n\nA new session requires a fresh authorization decision based on the user's current access. Temporary credentials still need protection on the device. Session policies limit the role's existing permissions; they do not grant permissions that the role lacks.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html\nhttps://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/131.mmd",
+  "diagram_alt": "Temporary mobile sessions permit scoped S3 access until expiration and require renewed authorization for replacement credentials.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html",
+      "checked_on": "2026-09-18",
+      "supports": "Temporary credentials include a session token, expire, and must be replaced by a new credential set."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "checked_on": "2026-09-18",
+      "supports": "A session policy narrows the role session and cannot expand role permissions."
+    }
+  ],
+  "editorial_notes": [
+    "Removed unrelated Fraud Detector and Device Farm details.",
+    "Kept the trusted-backend solution and focused this item on credential custody and expiration, distinct from the LDAP policy-intersection item."
+  ],
+  "review_status": "authored"
+}

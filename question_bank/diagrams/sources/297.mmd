@@ -1,0 +1,7 @@
+flowchart TB
+accTitle: Install the stable dependency once per image version
+accDescr: Framework installation moves from every launch into the AMI build. Many later application instances reuse the prepared image before applying their current application release.
+B[Clean build instance]:::inputData --> I[Install and validate framework<br/>20 minutes at image build]:::process
+I --> A[(Versioned AMI)]:::storage
+A --> L[Launch application instances<br/>Framework already installed]:::process
+L --> R[Apply current app release<br/>Health check and serve]:::output

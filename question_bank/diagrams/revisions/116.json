@@ -1,0 +1,57 @@
+{
+  "question_id": "116",
+  "base_record_sha256": "20eab51d5b314a1abeb6101477dd2346b9dc49fd50373e39eb5247dd39873922",
+  "record": {
+    "id": "116",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An application on EC2 downloads objects whose keys it already knows from an S3 bucket in the same account. The bucket uses SSE-S3, and no bucket policy, permissions boundary, SCP, or endpoint policy adds permissions or denies the requests. An instance profile will be associated with the instance.\n\nWhich two policy components should the architect configure on the application's IAM role to allow this access? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "A permissions policy allowing s3:ListBucket on the bucket ARN, without any object actions."
+      },
+      {
+        "id": "2",
+        "text": "A trust policy allowing only the company's administrator role to assume the application role."
+      },
+      {
+        "id": "3",
+        "text": "A trust policy allowing the ec2.amazonaws.com service principal to perform sts:AssumeRole."
+      },
+      {
+        "id": "4",
+        "text": "A trust policy allowing only the s3.amazonaws.com service principal to assume the application role."
+      },
+      {
+        "id": "5",
+        "text": "A permissions policy allowing s3:GetObject on the required object ARNs in the bucket."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<5>> are correct. The trust policy identifies who can assume the role: the EC2 service in this design. The permissions policy authorizes what the resulting role session can do: retrieve the required S3 objects. The associated instance profile makes temporary role credentials available to the application.\n\n<<1>> authorizes listing object keys, not downloading their contents. Known-key downloads require `s3:GetObject`, and object actions use object ARNs rather than the bucket ARN alone.\n\n<<2>> authorizes a different principal to assume the role, so it does not establish EC2 service trust.\n\n<<4>> trusts S3 rather than EC2. S3 is the target service here, not the compute service obtaining the application's credentials.\n\nTrust and permissions answer separate questions. Resource-based policies can also participate in S3 authorization in other designs, and SSE-KMS would introduce relevant KMS permissions; the stem excludes those additional policy paths.\n\nOfficial AWS references (checked September 18, 2026): [EC2 role trust and permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html). [S3 identity policies](https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-policies-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/116.mmd",
+  "diagram_alt": "Role trust allows EC2 to obtain credentials, while object-scoped permissions determine what those credentials can retrieve.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 service trust, role permission policies, instance profiles and temporary credentials"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-policies-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "Separate bucket-list and object-access permissions and resource scoping"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 3 and 5. Scoped the question to role configuration, same-account access, known-key downloads, and SSE-S3 to remove competing resource-policy or KMS interpretations."
+  ],
+  "review_status": "authored"
+}

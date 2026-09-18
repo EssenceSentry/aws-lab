@@ -1,0 +1,52 @@
+{
+  "question_id": "361",
+  "base_record_sha256": "08c5133d44784c51172da7864c86a5ab8118603a763405a2d2da17e405b2dfc9",
+  "record": {
+    "id": "361",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An online retailer runs product browsing and checkout in one ECS service behind an ALB and CloudFront. Browsing consumes most of the capacity during sales, but the two modules currently scale together. Each module can be deployed as a separate service without changing its API. JWT authorization is already implemented with trusted signing keys.\n\nThe retailer wants independent scaling and better workload isolation while retaining ECS and minimizing application changes. Which design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy browsing and checkout as separate ECS services with distinct target groups and scaling policies. Route their URL paths with ALB rules, retain appropriate CloudFront behaviors, and keep JWT validation on each protected path."
+      },
+      {
+        "id": "2",
+        "text": "Migrate both modules to EKS deployments with separate scaling policies and replace the current ECS deployment and operating processes with Kubernetes equivalents."
+      },
+      {
+        "id": "3",
+        "text": "Add API Gateway with a JWT authorizer ahead of the existing combined ECS service, but keep one task definition and one shared scaling policy for both modules."
+      },
+      {
+        "id": "4",
+        "text": "Rewrite both modules as Lambda functions and replace their ECS runtime with separate API Gateway integrations and concurrency settings."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Each service has its own task count and demand metrics, so a browsing surge can add browsing capacity without forcing an equal checkout expansion. Separate target groups preserve module routing and health checks while retaining the current container platform.\n\n<<2>> can provide independent scaling, but violates the requirement to retain ECS and introduces an unnecessary platform migration.\n\n<<3>> improves API-level authentication controls without separating the shared compute and scaling boundary. Authorizing a request does not allocate independent module capacity.\n\n<<4>> changes the runtime and requires the rewrite the company wants to avoid.\n\nChoose metrics that reflect each module's bottleneck, maintain adequate checkout capacity, and ensure the underlying EC2 capacity scales if the services do not use Fargate. Shared databases and other dependencies can still couple the services. Route by the requested operation, not by treating a user role as a measure of current load. JWT claims must be accepted only after signature, issuer, audience, and expiry checks. Keep personalized checkout responses out of shared caches unless the cache configuration safely distinguishes users.\n\nAWS documentation (checked September 18, 2026): [ECS service scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html); [ALB listener rules](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-rules.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/361.mmd",
+  "diagram_alt": "Browsing and checkout traffic route to separate services, each controlled by its own demand metric and desired task count.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Each ECS service can scale its desired task count using its own demand metrics; service scaling is distinct from EC2 cluster capacity."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-rules.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB listener conditions such as path patterns route requests to the appropriate target groups."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Made the ECS-retention and separate-deployment constraints explicit. Removed fictitious EKS Service Connect behavior and separated JWT authorization from routing and capacity decisions."
+  ],
+  "review_status": "authored"
+}

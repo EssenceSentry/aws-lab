@@ -1,0 +1,72 @@
+{
+  "question_id": "154",
+  "base_record_sha256": "d6a924c63561c7ef7be9842edc02781a007ba4c7c88d6ed017947b180a7cd12d",
+  "record": {
+    "id": "154",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company exposes an HTTPS application through CloudFront and an ALB. It needs managed mitigation and resource-level notifications for network and transport-layer DDoS events, including SYN floods and UDP reflection. It also needs configurable HTTP inspection rules for SQL injection and cross-site scripting. The company has approved the required protection subscription.\n\nWhich actions meet these requirements together? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable Shield Advanced protection for the eligible public resources. Configure CloudWatch alarms for relevant Shield detection metrics and send notifications through SNS."
+      },
+      {
+        "id": "2",
+        "text": "Associate an AWS WAF web ACL with the application entry point and configure tested SQL injection, cross-site scripting, and application-specific request rules."
+      },
+      {
+        "id": "3",
+        "text": "Configure SNS notifications from an ALB request-count alarm and increase the Auto Scaling maximum capacity to handle traffic spikes."
+      },
+      {
+        "id": "4",
+        "text": "Increase the CloudFront cache hit ratio and rely only on the automatically included Shield Standard protection, without configuring attack-notification metrics or HTTP inspection rules."
+      },
+      {
+        "id": "5",
+        "text": "Route outbound VPC traffic through Network Firewall and configure an allowlist of external domains that application instances may contact."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<2>> are correct. Shield Advanced provides enhanced protection and detection metrics for protected resources; CloudWatch and SNS turn those signals into notifications. WAF examines HTTP request components for application-layer attack patterns, including SQL injection and cross-site scripting.\n\n<<3>> observes completed HTTP requests reaching the ALB. It neither identifies every network-layer flood nor supplies the requested mitigation and content inspection.\n\n<<4>> provides useful edge capacity and baseline DDoS protection but omits the stated notification and HTTP-rule controls.\n\n<<5>> controls outbound destinations, not the required public-entry threat path. Network Firewall is a VPC traffic inspection service and can be useful in a single VPC; it is not limited to multi-account governance.\n\nTune alarms and WAF rules against normal traffic and investigation needs. A DDoS detection metric warrants investigation, and filtering does not remove the need to fix vulnerable application code.\n\nOfficial AWS references (checked September 18, 2026): [Shield Advanced metrics](https://docs.aws.amazon.com/waf/latest/developerguide/shield-metrics.html). [Shield alerts with SNS](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-get-started-create-alarms.html). [WAF SQL injection rules](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-sqli-match.html). [WAF cross-site scripting rules](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-xss-match.html). [Network Firewall scope](https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/154.diagram.json",
+  "diagram_alt": "A comparison maps network-layer mitigation, event notification, HTTP inspection, and outbound filtering to their distinct control paths.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/shield-metrics.html",
+      "checked_on": "2026-09-18",
+      "supports": "Protected-resource detection metrics including DDoSDetected and layer 3/4 attack-volume metrics"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-get-started-create-alarms.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudWatch alarms and SNS notification configuration"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-sqli-match.html",
+      "checked_on": "2026-09-18",
+      "supports": "Inspection of malicious SQL in HTTP request components"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-xss-match.html",
+      "checked_on": "2026-09-18",
+      "supports": "Inspection of malicious scripts in HTTP request components"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed stateful VPC traffic inspection distinct from Firewall Manager governance"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 1 and 2. Added explicit alarm-to-SNS configuration and corrected the Network Firewall versus Firewall Manager confusion."
+  ],
+  "review_status": "authored"
+}

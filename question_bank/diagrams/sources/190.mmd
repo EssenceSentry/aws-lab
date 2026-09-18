@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: An identity allow cannot cross a narrower SCP ceiling
+accDescr: The root and OU permit S3, but the sole account SCP omits S3. Therefore an IAM allow does not make CreateBucket effective.
+R[Root SCPs<br/>S3 allowed]:::inputData --> O[OU SCPs<br/>S3 allowed]:::inputData
+O --> A[Account SCP<br/>CloudTrail and IAM only]:::warning
+A --> I{S3 inside every<br/>SCP allowance?}:::decision
+P[IAM policy<br/>Allows s3:CreateBucket]:::inputData --> I
+I -->|No| D[CreateBucket denied]:::output
+N[No other account-level<br/>SCP supplies an S3 allow]:::warning -. decisive assumption .-> A

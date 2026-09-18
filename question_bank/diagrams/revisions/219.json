@@ -1,0 +1,52 @@
+{
+  "question_id": "219",
+  "base_record_sha256": "6502765eb970bfb02d1338370c1bddbf2f9e8336fcdb706dbe5885c881db26e1",
+  "record": {
+    "id": "219",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations and must deploy the same approved regional application baseline into member accounts in Europe and Asia. It wants central updates, controlled rollout settings, and automatic deployment when new accounts join designated organizational units. The template contains resources supported in the target Regions and does not use nested stacks or macros. The company wants the least custom cross-account deployment code.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use ordinary CloudFormation stacks and maintain a custom script that assumes a role in every account and Region, tracks deployments, and detects newly added accounts."
+      },
+      {
+        "id": "2",
+        "text": "Enroll accounts in Control Tower and apply its governance controls, without creating an application-baseline deployment mechanism."
+      },
+      {
+        "id": "3",
+        "text": "Activate trusted access for CloudFormation StackSets and use service-managed permissions. Target the designated OUs and Regions, enable automatic deployments, and configure the removal/retention and rollout settings."
+      },
+      {
+        "id": "4",
+        "text": "Create a root CloudFormation stack with nested stacks in one account and Region, and pass the other account IDs and Region names as ordinary parameters without a cross-account deployment mechanism."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. StackSets deploy stack instances across accounts and Regions. Service-managed permissions integrate with Organizations, and configured automatic deployments cover new accounts in the targeted organizational units.\n\n<<1>> can implement the rollout, but requires custom account discovery, credential handling, and deployment tracking.\n\n<<2>> establishes governance and a landing zone; enrollment alone does not deploy this arbitrary application template. Customizations or additional deployment tooling would still be needed.\n\n<<4>> organizes resources within the root stack's deployment context. Passing account or Region names as values does not move those nested stacks into other deployment contexts.\n\nOrganizations supplies account structure and trusted integration; StackSets performs deployment. Select failure tolerance and concurrency, and decide whether stacks are retained when accounts leave scope. Service-managed StackSets do not deploy to the management account, so any required management-account baseline needs a separate path.\n\nOfficial AWS references (checked September 18, 2026): [StackSets deployment model](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html). [Service-managed StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-associate-stackset-with-org.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/219.mmd",
+  "diagram_alt": "An Organizations-aware StackSet combines a reusable template with account membership and selected Regions to drive deployments.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html",
+      "checked_on": "2026-09-18",
+      "supports": "Consistent stacks across accounts and Regions"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-associate-stackset-with-org.html",
+      "checked_on": "2026-09-18",
+      "supports": "Trusted access, OU targets, automatic deployments and management-account exclusion"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Distinguished Organizations integration from the StackSets deployment engine and made automatic OU onboarding explicit. Removed the assertion that Control Tower itself is a general arbitrary-resource orchestrator."
+  ],
+  "review_status": "authored"
+}

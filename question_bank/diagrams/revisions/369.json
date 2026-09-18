@@ -1,0 +1,62 @@
+{
+  "question_id": "369",
+  "base_record_sha256": "fe7432013df15a0ecb0f7ae414f41b3869a98eb33c87023c43735522292a8e56",
+  "record": {
+    "id": "369",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A Linux web application uses PostgreSQL and shared NFS files for images and uploads. It must move to AWS without application-code changes and scale from 3 to 50 EC2 instances across Availability Zones. Compatibility with the selected Elastic Beanstalk platform and Aurora PostgreSQL has been verified. Persistent files and the database must survive replacement of the web environment.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use a load-balanced Elastic Beanstalk environment with an ALB and multi-AZ Auto Scaling. Mount an independently managed Regional EFS file system during instance initialization, and use a separately managed Aurora PostgreSQL cluster with backups and a cross-AZ replica."
+      },
+      {
+        "id": "2",
+        "text": "Use a load-balanced Elastic Beanstalk environment and attach the same EBS Multi-Attach volume directly to every web instance across Availability Zones as the shared NFS filesystem."
+      },
+      {
+        "id": "3",
+        "text": "Use a multi-AZ EC2 Auto Scaling web tier with Regional EFS and separate Aurora, but perform the EFS mount only in a scale-in termination lifecycle hook after an instance is selected for removal."
+      },
+      {
+        "id": "4",
+        "text": "Use a load-balanced Elastic Beanstalk environment with separate Aurora, and rewrite all file operations to use S3 object APIs instead of mounting an NFS filesystem."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Regional EFS supplies shared NFS access across Availability Zones, and initialization mounts it before an instance serves application traffic. Managing EFS and Aurora outside the disposable web environment separates persistent data from application-environment replacement.\n\n<<2>> substitutes shared block storage for managed NFS and tries to cross the single-AZ boundary of EBS Multi-Attach. It does not provide the required 50-instance multi-AZ shared filesystem.\n\n<<3>> performs the initialization at the wrong lifecycle stage. A launch hook can support mount preparation, but a termination hook runs when the instance is leaving service.\n\n<<4>> can be a useful modernization, but requires the application-code changes excluded by the scenario. S3 object APIs are not a drop-in NFS mount.\n\nCreate EFS mount targets and allow the required NFS traffic in the application AZs. Verify mount failure behavior so an instance cannot serve requests against an unintended local directory. Beanstalk configuration files can mount an existing EFS filesystem without changing application logic. Preserve data with backups and tested restore procedures: multi-AZ availability is not protection from every accidental deletion or logical corruption. Apply retention policies to persistent resources instead of assuming that environment termination always retains resources created inside it.\n\nAWS documentation (checked September 18, 2026): [EFS protocol and availability](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html); [EFS with Elastic Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/services-efs.html); [Auto Scaling lifecycle hook timing](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html); [EBS Multi-Attach scope](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/369.mmd",
+  "diagram_alt": "New web instances must mount shared storage before serving requests, while EFS and Aurora persist independently of web-environment replacement.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+      "checked_on": "2026-09-18",
+      "supports": "EFS supplies shared NFSv4 storage; Regional file systems store data redundantly across Availability Zones and support file locking and consistent shared access."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/services-efs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Beanstalk configuration files can mount an independently created EFS file system on application instances, and external file systems survive environment termination."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Launch hooks can hold new instances for initialization before service; termination hooks run during scale-in and cannot initialize a newly launched instance."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+      "checked_on": "2026-09-18",
+      "supports": "EBS Multi-Attach shares supported block volumes among instances in one Availability Zone and requires appropriate application or filesystem write coordination; it is not a managed NFS service."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Explicitly selected Regional EFS, external persistent-resource lifecycles, boot-time mounting and verified compatibility. Corrected the false blanket claim that lifecycle hooks cannot initialize filesystems: a launch hook can, but a scale-in hook is too late."
+  ],
+  "review_status": "authored"
+}

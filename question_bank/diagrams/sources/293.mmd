@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: The first matching ACL rule decides whether the packet proceeds
+accDescr: An inbound packet is checked against a low-numbered deny for abusive source ranges before the general HTTPS allow. A matching deny ends evaluation.
+P[Inbound packet<br/>Original client source visible]:::inputData --> D{Rule 100<br/>Source in blocked CIDRs?}:::decision
+D -->|Yes| X[DENY<br/>Stop evaluation]:::error
+D -->|No| H{Rule 200<br/>HTTPS allowed?}:::decision
+H -->|Yes| A[ALLOW<br/>Continue to instance controls]:::output
+H -->|No| R[Evaluate remaining rules<br/>Then default deny]:::process

@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Scale application instances and database readers independently
+accDescr: ALB affinity routes clients to an EC2 Auto Scaling group, which separates read traffic from write traffic and keeps durable sessions outside the instances.
+U["HTTP clients"]:::inputData --> L["ALB
+cookie affinity"]
+L --> E["EC2 Auto Scaling group
+target tracking"]
+E --> R["Reader endpoint"]
+E --> W["Writer endpoint"]
+E -.-> S["Durable session state"]:::storage
+R --> A["Aurora Replicas
+reader Auto Scaling"]:::storage
+W --> D["Single writer
+adequate capacity"]:::storage

@@ -1,0 +1,64 @@
+{
+  "question_id": "134",
+  "base_record_sha256": "bdf7473313a1cc6a40352256a316d0fac1c08bf15e72fed0e2e620c64a2b0cb0",
+  "record": {
+    "id": "134",
+    "exam_domain": "Design for New Solutions",
+    "question": "A solutions architect reviews this CloudFormation resource fragment. WorkQueue is an AWS::SQS::Queue resource declared elsewhere in the same template.\n\n{\n  \"EventTopic\": {\n    \"Type\": \"AWS::SNS::Topic\",\n    \"Properties\": {\n      \"Subscription\": [\n        {\n          \"Protocol\": \"sqs\",\n          \"Endpoint\": {\n            \"Fn::GetAtt\": [\n              \"WorkQueue\",\n              \"Arn\"\n            ]\n          }\n        }\n      ]\n    }\n  }\n}\n\nWhat does the fragment declare?",
+    "options": [
+      {
+        "id": "1",
+        "text": "An SNS topic whose subscription endpoint is supplied by a template parameter named WorkQueue."
+      },
+      {
+        "id": "2",
+        "text": "An SNS topic with a policy permitting SQS subscriptions, but without creating a subscription."
+      },
+      {
+        "id": "3",
+        "text": "An SNS topic and a new SQS queue that is created by executing the GetAtt expression."
+      },
+      {
+        "id": "4",
+        "text": "An SNS topic with an SQS subscription whose endpoint is the ARN of the WorkQueue resource."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The Subscription property declares an endpoint for the topic. Protocol: sqs selects an SQS subscription, and GetAtt resolves the Arn attribute of the queue resource identified by WorkQueue.\n\n<<1>> confuses a resource attribute with a template parameter. <<2>> treats a subscription declaration as an access policy; the fragment actually declares a subscription. <<3>> treats GetAtt as a queue-creation operation. The separate AWS::SQS::Queue declaration creates the queue, while GetAtt retrieves an attribute after the resource is available.\n\nFor this resource, Ref returns the queue URL, while GetAtt WorkQueue.Arn returns the ARN required by the SNS endpoint. Successful message delivery also requires a queue policy allowing SNS to send messages from the intended topic. That permission is separate from the subscription shown here.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-getatt.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-sns-topic.html\nhttps://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-sqs-queue.html\nhttps://docs.aws.amazon.com/sns/latest/dg/sns-access-policy-use-cases.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/134.mmd",
+  "diagram_alt": "GetAtt supplies the queue ARN to the SNS subscription, while queue permissions remain a separate delivery requirement.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-getatt.html",
+      "checked_on": "2026-09-18",
+      "supports": "GetAtt resolves an attribute of a declared resource."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-sns-topic.html",
+      "checked_on": "2026-09-18",
+      "supports": "The topic Subscription property declares subscription endpoints."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-sqs-queue.html",
+      "checked_on": "2026-09-18",
+      "supports": "SQS Ref returns a URL and GetAtt Arn returns the queue ARN."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-access-policy-use-cases.html",
+      "checked_on": "2026-09-18",
+      "supports": "SNS delivery to SQS requires a queue policy permitting SendMessage from the topic."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced the incomplete JSON fragment with a complete YAML resource fragment and explicitly declared the queue elsewhere.",
+    "Separated resource creation, attribute resolution, subscription creation and delivery authorization.",
+    "Root expressed the same fragment as valid JSON so the existing study-app code block preserves its structure."
+  ],
+  "review_status": "authored"
+}

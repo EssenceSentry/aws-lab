@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Release gates must control promotion
+accDescr: A GitHub revision enters CodeBuild. Failed checks block release and send event-based notification. Successful checks continue to a manual approval gate before production.
+G[GitHub revision]:::inputData --> B[CodeBuild<br/>Tests and scanners<br/>Synthesize configuration]:::process
+B --> T{All gates pass?}:::decision
+T -->|No| N[Stop release<br/>EventBridge to SNS]:::error
+T -->|Yes| A{Authorized manual<br/>approval?}:::decision
+A -->|Approved| P[Deploy reviewed revision<br/>to production]:::output
+A -->|Rejected or expired| X[Stop release]:::error

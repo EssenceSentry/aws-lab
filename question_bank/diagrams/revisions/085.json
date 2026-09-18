@@ -1,0 +1,47 @@
+{
+  "question_id": "085",
+  "base_record_sha256": "a62d798a868b1fc7911e7d0afc79362b4e389a1fb28efa4b6213f9a920e883d5",
+  "record": {
+    "id": "085",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An application writes records to a provisioned-capacity DynamoDB table. Short traffic bursts cause throttling, although average write demand is below the table's provisioned capacity and the keys are well distributed. Records can be committed asynchronously within several minutes. The company wants to accept every record durably without permanently provisioning for the burst peak.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Convert the table to a DynamoDB global table and continue sending all writes to the existing Region."
+      },
+      {
+        "id": "2",
+        "text": "Increase provisioned write capacity to the maximum burst rate and keep that setting throughout the day."
+      },
+      {
+        "id": "3",
+        "text": "Distribute incoming records across multiple manually sharded tables, each provisioned for its share of peak traffic, and update application queries to combine the shards."
+      },
+      {
+        "id": "4",
+        "text": "Accept records into an Amazon SQS queue. Use workers with controlled concurrency and retry backoff to write to DynamoDB, deleting each message only after its write succeeds."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. A durable queue separates the arrival rate from the commit rate. Workers can drain a short backlog at a rate the table can sustain, so capacity need not match a brief ingestion peak. Standard SQS delivery can repeat messages, so writes must be idempotent. Monitor backlog age, configure retention and failed-message handling, and keep average processing capacity above average arrivals.\n\n<<1>> adds regional replicas and replication work. It does not split the write demand sent to the existing Region across independent regional write quotas.\n\n<<2>> avoids throttling but pays for unused peak capacity between bursts.\n\n<<3>> adds routing and query complexity and still provisions each shard for its peak. The scenario has no hot-key problem that requires a new partitioning design.\n\nBuffering changes when writes occur, not the total write work. It cannot indefinitely compensate for sustained demand above the database's processing capacity.\n\nAWS documentation (checked September 18, 2026): [SQS standard queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/085.mmd",
+  "diagram_alt": "A queue absorbs short bursts while controlled workers commit records and acknowledge only successful writes.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard queues decouple producers and consumers and provide at-least-once delivery, requiring duplicate-safe processing."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added asynchronous latency and average-rate assumptions so buffering is a justified cost optimization, not a supposed cure for sustained underprovisioning."
+  ],
+  "review_status": "authored"
+}

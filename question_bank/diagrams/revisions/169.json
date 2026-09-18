@@ -1,0 +1,52 @@
+{
+  "question_id": "169",
+  "base_record_sha256": "7552830f9916d22f5a1eaf688673f35e5b2b91443cc9a2da3338a60d3265b270",
+  "record": {
+    "id": "169",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company ingests a reading from each of 20,000 sensors every 15 minutes into DynamoDB. A common query retrieves one sensor's readings for the previous seven days. The retention policy keeps the current calendar week and eight complete prior weeks, then retires an expired week as a unit. Older weekly data receives far less traffic than the current week.\n\nWhich table and key design most directly supports efficient queries and whole-week retirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use one table with timestamp as the partition key and sensor ID as the sort key."
+      },
+      {
+        "id": "2",
+        "text": "Use one table per calendar week with sensor ID as the partition key and timestamp as the sort key. Query each weekly table that overlaps the requested interval and merge the results."
+      },
+      {
+        "id": "3",
+        "text": "Use one table per calendar week with sensor ID and timestamp concatenated into a single partition key, with no sort key."
+      },
+      {
+        "id": "4",
+        "text": "Use one table for all readings with sensor ID and timestamp concatenated into a single partition key, with no sort key."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. A DynamoDB Query can select one sensor by partition-key equality and a time interval by a sort-key range. Weekly tables also allow older capacity to be reduced and a fully expired week to be deleted without issuing individual item deletes. A rolling seven-day interval can overlap two weekly tables, so query both and combine the results.\n\n<<1>> places each timestamp in a separate partition-key value. It cannot use one sensor equality condition with a timestamp range as the primary-table Query.\n\n<<3>> preserves weekly retirement but a concatenated partition key requires the complete key for direct lookup. It does not support a range over all timestamps for a sensor.\n\n<<4>> has the same key-query limitation and does not support deleting a whole week by dropping its table.\n\nThe composite primary key consists of both partition and sort key. A single table with that same composite key and TTL is another valid design when its retention semantics fit; it is not one of the offered schemas.\n\nAWS documentation (checked September 18, 2026): [DynamoDB key conditions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.KeyConditionExpressions.html); [DynamoDB time-series tables](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/169.diagram.json",
+  "diagram_alt": "Partition-key equality and sort-key ranges retrieve one sensor across the weekly boundary, while expired weeks retire as whole tables.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.KeyConditionExpressions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Query requires partition-key equality and supports sort-key ranges, with pagination for large result sets."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html",
+      "checked_on": "2026-09-18",
+      "supports": "Period-based tables can be created in advance, have capacity reduced as they age, and be archived or deleted when no longer required."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Repaired the rolling eight-week deletion ambiguity by specifying whole-calendar-week retention and explained the cross-table query boundary."
+  ],
+  "review_status": "authored"
+}

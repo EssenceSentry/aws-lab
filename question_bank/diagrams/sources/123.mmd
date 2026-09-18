@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Each audited account owns its access role
+accDescr: The same auditor identity assumes distinct roles in separate target accounts. Each role authorizes only local audit resources.
+A[Auditor role<br/>External AWS account]:::inputData
+subgraph X[Company account X]
+ RX[Audit role X<br/>Trusts auditor role]:::decision --> DX[Allowed configuration APIs]:::output
+end
+subgraph Y[Company account Y]
+ RY[Audit role Y<br/>Trusts auditor role]:::decision --> DY[Allowed configuration APIs]:::output
+end
+A -->|AssumeRole, temporary session| RX
+A -->|AssumeRole, temporary session| RY

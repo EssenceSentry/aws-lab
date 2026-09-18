@@ -1,0 +1,16 @@
+flowchart TB
+accTitle: Preventive authorization versus corrective remediation
+accDescr: The SCP evaluates a mutation before EC2 accepts it, whereas Config detects the resulting configuration only after an allowed change.
+Q["Application principal
+mutates critical security group"]:::inputData --> P{"PROD SCP
+explicit deny matches?"}:::decision
+P -->|Yes| X["Request rejected
+configuration unchanged"]:::warning
+P -->|No| I{"Remaining permissions
+allow request?"}:::decision
+I -->|Yes| E["EC2 accepts change"]
+E --> C["Config evaluates
+resulting configuration"]
+C --> R["Alert or remediation
+after the change"]:::output
+I -->|No| X

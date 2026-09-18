@@ -1,0 +1,52 @@
+{
+  "question_id": "166",
+  "base_record_sha256": "f36ba2a1060ef367d6d023e546acb3427d286ace47a41fbd5eb2014b38ae5f65",
+  "record": {
+    "id": "166",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An analytics company is an existing customer of the legacy Amazon Glacier vault API. It archives completed datasets containing thousands of files, and rare retrieval requests restore an entire dataset. Users must first find datasets by file ID, name, author, or tags. The retrieval workflow has been tested to finish within a 24-hour delivery objective using asynchronous archive retrieval.\n\nWithin this existing vault-based system, which design best combines low-cost archival storage with efficient metadata lookup?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Compress each completed dataset into an archive and upload it to Glacier. Store its archive ID and searchable metadata in DynamoDB, with lookup keys and indexes for the supported searches. Use the resulting archive ID to initiate retrieval and download the completed job output."
+      },
+      {
+        "id": "2",
+        "text": "Keep all completed datasets in S3 Standard and index the object keys and searchable metadata in DynamoDB. Do not transition the data to an archival storage class."
+      },
+      {
+        "id": "3",
+        "text": "Store compressed datasets in S3 Glacier storage classes and metadata as separate S3 objects. Use only the S3 ListObjects API to query arbitrary author and tag fields inside those metadata objects."
+      },
+      {
+        "id": "4",
+        "text": "Upload each dataset to Glacier with a descriptive archive name. Use a vault search API to find archives by file ID, author, and tags without maintaining a separate index."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The archival payload and the searchable catalog have different jobs. DynamoDB provides indexed lookups that return the archive ID, while Glacier stores the rarely retrieved dataset. The legacy retrieval workflow first creates a job and later downloads its output. Whole-dataset retrieval makes bundling appropriate for the stated access pattern.\n\n<<2>> supports the catalog but retains cold data in a higher-access storage tier instead of using the existing archival workflow.\n\n<<3>> uses valid archival storage but assumes that listing S3 objects can query arbitrary fields inside metadata documents. It needs a suitable query/index layer.\n\n<<4>> assumes a rich metadata-search API that the vault service does not provide. Preserve the archive identifiers in an external catalog.\n\nThe legacy vault service is closed to new customers. New architectures should evaluate S3 Glacier storage classes. Retrieval time, download time, and decompression must all fit the objective; bundling can be inefficient when callers usually need only one file.\n\nAWS documentation (checked September 18, 2026): [Legacy Glacier archive retrieval](https://docs.aws.amazon.com/amazonglacier/latest/dev/downloading-an-archive-two-steps.html); [DynamoDB key conditions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.KeyConditionExpressions.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/166.mmd",
+  "diagram_alt": "The searchable metadata catalog returns an archive ID before the separate asynchronous Glacier restore and download sequence.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazonglacier/latest/dev/downloading-an-archive-two-steps.html",
+      "checked_on": "2026-09-18",
+      "supports": "Vault archives require asynchronous retrieval jobs followed by downloads, Bulk is typically 5–12 hours, and the legacy service is closed to new customers."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.KeyConditionExpressions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Query requires partition-key equality and supports sort-key ranges, with pagination for large result sets."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1 and the explicit legacy-customer scope. Added whole-dataset retrieval to justify concatenation and avoided claiming arbitrary DynamoDB attributes are automatically indexed."
+  ],
+  "review_status": "authored"
+}

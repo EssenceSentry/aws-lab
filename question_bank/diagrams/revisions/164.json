@@ -1,0 +1,57 @@
+{
+  "question_id": "164",
+  "base_record_sha256": "484ea146b37f33a17d7e481e0b4e94b29523df4d5db62f20cd33c23da5eca622",
+  "record": {
+    "id": "164",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A mobile application's backend stores daily biometric events in provisioned-capacity DynamoDB Standard tables in one Region. It has a predictable, continuously used capacity baseline. Each morning, a workflow exports all required raw records to S3, verifies the export, handles late-arriving writes, and produces the users' aggregates. The retention policy permits removing a completed day's records from DynamoDB after this workflow succeeds.\n\nThe company wants to retain DynamoDB and reduce both capacity charges and unnecessary table storage. Which TWO changes meet these goals? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Replace the DynamoDB tables with a Multi-AZ RDS database and read replicas, and retain all raw records indefinitely."
+      },
+      {
+        "id": "2",
+        "text": "Keep every completed day in DynamoDB at peak provisioned capacity, and move frequently accessed S3 aggregates to S3 One Zone-IA."
+      },
+      {
+        "id": "3",
+        "text": "Purchase DynamoDB reserved capacity sized to the eligible provisioned baseline that will be used throughout the commitment term."
+      },
+      {
+        "id": "4",
+        "text": "Add an ElastiCache write-back layer that acknowledges events before they reach DynamoDB, and retain every DynamoDB item indefinitely."
+      },
+      {
+        "id": "5",
+        "text": "Use daily tables, prepare the next table before rollover, and delete a completed table only after its required export and late-write reconciliation have been verified."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<5>> are correct. Reserved capacity discounts eligible provisioned read and write capacity in exchange for a commitment, making a stable baseline the relevant purchase quantity. Retiring a fully archived daily table removes data that the stated retention policy no longer requires in DynamoDB.\n\n<<1>> violates the requirement to retain DynamoDB and introduces a database migration without demonstrating a saving.\n\n<<2>> preserves the unnecessary provisioned capacity and DynamoDB storage. A different S3 storage class does not solve either cost identified in the question, and infrequent-access storage must fit access and durability needs.\n\n<<4>> adds another data tier and a potential durability gap before database commit while retaining all stored items. It is not a supported shortcut for reducing authoritative write requirements.\n\nDo not delete a table merely because aggregates exist: the required raw export and late writes must be complete. Reserved capacity covers eligible provisioned capacity, not on-demand request charges. Include daily-table automation and retention checks in the operational design.\n\nAWS documentation (checked September 18, 2026): [DynamoDB reserved capacity billing](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-understanding-billing.html); [DynamoDB time-series tables](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/164.mmd",
+  "diagram_alt": "Daily-table deletion follows verified archival and late-write reconciliation, while reserved capacity targets the ongoing baseline.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-understanding-billing.html",
+      "checked_on": "2026-09-18",
+      "supports": "Reserved capacity discounts eligible single-Region provisioned RCUs and WCUs for Standard-class tables in exchange for a commitment."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html",
+      "checked_on": "2026-09-18",
+      "supports": "Period-based tables can be created in advance, have capacity reduced as they age, and be archived or deleted when no longer required."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 3 and 5. Specified single-Region Standard provisioned capacity, separate capacity and storage objectives, and a strict verified-archive deletion prerequisite."
+  ],
+  "review_status": "authored"
+}

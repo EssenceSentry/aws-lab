@@ -1,0 +1,58 @@
+{
+  "question_id": "312",
+  "base_record_sha256": "d8b94226faac7c3eca049de69cfd1391b21ae52d5088da5249f663234dab716a",
+  "record": {
+    "id": "312",
+    "exam_domain": "Design for New Solutions",
+    "question": "A logistics application runs on an EC2 Auto Scaling group behind an Application Load Balancer and uses self-managed MySQL on EC2. During the last four days of each month, reporting queries saturate the database CPU. Web capacity, storage latency and write throughput remain within their targets. Reports can tolerate replication lag. The team can perform a tested one-time database migration but wants to avoid recurring interruptions to the write workload when adding reporting capacity.\n\nWhich approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase the web Auto Scaling group maximum and replace the database volumes with gp3 volumes. Continue sending every report to the existing database endpoint."
+      },
+      {
+        "id": "2",
+        "text": "Migrate to an RDS for MySQL Multi-AZ DB-instance deployment. Provision read replicas before month-end, validate their readiness and lag, and route reporting queries to their endpoints while keeping writes on the primary."
+      },
+      {
+        "id": "3",
+        "text": "Configure a CPU alarm to stop the database EC2 instance, change its instance type and restart it whenever month-end reporting crosses the threshold."
+      },
+      {
+        "id": "4",
+        "text": "Take a month-end snapshot, restore it to a larger database instance, and redirect both transactions and reports to the restored copy without replicating changes made after the snapshot."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Read replicas add independent query capacity and can isolate reporting from transactional writes. The application must explicitly use replica endpoints for eligible reads; creating replicas alone does not reroute queries. Use a Multi-AZ source so replica creation takes its initial snapshot from the standby, avoiding the brief source I/O suspension that occurs with a Single-AZ source. Schedule provisioning early enough for creation, synchronization and validation.\n\n<<1>> does not address the measured database CPU bottleneck. More web instances or different storage might help other bottlenecks, but those resources have headroom here.\n\n<<3>> scales the primary vertically by stopping it, introducing the recurring write interruption the company wants to avoid.\n\n<<4>> leaves a gap between the snapshot and the current database. Redirecting writes without a coordinated catch-up and cutover risks missing changes.\n\nRDS MySQL read replication is asynchronous, so check replica lag and reporting freshness. RDS DB-instance read replicas do not automatically scale their count. A conventional Multi-AZ DB-instance standby serves high availability and does not accept reporting reads. The one-time migration also requires compatibility checks, replication or another transfer plan, and a validated cutover.\n\nOfficial AWS references (checked September 18, 2026): [RDS DB-instance read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html). [DMS ongoing replication](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html). [Creating a read replica](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.Create.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/312.mmd",
+  "diagram_alt": "Reporting traffic goes to asynchronous read replicas while transactions retain the primary endpoint.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous replicas scale eligible reads; application endpoints, manual provisioning and Multi-AZ standby distinction."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html",
+      "checked_on": "2026-09-18",
+      "supports": "Full load plus CDC captures supported source changes; source logging and variable lag require planning."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.Create.html",
+      "checked_on": "2026-09-18",
+      "supports": "Multi-AZ source avoids initial replica-creation I/O suspension by snapshotting its standby."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced inferred bottleneck with measured CPU evidence and explicit lag tolerance. Removed false claims that EBS snapshots always suspend writes or volume-type changes always require downtime.",
+    "Independent review identified the initial replica creation snapshot: specify a Multi-AZ source to meet the recurring write-continuity constraint."
+  ],
+  "review_status": "authored"
+}

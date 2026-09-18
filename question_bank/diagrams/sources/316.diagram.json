@@ -1,0 +1,41 @@
+{
+  "type": "table",
+  "title": "Two complete private-download designs",
+  "columns": [
+    "Stage",
+    "Direct S3 design",
+    "CloudFront design"
+  ],
+  "rows": [
+    [
+      "Before issuing link",
+      "Backend checks client entitlement",
+      "Backend checks client entitlement"
+    ],
+    [
+      "Download credential",
+      "Scoped presigned GET URL",
+      "Signed URL validated by trusted key group"
+    ],
+    [
+      "Origin access",
+      "Presigner has object-read permission",
+      "OAC and distribution-scoped bucket grant"
+    ],
+    [
+      "Bypass prevention",
+      "No public or alternate download path",
+      "No direct viewer S3 grant"
+    ],
+    [
+      "Shared limitation",
+      "Anyone holding the valid link can use it",
+      "Anyone holding the valid link can use it"
+    ]
+  ],
+  "footnote": "These are alternatives. Neither mechanism retracts bytes already downloaded.",
+  "emphasis_rows": [
+    0,
+    3
+  ]
+}

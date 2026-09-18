@@ -1,0 +1,12 @@
+flowchart TB
+accTitle: Rotation does not rewrite a running container environment
+accDescr: Secret version two reaches newly started tasks through the execution role, while existing tasks retain the value injected at their own startup.
+S[("Secrets Manager: password v1")] -->|Startup retrieval| OLD["Running task: v1"]
+S --> R["Rotate secret and database credential"]
+R --> NEWSEC[("Current password: v2")]
+NEWSEC -->|Execution role retrieves at startup| NEW["Replacement task: v2"]
+OLD -.-> N["No automatic environment refresh"]
+class S,NEWSEC storage
+class R decision
+class NEW output
+class N warning

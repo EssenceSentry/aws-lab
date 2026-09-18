@@ -1,0 +1,26 @@
+{
+  "type": "table",
+  "title": "Remove the two measured sources of waste",
+  "columns": [
+    "Measured waste",
+    "Change",
+    "Verify before relying on savings"
+  ],
+  "rows": [
+    [
+      "NAT handles only same-Region S3 traffic",
+      "Route through an S3 gateway endpoint",
+      "Both subnet routes and policies work; no remaining NAT dependencies"
+    ],
+    [
+      "Predictive scaling starts capacity hours early",
+      "Schedule instance and ECS task warm-up before each release",
+      "Measured startup time, task capacity, dynamic safety net and safe scale-in"
+    ]
+  ],
+  "footnote": "Remove NAT only after validation. Schedule both host and task capacity; preserve the capacity needed to serve each release.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

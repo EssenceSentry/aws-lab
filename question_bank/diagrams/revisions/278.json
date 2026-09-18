@@ -1,0 +1,57 @@
+{
+  "question_id": "278",
+  "base_record_sha256": "b895edaaee8ada0af019446a545269a2a784df9066f7bde7e5187a3d147b29c7",
+  "record": {
+    "id": "278",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company has several existing standalone AWS accounts. It wants to invite them into one AWS Organizations organization and allow a designated administration role in the management account to assume an administrative role in each member account. The solution must preserve the existing accounts and use temporary credentials.\n\nWhich procedure establishes both organization membership and the required administrative access?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Invite the accounts and accept the invitations. Rely on Organizations to create an administrative access role automatically in every invited account."
+      },
+      {
+        "id": "2",
+        "text": "Invite the accounts, then create a role in the management account that trusts the member accounts and grants administrative access to the management account."
+      },
+      {
+        "id": "3",
+        "text": "Invite the accounts and attach a FullAWSAccess service control policy to them to grant the management-account administration role access."
+      },
+      {
+        "id": "4",
+        "text": "Invite the accounts from the management account and accept each invitation. In each member account, create an administrative role such as OrganizationAccountAccessRole that trusts the designated administration role, and grant the caller permission to assume those member roles."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Invitations establish membership. Separately, the member role's trust policy allows the designated caller to assume it, the caller needs sts:AssumeRole permission, and the member role's permissions govern the resulting session.\n\n<<1>> confuses invited accounts with accounts created through Organizations. The standard administrative role is not automatically created for an invited account.\n\n<<2>> creates trust in the opposite direction and does not authorize administration of the member accounts.\n\n<<3>> mistakes a permissions limit for an access grant. An SCP limits available permissions; it does not create role trust or grant IAM permissions.\n\nOrganizationAccountAccessRole is a conventional name, not a magic requirement. Use narrowly scoped trust, appropriate administrative permissions, and the company's required controls on the caller.\n\nOfficial AWS references (checked September 18, 2026): [Inviting existing accounts](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_invites.html). [Accessing member account roles](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_access-cross-account-role.html). [SCP permission limits](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/278.mmd",
+  "diagram_alt": "Invitation acceptance establishes membership, while explicit role trust and caller permissions establish administrative sessions.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_invites.html",
+      "checked_on": "2026-09-18",
+      "supports": "Invited accounts do not automatically receive OrganizationAccountAccessRole"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_access-cross-account-role.html",
+      "checked_on": "2026-09-18",
+      "supports": "Caller permission to assume the member role is required"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "Service control policies set limits and do not grant permissions"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Corrected role auto-creation assumptions for invited accounts, made both trust and caller permissions explicit, and removed mandatory-role-name wording."
+  ],
+  "review_status": "authored"
+}

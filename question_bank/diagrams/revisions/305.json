@@ -1,0 +1,56 @@
+{
+  "question_id": "305",
+  "base_record_sha256": "8fc67cc84eaadad0dd17adb41e82923927cb4fc89a5e23791cc8185e6dab91a7",
+  "record": {
+    "id": "305",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company uses AWS Organizations. Its security team needs a durable record of who initiates account invitations, account creation, account removal, and OU moves from the management account. The team also wants prompt notifications for those operations.\n\nWhich solution meets both requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Systems Manager Inventory to collect host metadata from member accounts and send the inventory summary to the security team."
+      },
+      {
+        "id": "2",
+        "text": "Create a CloudWatch dashboard for organization costs and an SNS topic, and rely on the dashboard to identify and publish account-management API changes."
+      },
+      {
+        "id": "3",
+        "text": "Record Organizations management events with CloudTrail and configure matching EventBridge rules in us-east-1 to send the operation details to an SNS topic subscribed to by security."
+      },
+      {
+        "id": "4",
+        "text": "Use Control Tower baseline controls and Inspector vulnerability findings as the record of the caller and parameters for each Organizations API request."
+      },
+      {
+        "id": "5",
+        "text": "Record supported resource configuration changes with AWS Config and use only configuration snapshots to identify the API caller and notify security about account-management operations."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. CloudTrail records API activity with caller identity and request details. EventBridge selects the relevant Organizations events, and SNS delivers the configured notifications. For this global service, configure the monitoring path in US East (N. Virginia) as documented by AWS.\n\n<<1>> collects machine inventory rather than the required organization-management API audit trail.\n\n<<2>> supplies a display and a notification destination without a mechanism that detects and routes the specified operations. Cost data does not identify the API caller.\n\n<<4>> substitutes governance controls and workload vulnerability assessment for an API activity record.\n\n<<5>> treats resource configuration history as a complete source of API identity and invocation details. Config complements CloudTrail but does not replace this event-audit path.\n\nFilter for the required operations, retain logs in a protected destination, confirm SNS subscriptions, and test successful and failed requests as appropriate. A CreateAccount API response acknowledges an asynchronous request; account creation completion is a separate CreateAccountResult service event that needs its own monitoring rule if completion alerts are required. Scope event collection to the account where activity is recorded rather than assuming that every action by an external invited account appears in the management account's trail.\n\nAWS documentation (checked September 18, 2026): [Monitoring Organizations changes](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_tutorials_cwe.html); [Organizations CloudTrail records](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_cloudtrail-integration.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/305.mmd",
+  "diagram_alt": "CloudTrail supplies the API identity record, and EventBridge routes selected operations while distinguishing an account-creation request from its later completion.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_tutorials_cwe.html",
+      "checked_on": "2026-09-18",
+      "supports": "A management-account CloudTrail trail and EventBridge rules in us-east-1 can route specified Organizations API changes to SNS and Lambda."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_cloudtrail-integration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Organizations API activity records the caller and request; asynchronous account creation has a separate CreateAccountResult service event."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Removed the false implication that organization membership alone grants administrative access. Scoped the scenario to management-account activity and distinguished asynchronous account creation completion from the API request."
+  ],
+  "review_status": "authored"
+}

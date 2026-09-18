@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Ready promotion targets and stable client connections address different delays
+accDescr: Clients connect to RDS Proxy. Normally the proxy uses the Aurora writer. When that writer fails, Aurora promotes a ready replica in another Availability Zone and the proxy routes to it, while failed in-flight work requires retries.
+A[Application connections<br/>Retry failed in-flight work]:::inputData --> P[RDS Proxy<br/>Preserve eligible idle connections]:::process
+W[Aurora MySQL cluster<br/>Writer in AZ A]:::process
+R[Same Aurora cluster<br/>Ready replica in AZ B<br/>Promotion priority configured]:::process
+W -.->|Writer failure triggers promotion| R
+P -->|Normal backend| W
+P -.->|Backend after promotion| R

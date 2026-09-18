@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Billing consolidation does not cross an authorization boundary
+accDescr: Central administrators assume roles owned by development and test accounts. Consolidated billing is a separate relationship and does not grant resource permissions.
+C[Central administrator principal]:::inputData -->|AssumeRole| D[DEV account role<br/>Trust + scoped actions]:::decision
+C -->|AssumeRole| T[TEST account role<br/>Trust + scoped actions]:::decision
+D --> DR[DEV resources]:::output
+T --> TR[TEST resources]:::output
+B[Consolidated billing<br/>Combined charges only]:::warning -. no permission grant .-> C

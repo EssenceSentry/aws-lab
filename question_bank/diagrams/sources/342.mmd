@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: A short dispatcher starts a long-running container task
+accDescr: An upload starts a brief Lambda dispatcher that requests an ECS task and returns, while encoding and durable completion occur in the Fargate task.
+A["S3 video upload"] --> B["Lambda dispatcher"]
+B -->|ECS RunTask| C["Fargate encoder task"]
+B --> D["Dispatcher returns"]
+C --> E["Encode for 30 to 45 minutes"]
+E --> F["Write output and job status"]
+G["Monitor failed or incomplete jobs"] -.-> C
+class A inputData
+class B,C decision
+class D,F output
+class E storage
+class G warning

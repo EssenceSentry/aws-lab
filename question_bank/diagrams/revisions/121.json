@@ -1,0 +1,64 @@
+{
+  "question_id": "121",
+  "base_record_sha256": "effd5a8869aac28901c73dbf93c1304004e37d7ff91922456ea633910439472c",
+  "record": {
+    "id": "121",
+    "exam_domain": "Design for New Solutions",
+    "question": "A media company runs a private RDS for MySQL database in a VPC. An on-premises analytics system needs a continuously updated MySQL copy with read-only access for analysts. The selected tables and engine versions have passed AWS DMS compatibility testing. Database endpoints must remain private, and replication traffic must be encrypted.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Make the RDS instance publicly accessible and configure ongoing replication to the on-premises server using TLS over the public internet."
+      },
+      {
+        "id": "2",
+        "text": "Replicate changes through a self-managed MySQL server on EC2, then replicate to the on-premises database through public endpoints protected by TLS and source-IP restrictions."
+      },
+      {
+        "id": "3",
+        "text": "Export the database nightly to S3 and download the export over HTTPS to refresh the on-premises MySQL server."
+      },
+      {
+        "id": "4",
+        "text": "Establish Site-to-Site VPN connectivity and run a DMS full-load-and-CDC task from RDS to the on-premises MySQL target. Configure the required source binary logs, retention, endpoint TLS and restricted database accounts. Grant analysts read-only target permissions."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> separates secure connectivity from ongoing replication. The VPN provides a private IPsec path, while DMS first loads existing rows and then applies captured changes. Configure RDS binary logging for CDC, retain logs through expected interruptions, validate endpoint TLS and monitor replication lag. The DMS target account needs write privileges even though analyst accounts are read-only.\n\n<<1>> encrypts traffic but violates the private-endpoint requirement. <<2>> adds an intermediary but still exposes public endpoints, violating the private-endpoint requirement. TLS and IP restrictions do not make an endpoint private. <<3>> provides periodic copies rather than continuous updates.\n\nDMS CDC is asynchronous and requires supported schema and datatype behavior. The documented native RDS-to-external MySQL export procedure is limited to the export period and instructs operators to stop replication afterward; it should not be presented as an indefinitely supported analytics replica procedure.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Procedural.Exporting.NonRDSRepl.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/121.mmd",
+  "diagram_alt": "Initial load and ongoing CDC are separate phases; encrypted networking does not perform replication itself.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html",
+      "checked_on": "2026-09-18",
+      "supports": "Full load plus CDC loads existing data and applies ongoing source changes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html",
+      "checked_on": "2026-09-18",
+      "supports": "MySQL CDC uses row-based binary logging with required source permissions and retention."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS sources can replicate to on-premises MySQL targets and use TLS endpoint connections."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Procedural.Exporting.NonRDSRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Native external MySQL replication is documented as export-only, followed by stopping replication."
+    }
+  ],
+  "editorial_notes": [
+    "Substantive answer implementation repair: retained correct ID 4 but replaced native indefinite replication with supported DMS full load plus CDC.",
+    "Official native-export documentation explicitly limits external replication to the export period.",
+    "Replaced the invalid RDS-read-replica-on-EC2 distractor with a technically possible public relay that fails the stated network constraint."
+  ],
+  "review_status": "authored"
+}

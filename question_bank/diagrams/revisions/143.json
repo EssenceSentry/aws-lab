@@ -1,0 +1,52 @@
+{
+  "question_id": "143",
+  "base_record_sha256": "9851ac64d14fe0c5e0e856c8e1b5fc3fc0061bbd649751622b8e0dfb7d341b43",
+  "record": {
+    "id": "143",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company needs packet payloads from traffic reaching EC2 application instances for forensic analysis. An internet-facing ALB terminates client TLS and forwards HTTP to the targets over a trusted private network. The source EC2 instance and ENI types support VPC Traffic Mirroring. The security team wants an out-of-band copy of this backend traffic without installing capture agents on each application host.\n\nWhich solution meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable VPC Flow Logs for the target interfaces and send the records to S3 for packet-payload reconstruction."
+      },
+      {
+        "id": "2",
+        "text": "Enable ALB access logs and send them to S3 as the complete request and response packet capture."
+      },
+      {
+        "id": "3",
+        "text": "Create Traffic Mirroring sessions for the target ENIs with appropriate filters and packet length settings. Send copies to a supported mirror target and packet-analysis appliance."
+      },
+      {
+        "id": "4",
+        "text": "Associate a logging-enabled WAF web ACL with the ALB and use WAF logs as a complete capture of all request and response packets."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Traffic Mirroring copies packets from supported network interfaces to an out-of-band inspection target. At the selected target ENIs, it sees the ALB-to-application HTTP connection, where the specified payload is available in plaintext.\n\n<<1>> provides flow metadata, such as addresses, ports, and byte counts, rather than the original packet contents.\n\n<<2>> records application request metadata, not a complete packet-level exchange or all request and response bodies.\n\n<<4>> provides WAF evaluation logs, not full packet capture.\n\nThe capture point determines what is observable. Mirroring the backend interface does not reproduce the original client's TLS connection, and mirroring encrypted traffic does not decrypt it. Size the appliance and network path appropriately, and configure filters and truncation so required payload bytes are retained.\n\nOfficial AWS references (checked September 18, 2026): [VPC Traffic Mirroring](https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html). [VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/143.mmd",
+  "diagram_alt": "An out-of-band mirror captures the ALB-to-target HTTP connection, not the original client TLS session.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported source interfaces, copied packets, targets, filters, and truncation"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Flow-level IP traffic metadata rather than packet payload capture"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3 and prior encryption caveat; explicitly supplied plaintext backend traffic and supported source types so payload inspection is achievable."
+  ],
+  "review_status": "authored"
+}

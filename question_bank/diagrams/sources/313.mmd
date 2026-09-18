@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Field protection and cache reuse are separate decisions
+accDescr: Payment POST fields stay encrypted through intermediate components. Public versioned assets can use a longer cache lifetime. Payment responses remain uncached.
+C[CloudFront request]:::inputData --> T{Request path?}:::decision
+T -->|Payment POST| E[HTTPS and selected<br/>field encryption]:::process
+E --> I[Intermediate components<br/>Encrypted field values]:::process
+I --> D[Payment component<br/>Private key decrypts]:::output
+T -->|Public asset GET| A[Versioned asset cache<br/>Appropriate longer TTL]:::storage
+A --> H[Reuse cached asset<br/>on a valid hit]:::output

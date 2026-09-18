@@ -1,0 +1,57 @@
+{
+  "question_id": "365",
+  "base_record_sha256": "3f416ea0199b9a0adbcaa741054683ee8b23c6f20ebfd15edb2032d97985113e",
+  "record": {
+    "id": "365",
+    "exam_domain": "Design for New Solutions",
+    "question": "A CloudFormation stack creates a target IAM role in Account A. An EC2 instance in Account B runs with a source role supplied by its instance profile. That source role already has an identity policy allowing sts:AssumeRole on the target role, and no applicable explicit deny blocks the request.\n\nThe target role must trust only that specific source role. Which change resolves the missing cross-account trust?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Change the source role trust policy in Account B to trust Account A, leaving the target role trust policy unchanged."
+      },
+      {
+        "id": "2",
+        "text": "Change the target role trust policy in Account A to trust Account B as an account principal, without restricting trust to the source role."
+      },
+      {
+        "id": "3",
+        "text": "Add CAPABILITY_IAM and CAPABILITY_NAMED_IAM to the CloudFormation deployment request without changing either role policy."
+      },
+      {
+        "id": "4",
+        "text": "Change the target role trust policy in Account A to allow sts:AssumeRole for the ARN of the specific instance-profile role in Account B."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The caller's identity policy supplies one side of cross-account authorization, and the target role's trust policy supplies the other. Naming the source role ARN in the target trust policy grants the specific trust requested by the scenario.\n\n<<1>> changes who can assume the caller role rather than who can assume the target. The instance-profile role still needs its appropriate EC2 service trust.\n\n<<2>> can enable cross-account assumption when Account B delegates permission to a caller, but it trusts the account more broadly than the specified-role requirement permits. An account root principal in a trust policy is not restricted to requests made with root-user credentials.\n\n<<3>> acknowledges CloudFormation's ability to create IAM resources; it does not add runtime sts:AssumeRole authorization or change the target's trusted principal.\n\nUse the IAM role ARN, not the instance profile ARN or an EC2 instance ARN, as the source principal. After assumption, the temporary session is governed by the target role's permissions and any applicable session restrictions and explicit denies. The trust policy determines who may enter the role, not what the resulting session can do.\n\nAWS documentation (checked September 18, 2026): [STS AssumeRole authorization](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html); [IAM role and account principals](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html); [CloudFormation IAM capability acknowledgements](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/365.mmd",
+  "diagram_alt": "An existing caller permission is insufficient until the target role separately trusts the exact source role, after which target-role session permissions govern access.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cross-account role assumption requires an allowed caller and the target trust relationship; role permissions govern the temporary session."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html",
+      "checked_on": "2026-09-18",
+      "supports": "A role ARN identifies a specific role principal, while an account root ARN delegates trust to the account rather than only its root user."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html",
+      "checked_on": "2026-09-18",
+      "supports": "IAM capabilities acknowledge creation of IAM resources, with CAPABILITY_NAMED_IAM required for custom-named IAM resources; they do not grant runtime access."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Retained the explicit least-privilege trust requirement so account-level trust is correctly explained as broader rather than technically impossible. Distinguishes roles, instance profiles and CloudFormation acknowledgements."
+  ],
+  "review_status": "authored"
+}

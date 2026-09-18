@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Locate the failure layer from the HTTP evidence
+accDescr: Successful DNS resolution, an existing object and a 403 from both custom and direct endpoints isolate the investigation to effective public-read authorization.
+D[Custom name resolves<br/>to intended S3 website]:::inputData --> O[index.html exists<br/>Root and object URL fail]:::inputData
+O --> E[Direct endpoint also returns 403]:::warning
+E --> P{Effective public<br/>GetObject access?}:::decision
+B[Account and bucket<br/>Block Public Access]:::inputData --> P
+A[Bucket policy<br/>Public-read grant]:::inputData --> P
+P -->|No| F[403 Access Denied]:::warning
+P -->|Yes| S[Serve index document]:::output

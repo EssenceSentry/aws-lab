@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Fanout preserves every processor's work while queues bound pressure
+accDescr: An SNS topic copies each photo notification into separate processor queues. Each queue feeds a bounded Lambda consumer, and both consumers reuse database connections through RDS Proxy before writing to one RDS database.
+S[S3 photo notification]:::inputData --> N[SNS topic<br/>Copy event to each subscriber]:::process
+N --> A[(Processor A queue)]:::storage
+N --> B[(Processor B queue)]:::storage
+A --> LA[Lambda A<br/>Bounded concurrency]:::process
+B --> LB[Lambda B<br/>Bounded concurrency]:::process
+LA --> P[RDS Proxy<br/>Reuse backend connections]:::process
+LB --> P
+P --> D[(RDS MySQL writer)]:::storage

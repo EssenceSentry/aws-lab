@@ -1,0 +1,53 @@
+{
+  "question_id": "190",
+  "base_record_sha256": "29a2d67b88406f70e229050f14f00056271e30d5694bd519ba3d62c480258dec",
+  "record": {
+    "id": "190",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An IAM user in an AWS Organizations member account cannot create an S3 bucket. Root and OU SCPs permit the action. The following is the only SCP attached directly to this account:\n\n{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"cloudtrail:*\",\"iam:*\"],\"Resource\":\"*\"}]}\n\nThe user has this identity policy:\n\n{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"s3:*\",\"Resource\":\"arn:aws:s3:::*\"},{\"Effect\":\"Deny\",\"NotAction\":\"s3:*\",\"NotResource\":\"arn:aws:s3:::*\"}]}\n\nNo other policy or control changes this evaluation. Why is s3:CreateBucket denied?",
+    "options": [
+      {
+        "id": "1",
+        "text": "The account-level SCP allowlist omits S3, placing CreateBucket outside the permitted action set despite the identity-policy allow."
+      },
+      {
+        "id": "2",
+        "text": "SCPs do not support allowlists, so every Allow statement in the attached SCP is invalid."
+      },
+      {
+        "id": "3",
+        "text": "The identity policy's Deny with NotAction s3:* explicitly denies every S3 action."
+      },
+      {
+        "id": "4",
+        "text": "The identity policy and SCP must contain identical action lists before any allowed action can succeed."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. The action must remain permitted by the SCPs at every level on the account's organization path. This account's only attached SCP allows CloudTrail and IAM but not S3, so the identity-policy allow cannot make CreateBucket effective.\n\n<<2>> is incorrect because SCPs support allowlist designs. <<3>> reverses NotAction: the Deny statement excludes S3 actions from its action match. <<4>> incorrectly requires identical policies; an identity policy can grant a narrower set of permissions than the SCP ceiling.\n\nSCPs limit permissions rather than grant them. Allows from SCPs at the same level are combined, while an applicable explicit deny wins. If FullAWSAccess were also attached at this account level, the missing-S3 conclusion would change. The stem deliberately excludes that additional allow.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/190.mmd",
+  "diagram_alt": "The sole account SCP excludes S3 even though ancestor SCPs and the IAM policy permit it.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "An action needs SCP allowance throughout the hierarchy; SCPs at a level contribute allowed actions and denies override."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html",
+      "checked_on": "2026-09-18",
+      "supports": "Deny with NotAction excludes the named actions from the deny statement action match."
+    }
+  ],
+  "editorial_notes": [
+    "Moved the sole-account-SCP and permitting-ancestor assumptions into the scenario and retained the complete policy semantics.",
+    "Clarified NotAction and same-level allow combination rather than requiring identical IAM and SCP lists."
+  ],
+  "review_status": "authored"
+}

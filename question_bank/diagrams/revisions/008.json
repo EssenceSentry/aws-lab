@@ -1,0 +1,58 @@
+{
+  "question_id": "008",
+  "base_record_sha256": "c189280f05924ae3d471fc0a7d9da6a7b973fa704679d9109672a72415bf3e37",
+  "record": {
+    "id": "008",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs an application on EC2, S3, and DynamoDB. An external audit firm needs read-only access to evidence of AWS management activity and object- and item-level API activity during the next audit period. The auditor must not receive shared long-term credentials or general access to production data.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use CloudTrail Event history in each Region as the audit record. Let the auditor assume a role with permission to look up events, and rely on Event history to include all object and item operations."
+      },
+      {
+        "id": "2",
+        "text": "Configure a CloudTrail trail with management events and the required S3 and DynamoDB data events. Retain the logs in a protected S3 bucket. Let the auditor assume a role scoped to those logs, with appropriate cross-account trust and an external ID for the firm’s multi-customer integration."
+      },
+      {
+        "id": "3",
+        "text": "Enable CloudTrail management events and send S3 delivery notifications through SNS. Treat those notifications as the full record of object and item access and grant the auditor no log-bucket access."
+      },
+      {
+        "id": "4",
+        "text": "Create an audit IAM role, attach it to the production EC2 instances, and add it to the S3 and DynamoDB resource policies. Ask the auditor to use that role without configuring a trust relationship."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> supplies both the evidence and a usable, limited access path. CloudTrail data events must be enabled for the relevant S3 objects and DynamoDB tables. The auditor assumes a trusted role and receives temporary credentials whose permissions cover the log evidence. An external ID addresses the confused-deputy risk for a third party serving multiple customers.\n\n<<1>> relies on Event history, which contains the last 90 days of management events in a Region and does not include the required data events. <<3>> omits data events and confuses delivery notifications with their log contents. <<4>> assigns permissions to resources without allowing the auditor to assume the role; it also fails to establish the required logging.\n\nConfigure collection and retention before the audit period. CloudTrail records AWS API activity, not arbitrary application logs, and enabling a trail cannot recreate unrecorded past data events.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html\nhttps://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/008.mmd",
+  "diagram_alt": "The logging path produces evidence independently of the temporary-role path used by the auditor to read it.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html",
+      "checked_on": "2026-09-18",
+      "supports": "Data events are opt-in and include S3 object operations and DynamoDB table operations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html",
+      "checked_on": "2026-09-18",
+      "supports": "Third-party role assumption, temporary credentials, scoped permissions, and external IDs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudTrail Event history covers 90 days of regional management events and excludes data events."
+    }
+  ],
+  "editorial_notes": [
+    "Clarified audit scope and future collection period; removed the misleading claim that any CloudTrail trail includes object/item access. Answer ID unchanged.",
+    "Root review replaced support-case distractor with the plausible Event history versus data-events distinction."
+  ],
+  "review_status": "authored"
+}

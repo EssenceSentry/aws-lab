@@ -1,0 +1,64 @@
+{
+  "question_id": "077",
+  "base_record_sha256": "db7acf1a0964e640d0666b34c10e1b552652c010ebd52feecc74812e525d8b40",
+  "record": {
+    "id": "077",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs stateless web and application tiers on EC2 and stores 40 TB in Aurora MySQL. Its cross-Region disaster recovery objectives are an RPO of 5 minutes and an RTO of 30 minutes. Tests show that copied AMIs and infrastructure templates can rebuild both stateless tiers in 10 minutes. Tests also show that an Aurora MySQL cross-Region read replica stays within the required lag and that promotion plus application reconnection keeps total recovery below 30 minutes. The company wants to minimize steady-state DR compute cost.\n\nWhich actions should it combine? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Copy the approved AMIs and deployment artifacts to the recovery Region for every release, and keep the infrastructure templates ready. Launch the stateless web and application tiers when recovery is required."
+      },
+      {
+        "id": "2",
+        "text": "Keep a full production-sized copy of both EC2 application tiers running continuously in the recovery Region."
+      },
+      {
+        "id": "3",
+        "text": "Replace database replication with a snapshot every 5 minutes and assume a 40 TB snapshot restore will always finish within the 30-minute RTO."
+      },
+      {
+        "id": "4",
+        "text": "Maintain the tested Aurora MySQL cross-Region read replica. Monitor lag and automate promotion, application reconnection, and traffic switching through the validated recovery procedure."
+      },
+      {
+        "id": "5",
+        "text": "Remove the database replica and rely on nightly AWS Backup recovery points copied to a vault in the recovery Region."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "4"
+    ],
+    "explanation": {
+      "text": "<<1>> avoids continuously running recoverable stateless capacity, using the measured 10-minute rebuild time. <<4>> keeps the large stateful database close to current and uses a recovery procedure already shown to meet the objectives. Together they minimize the proposed application-tier standby cost without replacing the tested database recovery path.\n\n<<2>> increases steady-state cost even though the measured rebuild time fits the objective. <<3>> assumes an unverified restore duration and that a snapshot schedule alone establishes both RPO and RTO. <<5>> introduces a nightly recovery-point interval that cannot meet a 5-minute RPO.\n\nThe 30-minute outcome is workload-specific evidence, not a universal restore or promotion guarantee. Aurora MySQL cross-Region read replicas use binary-log replication, unlike Aurora Global Database storage replication. Keep measuring lag and rehearsing the entire recovery path as the workload grows.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Replication.CrossRegion.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/077.diagram.json",
+  "diagram_alt": "A recovery comparison shows why stateless tiers can remain stopped while the large database stays replicated.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Replication.CrossRegion.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora MySQL cross-Region read replicas use binlog replication and can be promoted for DR."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html",
+      "checked_on": "2026-09-18",
+      "supports": "RPO measures possible data loss and RTO measures return to a working service."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html",
+      "checked_on": "2026-09-18",
+      "supports": "AMIs are Regional and must be copied before they can launch recovery instances in a different Region."
+    }
+  ],
+  "editorial_notes": [
+    "Added explicit measured recovery times so the cost choice does not rely on a generic 30-minute restore assertion.",
+    "Removed obsolete claims about a universal AWS Backup minimum frequency and corrected backups to recovery points in vaults.",
+    "Specified Aurora MySQL for the binlog cross-Region replica mechanism."
+  ],
+  "review_status": "authored"
+}

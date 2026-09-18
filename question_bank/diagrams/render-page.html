@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>SAP-C02 diagram renderer</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#FBFAF7;color:#1C1E21;font-family:Arial,sans-serif}
+#card{width:1100px;padding:30px;background:#FBFAF7}header{font-size:14px;letter-spacing:1.2px;color:#56616B;margin-bottom:20px;font-weight:bold}
+#visual{width:1040px}#visual>svg{display:block;max-width:none}h1{font-size:28px;margin:0 0 24px;line-height:1.25}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:21px;line-height:1.4}th,td{text-align:left;vertical-align:top;padding:18px;border:1px solid #C7CED6;overflow-wrap:anywhere}
+th{background:#E8F2F8;color:#17425C;font-size:18px}td:first-child{font-weight:bold}tr.emphasis td{background:#E5F4F1;border-color:#83B6AD}
+.footnote{margin:24px 0 0;padding:16px 18px;background:#FFF4DE;border-left:4px solid #9A5F00;font-size:19px;line-height:1.45}
+</style></head><body><main id="card"><header id="eyebrow"></header><section id="visual"></section></main>
+<script type="module">
+import mermaid from '/node_modules/mermaid/dist/mermaid.esm.min.mjs';
+const [style, icons] = await Promise.all([fetch('/style.json').then(r=>r.json()), fetch('/node_modules/@iconify-json/logos/icons.json').then(r=>r.json())]);
+mermaid.registerIconPacks([{name:'logos', icons}]);
+const classes = `
+classDef inputData fill:#E8F2F8,stroke:#006BA2,stroke-width:1.5px,color:#1C1E21;
+classDef process fill:#F3F5F7,stroke:#56616B,stroke-width:1.5px,color:#1C1E21;
+classDef decision fill:#FFF4DE,stroke:#9A5F00,stroke-width:1.5px,color:#1C1E21;
+classDef model fill:#EAE6F0,stroke:#78405F,stroke-width:1.5px,color:#1C1E21;
+classDef output fill:#E5F4F1,stroke:#007A70,stroke-width:1.5px,color:#1C1E21;
+classDef warning fill:#FFF4DE,stroke:#9A5F00,stroke-width:1.5px,color:#1C1E21;
+classDef error fill:#FBE8EA,stroke:#C53A42,stroke-width:1.5px,color:#1C1E21;
+classDef storage fill:#EEEAE2,stroke:#826636,stroke-width:1.5px,color:#1C1E21;
+classDef external fill:#FFFFFF,stroke:#6B737C,stroke-width:1.5px,color:#1C1E21;
+classDef reference fill:#FFFFFF,stroke:#3F5661,stroke-width:1.5px,stroke-dasharray:4 3,color:#1C1E21;`;
+const el = (tag, text) => { const node=document.createElement(tag); node.textContent=text; return node; };
+window.renderDiagram = async ({id, source, kind, alt}) => {
+  const visual=document.querySelector('#visual'); visual.replaceChildren();
+  document.querySelector('#card').style.width='1100px';visual.style.width='1040px';
+  document.querySelector('#eyebrow').textContent='SAP-C02 · QUESTION ' + id + ' · EXPLANATION';
+  const warnings=[]; let svgOutput=null;
+  if(kind==='table') {
+    const spec=JSON.parse(source);
+    if(spec.type!=='table'|| !spec.title || spec.columns?.length<2 || !spec.rows?.length) throw new Error('Invalid table diagram');
+    visual.append(el('h1',spec.title));
+    const table=document.createElement('table');table.setAttribute('aria-label',alt);
+    const head=document.createElement('thead'), header=document.createElement('tr');
+    for(const column of spec.columns)header.append(el('th',column));
+    head.append(header);table.append(head);const body=document.createElement('tbody');
+    for(const [index,row] of spec.rows.entries()) {
+      if(row.length!==spec.columns.length)throw new Error('Table row/column mismatch');
+      const tr=document.createElement('tr');if(spec.emphasis_rows?.includes(index))tr.classList.add('emphasis');
+      for(const cell of row)tr.append(el('td',cell));body.append(tr);
+    }
+    table.append(body);visual.append(table);
+    if(spec.footnote){const note=el('p',spec.footnote);note.className='footnote';visual.append(note);}
+  } else {
+    if(kind==='mermaid') {
+      if(/%%\s*\{|^---|\bclick\s|<script|https?:\/\//im.test(source))throw new Error('Per-source configuration, callbacks, scripts, or remote assets are not allowed');
+      if(/^\s*(sequenceDiagram|stateDiagram)/.test(source)&&source.includes(';'))throw new Error('Use commas instead of semicolons in sequence and state labels; semicolons can create unintended statements');
+      mermaid.initialize({...style, deterministicIDSeed:'q'+id});
+      const isFlow=/^\s*(?:%%[^\n]*\n\s*)*(flowchart|graph)\b/.test(source);
+      const rendered=await mermaid.render('q'+id,source+(isFlow?'\n'+classes:''));
+      visual.innerHTML=rendered.svg;
+    } else if(kind==='svg') {
+      if(/<script|<foreignObject|\bon\w+\s*=|(?:href|src)\s*=\s*["'](?!#)/i.test(source))throw new Error('SVG must be self-contained and script-free');
+      visual.innerHTML=source;
+    } else throw new Error('Unsupported diagram kind');
+    const svg=visual.querySelector('svg');if(!svg)throw new Error('Renderer did not produce an SVG');
+    svg.setAttribute('role','img');svg.setAttribute('aria-label',alt);
+    const box=svg.viewBox.baseVal;
+    if(!box.width||!box.height)throw new Error('SVG has no valid viewBox');
+    const scale=Math.min(1.7,1040/box.width);
+    const width=Math.ceil(box.width*scale),height=Math.ceil(box.height*scale);
+    const cardWidth=Math.max(620,width+60);
+    document.querySelector('#card').style.width=cardWidth+'px';visual.style.width=(cardWidth-60)+'px';
+    svg.removeAttribute('style');svg.setAttribute('width',width);svg.setAttribute('height',height);
+    svg.style.margin='0 auto';
+    if(scale<0.7)warnings.push('Dense diagram: layout reduced to '+Math.round(scale*100)+'%');
+    if(height>1700)warnings.push('Tall diagram: consider splitting or simplifying');
+    svgOutput=svg.outerHTML;
+  }
+  await document.fonts.ready;
+  await new Promise(requestAnimationFrame);
+  const rect=visual.getBoundingClientRect();
+  if(visual.scrollWidth>rect.width+2)warnings.push('Horizontal overflow');
+  return {warnings,svg:svgOutput,height:Math.ceil(document.querySelector('#card').getBoundingClientRect().height)};
+};
+window.ready=true;
+</script></body></html>

@@ -1,0 +1,52 @@
+{
+  "question_id": "217",
+  "base_record_sha256": "9a80ce2da1952ad4bc005a83d8eccf36be09bcb17d4966b3cc3072927e544ba6",
+  "record": {
+    "id": "217",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An art marketplace stores large image uploads in a central S3 bucket in us-east-1. Mobile clients upload directly to S3, bypassing the EC2 web tier. European uploads are slow despite tested multipart concurrency, and measurements identify the long-distance internet path as the limiting factor. The bucket meets Transfer Acceleration requirements. The company wants a managed optimization while retaining the bucket and existing direct-upload model.\n\nWhich change should it evaluate?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase multipart concurrency further while retaining the same regional S3 endpoint and the already tuned upload configuration."
+      },
+      {
+        "id": "2",
+        "text": "Create a CloudFront distribution for image downloads but continue sending uploads to the existing regional S3 endpoint."
+      },
+      {
+        "id": "3",
+        "text": "Enable S3 Transfer Acceleration on the bucket and update the client or signing service to use the bucket’s s3-accelerate endpoint. Compare performance and cost from the affected locations."
+      },
+      {
+        "id": "4",
+        "text": "Put Global Accelerator in front of the EC2 web tier and add web instances, while retaining direct client-to-S3 uploads through the regional endpoint."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Transfer Acceleration routes uploads through an AWS edge location and an optimized path to the destination bucket. Enabling the bucket feature alone is insufficient: the transfer must use the acceleration endpoint.\n\n<<1>> repeats an optimization that has already been measured and does not change the identified long-distance path.\n\n<<2>> improves a download path while leaving the upload route unchanged.\n\n<<4>> changes a web tier that these upload bytes do not traverse.\n\nMultipart upload remains useful and can be combined with acceleration. Benchmark representative clients because acceleration is not guaranteed to improve every transfer and can add charges. CloudFront can support configured write methods; the reason the listed download-only option fails is its unchanged upload path, not a blanket prohibition on uploads through CloudFront.\n\nOfficial AWS references (checked September 18, 2026): [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html). [CloudFront origin methods](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/217.mmd",
+  "diagram_alt": "Both routes reach the same bucket, but using the acceleration endpoint changes the network path for the actual upload.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Edge-based optimized path, endpoint requirement and extra charges"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC supports dynamic S3 requests including PUT"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Added direct-upload and measured-path constraints, stated that multipart is already tuned, and retained the correction that CloudFront can forward writes when configured."
+  ],
+  "review_status": "authored"
+}

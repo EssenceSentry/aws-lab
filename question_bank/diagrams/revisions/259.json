@@ -1,0 +1,61 @@
+{
+  "question_id": "259",
+  "base_record_sha256": "75568e065c7319061017e7fefcc5396329b4bac22a0d1b95129878974e6b42d3",
+  "record": {
+    "id": "259",
+    "exam_domain": "Design for New Solutions",
+    "question": "EC2 application instances in one VPC initiate MySQL connections to an Aurora cluster in that VPC. All application ENIs use AppSG and database ENIs use DbSG. The relevant AppSG outbound and DbSG inbound rules are absent, including any broad allow rules. Routes and network ACLs already permit the traffic. Only members of AppSG should connect to the database on TCP 3306.\n\nWhich security-group rules are required? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Add an AppSG inbound rule for TCP 3306 with DbSG as the source."
+      },
+      {
+        "id": "2",
+        "text": "Add an AppSG outbound rule for TCP 3306 with DbSG as the destination."
+      },
+      {
+        "id": "3",
+        "text": "Add a DbSG inbound rule for TCP 3306 with AppSG as the source."
+      },
+      {
+        "id": "4",
+        "text": "Add a DbSG outbound rule for TCP 3306 with AppSG as the destination."
+      },
+      {
+        "id": "5",
+        "text": "Add an outbound network ACL rule allowing TCP 3306 to the entire database subnet instead of changing the security groups."
+      },
+      {
+        "id": "6",
+        "text": "Add an inbound network ACL rule allowing TCP 3306 from the entire application subnet instead of changing the security groups."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<3>> are correct. The application initiates traffic toward database port 3306, so the application group must permit egress and the database group must permit ingress. Referencing the groups follows membership as the application fleet scales.\n\n<<1>> permits initiation in the wrong direction and to the wrong application port. <<4>> is not needed to authorize responses to an allowed inbound connection. Security groups are stateful, so the return traffic uses connection tracking. <<5>> and <<6>> change controls that already permit the path, are broader than the stated group membership, and cannot override missing security-group allows.\n\nThe database response normally targets the application's ephemeral client port, not port 3306 on the application. Network ACLs are stateless and must independently permit both directions when restrictive, but that is already satisfied here. These network rules do not replace database authentication or authorization.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html\nhttps://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/259.diagram.json",
+  "diagram_alt": "The initiating packet needs application egress and database ingress; tracked responses return to the client’s ephemeral port.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security groups allow traffic by direction, protocol and source/destination, support same-VPC group references and do not have deny rules."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Security groups are stateful and automatically permit response traffic for allowed connections."
+    }
+  ],
+  "editorial_notes": [
+    "Added absent-rule and already-permitting NACL assumptions so exactly two changes are necessary, and removed obsolete same-VPC-only generalizations."
+  ],
+  "review_status": "authored"
+}

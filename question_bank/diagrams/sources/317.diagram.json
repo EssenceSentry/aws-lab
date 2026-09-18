@@ -1,0 +1,37 @@
+{
+  "type": "table",
+  "title": "Preserve the writer while closing the read bypass",
+  "columns": [
+    "Request path",
+    "Required action",
+    "Desired result"
+  ],
+  "rows": [
+    [
+      "Employee through authorized CloudFront",
+      "Viewer gate, then origin GetObject",
+      "Allow"
+    ],
+    [
+      "Employee directly to S3",
+      "GetObject under legacy grant",
+      "Remove this grant"
+    ],
+    [
+      "CloudFront on origin miss",
+      "Signed, distribution-scoped GetObject",
+      "Allow"
+    ],
+    [
+      "Upload application backend",
+      "Scoped PutObject",
+      "Retain"
+    ]
+  ],
+  "footnote": "Review all applicable grants. Origin lockdown for readers must not silently disable the upload workflow.",
+  "emphasis_rows": [
+    0,
+    2,
+    3
+  ]
+}

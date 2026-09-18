@@ -1,0 +1,26 @@
+{
+  "type": "table",
+  "title": "Three controls protect three deployment requirements",
+  "columns": [
+    "Requirement",
+    "Mechanism and boundary"
+  ],
+  "rows": [
+    [
+      "Keep original web capacity during validation",
+      "Beanstalk Immutable adds a temporary fleet; quotas must allow it."
+    ],
+    [
+      "Limit Lambda release exposure",
+      "CodeDeploy shifts alias traffic with hooks, alarms, and rollback."
+    ],
+    [
+      "Stop later releases after a failure",
+      "Pipeline failure gate stays closed until an operator clears it."
+    ]
+  ],
+  "footnote": "Backward-compatible code and data are assumed. Rollback does not itself lock future pipeline executions.",
+  "emphasis_rows": [
+    2
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "156",
+  "base_record_sha256": "1fea086622f719ae9c6f74bf72734af0afb3b08db02ac458a7f5cf890138f708",
+  "record": {
+    "id": "156",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A photo platform must run thousands of independent image-processing jobs in parallel beyond its on-premises capacity. The existing executable can run in a container, and jobs support checkpoints and idempotent retries after worker interruption. The storage team has already configured versioned S3 input and output buckets with cross-Region replication that meets its recovery objective. The company wants low compute cost and the least effort to operate scheduling, retries, and elastic capacity.\n\nWhich compute design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy an EKS cluster and build a custom controller that translates job requests into pods, tracks retry state, and coordinates worker scaling."
+      },
+      {
+        "id": "2",
+        "text": "Rewrite the image-processing workflow as Spark jobs on EMR and build a custom DynamoDB-backed submission and retry coordinator."
+      },
+      {
+        "id": "3",
+        "text": "Containerize the executable and submit jobs through AWS Batch queues to an EC2 Spot managed compute environment. Configure retry policies, use EBS only for temporary working files, and commit completed results to the existing S3 output bucket."
+      },
+      {
+        "id": "4",
+        "text": "Build an SQS consumer application on a self-managed EC2 Spot Auto Scaling group and implement job scheduling, checkpoints, retries, and worker scaling in custom code."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. AWS Batch manages job queues, scheduling, and compute-environment capacity. Spot is appropriate because the jobs tolerate interruption, and configured retry policies can rerun eligible failed attempts. Durable inputs and committed outputs remain in S3 rather than depending on a worker's temporary disk.\n\n<<1>> can run the containers, but the proposed custom controller adds scheduling and retry work.\n\n<<2>> introduces an unnecessary processing-framework rewrite and custom coordination for independent executable jobs.\n\n<<4>> is a valid queue-and-worker pattern, but requires the lifecycle and scheduling code that Batch already supplies.\n\nBatch retries are not automatic exactly-once execution. Configure the retry strategy and idempotent output commits, monitor terminal failures, and plan quotas and Spot capacity diversity. S3 replication is asynchronous; the prevalidated recovery objective in the stem is separate from Batch's compute scheduling.\n\nOfficial AWS references (checked September 18, 2026): [Batch managed compute environments](https://docs.aws.amazon.com/batch/latest/userguide/managed_compute_environments.html). [Batch retry strategies](https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html). [S3 replication](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/156.mmd",
+  "diagram_alt": "Interrupted workers can be retried because durable input and idempotently committed output live outside the worker.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/batch/latest/userguide/managed_compute_environments.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed capacity and instance selection with EC2 Spot support"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html",
+      "checked_on": "2026-09-18",
+      "supports": "Retry configuration and eligible instance or job failures"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous copying within or across Regions"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Added interruption tolerance, configured retries, durable output commits and an explicit regional-backup premise; removed claims that SQS duplicate processing alone makes that design unsuitable."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,67 @@
+{
+  "question_id": "155",
+  "base_record_sha256": "994629db6a8e17d73fbeb64763122c2895d9d0a70a180f1f8c98b8fa948689dd",
+  "record": {
+    "id": "155",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company already uses CloudFront, an internet-facing ALB, and private EC2 application instances. A review finds that attackers can bypass CloudFront through the ALB's public hostname and can send unwanted requests on unnecessary network paths. The company wants to reduce origin exposure and filter malicious HTTP traffic while preserving required connections.\n\nWhich changes directly address these findings? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Increase EC2 instance sizes and the Auto Scaling maximum capacity, while retaining the existing public origin access and security rules."
+      },
+      {
+        "id": "2",
+        "text": "Restrict the ALB security group to the CloudFront origin-facing managed prefix list on the required port. Require a protected custom origin header in ALB listener rules, and allow application-instance traffic only from the ALB security group."
+      },
+      {
+        "id": "3",
+        "text": "Restrict subnet network ACLs to the required traffic, including response paths and ephemeral ports. Configure and tune WAF request-inspection and rate-based rules at the public application entry point."
+      },
+      {
+        "id": "4",
+        "text": "Enable S3 Versioning and automate operating-system patching, while retaining the existing network exposure and HTTP request rules."
+      },
+      {
+        "id": "5",
+        "text": "Require MFA for administrators and enable AWS Config compliance reporting, while retaining the existing public origin access."
+      }
+    ],
+    "correct_option_ids": [
+      "2",
+      "3"
+    ],
+    "explanation": {
+      "text": "<<2>> and <<3>> are correct. The CloudFront prefix list narrows network sources, and the protected custom header distinguishes the intended distribution from other CloudFront traffic. Restricting EC2 access to the ALB prevents direct instance access. Network ACLs narrow subnet traffic, while WAF evaluates HTTP requests and rates.\n\n<<1>> adds capacity to absorb load but does not remove the bypass or unwanted access paths.\n\n<<4>> improves recovery and host hygiene, but does not address the identified ingress exposure or HTTP filtering.\n\n<<5>> protects administrative access and provides configuration evidence rather than filtering the public request path.\n\nA CloudFront distribution alone does not make a public origin private. Keep the origin-header value secret, use HTTPS, and rotate it. Network ACLs are stateless, so required return traffic must be explicitly allowed. Rate rules and signatures require testing to avoid blocking legitimate users.\n\nOfficial AWS references (checked September 18, 2026): [Restrict CloudFront ALB origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html). [Network ACL behavior](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html). [DDoS attack-surface reduction](https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/attack-surface-reduction.html). [WAF rate-based rules](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/155.mmd",
+  "diagram_alt": "Network source restrictions and a protected distribution header jointly close the direct ALB bypass.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed prefix lists, protected custom origin headers, HTTPS and rotation"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html",
+      "checked_on": "2026-09-18",
+      "supports": "Subnet-level stateless rules and explicit response-path requirements"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/attack-surface-reduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "Remove unnecessary public resources, ports and protocols"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html",
+      "checked_on": "2026-09-18",
+      "supports": "Request aggregation and rate-based action"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 2 and 3. Replaced merely hiding the origin with enforceable prefix-list/header controls, and corrected stateless NACL return-traffic omissions."
+  ],
+  "review_status": "authored"
+}

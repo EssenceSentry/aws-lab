@@ -1,0 +1,58 @@
+{
+  "question_id": "041",
+  "base_record_sha256": "b466bc34a1d78359c407c1c99392d223155c1e393e011d117b140a1aa2e4ce20",
+  "record": {
+    "id": "041",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company runs a Linux application in an EC2 Auto Scaling group. Each new instance must access a shared 500 GB read-only dataset before serving traffic, without downloading a complete local copy. Developers release application updates several times each day. All running instances must receive available OS security patches within 48 hours.\n\nWhich solution meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Automate patching and testing of a base AMI with AWS Systems Manager. Update the launch template and replace instances within the patch deadline. Use CodeDeploy for application releases and mount an EFS file system during startup."
+      },
+      {
+        "id": "2",
+        "text": "Automate patching and testing of a base AMI with AWS Systems Manager. Replace instances within the patch deadline. Deploy all application releases in one nightly batch and mount an EFS file system during startup."
+      },
+      {
+        "id": "3",
+        "text": "Use CodeDeploy for application releases and Systems Manager for timely OS patching. Download the complete dataset from S3 to an EBS volume on every new instance before registering it with the load balancer."
+      },
+      {
+        "id": "4",
+        "text": "Use CodeDeploy for application releases and mount an EFS file system during startup. Replace instances only when AWS publishes a new base AMI, without a separate patch evaluation or deployment schedule."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Choose <<1>>. Separate the three lifecycles: maintain a tested OS image, deploy application revisions independently, and mount shared data. Systems Manager Automation can create a patched AMI, but the rollout must also update the launch template and replace existing instances before the 48-hour deadline. Gate application readiness on a successful EFS mount. CodeDeploy can deploy revisions to both existing and newly launched Auto Scaling instances.\n\n<<2>> restricts releases to a nightly window, which cannot satisfy several deployments during the day. <<3>> can patch and deploy software, but a full 500 GB copy on every launch violates the stated startup constraint and adds duplicated storage. <<4>> delegates timing to the base-image publisher; it does not establish that every running instance receives each applicable patch within 48 hours.\n\nA shared file system avoids mandatory full-dataset transfer during scale-out. Its total cost still depends on storage class, throughput and access patterns; EFS is not universally cheaper than S3 plus EBS.\n\nAWS documentation (checked September 18, 2026): [Linux AMI maintenance](https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-tutorial-update-patch-linux-ami.html), [EFS automatic mounting](https://docs.aws.amazon.com/efs/latest/ug/mount-fs-auto-mount-onreboot.html), [CodeDeploy and Auto Scaling](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-auto-scaling.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/041.mmd",
+  "diagram_alt": "OS patch rollout, frequent application deployment and shared-data mounting converge before an instance is allowed to serve traffic.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-tutorial-update-patch-linux-ami.html",
+      "checked_on": "2026-09-18",
+      "supports": "Systems Manager Automation patches a temporary Linux instance and creates a new AMI."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/mount-fs-auto-mount-onreboot.html",
+      "checked_on": "2026-09-18",
+      "supports": "EC2 Linux instances can automatically mount EFS at startup."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-auto-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "CodeDeploy deploys application revisions to new Auto Scaling instances through lifecycle hooks."
+    }
+  ],
+  "editorial_notes": [
+    "Made the no-full-copy startup constraint explicit; removed the unsupported universal EFS-versus-EBS cost comparison.",
+    "Retained correct option 1; added launch-template update and replacement deadline so creating a patched AMI alone is not mistaken for fleet patching."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,52 @@
+{
+  "question_id": "344",
+  "base_record_sha256": "2fb93096ce58695dd5de9107db902f6127df05f4910fde44ad8cf26fe2b8c961",
+  "record": {
+    "id": "344",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An organization has S3 buckets across hundreds of accounts and several Regions. Its organization-wide Storage Lens dashboard has collected advanced usage and activity metrics for more than six months. Finance needs to compare storage growth and access activity across that period and identify the accounts and buckets driving increased use.\n\nWhich approach provides the analysis with the least custom development?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Export IAM Access Analyzer findings and build a dashboard that treats access-policy findings as historical storage and request metrics."
+      },
+      {
+        "id": "2",
+        "text": "Generate new S3 Inventory reports and combine them with Trusted Advisor recommendations to reconstruct six months of previously collected request activity."
+      },
+      {
+        "id": "3",
+        "text": "Use the existing organization-wide S3 Storage Lens dashboard with advanced metrics, selecting the six-month period and drilling into the relevant accounts, Regions, and buckets."
+      },
+      {
+        "id": "4",
+        "text": "Enable S3 Storage Class Analysis separately on each bucket and use its per-bucket transition recommendations as the organization-wide activity history."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Storage Lens aggregates S3 usage and activity and provides drill-down views suited to the requested comparison. Advanced metrics are available for queries for 15 months, covering the already-collected six-month period.\n\n<<1>> analyzes access exposure, not storage growth and request activity.\n\n<<2>> inventories object metadata, but creating reports now does not reconstruct historical request activity. Trusted Advisor recommendations do not supply that missing time series.\n\n<<4>> helps evaluate storage-class transitions, but does not replace the existing organization-wide usage and activity dashboard.\n\nHistorical availability depends on collection and retention. Free Storage Lens metrics have a 14-day query window, and enabling advanced metrics today does not manufacture six months of past observations. Use billing data separately when the question is actual invoiced cost rather than its storage-usage drivers.\n\nOfficial AWS references (checked September 18, 2026): [Storage Lens metrics](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens_basics_metrics_recommendations.html). [Viewing Storage Lens history](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens_view_metrics_dashboard.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/344.diagram.json",
+  "diagram_alt": "A comparison makes both retained history and the type of metric decisive.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens_basics_metrics_recommendations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Organization-wide aggregation and free versus advanced metrics history"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens_view_metrics_dashboard.html",
+      "checked_on": "2026-09-18",
+      "supports": "Dashboard scoping, drill-down and historical query windows"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Moved the existing-history assumption into the scenario and used the existing dashboard rather than implying a new dashboard backfills history."
+  ],
+  "review_status": "authored"
+}

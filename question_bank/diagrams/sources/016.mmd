@@ -1,0 +1,23 @@
+flowchart TB
+accTitle: Route through each network boundary in order
+accDescr: Spoke routes point to the transit gateway. The transit gateway selects the egress VPC, whose local routes traverse firewall and NAT in both directions.
+subgraph Spoke[Workload VPC]
+ Work[Private workload subnet]
+end
+ TGW[Transit gateway]
+subgraph Egress[Shared egress VPC - one AZ path]
+ Attach[TGW attachment subnet]
+ FW[Network Firewall endpoint]
+ NAT[Public NAT gateway]
+ IGW[Internet gateway]
+end
+ Net[Internet]
+ Work <-->|spoke default and return routes| TGW
+ TGW <-->|egress attachment| Attach
+ Attach <-->|local route| FW
+ FW <-->|inspect before NAT| NAT
+ NAT <--> IGW
+ IGW <--> Net
+class Work inputData
+class FW decision
+class Net output

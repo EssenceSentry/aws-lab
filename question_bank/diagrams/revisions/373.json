@@ -1,0 +1,57 @@
+{
+  "question_id": "373",
+  "base_record_sha256": "587177dad1943e7a538b631756a57f9e01456ad48f8123e357352d9f8acfba0a",
+  "record": {
+    "id": "373",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A manufacturer is evaluating a move from on-premises Kubernetes to EKS. The cluster hosts application services and self-managed MySQL and MongoDB databases. Capacity requirements prescribe a fixed node count, and the company needs a pre-migration comparison of its current costs with the complete proposed AWS operating cost.\n\nWhich assessment approach is most appropriate?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Migration Evaluator with collected inventory and utilization data for the baseline business case. Supplement its results with a target-architecture estimate covering EKS, fixed worker capacity, databases, storage, backups, networking, and operating assumptions."
+      },
+      {
+        "id": "2",
+        "text": "Begin server replication and a test migration, then treat the temporary test resources billed during that exercise as the complete steady-state TCO for the proposed EKS platform."
+      },
+      {
+        "id": "3",
+        "text": "Use the Cloud Value Framework alone to select a generic percentage saving, then apply that percentage to the current budget without estimating the proposed service configuration."
+      },
+      {
+        "id": "4",
+        "text": "Export only the current server inventory and use hardware counts as the complete TCO comparison, without adding service pricing, storage growth, licensing, or operating costs."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Inventory and utilization establish an evidence-based starting point, while the target-architecture estimate adds costs specific to the proposed EKS and database design. The fixed-node constraint must remain in the calculation rather than being replaced by an unsupported rightsizing assumption.\n\n<<2>> can validate migration mechanics and reveal some real charges, but a short test does not establish steady-state usage, all target services, or the current on-premises cost baseline.\n\n<<3>> provides a business-value perspective without the workload-specific financial model the question requires.\n\n<<4>> supplies quantities without enough information to price either the full target architecture or the ongoing operating work.\n\nMigration Evaluator Quick Insights specifically reports projected EC2, EBS, and operating-system license costs. It is not a complete EKS, MySQL, and MongoDB cost model by itself. Use a detailed Pricing Calculator estimate and documented assumptions for the remaining AWS services, database deployment choices, resilience, backups, transfer, support, and staff effort. Separate one-time migration costs from recurring costs and compare the same time horizon and availability level. An estimate is only as complete as its inputs; keep uncertain growth and utilization assumptions visible and test plausible alternatives.\n\nAWS documentation (checked September 18, 2026): [Migration Evaluator assessments](https://aws.amazon.com/migration-evaluator/); [Migration Evaluator Quick Insights scope](https://aws.amazon.com/migration-evaluator/faqs/); [AWS Pricing Calculator estimates](https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/373.diagram.json",
+  "diagram_alt": "Migration Evaluator supplies a baseline, while service configuration, usage assumptions, and operating costs complete the comparable target TCO.",
+  "sources": [
+    {
+      "url": "https://aws.amazon.com/migration-evaluator/",
+      "checked_on": "2026-09-18",
+      "supports": "Migration Evaluator accepts collected or existing inventory and utilization data to develop migration business cases and compare projected AWS alternatives."
+    },
+    {
+      "url": "https://aws.amazon.com/migration-evaluator/faqs/",
+      "checked_on": "2026-09-18",
+      "supports": "Quick Insights reports projected EC2, EBS and operating-system license costs; a complete target architecture assessment needs additional service and operating assumptions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html",
+      "checked_on": "2026-09-18",
+      "supports": "Pricing Calculator estimates service configurations from supplied usage assumptions and does not include costs or services that were omitted from the inputs."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1 with a substantive scope repair. Current Migration Evaluator FAQ limits Quick Insights to EC2, EBS and OS licensing, so the answer now explicitly supplements it for EKS, databases and other TCO inputs. Avoids outdated migration-tool branding and claiming discovery alone is a cost model."
+  ],
+  "review_status": "authored"
+}

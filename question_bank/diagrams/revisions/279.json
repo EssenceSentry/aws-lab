@@ -1,0 +1,52 @@
+{
+  "question_id": "279",
+  "base_record_sha256": "6aa96edbd9834df7d426be8522d4f68604de3eae2a42fad9a69b5f736f7d8a62",
+  "record": {
+    "id": "279",
+    "exam_domain": "Design for New Solutions",
+    "question": "A retailer processes large product-catalog batches. Each batch requires validation, several independent transformations, and a final load only after all transformations succeed. Workers run as container jobs and can take 20–60 minutes. The system must track progress, retry transient failures with backoff, and route exhausted failures for investigation. The team wants to minimize custom orchestration code.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store task status in RDS and build EC2 pollers that coordinate dependencies, detect failures, and schedule retries."
+      },
+      {
+        "id": "2",
+        "text": "Use AWS Config rules to observe job-resource changes and implement workflow state, dependency tracking, and retries in custom Lambda functions."
+      },
+      {
+        "id": "3",
+        "text": "Use Amazon MQ for task messages and build a coordinator that stores execution state and manages fan-out, completion, and retries."
+      },
+      {
+        "id": "4",
+        "text": "Use an AWS Step Functions Standard workflow with Parallel or Map states, integrated container jobs, Retry policies, and Catch transitions to a failure-handling path."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Step Functions represents dependencies and progress explicitly. Parallel or Map states coordinate independent work, Retry handles selected transient errors, and Catch directs exhausted failures to remediation. Standard workflows suit these long-running jobs.\n\n<<1>> can work, but the team must implement the orchestration behavior in database tables and pollers.\n\n<<2>> uses resource-configuration monitoring as an indirect signal and still requires a custom workflow engine.\n\n<<3>> decouples workers, but messaging alone does not coordinate the whole batch or track completion of every branch.\n\nWorkers should use idempotent writes because retries can repeat external effects. Pass references to large catalog data rather than the data itself through workflow state, and use the execution history to investigate failures.\n\nOfficial AWS references (checked September 18, 2026): [Step Functions error handling](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html). [Choosing a workflow type](https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/279.mmd",
+  "diagram_alt": "Parallel tasks must both finish before loading, with bounded retries and a separate failure path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Task, Parallel and Map states support Retry and Catch with backoff"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html",
+      "checked_on": "2026-09-18",
+      "supports": "Standard workflows support long-running orchestrations"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Made container-job duration and dependency joins explicit and replaced the misleading Config-plus-Step-Functions distractor with a distinct custom coordinator."
+  ],
+  "review_status": "authored"
+}

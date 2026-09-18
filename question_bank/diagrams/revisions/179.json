@@ -1,0 +1,62 @@
+{
+  "question_id": "179",
+  "base_record_sha256": "1184b4d87083ae321d7de107fa4d50e03119370950c9708a87ee3b1c21f10d22",
+  "record": {
+    "id": "179",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A fitness application assigns North American DNS clients to a US Region and Asian DNS clients to an Asia Region. This geographic business rule takes precedence over distance or latency. Healthy fallback is allowed, and unmatched locations need a default route.\n\nBoth Regions need a multi-AZ application tier. The MySQL-compatible database requires one authoritative writer and permits regional reads with bounded staleness. A tested recovery runbook promotes a secondary Region during a primary failure and accounts for replication lag.\n\nWhich choices implement the routing and application/database design? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Route 53 geoproximity routing with distance biases as the sole mechanism for enforcing the continent-to-Region assignment."
+      },
+      {
+        "id": "2",
+        "text": "Use Route 53 latency routing as the sole mechanism for enforcing the continent-to-Region assignment."
+      },
+      {
+        "id": "3",
+        "text": "Use Route 53 geolocation records with a default and health-aware fallback hierarchy to direct clients to the regional ALBs."
+      },
+      {
+        "id": "4",
+        "text": "Deploy multi-AZ application tiers and independent writable Aurora clusters in both Regions. Update the same records locally in each cluster and merge database changes nightly."
+      },
+      {
+        "id": "5",
+        "text": "Deploy an ALB and multi-AZ EC2 Auto Scaling group in each Region. Use Aurora Global Database with one primary write Region and a secondary read Region, send writes through the global writer endpoint and eligible reads to regional readers, and use the tested database recovery runbook."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>> and <<5>> are correct. Geolocation records implement the explicit continent mapping, while a default covers unmatched or unresolved geography. Health-aware record trees permit the stated fallback. Regional application tiers and Aurora Global Database provide regional read access while retaining one authoritative primary writer.\n\n<<1>> chooses by geographic distance and optional bias, which does not reliably enforce the required continent assignments.\n\n<<2>> optimizes latency, a different objective from the business rule.\n\n<<3>> needs correctly configured endpoint health checks or alias target-health evaluation throughout the routing hierarchy. Geolocation alone is not an application-readiness check.\n\n<<4>> creates two independent writers to the same logical data and requires conflict resolution. Nightly merging does not implement the requested single authoritative writer.\n\n<<5>> separates database promotion from DNS routing. After the database recovery operation, the global writer endpoint follows the primary. Cross-Region replication is asynchronous, so applications must enforce acceptable read staleness and account for possible data loss during an unplanned failover.\n\nDNS geography reflects the query's inferred source location, not a verified customer address. A routing change does not promote a database, and multi-AZ capacity inside a Region does not replace multi-Region recovery.\n\nAWS documentation (checked September 18, 2026): [Route 53 geolocation](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html); [Route 53 health-aware record trees](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-complex-configs.html); [Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/179.diagram.json",
+  "diagram_alt": "The routing rules choose a regional application, but both application Regions send writes to the same authoritative database primary.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html",
+      "checked_on": "2026-09-18",
+      "supports": "Geolocation maps DNS-source geography to records, and a default record handles unmapped or unspecified locations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-complex-configs.html",
+      "checked_on": "2026-09-18",
+      "supports": "Alias hierarchies need appropriate target-health evaluation and endpoint checks to select healthy branches."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+      "checked_on": "2026-09-18",
+      "supports": "One primary Region accepts writes, secondary Regions serve reads, and the global writer endpoint follows the primary after a separate database failover."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 3 and 5 and made Select TWO explicit. Retained the repaired geographic business rule and single-writer focus, replacing the implausible DNS-synchronizes-databases distractor with independent writable databases and delayed merging."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Corporate sign-in and AWS permission assignment are separate
+accDescr: Corporate authentication and provisioned user/group assignments meet in Identity Center, which exposes only assigned AWS roles through the portal and CLI.
+I["Corporate SAML sign-in"] --> C["IAM Identity Center"]
+G["Provisioned groups and permission sets"] --> C
+C --> A["Assigned AWS account role"]
+A --> T["Temporary console or CLI session"]
+class I,G inputData
+class C,A decision
+class T output

@@ -1,0 +1,47 @@
+{
+  "question_id": "115",
+  "base_record_sha256": "21d71dff827013f82e56e733db69b272b6853bc531db0fad692d057a990fbb9d",
+  "record": {
+    "id": "115",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A serverless discussion application uses API Gateway, Lambda, and DynamoDB. Clients currently retrieve comments with repeated GET requests. The company wants authorized clients viewing a topic to receive new comments as they are posted, without polling. The team can adopt GraphQL and change the comment-write API, and it wants managed connection handling.\n\nWhich solution best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable API Gateway caching for GET requests and shorten the cache time-to-live so clients receive newer comments on their next request."
+      },
+      {
+        "id": "2",
+        "text": "Increase Lambda reserved concurrency and have clients poll the existing GET endpoint every second."
+      },
+      {
+        "id": "3",
+        "text": "Use AWS AppSync GraphQL mutations to create comments and subscriptions to deliver matching updates over WebSocket connections. Authenticate subscribers and authorize access to the requested topics."
+      },
+      {
+        "id": "4",
+        "text": "Write comments directly to DynamoDB and enable an AppSync subscription, without connecting a comment mutation or event-publishing path to those writes."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. AppSync manages WebSocket connections for GraphQL subscriptions, and configured mutations trigger subscription updates. The write path must execute the relevant mutation, with authorization and filters that ensure a client receives only permitted topic data.\n\n<<1>> changes read caching but still requires the client to request updates. Caching can also return stale comments during the cache lifetime.\n\n<<2>> adds execution capacity but retains polling and its repeated requests.\n\n<<4>> omits the event path. Writing to a DynamoDB table does not by itself trigger a GraphQL subscription merely because AppSync can read that table.\n\nPush delivery and data retrieval solve different needs: use a query for initial state and a subscription for subsequent updates. A custom API Gateway WebSocket solution can also provide push, but the proposed AppSync design supplies managed GraphQL subscription integration.\n\nOfficial AWS references (checked September 18, 2026): [AppSync GraphQL subscriptions](https://docs.aws.amazon.com/appsync/latest/devguide/aws-appsync-real-time-data.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/115.mmd",
+  "diagram_alt": "AppSync sends updates through an authorized subscription when the associated mutation executes; initial queries remain separate.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/appsync/latest/devguide/aws-appsync-real-time-data.html",
+      "checked_on": "2026-09-18",
+      "supports": "Managed secure WebSocket updates, mutation triggers, and subscription authorization"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Explicitly tied subscription updates to mutations and authorization; removed irrelevant API-key detail and avoided claiming AppSync is the only possible push architecture."
+  ],
+  "review_status": "authored"
+}

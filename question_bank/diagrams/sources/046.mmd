@@ -1,0 +1,16 @@
+flowchart TB
+accTitle: PrivateLink has distinct security boundaries
+accDescr: The NLB inbound rule evaluates the client private IP while target rules reference the NLB security group, subnet NACLs require both directions.
+subgraph C["Consumer VPC"]
+ U["Client private IP"] --> E["Interface endpoint"]
+end
+subgraph P["Provider VPC"]
+ N["NLB listener SG
+source = client private IP"] --> A["NLB and target subnet NACLs"]
+ A --> T["EC2 target SG
+source = NLB SG"]
+ T -->|"return / ephemeral ports"| A
+ A --> N
+ N -.->|"health checks allowed outbound"| T
+end
+E -->|"PrivateLink"| N

@@ -1,0 +1,63 @@
+{
+  "question_id": "195",
+  "base_record_sha256": "313ecd8e9c77e2bba7a7c1aba8ad09aa04d3ce0e1addbb3a95cdedad4a9a10f2",
+  "record": {
+    "id": "195",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company must migrate a SQL Server warehouse with a 60-TB bulk export to Amazon Redshift within 30 days. The existing connection permits 50 Mbps for migration, and new connectivity cannot be provisioned before the deadline. Changes average 50 GB per day. The company has a confirmed Data Transfer Terminal reservation and tested equipment; export, transport, upload and Redshift bulk loading can finish within eight days. Schema conversion and a consistent bulk-export/CDC start-position procedure have been validated, and source logs can be retained through catch-up.\n\nWhich migration plan meets these constraints?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run a DMS full-load-and-CDC task for the entire 60-TB warehouse over the 50-Mbps connection and rely on the 30-day window to complete the initial load."
+      },
+      {
+        "id": "2",
+        "text": "Use the Terminal for the bulk copy, import it into an intermediate Oracle RDS database, and then perform a second engine conversion to Redshift. Copy later changes only to the Oracle database."
+      },
+      {
+        "id": "3",
+        "text": "Wait for a new 1-Gbps Direct Connect connection, then perform the full load from SQL Server to Redshift over that connection."
+      },
+      {
+        "id": "4",
+        "text": "Apply the validated SCT schema conversion, transfer the consistent bulk export through the Terminal to S3, and load Redshift. Apply SQL Server changes through DMS CDC from the coordinated source position, then reconcile and cut over after catch-up."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. Physical movement of the bulk export avoids the constrained WAN for the 60-TB seed. The existing connection can then carry the much smaller change stream, with CDC aligned to the bulk copy so transactions are neither omitted nor replayed incorrectly.\n\n<<1>> fails the bandwidth test: 60 decimal TB at 50 Mbps takes about 111 days before overhead. <<2>> introduces an unnecessary engine and leaves Redshift without the specified ongoing changes. <<3>> depends on connectivity that cannot arrive within the migration window.\n\nAt the ideal link rate, 50 GB of daily changes takes about 2.22 hours to transfer, leaving capacity to catch up after the eight-day bulk phase. Actual feasibility still depends on measured export, transfer and apply performance. Preserve the required transaction logs, validate data types and CDC support, use the correct target preparation mode, and reconcile the target before the final cutover.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/datatransferterminal/latest/userguide/tech-requirements.html\nhttps://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/migrate-an-on-premises-microsoft-sql-server-database-to-amazon-redshift-using-aws-sct-data-extraction-agents.html\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Redshift.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/195.diagram.json",
+  "diagram_alt": "An ideal WAN-only copy takes 111 days, while the bounded daily change stream can fit alongside a Terminal-delivered bulk seed.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/datatransferterminal/latest/userguide/tech-requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "Terminal uploads require customer equipment and validated network/storage performance."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/migrate-an-on-premises-microsoft-sql-server-database-to-amazon-redshift-using-aws-sct-data-extraction-agents.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCT extraction and schema conversion support a SQL Server warehouse migration to Redshift."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html",
+      "checked_on": "2026-09-18",
+      "supports": "CDC-only tasks can start from a coordinated SQL Server native log position after a bulk load."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Redshift.html",
+      "checked_on": "2026-09-18",
+      "supports": "Redshift is a supported DMS target with CDC apply settings and limitations."
+    }
+  ],
+  "editorial_notes": [
+    "Added confirmed Terminal availability and measured end-to-end bulk timing instead of assuming a facility can always meet the deadline.",
+    "Removed SQL Server/Oracle source contradictions and supplied quantitative delta bandwidth and consistent CDC-start assumptions."
+  ],
+  "review_status": "authored"
+}

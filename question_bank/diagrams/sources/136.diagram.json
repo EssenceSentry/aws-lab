@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "title": "After the stack is deleted",
+  "columns": [
+    "Resource policy",
+    "Data outcome",
+    "Compute / resource outcome"
+  ],
+  "rows": [
+    [
+      "S3: Retain",
+      "Original objects stay accessible",
+      "Original bucket remains"
+    ],
+    [
+      "RDS: Snapshot",
+      "Restorable DB snapshot remains",
+      "DB instance is deleted"
+    ],
+    [
+      "RDS: Retain",
+      "Live database remains",
+      "DB compute stays provisioned"
+    ],
+    [
+      "S3: Snapshot",
+      "Unsupported for this resource",
+      "Does not meet the requirement"
+    ]
+  ],
+  "footnote": "Deleting a template file does not delete a stack. Update replacements use UpdateReplacePolicy for the old physical resource.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

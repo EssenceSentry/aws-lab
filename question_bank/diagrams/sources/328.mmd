@@ -1,0 +1,17 @@
+stateDiagram-v2
+accTitle: A termination hook waits for actual upload completion
+accDescr: A bounded terminating wait includes the upload and result checks. Completion releases termination, but the overall hook can still expire under default behavior.
+[*] --> InService
+InService --> Waiting: Scale-in or replacement
+state "Terminating:Wait" as Waiting {
+  [*] --> Uploading
+  state "SSM uploads local logs to S3" as Uploading
+  Uploading --> Checking: Command submitted
+  state "Poll execution, send heartbeats" as Checking
+  Checking --> Uploading: Retry recoverable failure
+  Checking --> [*]: Upload succeeded
+}
+Waiting --> Released: Complete with CONTINUE
+Waiting --> Terminated: Hook expires, default behavior
+Released --> Terminated: Remaining hooks complete
+Terminated --> [*]

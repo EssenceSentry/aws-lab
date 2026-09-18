@@ -1,0 +1,52 @@
+{
+  "question_id": "151",
+  "base_record_sha256": "d7fbefec3a5bfea110daae9e04bc0b2d0d7730a82b5ae1b3982b5bf88e7530ed",
+  "record": {
+    "id": "151",
+    "exam_domain": "Design for New Solutions",
+    "question": "A news website wants to adapt page recommendations during each visitor's active session. It must process click events continuously and make updated session features available to the web tier within a few seconds under normal load. Events contain a session ID, event ID, and per-session sequence number so consumers can handle retries and out-of-order arrivals.\n\nWhich design best supports this requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store access logs in S3 and run an hourly EMR job to calculate session features for the next recommendation refresh."
+      },
+      {
+        "id": "2",
+        "text": "Ingest clicks into Kinesis Data Streams using session IDs as partition keys. Run a continuous consumer that maintains session state, handles event sequence and duplicates, and writes current features to a low-latency serving store used by the web tier."
+      },
+      {
+        "id": "3",
+        "text": "Write click events to a time-series database and refresh recommendation features from a scheduled hourly analysis report."
+      },
+      {
+        "id": "4",
+        "text": "Ingest clicks through SQS and persist them promptly to RDS. Recalculate all recommendation features with a nightly SQL job."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. The design includes ingestion, continuous analysis, and a serving path for the resulting features. Partitioning by session keeps a session's records together in a shard, while the application uses its own event identity and sequence rules to maintain valid session state.\n\n<<1>> makes feature availability depend on an hourly batch.\n\n<<3>> stores useful event data but its scheduled analysis is too infrequent.\n\n<<4>> ingests promptly, but delays the actual recommendation update until the nightly job.\n\nKinesis transports and retains records; it does not calculate recommendations by itself. Partition keys do not provide global ordering, and concurrent producer requests or retries can affect application event order. Design and test the consumer's ordering, deduplication, state, and latency behavior. SQS, EC2, and EMR can participate in streaming systems; the listed alternatives fail because of their processing schedules.\n\nOfficial AWS references (checked September 18, 2026): [Kinesis stream concepts](https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html). [Kinesis producer ordering](https://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-sdk.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/151.mmd",
+  "diagram_alt": "Continuous session analysis must write features that the web tier can read during the same visit.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html",
+      "checked_on": "2026-09-18",
+      "supports": "Partition keys, shards, records and continuously consuming applications"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-sdk.html",
+      "checked_on": "2026-09-18",
+      "supports": "Partition-key mapping, concurrent write ordering, PutRecords retries, and limited ordering scope"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Removed false claims that SQS, EC2, EMR, or time-series databases cannot support real-time systems, and added a serving path plus explicit event-order handling."
+  ],
+  "review_status": "authored"
+}

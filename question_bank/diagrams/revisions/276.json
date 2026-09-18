@@ -1,0 +1,52 @@
+{
+  "question_id": "276",
+  "base_record_sha256": "c883de1ee08897721bb7e8a93854924c3c4d8f25d9b0f7c2ea35e2ac4763989d",
+  "record": {
+    "id": "276",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "An online game store runs its website and Oracle database in an on-premises data center. A promotion begins next week. Load tests show that cacheable catalog pages, images, and game downloads cause most of the projected overload. The existing servers can handle the projected uncached checkout and account traffic after those requests are removed. A full migration and new private connectivity cannot be completed before the promotion.\n\nWhich change best addresses the measured bottleneck within the deadline?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy additional EC2 web servers behind an ALB and wait for a new private connection to the on-premises Oracle database before accepting orders."
+      },
+      {
+        "id": "2",
+        "text": "Migrate the entire website and Oracle database to EC2 and complete application acceptance testing before the promotion."
+      },
+      {
+        "id": "3",
+        "text": "Configure DNS failover to an S3 static maintenance page whenever the on-premises website is overloaded."
+      },
+      {
+        "id": "4",
+        "text": "Place CloudFront in front of the existing HTTPS origin. Cache the eligible catalog and download paths, use appropriate freshness rules, and keep checkout and account responses uncached."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. A CloudFront custom origin can be an on-premises HTTP server. Serving eligible content from edge caches removes the workload identified by the tests, while dynamic transactions continue to reach the existing application.\n\n<<1>> depends on connectivity that will not be ready and leaves an untested hybrid transaction path.\n\n<<2>> exceeds the stated preparation window.\n\n<<3>> can display an outage notice, but does not keep the store accepting orders.\n\nA CDN does not automatically make a database scalable or guarantee an outage-free promotion. This choice depends on the measured cacheable fraction and validated residual origin capacity. Test cache keys, authentication, invalidation, and cold-cache behavior before the event.\n\nOfficial AWS references (checked September 18, 2026): [CloudFront custom origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html). [Cache freshness controls](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/276.mmd",
+  "diagram_alt": "Cacheable traffic and transactions take different paths, leaving a measured residual load on the original system.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront can use an HTTP server outside AWS as an origin"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cache duration balances origin offload and freshness"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Added measured cacheable load and residual checkout capacity so CloudFront is a defensible deadline solution rather than an unconditional outage guarantee."
+  ],
+  "review_status": "authored"
+}

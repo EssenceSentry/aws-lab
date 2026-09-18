@@ -1,0 +1,58 @@
+{
+  "question_id": "056",
+  "base_record_sha256": "34089df1f0c28853d03ab2d77e3c7503b7a1ac05f0c21ffebaf4a759e32f468a",
+  "record": {
+    "id": "056",
+    "exam_domain": "Design for New Solutions",
+    "question": "A bank runs a public portal on EC2 instances behind an Application Load Balancer. DevOps engineers need operating-system administrator access to the instances. A separate cybersecurity team must control the public TLS certificate and its private key, and the key must not become available to the EC2 administrators. The teams use separate IAM roles and DevOps cannot modify security-role policies.\n\nWhich design meets this separation-of-duties requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Have the cybersecurity team create an exportable ACM certificate, install it and its private key on every EC2 instance, and restrict the key file to the operating-system root user."
+      },
+      {
+        "id": "2",
+        "text": "Terminate public TLS on the ALB with a non-exportable ACM certificate. Grant certificate and listener-certificate administration only to the cybersecurity role, while limiting the DevOps role to its required instance operations."
+      },
+      {
+        "id": "3",
+        "text": "Store an exportable certificate and private key in a private S3 bucket. Allow only the EC2 instance role to download them and terminate public TLS on the instances."
+      },
+      {
+        "id": "4",
+        "text": "Terminate public TLS on the ALB with an ACM certificate. Use only an SCP Allow statement to grant the cybersecurity role certificate-management access, without granting corresponding IAM permissions."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "Choose <<2>>. The ALB performs TLS termination through its ACM integration, so the public-facing private key does not need to be installed on the application hosts. Selecting a non-exportable certificate and controlling certificate, listener and IAM administration preserves the intended separation.\n\n<<1>> exposes the private key to the operating-system administrators who control the root account. File permissions do not isolate secrets from those administrators. <<3>> likewise delivers key material to the EC2 environment; restricting the S3 download to the instance role does not prevent an administrator of that instance from obtaining it. <<4>> mistakes an SCP for a permission grant. SCPs constrain the available permissions and cannot replace the IAM allow needed by the cybersecurity role.\n\nA certificate contains a public key; its associated private key is the secret material. ACM now offers exportable public certificates, so key non-exportability is a selected property rather than a universal ACM guarantee. If the ALB-to-target connection also uses TLS, it is a separate TLS session with its own certificate and key controls.\n\nAWS documentation (checked September 18, 2026): [ALB HTTPS certificates](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/https-listener-certificates.html), [ACM exportable certificates](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html), [SCP evaluation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/056.mmd",
+  "diagram_alt": "TLS terminates at the ALB, and EC2 operating-system access does not expose the associated non-exportable public TLS key.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/https-listener-certificates.html",
+      "checked_on": "2026-09-18",
+      "supports": "ALB HTTPS listeners integrate with ACM and support automatic renewal of ACM-issued certificates."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html",
+      "checked_on": "2026-09-18",
+      "supports": "Exportable public certificates can be deployed on EC2; customers manage deployment of renewed exported certificates."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "An explicit deny at any ancestor applies below it; SCP allows must exist throughout the account path."
+    }
+  ],
+  "editorial_notes": [
+    "Made the non-exportable ACM offering explicit and preserved the IAM-versus-SCP distinction.",
+    "Removed unrelated Firewall Manager and AWS Config story elements and replaced them with realistic key-distribution distractors."
+  ],
+  "review_status": "authored"
+}

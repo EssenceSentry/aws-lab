@@ -1,0 +1,17 @@
+flowchart TB
+accTitle: Keep TLS keys inside the HSM and authorize log reads separately
+accDescr: TCP traffic reaches web servers, which invoke HSM key operations without key export; reading logs requires S3 and KMS permissions.
+C[TLS client] --> N[NLB TCP listener]
+N --> W[Web servers across AZs]
+W -->|Private-key operation| H[CloudHSM across AZs - non-extractable key]
+H -->|Operation result only| W
+W -->|Application logs| S[(S3 with SSE-KMS)]
+E[Employee request] --> P{S3 read allowed?}
+P -->|Yes| K{KMS decrypt allowed?}
+K -->|Yes| S
+P -->|No| X[Denied]
+K -->|No| X
+class C,E inputData
+class P,K decision
+class H,S storage
+class X warning

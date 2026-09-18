@@ -1,0 +1,57 @@
+{
+  "question_id": "150",
+  "base_record_sha256": "ddce7ede71adc0c605618ef38aaac05032469b33b2d8e24d854b58af4dd695ec",
+  "record": {
+    "id": "150",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company runs a stateless HTTP application on a fixed EC2 fleet. The service must remain at the Route 53 public hosted-zone apex, example.com. Traffic must be distributed across at least two Availability Zones, capacity must scale with demand, and instances that fail the load balancer's application health check must be replaced automatically.\n\nWhich actions together meet these requirements? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Create an ALB and target group with an application health check. Create a Route 53 A alias record at example.com targeting the ALB."
+      },
+      {
+        "id": "2",
+        "text": "Place CloudFront in front of the existing fixed fleet and create an apex alias to the distribution. Leave compute capacity and replacement policies unchanged."
+      },
+      {
+        "id": "3",
+        "text": "Place the instances in a multi-AZ Auto Scaling group with demand-based scaling and attach the ALB target group. Configure only EC2 status checks and do not use the ALB health results for replacement."
+      },
+      {
+        "id": "4",
+        "text": "Create a CNAME record at the example.com zone apex pointing to the ALB DNS name."
+      },
+      {
+        "id": "5",
+        "text": "Place the instances in an Auto Scaling group spanning at least two Availability Zones. Attach the ALB target group, configure demand-based scaling, and enable ELB health checks with an appropriate grace period."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<5>> are correct. The ALB supplies application load distribution and health checks, and a Route 53 alias supports the hosted-zone apex. The Auto Scaling group supplies elastic capacity and, when ELB health checks are enabled, replaces instances the ALB reports unhealthy.\n\n<<2>> adds caching and an edge endpoint but leaves the required compute scaling and replacement controls absent.\n\n<<3>> provides scaling but explicitly omits the required application-health replacement signal. Attaching a target group alone does not enable ELB health checks in Auto Scaling.\n\n<<4>> uses an unsupported record type at the zone apex. A CNAME may be appropriate at a non-apex name, but the stated apex requires a suitable alias.\n\nLoad-balancer target selection and instance replacement are separate mechanisms. Set minimum capacity, startup grace, scaling limits, and failure headroom to match the availability target, and test unhealthy-target replacement.\n\nOfficial AWS references (checked September 18, 2026): [Route 53 alias records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html). [Auto Scaling health checks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/150.mmd",
+  "diagram_alt": "The ALB routes requests and reports application health; Auto Scaling must explicitly use that signal to replace instances.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aliases support zone apex names while CNAMEs do not"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html",
+      "checked_on": "2026-09-18",
+      "supports": "ELB health checks must be enabled for load-balancer-driven instance replacement"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer set 1 and 5 and existing apex repair. Replaced the NAT-instance distractor with an otherwise-valid ASG that deliberately lacks the required ELB health signal."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: The complete inspection loop stays inside the factory
+accDescr: Cloud training and deployment supply a model before an outage. During operation the cameras, Greengrass inference server and feedback API communicate locally without a cloud inference request.
+C[SageMaker training<br/>Deploy artifacts while connected]:::external -.->|Before outage| M
+subgraph F[Factory LAN, operational without Internet]
+direction TB
+I[Camera images]:::inputData --> M[Greengrass core<br/>Local model and runtime]:::process
+M --> A[Local feedback API]:::process
+A --> W[Workers receive inspection result]:::output
+end

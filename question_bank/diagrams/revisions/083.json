@@ -1,0 +1,52 @@
+{
+  "question_id": "083",
+  "base_record_sha256": "982611b99b059c8dc694c8bce2b267e928432f3cccc27398fa5f73dad54e2c43",
+  "record": {
+    "id": "083",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A stateless application runs on identical EC2 instances distributed evenly across three Availability Zones. During scheduled sales events, average CPU utilization reaches 90%. Load tests show that CPU demand is proportional to traffic and that the remaining instances must stay at or below 90% CPU after an Availability Zone fails. New instances take several minutes to become ready.\n\nWhich capacity strategy meets the failure requirement while avoiding year-round provisioning for the largest sales event?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use scheduled scaling to make sufficient capacity healthy before each event. Size the three-AZ fleet for at most 60% CPU at the forecast peak, and use target tracking and suitable capacity limits as demand changes."
+      },
+      {
+        "id": "2",
+        "text": "Keep the fleet at 90% CPU during each event. Increase the Auto Scaling maximum so that replacement instances can be launched after an Availability Zone fails."
+      },
+      {
+        "id": "3",
+        "text": "Keep the fleet sized for 60% CPU at the largest annual event throughout the year. Disable scale-in to ensure that this capacity remains available."
+      },
+      {
+        "id": "4",
+        "text": "Use scheduled scaling to make sufficient capacity healthy for 75% CPU at the forecast peak. Rely on equal distribution across three Availability Zones for failure headroom."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Losing one of three equally sized AZs leaves two-thirds of the capacity. At unchanged demand, utilization increases by a factor of 3/2: 60% becomes 90%. Scheduling capacity ahead of the event accommodates launch and warmup time, while scaling back afterward avoids carrying the annual peak all year. Real deployments should include additional margin for forecast error and imperfect balancing.\n\n<<2>> allows future recovery but lacks capacity during the replacement interval. A fleet already at 90% would require 135% of the surviving capacity immediately after the failure.\n\n<<3>> meets the failure-headroom requirement, but retaining peak-event capacity all year violates the cost objective.\n\n<<4>> leaves insufficient headroom: 75% becomes 112.5% after one AZ is lost.\n\nAn Auto Scaling maximum is permission to grow, not preexisting healthy capacity.\n\nAWS documentation (checked September 18, 2026): [Auto Scaling target tracking](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html); [Scheduled scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/083.diagram.json",
+  "diagram_alt": "A capacity calculation shows why a three-AZ fleet needs 60% or lower peak utilization to remain at 90% after losing one AZ.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html",
+      "checked_on": "2026-09-18",
+      "supports": "Target tracking adjusts group capacity toward a utilization target and depends on instance warmup."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Scheduled actions prepare desired and minimum capacity for predictable traffic and can operate with dynamic policies."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Replaced unexplained instance counts and unsupported discount recommendations with explicit failure-headroom arithmetic."
+  ],
+  "review_status": "authored"
+}

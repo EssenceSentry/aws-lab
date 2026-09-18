@@ -1,0 +1,57 @@
+{
+  "question_id": "244",
+  "base_record_sha256": "f10a67cfc45bb771468845420ff6efa82b932c0626f11385785fc32f8bb4a282",
+  "record": {
+    "id": "244",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "Partners upload inventory through SFTP to an EC2 server with an Elastic IP. They use SSH keys, verify the server host key, and connect only from approved source IPs. The company wants managed storage and multi-AZ endpoint availability with the least server administration. Partners will retain SFTP and accept a hostname or additional IPs for failover. The existing host key is supported for import.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run SFTP servers behind an NLB in multiple AZs and mount the same EBS Multi-Attach volume on all servers as their shared cross-AZ filesystem."
+      },
+      {
+        "id": "2",
+        "text": "Run an SFTP container service on Fargate across AZs with EFS behind an NLB. Maintain the SFTP image, user database, host keys and scaling configuration."
+      },
+      {
+        "id": "3",
+        "text": "Use an internet-facing VPC-hosted Transfer Family SFTP endpoint across AZs with S3 storage. Import the host key, configure partner users and scoped S3 access, reuse the old Elastic IP in one subnet, and add IPs for other AZs with source-IP security-group restrictions."
+      },
+      {
+        "id": "4",
+        "text": "Use a Transfer Family PUBLIC endpoint with S3 storage and attach the existing Elastic IP and a partner-restricted security group directly to that PUBLIC endpoint."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. An internet-facing VPC-hosted Transfer Family endpoint supports chosen Elastic IPs and security groups while the service manages the SFTP servers. Preserve the server identity separately from partner user authentication and grant each user only the intended S3 access.\n\n<<1>> relies on EBS Multi-Attach as a cross-AZ shared filesystem; it is neither that nor a substitute for filesystem coordination. <<2>> can be engineered, but retains more SFTP server administration than the managed service. <<4>> confuses the PUBLIC endpoint type with the VPC-hosted type that supports these network controls.\n\nAn Elastic IP belongs to one endpoint subnet. Reusing the old address alone does not provide client failover across AZs. Partners must use the agreed hostname or alternate addresses, and existing SSH sessions may still need to reconnect.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/transfer/latest/userguide/create-server-in-vpc.html\nhttps://docs.aws.amazon.com/transfer/latest/userguide/configuring-servers-change-host-key.html\nhttps://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/244.mmd",
+  "diagram_alt": "Client failover uses multiple endpoint addresses; network filtering, SSH identity, and S3 authorization remain distinct controls.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/create-server-in-vpc.html",
+      "checked_on": "2026-09-18",
+      "supports": "Internet-facing VPC-hosted Transfer Family endpoints support security groups and an Elastic IP per selected subnet across up to three AZs."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/configuring-servers-change-host-key.html",
+      "checked_on": "2026-09-18",
+      "supports": "Transfer Family can import supported existing SFTP server host keys to retain server identity during migration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+      "checked_on": "2026-09-18",
+      "supports": "EBS Multi-Attach is limited to instances in one AZ and requires applications or clustered filesystems to coordinate writes."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved the necessary client failover allowance and distinguished a viable self-managed alternative from the lower-administration managed service."
+  ],
+  "review_status": "authored"
+}

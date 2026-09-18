@@ -1,0 +1,19 @@
+flowchart TB
+accTitle: Search retention and audit retention have separate lifecycles
+accDescr: The search index moves hot to warm to cold and is deleted at ninety days, while independent S3 dataset copies remain archived for seven years.
+D["Weekly processed dataset"]:::inputData
+D --> H["Hot index
+days 0–7, ingest and search"]:::storage
+D --> S["Customer S3 copy
+days 0–90"]:::storage
+H --> W["UltraWarm
+migration and rare queries"]:::storage
+W --> C["Cold index
+rare access until day 90"]:::storage
+C -->|Attach to query| W
+C --> X["Delete search index
+at day 90"]:::warning
+S --> A["Glacier Deep Archive
+retain through year 7"]:::storage
+A --> R["Restore for audit
+delayed retrieval accepted"]:::output

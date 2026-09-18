@@ -1,0 +1,62 @@
+{
+  "question_id": "087",
+  "base_record_sha256": "57bd74eeb8415e7470def6981f29e660dd95323a0a44eec208a4a7e025fb4787",
+  "record": {
+    "id": "087",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses AWS Organizations for its workload accounts. Finance requires CostCenter and ProjectID tags on existing and future RDS DB instances and DynamoDB tables, and needs costs grouped by those tags. Teams create resources through CloudFormation or approved API calls that support tags on creation. Workload administrators must be unable to create an untagged resource or remove either required tag.\n\nWhich approach meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use Tag Editor to tag existing resources and activate both cost allocation tag keys in the management account. Ask teams to include the tags in new templates."
+      },
+      {
+        "id": "2",
+        "text": "Activate both cost allocation tag keys and use an hourly AWS Config remediation workflow to apply missing tags after resources have been created."
+      },
+      {
+        "id": "3",
+        "text": "Tag existing resources and activate both cost allocation tag keys. Require tags in CloudFormation and apply scoped SCP denies for supported creation requests missing either required tag and for removal of the required tags."
+      },
+      {
+        "id": "4",
+        "text": "Attach a required-tag policy to the federated developer role and activate both cost allocation tag keys. Leave other workload roles and existing resources unchanged."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Three separate controls are needed: repair existing resources, prevent future violations, and activate the keys for cost reporting. The SCPs must be scoped to supported service actions and tested against the actual creation and tagging APIs. A separate deny for each missing request tag ensures that absence of either tag is rejected. Empty or invalid values also need an explicit policy if prohibited. Resource creation still requires normal IAM permissions, including required tagging permissions.\n\n<<1>> performs cleanup and billing setup but relies on a convention for future resources.\n\n<<2>> is detective and corrective. An hourly repair window does not meet the requirement to prevent untagged creation, and automation may not know the correct business values.\n\n<<4>> restricts only one role and leaves existing resources and other creation paths uncovered.\n\nActivating a cost allocation key does not add tags to resources. SCPs limit affected member-account principals rather than granting access, and service support for request-tag conditions must be verified for each covered action.\n\nAWS documentation (checked September 18, 2026): [Activate cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html); [RDS tags on creation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/security_iam_id-based-policy-examples-grant-permissions-tags-on-create.html); [DynamoDB request-tag conditions](https://docs.aws.amazon.com/us_en/amazondynamodb/latest/developerguide/abac-example-use-cases.html); [SCP evaluation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/087.mmd",
+  "diagram_alt": "Cleanup, preventive request policies, and billing activation fulfill different parts of the tagging requirement.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html",
+      "checked_on": "2026-09-18",
+      "supports": "User-defined resource tag keys must be activated for billing reports after they have been applied to resources."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/security_iam_id-based-policy-examples-grant-permissions-tags-on-create.html",
+      "checked_on": "2026-09-18",
+      "supports": "Supported RDS create actions accept tags and require authorization for AddTagsToResource, with request-tag conditions available."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/us_en/amazondynamodb/latest/developerguide/abac-example-use-cases.html",
+      "checked_on": "2026-09-18",
+      "supports": "DynamoDB CreateTable supports authorization conditions on aws:RequestTag and requires appropriate tagging permissions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCP explicit denies limit affected member-account principals and are not permissions grants."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Scoped enforcement to supported RDS and DynamoDB creation APIs and clarified separate deny logic for either missing key."
+  ],
+  "review_status": "authored"
+}

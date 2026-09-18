@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Regional resilience plus primary and standby DNS
+accDescr: Route 53 normally answers with the primary ALB and uses the ready secondary when the primary is unhealthy. Each Region has its own ALB and Auto Scaling group.
+Q[Public hostname query]:::inputData --> H{Primary ready<br/>and healthy?}:::decision
+P[us-west-1 primary<br/>Regional ALB]:::decision --> A[us-west-1<br/>Auto Scaling group<br/>Multiple AZs]:::output
+S[us-east-1 standby<br/>Regional ALB]:::decision --> B[us-east-1<br/>Auto Scaling group<br/>Multiple AZs]:::output
+H -->|Yes| P
+H -->|No, standby healthy| S
+N[Standby data and capacity<br/>Already validated]:::inputData -. prerequisite .-> S

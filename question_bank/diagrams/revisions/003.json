@@ -1,0 +1,52 @@
+{
+  "question_id": "003",
+  "base_record_sha256": "ab1ae96300a32664f48d8bb019013fc094e307006177110e9b028c5cbb8d1789",
+  "record": {
+    "id": "003",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company deploys a stateless web application to Amazon EC2 instances by manually running scripts. It wants an automated deployment process that validates a new version before production cutover and can return to the previous version without reinstalling it. The application can run on Elastic Beanstalk, and database changes remain compatible with both application versions.\n\nWhich deployment design best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Automate deployment to a separate Elastic Beanstalk environment and run the scripts as platform hooks. Test the new environment, swap the environment CNAMEs, and retain the previous environment for a reverse swap if needed."
+      },
+      {
+        "id": "2",
+        "text": "Automate an Elastic Beanstalk rolling deployment with an additional batch. Terminate the additional instances when the update completes, and redeploy the previous application bundle if production errors occur."
+      },
+      {
+        "id": "3",
+        "text": "Use CodeBuild to install the new version on one production instance, test it, and then update the remaining instances in place. Reinstall the previous bundle on all instances if errors occur."
+      },
+      {
+        "id": "4",
+        "text": "Use a Systems Manager Automation runbook to validate the release in staging and then replace the application on every production instance. Run the deployment again with the previous bundle if errors occur."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> keeps the old and new versions in separate environments. After testing green, a CNAME swap directs clients toward it; reversing the swap provides rollback without reinstalling blue. Platform hooks can run deployment customization scripts.\n\n<<2>> is a rolling replacement of the existing environment, so returning to the previous release requires redeployment. <<3>> tests a canary but then overwrites the production fleet. <<4>> automates testing and installation, but also overwrites the old production release. All three lack the retained environment required by the stem.\n\nA DNS cutover is not instantaneous for every client. Keep the old environment available while cached records expire and connections drain. Shared data must remain compatible; application rollback does not undo database migrations.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html\nhttps://docs.aws.amazon.com/elasticbeanstalk/latest/dg/platforms-linux-extend.hooks.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/003.mmd",
+  "diagram_alt": "The previous application remains deployed throughout validation, cutover, and possible rollback.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html",
+      "checked_on": "2026-09-18",
+      "supports": "Separate-environment testing, CNAME swapping, database separation, and DNS propagation cautions."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/platforms-linux-extend.hooks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Platform hooks run scripts during deployment on supported Linux platforms."
+    }
+  ],
+  "editorial_notes": [
+    "Removed the implication that CodePipeline itself defines a Beanstalk rolling policy. Distinguished rollback without reinstallation and preserved DNS propagation caveat. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

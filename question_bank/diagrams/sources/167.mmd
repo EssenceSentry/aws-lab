@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Separate API usage management from player authorization
+accDescr: API Gateway applies client usage controls and player authorization before Lambda accesses keyed session records in DynamoDB.
+C[Mobile REST client]:::external --> G[API Gateway REST API]:::process
+K[API key and usage plan]:::reference -.->|Meter and throttle client usage| G
+A[Player token and authorizer]:::reference -.->|Authorize player access| G
+G --> L[Stateless Lambda game operation]:::process
+L --> D[(DynamoDB session by player ID)]:::storage
+D --> R[REST response]:::output
+N[API key is not player authentication]:::warning -.-> K

@@ -1,0 +1,52 @@
+{
+  "question_id": "026",
+  "base_record_sha256": "62769c1cd49a3d734b44902107f7188bc5fd36ddcd0aab21f3f6554e79d14bda",
+  "record": {
+    "id": "026",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company uses Systems Manager Patch Manager to maintain a Windows EC2 web fleet. Every service has redundant instances, and either of two patch cohorts can handle the full workload. The company needs recurring installation of approved patches, including required reboots, without taking both cohorts out of service together. An existing automation runbook can verify application health and stop a rollout.\n\nWhich approach best meets the requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Tag instances into two disjoint PatchGroup values and register an approved Windows baseline for each. Schedule AWS-RunPatchBaseline installation in separate maintenance windows, and have the runbook allow the second cohort only after the first is healthy. Set appropriate concurrency and error limits."
+      },
+      {
+        "id": "2",
+        "text": "Place all instances in one patch group. Run AWS-RunPatchBaseline with Install and RebootIfNeeded on every target concurrently in a single maintenance window."
+      },
+      {
+        "id": "3",
+        "text": "Create two patch groups with different baselines. Schedule both groups to install and reboot at the same time; rely on the different baseline IDs to serialize execution."
+      },
+      {
+        "id": "4",
+        "text": "Run AWS-RunPatchBaseline with Scan for all instances on a recurring schedule. Treat a successful scan as confirmation that the approved patches have been installed."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Correct: <<1>>. Patch groups select the applicable baseline; maintenance windows schedule the work; and the health gate prevents the next cohort from starting while the first remains unavailable. Concurrency and error controls limit rollout impact within a cohort.\n\n<<2>> allows the entire fleet to reboot together. A single window can support a safe rolling design, but this option explicitly runs all targets concurrently.\n\n<<3>> is incorrect because distinct baselines do not serialize tasks. Simultaneous schedules can disrupt both cohorts.\n\n<<4>> evaluates patch compliance but does not install patches. Use Install and an appropriate reboot policy to complete patching.\n\nNon-overlapping scheduled windows alone are not proof of application recovery: an earlier execution can overrun or leave unhealthy services. Patch policies in Quick Setup are a current alternative; this scenario uses an existing patch-group workflow.\n\nOfficial AWS references (checked 2026-09-18):\n[Patch groups](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-patch-groups.html)\n[AWS-RunPatchBaseline](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-aws-runpatchbaseline.html)",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/026.mmd",
+  "diagram_alt": "A health check between cohorts makes the patch schedule an availability-preserving rollout.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-patch-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "Patch group tags associate managed nodes with baselines"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-aws-runpatchbaseline.html",
+      "checked_on": "2026-09-18",
+      "supports": "Scan, Install and reboot semantics"
+    }
+  ],
+  "editorial_notes": [
+    "Added a health gate and redundant-capacity assumption; removed false claims that Run Command/EventBridge cannot patch. Avoided implying patch groups alone or distinct start times guarantee availability. Answer unchanged."
+  ],
+  "review_status": "authored"
+}

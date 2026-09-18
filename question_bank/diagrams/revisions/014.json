@@ -1,0 +1,52 @@
+{
+  "question_id": "014",
+  "base_record_sha256": "f5e6b4aee24f2ade4a19ecdd31d88d2f23845631b93267ecf9d250bff60862fd",
+  "record": {
+    "id": "014",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company runs a provisioned Amazon Redshift cluster. Its disaster recovery objectives for a Region outage are a recovery point objective (RPO) of 24 hours and a recovery time objective (RTO) of 1 hour. Repeated recovery exercises have restored a representative snapshot in the recovery Region and completed client cutover within 40 minutes. The company wants to avoid paying for an always-running recovery cluster.\n\nWhich configuration best supports these objectives?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Take automated snapshots in the primary Region. Start copying the latest snapshot to the recovery Region only after a Region outage is declared."
+      },
+      {
+        "id": "2",
+        "text": "Enable automated snapshots and cross-Region snapshot copying. Monitor that the latest successfully copied recovery point is less than 24 hours old, and maintain the tested restore-and-cutover runbook and recovery dependencies."
+      },
+      {
+        "id": "3",
+        "text": "Enable cross-Region synchronous replication between the Redshift cluster and a continuously running standby cluster, then configure automatic DNS failover."
+      },
+      {
+        "id": "4",
+        "text": "Rely on the default automated snapshots in the primary Region. During an outage, restore those snapshots to a different Availability Zone in that same Region."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> places recoverable data outside the failure Region before the incident. Snapshot copy produces backups, not a running cluster. On failure, restore from the destination copy and execute the tested client cutover.\n\n<<1>> depends on an unavailable source Region during the incident. <<3>> describes neither the snapshot-copy feature nor the requested cost model, and Redshift does not provide the claimed synchronous cross-Region standby switch. <<4>> changes Availability Zone within the failed Region and provides no independently stored regional recovery copy.\n\nRPO measures the age of the recoverable data; RTO measures the time to restore service. A schedule alone does not establish either result: monitor completed copies and rehearse restoration, permissions, capacity, networking, and cutover. The one-hour RTO is supported here by scenario-specific tests, not a service guarantee.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/redshift/latest/mgmt/cross-region-snapshot-copy.html\nhttps://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/014.mmd",
+  "diagram_alt": "The age of the copied snapshot and the duration of the recovery process are independent time budgets.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/cross-region-snapshot-copy.html",
+      "checked_on": "2026-09-18",
+      "supports": "Automatic snapshot copying to another Region and destination restoration."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html",
+      "checked_on": "2026-09-18",
+      "supports": "Snapshots are point-in-time backups; restoration creates a new cluster."
+    }
+  ],
+  "editorial_notes": [
+    "Added observed restore evidence to make the 1-hour RTO defensible. Clarified that copying replicates snapshots, not an active cluster. Answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

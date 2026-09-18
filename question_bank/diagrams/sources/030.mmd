@@ -1,0 +1,16 @@
+flowchart TB
+accTitle: Layered request-flood defenses
+accDescr: Edge capacity and caching reduce origin load, WAF filters HTTP requests, and the ALB distributes allowed work across zones.
+I[Internet requests] --> C[CloudFront edge]
+C -->|Cache hit| H[Response from edge]
+C -->|Origin request| W{WAF rules}
+W -->|Blocked or rate limited| X[Stop request]
+W -->|Allowed| A[ALB]
+A --> E1[EC2 workers AZ A]
+A --> E2[EC2 workers AZ B]
+M[CloudWatch demand] -.->|Controlled scaling| E1
+M -.->|Controlled scaling| E2
+class I inputData
+class W decision
+class X warning
+class H,E1,E2 output

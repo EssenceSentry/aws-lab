@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Enforce access at each origin
+accDescr: S3 checks signed distribution access while ALB-side WAF checks the protected origin header. Direct viewers do not satisfy either configured gate.
+C[Designated<br/>CloudFront distribution]:::inputData -->|Signed OAC request| S{S3 bucket policy<br/>Expected SourceArn?}:::decision
+C -->|HTTPS with secret header| W{WAF on ALB<br/>Exact value?}:::decision
+S -->|Allowed| M[(Private media objects)]:::storage
+W -->|Allowed| F[Fargate application]:::output
+D[Direct viewer requests]:::external --> X[Blocked at origin<br/>Missing required authorization]:::error

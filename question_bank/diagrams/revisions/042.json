@@ -1,0 +1,48 @@
+{
+  "question_id": "042",
+  "base_record_sha256": "7285466e2a0b5792f2be9f0b20c2308d00e6ee75baf706c3651874ddaab906ac",
+  "record": {
+    "id": "042",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A company uses AWS Organizations with all features enabled. All established member accounts are in a Production OU. A custom SCP attached to the organization root explicitly denies changes to AWS Config. A newly invited account needs its Config rules updated before joining Production. The administrators already have the necessary IAM permissions.\n\nHow should the company enable a repeatable onboarding process while keeping the established accounts continuously protected?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Remove the Config deny from the root SCP and publish approved Config templates in AWS Service Catalog for all accounts to use."
+      },
+      {
+        "id": "2",
+        "text": "Leave the root SCP unchanged. Move the new account to an Onboarding OU and attach an SCP that explicitly allows Config changes."
+      },
+      {
+        "id": "3",
+        "text": "Leave the root SCP unchanged. Attach an IAM policy allowing Config changes to the new account administrators for the onboarding period."
+      },
+      {
+        "id": "4",
+        "text": "Attach the Config restriction to the Production OU before removing that restriction from the root. Retain the required SCP allows and other guardrails. Make the changes in a separate Onboarding OU, then move the account to Production."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "Choose <<4>>. Scope the Config deny to the accounts that have completed onboarding. Attaching the deny to Production first preserves its protection while the root policy is changed. The new account can then use its existing IAM permissions in the separate Onboarding OU, provided the SCP path allows the actions and no other deny applies. Moving it to Production activates the Config restriction.\n\n<<1>> removes the enforcement boundary for established accounts. An approved Service Catalog product does not prevent administrators from calling Config APIs directly. <<2>> cannot override the inherited root deny with a lower-level allow. <<3>> also fails because an IAM allow cannot override an applicable SCP deny.\n\nSCPs set permission boundaries; they do not grant permissions. Keep appropriate allows at the root, every OU and the account. Root-level denies are valid for restrictions that truly must apply everywhere; the problem here is the scope of this particular deny.\n\nAWS documentation (checked September 18, 2026): [SCP evaluation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/042.diagram.json",
+  "diagram_alt": "A policy comparison shows that a root deny blocks both branches, while a Production-only deny preserves protection during onboarding.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "An explicit deny at any ancestor applies below it; SCP allows must exist throughout the account path."
+    }
+  ],
+  "editorial_notes": [
+    "Changed the migration sequence to attach the Production deny before removing the root deny, avoiding a guardrail gap.",
+    "Replaced the ambiguous root allow-list alternative with the direct IAM-versus-SCP misconception; correct option 4 remains unchanged."
+  ],
+  "review_status": "authored"
+}

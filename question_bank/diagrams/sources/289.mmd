@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Infrastructure deployment and content indexing are different steps
+accDescr: CloudFormation provisions resources, while a separate ingestion path links document text in the search index to originals in S3 for the website to retrieve.
+A["CloudFormation resources"] -.-> B["S3 original files"]
+A -.-> C["OpenSearch domain"]
+B --> D["Ingest text, metadata and object ID"]
+D --> C
+E["Website search request"] --> C
+C -->|Matching object IDs| F["Links to authorized originals"]
+F --> B
+class A inputData
+class B,C storage
+class D decision
+class E,F output

@@ -1,0 +1,15 @@
+sequenceDiagram
+accTitle: Exchange identity for scoped AWS credentials
+accDescr: The mobile client receives an OIDC token, exchanges it with STS, and signs direct service calls with the complete temporary credential set.
+participant App as Mobile app
+participant IdP as OIDC provider
+participant STS as AWS STS
+participant Data as S3 and DynamoDB
+App->>IdP: Authenticate user
+IdP-->>App: OIDC identity token
+App->>STS: AssumeRoleWithWebIdentity
+Note over STS: Validate token and role trust
+STS-->>App: Access key, secret key, session token
+App->>Data: Signed request with session token
+Note over Data: Enforce user-scoped role permissions
+Data-->>App: Authorized result

@@ -1,0 +1,33 @@
+{
+  "type": "table",
+  "title": "Availability requires capacity at both application and database layers",
+  "columns": [
+    "Layer",
+    "Mechanism",
+    "Failure or growth handled"
+  ],
+  "rows": [
+    [
+      "Rails application",
+      "ALB and multi-AZ Auto Scaling",
+      "Instance load and an AZ outage"
+    ],
+    [
+      "Aurora storage",
+      "Shared volume across three AZs",
+      "Durable data and automatic volume growth"
+    ],
+    [
+      "Aurora compute",
+      "Ready replica in another AZ",
+      "Writer promotion without new compute creation"
+    ],
+    [
+      "EC2 billing",
+      "Commitment for measured baseline",
+      "Discount eligible steady usage, burst separately"
+    ]
+  ],
+  "footnote": "Storage replication, compute failover and billing commitments are different mechanisms. None substitutes for the other two.",
+  "emphasis_rows": []
+}

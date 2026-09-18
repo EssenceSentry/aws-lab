@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Repair the unreachable guest offline
+accDescr: After checking eligibility, Automation stops and backs up the instance, uses a helper to repair its root volume, and restarts and verifies the instance.
+M["Monitoring identifies unreachable guest"] --> E{"Runbook eligibility and permissions verified?"}
+E -->|No| X["Escalate for another recovery path"]
+E -->|Yes| S["Stop instance and create backup AMI"]
+S --> H["Attach root volume to helper"]
+H --> R["Run offline EC2Rescue checks and repairs"]
+R --> A["Restore volume and start instance"]
+A --> V["Verify access and review rescue output"]
+class M inputData
+class E decision
+class X warning
+class V output

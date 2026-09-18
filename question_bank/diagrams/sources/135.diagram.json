@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "title": "Database connection: forward and return paths",
+  "columns": [
+    "Control",
+    "Request to database",
+    "Response to application"
+  ],
+  "rows": [
+    [
+      "Security groups",
+      "Allow initiating TCP 5432 flow",
+      "Stateful return is allowed"
+    ],
+    [
+      "Network ACLs",
+      "Allow outbound and inbound TCP 5432",
+      "Allow outbound and inbound client ephemeral port"
+    ],
+    [
+      "VPC routes",
+      "Existing local route reaches DB subnet",
+      "Existing local route reaches app subnet"
+    ]
+  ],
+  "footnote": "Example: app port 49152 → DB port 5432; replies target app port 49152. Permit the client ephemeral range. Separately, AWS Config records security group and network ACL configuration history.",
+  "emphasis_rows": [
+    0,
+    1
+  ]
+}

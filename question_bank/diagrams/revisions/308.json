@@ -1,0 +1,52 @@
+{
+  "question_id": "308",
+  "base_record_sha256": "7cae53f0b73925350305069c2575a789d579001d6b85020b53c04eae74bf1416",
+  "record": {
+    "id": "308",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A factory uses IP cameras to inspect parts on an assembly line. A defect-detection model has been trained in SageMaker AI. The cameras can stream images but cannot run the model. A local Linux server exposes the API that sends inspection feedback to workers, and another compatible local server is available for inference.\n\nInspections and feedback must continue during Internet outages. Which deployment meets this requirement?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Deploy the model to a regional SageMaker real-time endpoint and connect the factory API to that endpoint through redundant VPN connections."
+      },
+      {
+        "id": "2",
+        "text": "Upload images to S3 and run SageMaker batch transform jobs in the Region, then deliver each completed result to the factory API."
+      },
+      {
+        "id": "3",
+        "text": "Install Greengrass V2 on the local inference server and deploy the compatible model, runtime, and inference components in advance. Process camera images locally and invoke the local feedback API."
+      },
+      {
+        "id": "4",
+        "text": "Use a Greengrass component to preprocess camera images locally, but invoke a regional SageMaker endpoint for every defect prediction before sending feedback."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. Both inference and feedback stay on the factory network. Greengrass components can package the application code, model artifacts, and compatible runtime so the hot path does not depend on a cloud request.\n\n<<1>> can improve connectivity resilience but still requires a working path to the regional inference service. Redundant VPNs do not make a cloud endpoint available during a complete Internet outage.\n\n<<2>> introduces cloud transfer and batch-processing dependencies, so it cannot continue the required local inspection loop while disconnected.\n\n<<4>> performs only preprocessing locally. The decisive prediction still depends on the unavailable regional endpoint.\n\nDeploy all artifacts and runtime dependencies before an outage, and avoid cloud-only authorization, model downloads, or API calls in the inspection path. Verify that local hardware supports the model and meets the required throughput. Greengrass can manage deployment when connectivity is available, but local inference code must implement the camera and feedback-API integrations. Test the full workflow with WAN access disabled; local network and server failures require their own resilience design.\n\nAWS documentation (checked September 18, 2026): [Local Greengrass ML inference](https://docs.aws.amazon.com/greengrass/v2/developerguide/perform-machine-learning-inference.html); [Greengrass resilience](https://docs.aws.amazon.com/greengrass/v2/developerguide/disaster-recovery-resiliency.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/308.mmd",
+  "diagram_alt": "Cloud connectivity is used for advance deployment, while camera input, inference, and worker feedback form a complete local runtime path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/perform-machine-learning-inference.html",
+      "checked_on": "2026-09-18",
+      "supports": "Greengrass V2 components can deploy model artifacts, compatible runtimes and inference code to a core device for local inference."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/disaster-recovery-resiliency.html",
+      "checked_on": "2026-09-18",
+      "supports": "Greengrass applications can operate locally during cloud-connectivity interruptions when their runtime dependencies are local."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Made camera and local-server capabilities explicit. Replaced obsolete or unsupported service alternatives with real architectures that fail the offline requirement. No claim that Greengrass automatically supplies the application-specific API integration."
+  ],
+  "review_status": "authored"
+}

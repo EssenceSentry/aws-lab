@@ -1,0 +1,58 @@
+{
+  "question_id": "063",
+  "base_record_sha256": "5b13c990b9ba767ae0f4c25d887d6153e09390d8e080f41607c27d6d446bcb8f",
+  "record": {
+    "id": "063",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company must retain an Oracle RAC database while migrating it to Amazon EC2. The company has already validated the licensing, cluster interconnect, storage design, and Oracle support requirements. Its database team has tested application-consistent backup scripts for the EBS-backed database volumes. The team wants scheduled backups and controlled operating system patching with the least custom orchestration.\n\nWhich solution should a solutions architect recommend?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Run the validated RAC design on EC2. Use an Amazon Data Lifecycle Manager snapshot policy with the tested pre- and post-snapshot scripts, and use Systems Manager Patch Manager in maintenance windows that respect the cluster maintenance procedure."
+      },
+      {
+        "id": "2",
+        "text": "Migrate the RAC database to an Amazon RDS for Oracle Multi-AZ DB instance. Use its managed standby as the second RAC node and rely on RDS backups and maintenance."
+      },
+      {
+        "id": "3",
+        "text": "Migrate the RAC database to Amazon Aurora. Preserve the Oracle RAC engine configuration and use Aurora automated backups and managed patching."
+      },
+      {
+        "id": "4",
+        "text": "Run the validated RAC design on EC2. Build scheduled Lambda functions to create snapshots, and build CodePipeline and CodeDeploy workflows to coordinate operating system patches."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> preserves the required database architecture and uses managed scheduling for the operational tasks. Data Lifecycle Manager can invoke Systems Manager pre- and post-snapshot scripts to coordinate application-consistent snapshots. Patch Manager can run in maintenance windows, with the database team controlling safe node order, draining and reboot behavior. Verify script success and restoreability rather than assuming every EBS snapshot is application-consistent.\n\n<<2>> is unsuitable because RDS for Oracle does not support Oracle RAC; a Multi-AZ standby is not a RAC node. <<3>> changes the database engine and cannot preserve an Oracle RAC configuration. <<4>> can be engineered to work, but duplicates snapshot and patch orchestration available in the managed services and therefore adds operational work.\n\nThis choice does not establish that an arbitrary EC2/EBS arrangement supports RAC. The validated cluster and storage design is an explicit prerequisite.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Concepts.FeatureSupport.html\nhttps://docs.aws.amazon.com/ebs/latest/userguide/automate-app-consistent-backups.html\nhttps://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/063.mmd",
+  "diagram_alt": "Backups need consistency scripts and patches need a cluster-aware node sequence.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Concepts.FeatureSupport.html",
+      "checked_on": "2026-09-18",
+      "supports": "RDS for Oracle lists Real Application Clusters as unsupported."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/automate-app-consistent-backups.html",
+      "checked_on": "2026-09-18",
+      "supports": "DLM invokes custom Systems Manager scripts for application-consistent EBS snapshots."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html",
+      "checked_on": "2026-09-18",
+      "supports": "Patch Manager manages operating system patch operations."
+    }
+  ],
+  "editorial_notes": [
+    "Made licensing, Oracle support and storage validation prerequisites rather than implying generic EBS volumes establish RAC support.",
+    "Separated OS patching from Oracle database patch orchestration."
+  ],
+  "review_status": "authored"
+}

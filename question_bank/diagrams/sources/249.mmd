@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Cost attribution and access are separate joins
+accDescr: Consolidated account-level charges join to an OU map, then a reader-to-team permissions dataset restricts which rows a leader receives.
+CUR[CUR 2.0, account IDs and costs]:::inputData --> JOIN[Join on usage account ID]
+MAP[Current account-to-OU map]:::inputData --> JOIN
+JOIN --> DATA[Team-attributed cost dataset]:::storage
+DATA --> RLS{Reader-to-team RLS rules}:::decision
+PERM[Leader permissions map]:::inputData --> RLS
+RLS --> A[Team A authorized rows]:::output
+RLS --> B[Team B authorized rows]:::output

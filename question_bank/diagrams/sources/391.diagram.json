@@ -1,0 +1,25 @@
+{
+  "type": "table",
+  "title": "One exclusion tag, two different scan outcomes",
+  "columns": [
+    "Eligible function",
+    "Dependency CVE scan",
+    "Code vulnerability scan"
+  ],
+  "rows": [
+    [
+      "Production, no exclusion tag",
+      "Enabled for function + layers",
+      "Enabled"
+    ],
+    [
+      "Test, code exclusion tag",
+      "Still enabled for function + layers",
+      "Excluded"
+    ]
+  ],
+  "footnote": "Exact tag: InspectorCodeExclusion=LambdaCodeScanning. Code scanning requires standard scanning to be active.",
+  "emphasis_rows": [
+    1
+  ]
+}

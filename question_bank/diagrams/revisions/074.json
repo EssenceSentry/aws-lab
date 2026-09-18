@@ -1,0 +1,68 @@
+{
+  "question_id": "074",
+  "base_record_sha256": "0e22f080509bbe6ff724d725a5b4e237ef7b3aa6150de0216e7518d968ee0b13",
+  "record": {
+    "id": "074",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A research team runs a tightly coupled MPI workload on 200 EC2 instances across multiple Availability Zones. The workload reads and writes large shared files on Amazon EFS. Tests at 1,000 instances show excessive time spent on inter-instance communication and parallel file I/O. The team prioritizes job performance and can restart jobs from checkpoints after an Availability Zone failure.\n\nWhich changes should the team make? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Place the compute instances in a cluster placement group within one Availability Zone, with capacity planning for the required fleet."
+      },
+      {
+        "id": "2",
+        "text": "Attach extra standard network interfaces to the existing instances and assume their aggregate bandwidth increases without changing instance limits."
+      },
+      {
+        "id": "3",
+        "text": "Use supported EFA-enabled instances and an MPI/libfabric software stack configured to use Elastic Fabric Adapter."
+      },
+      {
+        "id": "4",
+        "text": "Stripe EBS volumes from different Availability Zones into one RAID 0 device attached to every compute instance."
+      },
+      {
+        "id": "5",
+        "text": "Replace EFS with a single st1 EBS volume and mount it concurrently from all compute instances as the shared filesystem."
+      },
+      {
+        "id": "6",
+        "text": "Use an appropriately sized Amazon FSx for Lustre filesystem for the shared parallel file workload, and validate throughput and metadata settings with representative tests."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "3",
+      "6"
+    ],
+    "explanation": {
+      "text": "<<1>> reduces network distance for a tightly coupled cluster. <<3>> enables a lower-overhead communication path for supported MPI workloads. <<6>> provides a parallel filesystem designed for concurrent high-performance file access. These address the measured communication and storage bottlenecks.\n\n<<2>> does not remove the instance’s networking limits merely by adding interfaces. <<4>> assumes cross-AZ EBS attachment and universal shared RAID access that this design does not provide. <<5>> treats an st1 block volume as a shared multi-client filesystem.\n\nEFS is not categorically unable to support 1,000 clients; the evidence is the workload’s measured I/O bottleneck. FSx throughput, striping, client configuration and available compute capacity still need validation. Concentrating the compute fleet in one AZ trades fault isolation for performance, so checkpoint and restart procedures remain necessary.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html\nhttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html\nhttps://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/074.mmd",
+  "diagram_alt": "Placement, EFA transport and shared parallel storage address distinct HPC bottlenecks.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html",
+      "checked_on": "2026-09-18",
+      "supports": "Cluster placement groups concentrate instances in one AZ for low latency and high throughput."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html",
+      "checked_on": "2026-09-18",
+      "supports": "EFA OS bypass and MPI/libfabric support for HPC communication."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html",
+      "checked_on": "2026-09-18",
+      "supports": "Lustre parallel file servers and metadata/throughput tuning."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced categorical EFS scale claims with measured workload bottlenecks.",
+    "Made the single-AZ performance and recovery tradeoff explicit."
+  ],
+  "review_status": "authored"
+}

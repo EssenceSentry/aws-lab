@@ -1,0 +1,52 @@
+{
+  "question_id": "285",
+  "base_record_sha256": "9783a3a5fcdf206b2cef84238d7b84d8ee468c436a2597c447d0d4599e308a0f",
+  "record": {
+    "id": "285",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company needs a backup-and-restore disaster recovery plan for a JBoss application, an Oracle database, and 512 GB of content files. Complete Oracle RMAN backup sets are available in S3 Standard, and a stored Volume Gateway produces completed EBS snapshots of the content volume. The company has tested EC2 images, licensing, network configuration, and capacity for recovery. JBoss can read the content from an attached EBS volume. Ongoing standby replication is outside the budget.\n\nWhich recovery path uses the existing backups with the fewest additional storage recovery components?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Retain the Oracle recovery backups in S3 Glacier Deep Archive, retrieve them after disaster declaration, and restore them onto the prepared EC2 instances."
+      },
+      {
+        "id": "2",
+        "text": "Restore Oracle from the S3 RMAN backup sets onto the prepared EC2 instances. Create an EBS content volume directly from the completed gateway snapshot and attach it to the recovered application instance."
+      },
+      {
+        "id": "3",
+        "text": "Restore Oracle on EC2, deploy and activate a new cached Volume Gateway on EC2, restore its volume from the content snapshot, and connect JBoss through iSCSI."
+      },
+      {
+        "id": "4",
+        "text": "Restore Oracle on EC2, recover the content snapshot to a new gateway in a replacement on-premises site, and connect the AWS application to that site over a new VPN."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Oracle RMAN backups can restore a self-managed Oracle database on EC2. A completed Volume Gateway snapshot can also create an EBS volume directly, avoiding an extra gateway when the application already supports attached block storage.\n\n<<1>> introduces an archive-retrieval dependency on the recovery path.\n\n<<3>> is a supported general recovery pattern, but adds gateway provisioning, activation, and iSCSI configuration that this application does not require.\n\n<<4>> adds replacement-site and connectivity dependencies to an otherwise cloud-based recovery.\n\nThis is a comparison of the prepared backup-and-restore paths, not a claim that backup restoration provides the best possible RTO. Measure database restore, EBS initialization, application startup, validation, and traffic cutover. The backup schedule and application-consistent recovery point determine the achievable RPO.\n\nOfficial AWS references (checked September 18, 2026): [Volume Gateway backup and restore](https://docs.aws.amazon.com/storagegateway/latest/vgw/backing-up-volumes.html). [Oracle RMAN on EC2](https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-oracle-database/homogeneous-migration-tools.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/285.mmd",
+  "diagram_alt": "Oracle and content backups have direct restore paths that converge before application validation and traffic cutover.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/backing-up-volumes.html",
+      "checked_on": "2026-09-18",
+      "supports": "Gateway backups are EBS snapshots and can restore directly to EBS volumes"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-oracle-database/homogeneous-migration-tools.html",
+      "checked_on": "2026-09-18",
+      "supports": "RMAN backup sets in S3 can restore self-managed Oracle databases on EC2"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Replaced an unsupported universal best-RTO claim with explicit prepared recovery paths and removed unnecessary gateway steps from the direct EBS solution."
+  ],
+  "review_status": "authored"
+}

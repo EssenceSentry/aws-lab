@@ -1,0 +1,52 @@
+{
+  "question_id": "007",
+  "base_record_sha256": "7d9c0bbc079383c1706001993d102c3a81edfad3ebd7b79f13c4484318f38b1e",
+  "record": {
+    "id": "007",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company publishes downloadable reports for global customers. It must block report requests whose source IP addresses are geolocated to countries on a company-maintained denylist, while retaining low-latency delivery elsewhere. The same country policy applies to every report. Reports can be stored in a private S3 bucket.\n\nWhich solution meets these requirements with the least operational effort?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Serve the reports from EC2 instances and maintain country IP ranges as deny rules in the instances’ subnet network ACLs."
+      },
+      {
+        "id": "2",
+        "text": "Use Route 53 geolocation routing to return no record for denied countries. Serve the reports from a publicly accessible S3 website endpoint."
+      },
+      {
+        "id": "3",
+        "text": "Use Route 53 geoproximity routing to shift denied-country requests to another AWS Region. Serve the same reports from that Region."
+      },
+      {
+        "id": "4",
+        "text": "Deliver the reports through CloudFront with a country denylist. Use origin access control and a bucket policy that permits origin access only through the distribution."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> combines country-level request filtering at CloudFront with global edge delivery. A private S3 origin with origin access control prevents clients from bypassing that distribution to fetch the same reports directly.\n\n<<1>> requires maintaining changing IP ranges and does not provide a global content cache. <<2>> treats DNS answer selection as authorization; a client can bypass the intended DNS answer and reach the public origin. <<3>> changes routing proximity but does not deny report access.\n\nCloudFront geographic restrictions apply to the entire distribution and depend on IP geolocation. They do not prove a user’s residence or identity; unknown locations and proxies require separate consideration when designing a stricter policy.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html\nhttps://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/007.mmd",
+  "diagram_alt": "Country authorization occurs on the content request, and a private origin closes the bypass path.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html",
+      "checked_on": "2026-09-18",
+      "supports": "Country allow/deny lists, distribution-wide scope, IP geolocation and origin-bypass considerations."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC and a distribution-scoped bucket policy restrict private S3 origin access."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced overbroad legal-compliance claims with a precise company IP-country policy. Added private origin access; answer ID unchanged."
+  ],
+  "review_status": "authored"
+}

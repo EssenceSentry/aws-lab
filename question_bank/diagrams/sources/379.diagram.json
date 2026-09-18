@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Two different tag failures require two checks",
+  "columns": [
+    "Resource tags",
+    "Allowed-value rule alone",
+    "Required-key hook in FAIL mode"
+  ],
+  "rows": [
+    [
+      "Project absent",
+      "Does not require key presence",
+      "Blocks deployment"
+    ],
+    [
+      "Project = approved value",
+      "Value passes",
+      "Key is present"
+    ],
+    [
+      "Project = disallowed value",
+      "Rejects noncompliant value",
+      "Key-presence test alone is insufficient"
+    ]
+  ],
+  "footnote": "Use both controls. Activate the managed hook at STACK level in each deployment account and Region.",
+  "emphasis_rows": [
+    0
+  ]
+}

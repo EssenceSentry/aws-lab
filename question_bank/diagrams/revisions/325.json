@@ -1,0 +1,52 @@
+{
+  "question_id": "325",
+  "base_record_sha256": "df4bb14059a84bb0c3b7ef9a0aff1b3d151de6a6538888eb1a79c8eeddd1dd0e",
+  "record": {
+    "id": "325",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A company runs an application on EC2 Auto Scaling, an ALB, and RDS for PostgreSQL in one Region. A second Region has an ALB, a cross-Region read replica, and an Auto Scaling group with zero running instances. The secondary group's launch configuration, quotas, and recovery capacity have been validated. The company requires a 30-minute RTO while keeping standby compute costs low. Its tested runbook can promote the replica, start the application, validate writes, and update DNS within this objective.\n\nWhich approach should automate the runbook?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Monitor a meaningful primary application endpoint with Route 53 health checks. Use a CloudWatch alarm and SNS to start a recovery workflow that fences primary writes, promotes the replica, scales the secondary group, verifies readiness, and then redirects DNS traffic."
+      },
+      {
+        "id": "2",
+        "text": "Monitor individual ALB 502 responses. On the first error, promote the replica and update DNS immediately, then request secondary EC2 capacity."
+      },
+      {
+        "id": "3",
+        "text": "Keep enough application instances running in the secondary Region to serve the full production load. Use weighted DNS routing and promote the replica when the primary health check fails."
+      },
+      {
+        "id": "4",
+        "text": "Configure Route 53 failover records and health checks for both ALBs. Rely on DNS failover to promote the read replica and launch instances in the secondary Auto Scaling group."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "Option <<1>> automates the recovery dependencies while retaining the pilot-light compute footprint. Health checks publish metrics to CloudWatch; an alarm can notify SNS and start orchestration. The workflow must make the database writable, launch and configure application capacity, and verify the recovered service before explicitly directing clients to it. Use a durable orchestrator, such as Step Functions with Lambda tasks, for polling and retries.\n\nOption <<2>> treats one request error as a regional failure and directs traffic to a service that is not ready. Option <<3>> can shorten recovery but pays for full standby compute, contrary to the stated cost objective. Option <<4>> changes DNS routing only; Route 53 does not perform RDS promotion or EC2 scaling.\n\nThe 30-minute RTO comes from tested end-to-end recovery, including detection, capacity acquisition, database promotion, application checks, and DNS/client caching. It is not guaranteed by these services individually. Cross-Region replication is asynchronous, so the recovery plan also needs a separate RPO and controls against competing writers.\n\nAWS references checked on 2026-09-18:\nhttps://docs.aws.amazon.com/Route53/latest/DeveloperGuide/monitoring-health-checks.html\nhttps://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/325.mmd",
+  "diagram_alt": "Database promotion and application startup converge at a readiness gate before DNS is changed.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/monitoring-health-checks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Route 53 health-check metrics, CloudWatch alarms and SNS notification chain."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "Read replicas replicate asynchronously and can be promoted for disaster recovery."
+    }
+  ],
+  "editorial_notes": [
+    "Replaced unsupported DNS-triggered promotion and immediate traffic cutover with an explicitly gated workflow. Retained 30-minute RTO only as a tested operational objective; key 1 unchanged."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,57 @@
+{
+  "question_id": "108",
+  "base_record_sha256": "b26c73bc72c23c4334cf9e1a1aef40044c044fa9ab17722e289bebfe53ea59da",
+  "record": {
+    "id": "108",
+    "exam_domain": "Design for New Solutions",
+    "question": "A retailer uses an ALB in eu-west-1 as a custom origin for CloudFront. Viewers use shop.example.com. The origin hostname is origin.example.com, which resolves to the ALB. The company must reject HTTP viewer requests and encrypt traffic on both the viewer-to-CloudFront and CloudFront-to-ALB connections.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Request or import a viewer certificate covering shop.example.com in ACM in us-east-1 and attach it to CloudFront. Attach a certificate covering origin.example.com to the ALB in eu-west-1. Configure HTTPS Only for both the viewer protocol policy and origin protocol policy."
+      },
+      {
+        "id": "2",
+        "text": "Attach a certificate covering shop.example.com to CloudFront and set the viewer protocol policy to HTTPS Only. Configure HTTP Only for the origin protocol policy because CloudFront already encrypted the viewer connection."
+      },
+      {
+        "id": "3",
+        "text": "Use CloudFront's default *.cloudfront.net certificate for shop.example.com. Attach a valid certificate to the ALB and configure HTTPS Only for both protocol policies."
+      },
+      {
+        "id": "4",
+        "text": "Configure HTTPS Only for both protocol policies. Attach the viewer certificate from us-east-1 to CloudFront and use a self-signed certificate on the ALB for origin.example.com."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. CloudFront terminates viewer TLS and establishes a separate TLS connection to the origin. An ACM viewer certificate for CloudFront must be in us-east-1. The ALB uses a certificate in its own Region. Certificate names and the configured hostnames must match, and the origin certificate must have a trusted chain.\n\n<<2>> encrypts only the viewer leg. Viewer HTTPS does not force origin HTTPS.\n\n<<3>> presents a certificate that does not cover the custom viewer hostname. The default CloudFront certificate covers CloudFront's assigned domain name.\n\n<<4>> fails CloudFront's origin trust requirements. CloudFront does not accept a self-signed origin certificate.\n\nBoth protocol policies are necessary controls for this requirement. Two encrypted connections are not a single TLS tunnel through CloudFront to the ALB.\n\nOfficial AWS references (checked September 18, 2026): [CloudFront certificate requirements](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html). [CloudFront origin HTTPS](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html). [Viewer HTTPS policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/108.mmd",
+  "diagram_alt": "Viewer and origin TLS have distinct termination points, hostnames, and ACM Region requirements.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html",
+      "checked_on": "2026-09-18",
+      "supports": "Viewer certificate Region, custom hostname coverage, trusted origin certificate requirements"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-custom-origin.html",
+      "checked_on": "2026-09-18",
+      "supports": "HTTPS Only origin policy"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html",
+      "checked_on": "2026-09-18",
+      "supports": "HTTPS Only rejects HTTP viewer requests"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Clarified two TLS sessions, explicit hostnames and Regions, and HTTPS-only behavior; removed suggestion that ACM is inherently more secure than a trusted imported certificate."
+  ],
+  "review_status": "authored"
+}

@@ -1,0 +1,46 @@
+{
+  "type": "table",
+  "title": "Separate client routing from database authority",
+  "columns": [
+    "Request or event",
+    "Destination or action",
+    "Decision being enforced"
+  ],
+  "rows": [
+    [
+      "North American DNS query",
+      "Healthy US ALB preferred",
+      "Explicit continent mapping"
+    ],
+    [
+      "Asian DNS query",
+      "Healthy Asia ALB preferred",
+      "Explicit continent mapping"
+    ],
+    [
+      "Unmatched or unresolved geography",
+      "Configured default route",
+      "Complete routing coverage"
+    ],
+    [
+      "Write from either application Region",
+      "Current global primary writer",
+      "One authoritative writer"
+    ],
+    [
+      "Read eligible for bounded staleness",
+      "Local regional reader",
+      "Regional read access"
+    ],
+    [
+      "Primary database Region failure",
+      "Recovery runbook promotes secondary",
+      "Database authority changes explicitly"
+    ]
+  ],
+  "footnote": "Health-aware DNS fallback and database promotion are distinct operations. Aurora replication is asynchronous.",
+  "emphasis_rows": [
+    3,
+    5
+  ]
+}

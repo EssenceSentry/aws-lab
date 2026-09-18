@@ -1,0 +1,11 @@
+flowchart TB
+accTitle: Durable processing and mobile delivery solve different problems
+accDescr: Location updates enter a durable queue, workers query a geographic index, and SNS uses platform push services instead of a persistent app connection.
+M["Mobile location update"] --> A["Authenticated API"] --> Q[("SQS: retain accepted work")]
+Q --> W["Scaled lookup workers"]
+W --> D[("DynamoDB geographic-cell index")]
+D --> W
+W --> N["SNS mobile endpoint"]
+N --> P["APNs / FCM"] --> O["Device OS notification"]
+Q -.-> T["Queue age: scale before delay grows"]
+T -.-> W

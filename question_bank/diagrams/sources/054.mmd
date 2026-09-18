@@ -1,0 +1,16 @@
+sequenceDiagram
+accTitle: Same hostname, new database connection
+accDescr: Maintenance promotes the standby, changes DNS mapping and requires the client to reconnect using the unchanged endpoint name.
+participant A as Application
+participant D as Endpoint DNS
+participant P as Primary AZ A
+participant S as Standby AZ B
+A->>D: Resolve db.example.rds.amazonaws.com
+D-->>A: Primary address
+A->>P: Database connection
+Note over P,S: Maintenance triggers standby promotion
+P--xA: Existing connection ends
+S->>D: RDS changes endpoint mapping
+A->>D: Resolve same hostname again
+D-->>A: Promoted standby address
+A->>S: New database connection

@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: DNS trust and two separate TLS connections
+accDescr: A parent DS record establishes trust in the signed hosted zone. Viewer and origin TLS terminate separately at CloudFront and the ALB.
+subgraph DNS[DNS authenticity]
+ P[Parent zone DS record] -->|trusts signing key| Z[Signed Route 53 zone]
+ Z -->|signed answer| R[Validating resolver]
+end
+ B[Browser] -->|HTTPS| C[CloudFront]
+ C -->|HTTPS only| A[ALB in eu-west-1]
+ V[ACM certificate in us-east-1] -.->|viewer identity| C
+ O[ACM certificate in eu-west-1] -.->|origin identity| A
+ R -.->|validated DNS answer| B
+class B inputData
+class P,Z,V,O storage
+class A output

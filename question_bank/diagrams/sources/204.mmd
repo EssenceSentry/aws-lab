@@ -1,0 +1,14 @@
+flowchart TB
+accTitle: Commit work before making inputs cold
+accDescr: Queue references drive retryable workers, successful output commits permit acknowledgement and completion tags, and only completed objects become archival candidates.
+Q["SQS: object key"] --> W["Retryable Spot worker"]
+W --> C{"Output committed to S3?"}
+C -->|No| R["Retry after visibility timeout"]
+R --> Q
+C -->|Yes| A["Acknowledge job and tag completed objects"]
+A --> G[("Lifecycle to Deep Archive")]
+class Q inputData
+class C decision
+class R warning
+class A output
+class G storage

@@ -1,0 +1,9 @@
+flowchart TB
+accTitle: Free-space monitoring drives guarded in-place expansion
+accDescr: A low-free-capacity alarm triggers automation, which checks limits and existing updates before expanding the same FSx file system. Successful growth updates the threshold, while blocked growth alerts operators.
+F[FSx FreeStorageCapacity]:::inputData --> A[CloudWatch alarm<br/>Trigger before exhaustion]:::process
+A --> E[EventBridge ALARM state event]:::process
+E --> L{Lambda checks limits<br/>and update status}:::decision
+L -->|Eligible| U[UpdateFileSystem<br/>Increase same file system]:::process
+U --> R[Monitor completion<br/>Adjust threshold]:::output
+L -->|Cannot expand| N[Alert and investigate]:::warning

@@ -1,0 +1,58 @@
+{
+  "question_id": "133",
+  "base_record_sha256": "a280a1957f34540a6d1080cc2c1ecd65ae584335150ca0f2cbdf69649c5fd68a",
+  "record": {
+    "id": "133",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "After a developer accidentally terminates a production EC2 instance, a company reviews its developer roles and finds overlapping administrative policies. Only a designated architect role should be able to stop or terminate production instances. Instances carry a protected Environment=Production tag. The company wants both an explicit preventive restriction and least-privilege developer permissions.\n\nWhich actions should the solutions architect take? (Select TWO.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Explicitly deny StopInstances and TerminateInstances for developer roles when the target carries the production tag. Prevent developers from changing that tag or altering or bypassing the restriction."
+      },
+      {
+        "id": "2",
+        "text": "Remove broad developer permissions and privilege-escalation paths, including overlapping policies and access to the architect role. Grant production stop and terminate permissions only to the designated architect role."
+      },
+      {
+        "id": "3",
+        "text": "Require developers to use MFA when calling StopInstances or TerminateInstances, while retaining their production permissions."
+      },
+      {
+        "id": "4",
+        "text": "Remove developer workstation addresses from the production instances' security groups, while retaining their EC2 API permissions."
+      },
+      {
+        "id": "5",
+        "text": "Replace the developers' administrative policies with the AWS managed PowerUserAccess policy as the sole permission change."
+      }
+    ],
+    "correct_option_ids": [
+      "1",
+      "2"
+    ],
+    "explanation": {
+      "text": "<<1>> and <<2>> are correct. The explicit deny blocks the prohibited production actions even when an applicable policy allows them. Least-privilege cleanup removes unnecessary grants and paths to a different, unrestricted identity. The protected tag and the policies enforcing the restriction must not be editable by developers.\n\n<<3>> verifies possession of an additional authentication factor but still authorizes the wrong people to perform the action. <<4>> changes instance network access, not authorization for EC2 control-plane API calls. <<5>> remains too broad: PowerUserAccess permits EC2 actions, including stopping and terminating instances.\n\nAn explicit deny takes precedence over an allow in the applicable policy evaluation. Removing overlapping allows is therefore a complementary least-privilege measure, not a prerequisite for that deny to work. Evaluate the identity the developer can actually use, including role-assumption and policy-editing paths.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html\nhttps://docs.aws.amazon.com/aws-managed-policy/latest/reference/PowerUserAccess.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/133.mmd",
+  "diagram_alt": "Production-tag matching activates an explicit deny that an overlapping allow cannot override, provided developers cannot remove or bypass the controls.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html",
+      "checked_on": "2026-09-18",
+      "supports": "An applicable explicit deny overrides an allow during authorization."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-managed-policy/latest/reference/PowerUserAccess.html",
+      "checked_on": "2026-09-18",
+      "supports": "The managed policy permits EC2 actions and does not enforce the requested separation of duties."
+    }
+  ],
+  "editorial_notes": [
+    "Made the two selected actions explicitly complementary and removed the implication that broad allows override an applicable explicit deny.",
+    "Retained tag and privilege-escalation protections that prevent a superficial tag-only control."
+  ],
+  "review_status": "authored"
+}

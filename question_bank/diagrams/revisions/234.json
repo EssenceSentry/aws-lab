@@ -1,0 +1,62 @@
+{
+  "question_id": "234",
+  "base_record_sha256": "977b2ddb2de7b4dd909e73f4565b367ada5042185c4e89e9ca9a0aa12593ff36",
+  "record": {
+    "id": "234",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A game publisher expects millions of anonymous users worldwide to download a 5 GB release package. The existing website will continue to list the download link. The publisher wants global edge caching over HTTPS, minimal origin-server administration, and no requirement for downloaders to hold AWS credentials.\n\nWhich solution meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store package copies on EBS volumes in an EC2 Auto Scaling group behind an Application Load Balancer, and publish the regional load-balancer URL directly."
+      },
+      {
+        "id": "2",
+        "text": "Store the package on EFS mounted by EC2 web servers behind an Application Load Balancer, and use that load balancer as a CloudFront origin."
+      },
+      {
+        "id": "3",
+        "text": "Store the package in a private S3 bucket and configure its REST endpoint as a CloudFront origin with origin access control. Permit the distribution to read the object and publish its HTTPS download URL."
+      },
+      {
+        "id": "4",
+        "text": "Store the package in an S3 Requester Pays bucket and publish the direct S3 object URL so anonymous users pay the download charges."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. S3 supplies durable object storage without web-server administration, and CloudFront caches the release at edge locations. OAC signs origin requests so the bucket can remain private while viewer downloads remain public. A 5 GB object is below CloudFront's current 50 GB cacheable-object limit.\n\n<<1>> provides regional origin capacity but omits the required global edge cache and retains server management.\n\n<<2>> supplies an edge cache and can work, but adds EC2 and filesystem administration to serve a static object that S3 can provide directly.\n\n<<4>> fails the anonymous-access requirement. Requester Pays requires an authenticated requester that accepts the charge, and a direct S3 URL does not add a CloudFront cache.\n\nUse the S3 REST origin, not an S3 website endpoint, for OAC. Scope the bucket permission to the intended distribution. Cache misses still fetch from the origin, so choose appropriate cache headers and versioned object names for releases. CloudFront reduces repeated origin transfers but does not eliminate the first fetch at every cache location.\n\nAWS documentation (checked September 18, 2026): [CloudFront origin access control for S3](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html); [CloudFront object-size limits](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html); [S3 Requester Pays requirements](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html); [CloudFront cache hits and origin fetches](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/234.mmd",
+  "diagram_alt": "Viewer access is public, but a cache miss reaches the private S3 object through an authorized CloudFront origin request.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront OAC signs origin requests to a private S3 REST endpoint and requires appropriate bucket permission; S3 website endpoints do not support OAC."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront supports cacheable HTTP GET responses up to 50 GB, so a 5 GB package is within the ordinary object-size limit."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+      "checked_on": "2026-09-18",
+      "supports": "Requester Pays buckets do not support anonymous requests and require authenticated requesters to acknowledge the charge."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "checked_on": "2026-09-18",
+      "supports": "CloudFront serves cached objects from edge locations and fetches missing content from configured origins, including S3 and HTTP servers."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced public S3 website hosting with a private REST origin and OAC, corrected Requester Pays spelling and access assumptions, and made origin administration and anonymous global downloads decisive."
+  ],
+  "review_status": "authored"
+}

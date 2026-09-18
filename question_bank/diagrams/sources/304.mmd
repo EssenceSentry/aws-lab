@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Delete the input only after the database commit succeeds
+accDescr: A new S3 object triggers per-object Lambda processing. A successful idempotent RDS transaction allows deletion, while failure retains the input for retry.
+S[(New S3 input object)]:::storage -->|ObjectCreated notification| L[Lambda<br/>Parse and transform one input]:::process
+L --> R[Idempotent RDS transaction]:::process
+R --> C{Commit succeeded?}:::decision
+C -->|Yes| D[Delete processed input]:::output
+C -->|No| F[Retain input<br/>Retry and monitor failure]:::warning

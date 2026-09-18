@@ -1,0 +1,16 @@
+stateDiagram-v2
+accTitle: Readiness gates each replacement batch
+accDescr: An updated launch template starts controlled batches. A successful readiness signal permits progress, while a timeout fails the update.
+[*] --> NewVersion
+NewVersion: Stack references new template version
+NewVersion --> Batch
+Batch: Replace one configured batch
+Batch --> Wait
+Wait: Keep minimum capacity in service
+Wait --> Next: New instances signal readiness
+Wait --> Failure: Readiness timeout
+Next: More old instances?
+Next --> Batch: Yes
+Next --> Complete: No
+Failure: Update fails, inspect rollback events
+Complete --> [*]

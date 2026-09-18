@@ -1,0 +1,14 @@
+stateDiagram-v2
+accTitle: Migrating a writable Single-AZ share
+accDescr: Bulk and incremental copies happen before a brief write freeze, with verification required before clients switch to the Multi-AZ destination.
+[*] --> SourceActive
+SourceActive: Single-AZ source owns writes
+SourceActive --> Copying: Create Multi-AZ destination
+Copying: Initial copy and repeated incremental tasks while source changes
+Copying --> Frozen: Begin cutover window
+Frozen: Source writes paused
+Frozen --> Verified: Final transfer passes validation
+Frozen --> SourceActive: Abort cutover safely
+Verified --> DestinationActive: Repoint clients
+DestinationActive: Multi-AZ destination owns writes
+DestinationActive --> [*]

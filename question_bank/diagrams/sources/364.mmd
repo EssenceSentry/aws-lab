@@ -1,0 +1,15 @@
+sequenceDiagram
+accTitle: A short launch invocation starts a separate long-running task
+accDescr: An S3 upload event invokes a Lambda launcher, which starts an ECS Fargate task and returns. The task continues transcoding for about 40 minutes, then reports an output or failure independently of the launcher.
+participant S as S3 upload
+participant L as Lambda launcher
+participant E as ECS Fargate
+participant J as Durable job tracking
+S->>L: Object-created event
+L->>J: Claim idempotent job
+L->>E: RunTask with input key
+E-->>L: Task accepted
+Note over L: Invocation can finish
+E->>E: Transcode for about 40 minutes
+E-->>J: Task exit status and output
+Note over J: Validate success or arrange retry

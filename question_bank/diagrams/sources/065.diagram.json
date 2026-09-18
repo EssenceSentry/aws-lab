@@ -1,0 +1,12 @@
+{
+  "type": "table",
+  "title": "Three requirements, three mechanisms",
+  "columns": ["Requirement", "Mechanism", "Boundary of the guarantee"],
+  "rows": [
+    ["Infrequent reads after day 30", "S3 Standard → Standard-IA", "Immediate retrieval, with retrieval charges"],
+    ["Find personal data in JSON", "Macie sensitive data discovery", "Findings require a separate response workflow"],
+    ["Survive a database AZ failure", "RDS primary + synchronous Multi-AZ standby", "Automatic failover; standby is not a read replica"]
+  ],
+  "footnote": "JSON metadata is the discovery target. Macie does not inspect the visual content of photographs.",
+  "emphasis_rows": [0, 1, 2]
+}

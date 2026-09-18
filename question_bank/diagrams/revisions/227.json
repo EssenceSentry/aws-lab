@@ -1,0 +1,52 @@
+{
+  "question_id": "227",
+  "base_record_sha256": "1754005061a5ba22d84ef39f856b9c7d6b46baa3e93f7be22986743459319f7b",
+  "record": {
+    "id": "227",
+    "exam_domain": "Design for New Solutions",
+    "question": "A photo-processing application runs on EC2 and writes watermarked images to a private S3 bucket. It needs only PutObject access to the processed/ prefix. The company prohibits long-lived application access keys and wants credentials to rotate without deployment changes.\n\nWhich configuration meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Grant the application the required S3 permission through an SCP and rely on that policy to issue credentials to the instance."
+      },
+      {
+        "id": "2",
+        "text": "Create a restricted IAM user and store its access key in encrypted instance user data for the application to load at startup."
+      },
+      {
+        "id": "3",
+        "text": "Attach an instance profile containing an EC2-trusted IAM role with the required prefix-scoped PutObject permission. Use the AWS SDK credential provider to retrieve and refresh temporary role credentials through instance metadata."
+      },
+      {
+        "id": "4",
+        "text": "Obtain a restricted role session during deployment and place its temporary credentials in instance user data. Have the application reuse those values for the lifetime of the instance."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. The instance profile associates the role with EC2, and the role's permission policy limits uploads to the required objects. The SDK can use temporary credentials supplied through instance metadata and refresh them before expiration without embedding keys in the application.\n\n<<1>> confuses an organization permissions limit with a credential source. An SCP neither grants S3 permission nor attaches an identity to an EC2 instance.\n\n<<2>> still distributes long-lived IAM user credentials. Encrypting their storage does not provide the required automatically refreshed role session.\n\n<<4>> starts with temporary credentials but freezes them in deployment data. They expire, and user data does not automatically refresh them.\n\nUse IMDSv2 and a supported SDK configuration, and restrict who may pass or replace the instance role. Grant ListBucket or other actions only if the application actually needs them. Role credentials eliminate static-key distribution but do not replace application and instance security.\n\nAWS documentation (checked September 18, 2026): [EC2 application role credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html); [IMDSv2 and supported SDKs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/227.mmd",
+  "diagram_alt": "The application uses refreshable instance-role credentials from metadata rather than credentials copied into user data.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
+      "checked_on": "2026-09-18",
+      "supports": "An instance profile associates a role with EC2, and SDK instance-profile providers obtain and refresh temporary credentials from instance metadata."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html",
+      "checked_on": "2026-09-18",
+      "supports": "IMDSv2 uses session-oriented metadata requests, can be required on an instance, and is supported by current AWS SDKs."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Narrowed permissions to the required upload prefix, used the explicit instance-profile mechanism, and replaced an invented user-data credential service with a plausible but expiring deployment-time credential copy."
+  ],
+  "review_status": "authored"
+}

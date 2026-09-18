@@ -1,0 +1,15 @@
+sequenceDiagram
+accTitle: TLS selection precedes application routing
+accDescr: The client supplies a hostname in TLS SNI. The ALB selects its certificate, completes TLS, then evaluates the HTTP host to choose a target group.
+participant C as Browser
+participant A as ALB listener
+participant T as Target group
+C->>A: TLS ClientHello, SNI app.example.net
+A->>A: Select matching certificate from list
+A-->>C: Certificate for app.example.net
+Note over C,A: TLS handshake completes
+C->>A: Encrypted HTTP request, Host app.example.net
+A->>A: Evaluate host-based routing rule
+A->>T: Forward request
+T-->>A: Application response
+A-->>C: Encrypted response

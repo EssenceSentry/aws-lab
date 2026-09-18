@@ -1,0 +1,10 @@
+flowchart TB
+accTitle: Inspect the public path and close origin bypasses
+accDescr: Public traffic enters CloudFront protected by WAF and Shield Advanced. Only the intended distribution path reaches the restricted ALB and private S3 origin.
+U[Internet clients]:::external --> F[CloudFront<br/>Shield Advanced enrolled]:::process
+W[WAF SQLi, rate, and bot rules]:::reference -.->|Inspect requests| F
+F -->|Restricted origin path| A[ALB and application]:::process
+F -->|Signed OAC request| S[(Private S3 origin)]:::storage
+U -.->|Direct origin request| X[Denied by origin controls]:::error
+X -.-> A
+X -.-> S

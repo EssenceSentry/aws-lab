@@ -1,0 +1,67 @@
+{
+  "question_id": "235",
+  "base_record_sha256": "0c3478814aff9e2b253b1f23ee9fe434ecf8e002b267e1b1d82e50aae6890314",
+  "record": {
+    "id": "235",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A trading application uses RDS for MySQL with a Multi-AZ standby. A failover drill interrupted service for 40 seconds. The team wants to reduce disruption toward a 20-second target, preserve idle client connections where possible, and avoid reconnecting every client after a writer change. The application can retry failed in-flight work, and migration to a compatible Aurora MySQL database is permitted. The final timing target must be verified under representative load.\n\nWhich changes work together toward these goals? (Select THREE.)",
+    "options": [
+      {
+        "id": "1",
+        "text": "Enable RDS Optimized Writes on the existing database as the primary mechanism for preserving client connections during failover."
+      },
+      {
+        "id": "2",
+        "text": "Cache read results in ElastiCache and use that cache as the replacement SQL writer whenever the database fails."
+      },
+      {
+        "id": "3",
+        "text": "Place RDS Proxy between the application and its supported database targets, and configure application retries and connection timeouts for failover."
+      },
+      {
+        "id": "4",
+        "text": "Migrate the database to an Aurora MySQL cluster after validating application and feature compatibility."
+      },
+      {
+        "id": "5",
+        "text": "Provision Aurora Replicas in other Availability Zones and set promotion priorities to provide ready failover targets."
+      },
+      {
+        "id": "6",
+        "text": "Add ordinary asynchronous read replicas to the existing RDS for MySQL DB instance and assume they become automatic Multi-AZ standby promotion targets."
+      }
+    ],
+    "correct_option_ids": [
+      "3",
+      "4",
+      "5"
+    ],
+    "explanation": {
+      "text": "<<3>>, <<4>>, and <<5>> are correct. Aurora Replicas provide ready compute that the cluster can promote to writer, with promotion priorities influencing target selection. RDS Proxy separates client connections from backend database connections and can redirect to the new writer while preserving idle client connections. Together these address promotion and client reconnection overhead.\n\n<<1>> targets write throughput, not preservation or rerouting of database sessions during writer failure.\n\n<<2>> can serve suitable cached reads, but an ElastiCache cache is not a MySQL writer and cannot safely accept arbitrary SQL transactions for later replay.\n\n<<6>> confuses ordinary RDS asynchronous read replicas with the managed Multi-AZ standby failover mechanism. Adding them does not make them automatic standby promotion targets.\n\nA sub-20-second outage is a test objective, not a guarantee of these services. RDS Proxy can accept new client connections and temporarily hold work awaiting an available backend, subject to timeouts. It is not a durable write queue: in-flight statements and transactions can fail and require application handling. Test failover with real transaction lengths, session behavior, retries, and timeout settings, including idempotency where retrying could duplicate a committed operation.\n\nAWS documentation (checked September 18, 2026): [RDS Proxy pooling and failover](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html); [Aurora high availability](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html); [RDS read replicas and standbys](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/235.mmd",
+  "diagram_alt": "Cross-AZ Aurora replicas shorten the compute promotion path, while RDS Proxy reduces client reconnection work during the writer change.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html",
+      "checked_on": "2026-09-18",
+      "supports": "Pooling reduces database connection overhead; during failover the proxy can preserve idle client connections, accept new connections, and route to the new writer, while active work can fail."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html",
+      "checked_on": "2026-09-18",
+      "supports": "Aurora can promote an existing replica in another Availability Zone using promotion priorities; failover duration varies and no sub-20-second guarantee is established."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "checked_on": "2026-09-18",
+      "supports": "MySQL read replicas serve separately routed reads using asynchronous replication; a conventional Multi-AZ DB-instance standby cannot serve reads."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answers 3, 4 and 5. Removed the implied sub-20-second service guarantee and durable write-queue promise, and clarified that only eligible idle connections survive while in-flight work needs application retry handling."
+  ],
+  "review_status": "authored"
+}

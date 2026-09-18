@@ -1,0 +1,52 @@
+{
+  "question_id": "173",
+  "base_record_sha256": "d264a7966e73b87ebc031ae60f377c113c527f52dd9aa9a7cf544cfe35439442",
+  "record": {
+    "id": "173",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "An administrator attaches an SCP with explicit denies for several EC2 networking actions to an OU containing a workload account. Interactive calls to those actions from the account's administrator role are denied. However, CloudTrail shows successful calls to the same actions made by Amazon ECS through AWSServiceRoleForECS while it manages application networking.\n\nWhat explains the difference?",
+    "options": [
+      {
+        "id": "1",
+        "text": "The default FullAWSAccess SCP overrides explicit denies whenever the calling principal has administrator permissions."
+      },
+      {
+        "id": "2",
+        "text": "An allow statement on a parent OU takes precedence over a deny statement attached to a child OU."
+      },
+      {
+        "id": "3",
+        "text": "The ECS cluster was originally created by the workload account's root user, so every later API call associated with the cluster is exempt from SCPs."
+      },
+      {
+        "id": "4",
+        "text": "The successful calls use a service-linked role, and SCPs do not restrict permissions attached to service-linked roles."
+      }
+    ],
+    "correct_option_ids": [
+      "4"
+    ],
+    "explanation": {
+      "text": "<<4>> is correct. The relevant distinction is the caller shown in CloudTrail. AWSServiceRoleForECS is a service-linked role, and such roles are outside SCP restrictions. An ordinary administrator role in the member account remains subject to the explicit deny.\n\n<<1>> misstates deny precedence. FullAWSAccess does not override a matching explicit deny for a principal to which SCPs apply, and SCPs do not independently grant administrator permissions.\n\n<<2>> reverses the hierarchy's effect. An applicable explicit deny is not canceled by an allow on an ancestor.\n\n<<3>> invents a resource-creator exemption. Member-account root activity is generally subject to SCPs, and a resource's creator does not determine the permissions of later callers.\n\nDistinguish service-linked roles from ordinary service execution roles, such as application task roles. The exemption is not a blanket rule that all actions related to an AWS service bypass organization controls.\n\nAWS documentation (checked September 18, 2026): [SCP scope and exceptions](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html); [SCP evaluation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/173.diagram.json",
+  "diagram_alt": "Ordinary member-account principals and service-linked roles are evaluated differently under SCP scope.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "checked_on": "2026-09-18",
+      "supports": "SCPs restrict member-account users and roles including root, do not grant permissions, and do not restrict management-account principals or service-linked roles."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html",
+      "checked_on": "2026-09-18",
+      "supports": "Applicable explicit denies override allows, while permission availability depends on the organization hierarchy."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 4. Identified successful service-linked-role requests explicitly, preventing the misleading inference that ordinary ECS users or root-created resources bypass SCPs."
+  ],
+  "review_status": "authored"
+}

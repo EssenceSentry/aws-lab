@@ -1,0 +1,26 @@
+{
+  "type": "table",
+  "title": "Match the scaling boundary to the work",
+  "columns": [
+    "Design",
+    "Unit of scaling and operational responsibility"
+  ],
+  "rows": [
+    [
+      "EC2 monolith behind ALB",
+      "Scale entire application instances and maintain their servers"
+    ],
+    [
+      "EC2 workers on EKS",
+      "Scale pods and nodes, while operating Kubernetes deployment infrastructure"
+    ],
+    [
+      "API operations on Lambda",
+      "Scale each compatible function and manage application code and limits"
+    ]
+  ],
+  "footnote": "This scenario has validated short, stateless operations and a favorable measured cost profile.",
+  "emphasis_rows": [
+    2
+  ]
+}

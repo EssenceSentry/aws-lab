@@ -1,0 +1,15 @@
+flowchart TB
+accTitle: A certificate in each ALB Region
+accDescr: The same hostname is covered by separate regional ACM certificate resources, each attached to its local ALB.
+N[app.example.com] --> A
+N --> B
+subgraph R1[us-west-1]
+C1[ACM certificate] -->|Attach locally| A[ALB]
+end
+subgraph R2[ap-southeast-2]
+C2[ACM certificate] -->|Attach locally| B[ALB]
+end
+C1 -.->|Cross-Region ARN cannot attach| X[Destination listener rejects association]
+class N inputData
+class A,B output
+class X warning

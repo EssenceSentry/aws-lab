@@ -1,0 +1,8 @@
+flowchart TB
+accTitle: Keep ORC storage independent of query compute
+accDescr: Existing and new ORC files live in S3, Glue stores only their metadata, and Athena reads selected partitions and columns during the nightly query window.
+H["Existing ORC in HDFS"]:::inputData -->|"One-time copy"| S[("Partitioned ORC in S3")]:::storage
+N["New telemetry ORC"]:::inputData --> S
+G[("Glue catalog<br/>Schema + partitions")]:::storage -->|"Metadata"| A["Athena SQL<br/>Nightly query window"]
+S -->|"Selected partitions + columns"| A
+A --> R["Query results within tested SLA"]:::output

@@ -1,0 +1,48 @@
+{
+  "question_id": "020",
+  "base_record_sha256": "a73f09932c8699f18a5dea7d4073850e3841c00c20c29609aad38a4edc0d243d",
+  "record": {
+    "id": "020",
+    "exam_domain": "Design for New Solutions",
+    "question": "A company is replacing an EC2 application with API Gateway, Lambda, and DynamoDB. It needs a repeatable pipeline that builds and tests the code and gradually shifts API traffic between published Lambda versions. A failed validation or a CloudWatch alarm must trigger rollback. API Gateway must invoke the controlled production version throughout deployment.\n\nWhich solution meets these requirements with the least custom deployment logic?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Define the application with AWS SAM. Use CodePipeline and CodeBuild for orchestration, build, and tests. Configure AutoPublishAlias and a canary or linear DeploymentPreference with hooks and alarms so CodeDeploy shifts traffic through the Lambda alias used by API Gateway."
+      },
+      {
+        "id": "2",
+        "text": "Define the application with AWS SAM using AutoPublishAlias and an AllAtOnce deployment preference. Use CodePipeline and CodeBuild for build and tests, connect API Gateway to the alias, and configure hooks and alarms for rollback."
+      },
+      {
+        "id": "3",
+        "text": "Use CodePipeline and CodeBuild, then have a Systems Manager Automation runbook update the Lambda function’s $LATEST code. Invoke $LATEST from API Gateway and treat the update as a gradual deployment."
+      },
+      {
+        "id": "4",
+        "text": "Publish the application to the Serverless Application Repository and deploy each new version from the repository. Rely on publication alone to create build tests, an alias traffic-shifting policy, and automatic rollback."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> joins the pipeline to the mechanism that actually shifts traffic. SAM’s AutoPublishAlias creates the version/alias structure, and DeploymentPreference configures CodeDeploy canary or linear shifting with validation hooks and alarms. API Gateway must invoke the alias for its requests to follow the controlled rollout.\n\n<<2>> supplies versions, an alias and rollback controls, but AllAtOnce shifts all traffic in one step instead of gradually. <<3>> replaces $LATEST without establishing weighted routing between published versions; a runbook could orchestrate a fuller design, but this one does not. <<4>> confuses application packaging and distribution with an implemented CI/CD and rollout policy.\n\nTraffic shifting needs both an old and a new version. Establish the initial alias/version before performing a gradual update, and keep shared data changes compatible with both versions so rollback remains useful.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/serverless-application-model/latest/developerguide/automating-updates-to-serverless-apps.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/020.mmd",
+  "diagram_alt": "A canary deployment changes the alias’s version weights and returns traffic to the retained version on failure.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/automating-updates-to-serverless-apps.html",
+      "checked_on": "2026-09-18",
+      "supports": "AutoPublishAlias, alias-qualified invocation, canary/linear policies, validation hooks, alarms, rollback, and initial-version prerequisite."
+    }
+  ],
+  "editorial_notes": [
+    "Specified the alias and DeploymentPreference that make SAM gradual deployments concrete. Removed the false absolute that Systems Manager cannot orchestrate serverless changes. Answer ID unchanged.",
+    "Root review replaced unsupported Elastic Beanstalk/Lambda distractor with a supported AllAtOnce policy that fails gradual shifting."
+  ],
+  "review_status": "authored"
+}

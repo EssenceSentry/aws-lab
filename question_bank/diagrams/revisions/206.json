@@ -1,0 +1,57 @@
+{
+  "question_id": "206",
+  "base_record_sha256": "5797a5f00af427b9e98511ec367a907bed68622212b071fbc443efee7dfd44b8",
+  "record": {
+    "id": "206",
+    "exam_domain": "Design Solutions for Organizational Complexity",
+    "question": "A call center is replacing an on-premises NFS archive and manual transcription process. Recordings selected for quality review must be transcribed automatically soon after upload, rather than waiting days for an offshore team. All recordings need immediate access for 90 days, followed by seven-year retention with restores allowed to take hours. The portal can be refactored to a static frontend and short-lived APIs. The company wants the least infrastructure to operate.\n\nWhich design meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Store recordings in S3. Use an event-driven Lambda function to start asynchronous Transcribe jobs for selected recordings and persist completed transcripts in a company-owned S3 bucket. Serve the frontend through CloudFront and S3 with API Gateway and Lambda APIs, and transition eligible recordings to S3 Glacier Flexible Retrieval after 90 days."
+      },
+      {
+        "id": "2",
+        "text": "Store recordings in S3 and archive them after 90 days. Send selected object links to the existing offshore transcription team, and continue hosting the portal on a fixed EC2 fleet."
+      },
+      {
+        "id": "3",
+        "text": "Store recordings in EFS and host the portal on EC2. After 90 days, copy selected recordings to S3 and start Transcribe jobs as part of the archival workflow."
+      },
+      {
+        "id": "4",
+        "text": "Store recordings in S3 and use Transcribe promptly, but transition every recording to S3 Glacier Deep Archive immediately after transcription and restore it when a reviewer requests playback."
+      }
+    ],
+    "correct_option_ids": [
+      "1"
+    ],
+    "explanation": {
+      "text": "<<1>> is correct. Transcribe performs managed speech-to-text processing on S3 media. An event handler starts the batch job and a completion workflow records its result, while S3 lifecycle separates the active review period from long-term archival. The refactor removes the always-running portal fleet.\n\n<<2>> retains manual transcription and the infrastructure the company wants to reduce.\n\n<<3>> delays transcription until the archive date instead of supporting prompt review. EFS can remain part of other designs, but batch Transcribe input must be made available through a supported input path such as S3.\n\n<<4>> requires restores during the 90-day immediate-access period.\n\nDo not keep Lambda running until a transcription completes. Track job status, handle duplicate notifications and failures, and store transcripts durably in the chosen bucket. Validate audio formats, language support, and transcription quality. Archive transitions are asynchronous; restore latency, minimum storage duration, and retrieval charges must match the retention policy.\n\nOfficial AWS references (checked September 18, 2026): [Start a batch transcription job](https://docs.aws.amazon.com/transcribe/latest/APIReference/API_StartTranscriptionJob.html). [Transcribe inputs and outputs](https://docs.aws.amazon.com/transcribe/latest/dg/how-input.html). [S3 archive lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/206.mmd",
+  "diagram_alt": "Transcription and retention are independent timelines, so archival does not delay quality review.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/transcribe/latest/APIReference/API_StartTranscriptionJob.html",
+      "checked_on": "2026-09-18",
+      "supports": "S3 media input, job identity and output bucket configuration"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/transcribe/latest/dg/how-input.html",
+      "checked_on": "2026-09-18",
+      "supports": "Batch audio in S3, supported media and durable versus service-managed transcript storage"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+      "checked_on": "2026-09-18",
+      "supports": "Asynchronous archival and restore requirements"
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 1. Removed AWS IQ and Translate service-misuse distractors, clarified asynchronous completion and durable transcripts, and made the 90-day hot-access constraint explicit."
+  ],
+  "review_status": "authored"
+}

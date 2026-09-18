@@ -1,0 +1,52 @@
+{
+  "question_id": "099",
+  "base_record_sha256": "12079cf97ababa66a28548c00e986c83673c5c3929d11d4cb15584bb6ea40408",
+  "record": {
+    "id": "099",
+    "exam_domain": "Design for New Solutions",
+    "question": "A startup is launching a React single-page application. The browser runs the application logic, users upload photos to S3, and captions are stored in DynamoDB. Users authenticate with an existing supported OIDC provider. The startup expects low initial usage and wants HTTPS delivery, direct user-scoped data access, and minimal server administration without embedding long-term AWS credentials.\n\nWhich architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Host the static application in S3 behind CloudFront. Operate a single EC2 credential broker that authenticates users and issues temporary AWS credentials for direct data access."
+      },
+      {
+        "id": "2",
+        "text": "Host the static application in a private S3 bucket behind CloudFront using origin access control. Configure web identity federation to exchange OIDC tokens for temporary, user-scoped AWS credentials that the browser uses for S3 and DynamoDB."
+      },
+      {
+        "id": "3",
+        "text": "Host the static application on an EC2 Auto Scaling group behind an ALB, and operate an EC2 credential-broker fleet that issues temporary AWS credentials after OIDC authentication."
+      },
+      {
+        "id": "4",
+        "text": "Host the static application on an EC2 instance with an IAM role. Have the downloaded browser application use the instance role automatically for its direct S3 and DynamoDB requests."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. A React application that executes in the browser can be distributed as static files. CloudFront provides HTTPS delivery from the private S3 origin, and OAC authorizes origin reads. A configured web identity exchange supplies short-lived AWS credentials for the signed-in user, with IAM permissions restricting the user's object prefixes and database access.\n\n<<1>> can issue temporary credentials, but introduces a server to operate and a single availability dependency for sign-in. The supported identity provider already permits a managed credential exchange.\n\n<<3>> can be made resilient, but allocates server fleets to static hosting and credential brokering that the stated design does not require.\n\n<<4>> confuses the web server's identity with the browser's identity. Downloading JavaScript from an EC2 instance does not give that JavaScript the instance role credentials.\n\nKeep static delivery permissions separate from user-data permissions. The browser must obtain its own scoped credential session, refresh it on expiration, and sign data requests correctly. Configure the required S3 browser CORS behavior in addition to authorization.\n\nAWS documentation (checked September 18, 2026): [CloudFront origin access control](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html); [AssumeRoleWithWebIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/099.mmd",
+  "diagram_alt": "The browser downloads static assets through CloudFront but obtains separate federated credentials for authorized data operations.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "checked_on": "2026-09-18",
+      "supports": "OAC signs CloudFront requests to a regular private S3 origin, with bucket policies restricting access to the intended distribution."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html",
+      "checked_on": "2026-09-18",
+      "supports": "OIDC identity tokens can be exchanged for role credentials consisting of an access key ID, secret access key, and session token without preexisting AWS credentials."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 2. Retained static SPA plus web federation focus while replacing public S3 website delivery with HTTPS CloudFront and a private OAC origin."
+  ],
+  "review_status": "authored"
+}

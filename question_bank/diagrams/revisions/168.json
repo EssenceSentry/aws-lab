@@ -1,0 +1,52 @@
+{
+  "question_id": "168",
+  "base_record_sha256": "9070f421a3de8bc70e45463368b5928bd0689e4a5d501d48113fe6b7030d716a",
+  "record": {
+    "id": "168",
+    "exam_domain": "Continuous Improvement for Existing Solutions",
+    "question": "A publisher runs a stateless web fleet across multiple Availability Zones. Existing EC2 reservations cover its continuously used On-Demand baseline, and peak utilization currently reaches 90%. The company will add enough healthy headroom to sustain its required service level during an AZ failure. Capacity above that protected baseline is interruption-tolerant, and the company wants to use Spot pricing for this flexible portion.\n\nWhich fleet design best meets these availability and purchasing requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Use an all-Spot Auto Scaling group behind an ALB, including for the capacity that must remain available without Spot interruption."
+      },
+      {
+        "id": "2",
+        "text": "Use an all-On-Demand Auto Scaling group behind an ALB, including for every flexible burst instance."
+      },
+      {
+        "id": "3",
+        "text": "Use a mixed-instances Auto Scaling group behind an ALB across AZs. Maintain the required On-Demand baseline and tested headroom, and use diversified Spot pools for the interruption-tolerant capacity above it."
+      },
+      {
+        "id": "4",
+        "text": "Use an all-Spot fleet in a single AZ behind an ALB, and request replacement Spot instances in another AZ only after an outage."
+      }
+    ],
+    "correct_option_ids": [
+      "3"
+    ],
+    "explanation": {
+      "text": "<<3>> is correct. A mixed group expresses the purchase boundary directly: sufficient On-Demand capacity for the required baseline, with Spot used where interruption is acceptable. Multiple AZs and instance pools reduce concentration, while preexisting healthy headroom addresses the time before replacements become ready. Eligible reservations discount the On-Demand usage.\n\n<<1>> exposes the protected baseline to Spot interruption.\n\n<<2>> can provide the required capacity but does not use the requested Spot pricing for the flexible portion.\n\n<<4>> concentrates the fleet in one AZ and waits until failure to obtain capacity that is not guaranteed to be available.\n\nSpot savings do not create availability headroom. A fleet at 90% utilization can overload its surviving AZs after an outage, regardless of purchase model. Reserved Instances are a billing benefit, not a separate running-instance type. AWS now recommends EC2 Fleet or Auto Scaling groups over the legacy Spot Fleet API.\n\nAWS documentation (checked September 18, 2026): [Mixed-instances Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html); [Spot Fleet status](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-automatic-scaling.html).",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/168.diagram.json",
+  "diagram_alt": "The fleet separates a protected baseline, healthy failure headroom, and flexible Spot capacity.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html",
+      "checked_on": "2026-09-18",
+      "supports": "An Auto Scaling group can combine On-Demand and Spot capacity and use eligible reservations for the On-Demand usage."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-automatic-scaling.html",
+      "checked_on": "2026-09-18",
+      "supports": "Spot Fleet uses a legacy API with no planned investment, and AWS recommends EC2 Fleet or Auto Scaling groups."
+    }
+  ],
+  "editorial_notes": [
+    "Preserved answer 3. Replaced the legacy Spot Fleet implementation with a modern mixed-instances Auto Scaling group, and made the baseline, Spot tolerance, and healthy headroom requirements explicit."
+  ],
+  "review_status": "authored"
+}

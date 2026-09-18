@@ -1,0 +1,58 @@
+{
+  "question_id": "198",
+  "base_record_sha256": "00c2e405023f9756e817fa7892427df7c183da511175ac1d0cfc507320dbd44b",
+  "record": {
+    "id": "198",
+    "exam_domain": "Accelerate Workload Migration and Modernization",
+    "question": "A company is migrating an Oracle database to RDS for PostgreSQL. The source contains tables, views and stored program code that require conversion. The company wants to minimize custom migration tooling and keep the source operational until a planned cutover.\n\nWhich approach best meets these requirements?",
+    "options": [
+      {
+        "id": "1",
+        "text": "Rehost the Oracle server with Application Migration Service, then use a DMS replication task alone to translate all Oracle stored program code into PostgreSQL code."
+      },
+      {
+        "id": "2",
+        "text": "Use AWS SCT to assess and convert the schema and supported code, manually resolve reported conversion items, and test the target. Use DMS full load and supported CDC to migrate data and catch up before cutover."
+      },
+      {
+        "id": "3",
+        "text": "Build custom Glue transformations for schema and stored program translation, and use Batch jobs to implement the complete bulk-copy and change-replay process."
+      },
+      {
+        "id": "4",
+        "text": "Use a DMS replication task with target table creation enabled and assume that creating target tables also converts all views, packages, procedures and application SQL."
+      }
+    ],
+    "correct_option_ids": [
+      "2"
+    ],
+    "explanation": {
+      "text": "<<2>> is correct. Schema and code conversion prepares the target database structure and behavior, while the DMS replication task transfers rows and supported changes. SCT assessment identifies objects needing manual work, and testing verifies that converted code preserves required behavior.\n\n<<1>> rehosts the server without solving the engine conversion; a data replication task does not translate all stored program code. <<3>> can involve extensive custom engineering and does not minimize migration tooling. <<4>> mistakes basic target table creation for complete schema and code conversion.\n\nAWS DMS also offers a separate Schema Conversion capability, but that is distinct from the replication-only behavior in the distractors. No tool removes the need to assess unsupported features, data types, constraints, logging requirements and application SQL. Validate the load, let changes catch up, and perform a controlled final cutover.\n\nAWS documentation (checked 2026-09-18):\nhttps://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html\nhttps://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html",
+      "images": []
+    }
+  },
+  "diagram_source": "sources/198.mmd",
+  "diagram_alt": "Schema/code conversion and row/change replication are separate work streams that meet at a validated PostgreSQL target.",
+  "sources": [
+    {
+      "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/",
+      "checked_on": "2026-09-18",
+      "supports": "SCT converts supported database schema and code and identifies conversion work that cannot be automated."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html",
+      "checked_on": "2026-09-18",
+      "supports": "Full load plus CDC transfers existing data and subsequent supported source changes."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html",
+      "checked_on": "2026-09-18",
+      "supports": "DMS Schema Conversion is a separate capability from database replication tasks."
+    }
+  ],
+  "editorial_notes": [
+    "Removed the promise that every data type and code construct converts automatically.",
+    "Distinguished a DMS replication task from the currently available DMS Schema Conversion feature."
+  ],
+  "review_status": "authored"
+}

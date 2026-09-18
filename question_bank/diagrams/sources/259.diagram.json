@@ -1,0 +1,30 @@
+{
+  "type": "table",
+  "title": "Connection initiation determines the required rules",
+  "columns": [
+    "Packet direction",
+    "AppSG evaluation",
+    "DbSG evaluation"
+  ],
+  "rows": [
+    [
+      "App ephemeral port → DB 3306",
+      "Outbound allow to DbSG:3306",
+      "Inbound allow from AppSG:3306"
+    ],
+    [
+      "DB 3306 → app ephemeral port",
+      "Tracked response allowed",
+      "Tracked response allowed"
+    ],
+    [
+      "Unrelated source → DB 3306",
+      "Not a member of AppSG",
+      "No matching AppSG source allow"
+    ]
+  ],
+  "footnote": "Security groups are stateful. Existing NACLs and routes must separately permit the path.",
+  "emphasis_rows": [
+    0
+  ]
+}
