@@ -105,6 +105,11 @@ the first visit. Diagrams cache as they are viewed; Settings offers a resumable
 download of the complete image pack. External references and videos need the internet.
 Browser storage can be evicted, so sync or export progress regularly.
 
+When Settings shows **A fresh version is ready**, choose **Update app** to
+activate it while retaining saved progress. Each update refreshes the shared
+question, guide, and image-manifest URLs from the server so the new offline
+cache cannot inherit obsolete responses from the browser's HTTP cache.
+
 Progress stays in this browser under waypoint.sap-c02.progress.v3. Backups
 include bookmarks, answer statistics, history, and an unfinished session.
 Restoration validates question IDs, options, and timer state before replacement.

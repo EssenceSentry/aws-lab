@@ -16,10 +16,10 @@ async function walk(dir, prefix = "") {
   return result.sort();
 }
 const files = await walk(dist);
-const digest = createHash("sha256");
+const template = await readFile(resolve(app, "scripts/sw-template.js"), "utf8");
+const digest = createHash("sha256").update(template);
 for (const path of files) digest.update(path).update(await readFile(resolve(dist, path)));
 const build = digest.digest("hex").slice(0, 16);
-const template = await readFile(resolve(app, "scripts/sw-template.js"), "utf8");
 await writeFile(resolve(dist, "sw.js"), template.replace("__BUILD__", build).replace("__CORE_FILES__", JSON.stringify(files)));
 await writeFile(resolve(dist, ".nojekyll"), "");
 console.log("Built offline app shell " + build + " with " + files.length + " assets.");

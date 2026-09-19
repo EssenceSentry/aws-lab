@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts tests/*.test.mjs",
-    "test:browser": "node --experimental-strip-types scripts/browser-smoke.mjs"
+    "test:browser": "node scripts/sw-update-smoke.mjs && node --experimental-strip-types scripts/browser-smoke.mjs"
   },
   "engines": {
     "node": ">=22.18"

@@ -8,7 +8,10 @@ const IMAGE_CACHE = PREFIX + "images-v1";
 const absolute = (path) => new URL(path, BASE).href;
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CORE_CACHE).then((cache) => cache.addAll(CORE_FILES.map(absolute))));
+  // A new build reuses data URLs. Fetch their current bytes instead of carrying
+  // fresh-but-obsolete HTTP-cache entries into the new versioned app cache.
+  const requests = CORE_FILES.map((path) => new Request(absolute(path), { cache: "reload" }));
+  event.waitUntil(caches.open(CORE_CACHE).then((cache) => cache.addAll(requests)));
 });
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
