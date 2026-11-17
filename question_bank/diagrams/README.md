@@ -4,6 +4,8 @@ Editable source lives in `sources/`, and the corresponding question rewrite and 
 
 All 391 questions have an integrated editorial revision and a manually reviewed explanation diagram. Sources comprise 300 Mermaid diagrams, 89 graphic tables and two SVG diagrams. `manifest.json` records rendering, `reviews.json` records explicit editorial and visual review, and `integrated.json` records the exact revision applied to the bank. Each stage is tied to source and revision hashes so subsequent edits invalidate prior review. Run validation to confirm the current state; the last full verification is recorded in `validation.json`.
 
+On November 17, 2026, all 391 diagrams were rendered with the updated dependencies. Of those, 204 matched the approved PNGs byte for byte and 187 received a fresh visual review. Each replacement's entry in `reviews.json` contains the visual reviewer's notes and preserves the original editorial review in `editorial_review`.
+
 ## Render and inspect
 
 Use Node 22.18 or later, install this directory's locked dependencies with `npm ci`, and install the study application's locked dependencies with `npm ci --prefix ../../study_app`. The renderer reuses that application's Playwright installation and launches local Google Chrome. It serves assets on an ephemeral loopback port and blocks browser requests outside that server.
