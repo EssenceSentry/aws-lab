@@ -1,25 +1,12 @@
 # AWS Lab
 
-**[Open Waypoint](https://essencesentry.github.io/aws-lab/)** to study on mobile
-or desktop. Use Settings in the app for installation and offline downloads.
+Study for AWS Solutions Architect Professional by practicing two different decisions: which answer fits an exam question, and which architecture still works when a constraint changes.
 
-The repository also contains **[Waypoint](study_app/README.md)**, an installable
-mobile study app built from [the question bank](question_bank/questions.jsonl).
-It supports domain practice, mixed exams, optional timers, offline study,
-and saved progress, with a GitHub Pages deployment workflow.
+**Start with one question in [Waypoint](https://essencesentry.github.io/aws-lab/).** Choose **One quick question**, check the explanation, and revisit mistakes or saved questions later. Waypoint also supports timed exam rehearsal and offline study on mobile or desktop. [Study modes and offline setup](study_app/README.md)
 
-The [visual-language audit](question_bank/visual_language_audit.md) describes
-18 reusable visual forms for the bank's concepts. Editable diagram sources,
-question revisions, AWS references, and rendering instructions are in
-[question_bank/diagrams](question_bank/diagrams/README.md). Generated PNGs live
-in `question_bank/images` and appear in the questions' explanations.
+**Try an architecture change in the [local Streamlit lab](#set-up-and-run-locally).** Configure a multi-account scenario, choose a design, then change a requirement. The trainer identifies affected constraints and explains possible fixes without provisioning AWS resources. It covers the supplied Tutorials Dojo SAP-C02 chapter on organizational complexity.
 
-A local Streamlit application for studying the supplied Tutorials Dojo
-SAP-C02 chapter on **Design Solutions for Organizational Complexity**.
-
-The app is not an AWS emulator. It is a deterministic decision-boundary
-trainer: configure a scenario, select an architecture, and inspect explicit
-constraint violations, tradeoffs, counterfactual fixes, and source pages.
+Explanations use a shared visual vocabulary. The [question bank](question_bank/questions.jsonl), [diagram sources](question_bank/diagrams/README.md), and [visual-language audit](question_bank/visual_language_audit.md) are available for readers building on the material.
 
 ## What is included
 
