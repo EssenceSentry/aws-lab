@@ -1,5 +1,10 @@
 # AWS Lab
 
+[![Quality](https://github.com/EssenceSentry/aws-lab/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/EssenceSentry/aws-lab/actions/workflows/quality.yml)
+[![Study app](https://github.com/EssenceSentry/aws-lab/actions/workflows/study-pages.yml/badge.svg?branch=main)](https://github.com/EssenceSentry/aws-lab/actions/workflows/study-pages.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-2563eb?logo=python&logoColor=white)](pyproject.toml)
+[![Study app](https://img.shields.io/badge/Study%20app-open-2563eb)](https://essencesentry.github.io/aws-lab/)
+
 Study for AWS Solutions Architect Professional by practicing two different decisions: which answer fits an exam question, and which architecture still works when a constraint changes.
 
 **Start with one question in [Waypoint](https://essencesentry.github.io/aws-lab/).** Choose **One quick question**, check the explanation, and revisit mistakes or saved questions later. Waypoint also supports timed exam rehearsal and offline study on mobile or desktop. [Study modes and offline setup](study_app/README.md)
@@ -55,6 +60,8 @@ In VS Code, you can also run **Tasks: Run Task** from the Command Palette and
 select **Start Streamlit app**.
 
 ## Run checks
+
+GitHub Actions runs the Python lab's lint, formatting, strict type checks, tests and package build on pushes and pull requests. The study-app workflow also checks the question bank, diagram review evidence, browser interactions and offline image pack.
 
 ```bash
 uv run pytest
