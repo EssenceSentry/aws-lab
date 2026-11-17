@@ -10,6 +10,6 @@
   "engines": {"node": ">=22.18"},
   "dependencies": {
     "@iconify-json/logos": "1.2.14",
-    "mermaid": "12.0.0"
+    "mermaid": "12.3.0"
   }
 }
