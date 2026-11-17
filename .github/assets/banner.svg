@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+<title id="title">AWS Lab</title>
+<desc id="desc">Practice the decision behind the architecture. Decorative illustration of the project’s workflow.</desc>
+<defs>
+  <linearGradient id="background" x2="1" y2="1"><stop stop-color="#111C27"/><stop offset="1" stop-color="#172A34"/></linearGradient>
+  <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".7" fill="#728995" opacity=".18"/></pattern>
+</defs>
+<rect width="1200" height="360" rx="16" fill="url(#background)"/>
+<rect x="768" y="25" width="406" height="310" fill="url(#grid)"/>
+<path d="M748 48V312" stroke="#354550" stroke-width="1"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<rect x="54" y="64" width="20" height="3" rx="1" fill="#F4B67C" stroke="none"/>
+<text x="86" y="70" font-size="11" fill="#BDCACD" letter-spacing="1.8">CLOUD ARCHITECTURE / LEARNING TOOLS</text>
+<text x="52" y="160" font-size="64" fill="#EEF2ED" font-weight="700" letter-spacing="-2">AWS Lab</text>
+<text x="55" y="211" font-size="25" fill="#CFD9DC" >Practice the decision</text>
+<text x="55" y="245" font-size="25" fill="#CFD9DC" >behind the architecture.</text>
+<text x="56" y="309" font-size="10" fill="#9DB1BA" letter-spacing="1.3">SCENARIOS   /   VISUAL EXPLANATIONS   /   OFFLINE STUDY</text>
+<path d="M963 168L820 96" fill="none" stroke="#304352" stroke-width="2" /><path d="M963 168L1092 94" fill="none" stroke="#304352" stroke-width="2" /><path d="M963 168L814 239" fill="none" stroke="#304352" stroke-width="2" /><path d="M963 168L1106 240" fill="none" stroke="#304352" stroke-width="2" /><path d="M963 168L962 285" fill="none" stroke="#304352" stroke-width="2" /><rect x="948" y="153" width="30" height="30" rx="6" fill="#F4B67C" stroke="#F4B67C"/><rect x="805" y="81" width="30" height="30" rx="6" fill="#162B36" stroke="#647888"/><rect x="1077" y="79" width="30" height="30" rx="6" fill="#162B36" stroke="#647888"/><rect x="799" y="224" width="30" height="30" rx="6" fill="#162B36" stroke="#F4B67C"/><rect x="1091" y="225" width="30" height="30" rx="6" fill="#162B36" stroke="#647888"/><rect x="947" y="270" width="30" height="30" rx="6" fill="#162B36" stroke="#647888"/><circle cx="963" cy="168" r="38" fill="none" stroke="#304352" stroke-width="1"/><text x="794" y="325" font-size="13" fill="#647888" >CONSTRAINTS → CHOICES</text>
+</g>
+</svg>

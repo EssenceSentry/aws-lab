@@ -1,3 +1,5 @@
+![AWS Lab — Practice the decision behind the architecture.](.github/assets/banner.svg)
+
 # AWS Lab
 
 [![Quality](https://github.com/EssenceSentry/aws-lab/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/EssenceSentry/aws-lab/actions/workflows/quality.yml)
@@ -5,13 +7,15 @@
 [![Python](https://img.shields.io/badge/Python-3.11%2B-2563eb?logo=python&logoColor=white)](pyproject.toml)
 [![Study app](https://img.shields.io/badge/Study%20app-open-2563eb)](https://essencesentry.github.io/aws-lab/)
 
-Study for AWS Solutions Architect Professional by practicing two different decisions: which answer fits an exam question, and which architecture still works when a constraint changes.
+**Learn cloud architecture by making decisions and seeing their consequences.** AWS Lab pairs an offline study app with a local architecture trainer: practice an exam question, inspect the explanation, then explore what changes when a design constraint moves.
 
-**Start with one question in [Waypoint](https://essencesentry.github.io/aws-lab/).** Choose **One quick question**, check the explanation, and revisit mistakes or saved questions later. Waypoint also supports timed exam rehearsal and offline study on mobile or desktop. [Study modes and offline setup](study_app/README.md)
+**[Start one question in Waypoint →](https://essencesentry.github.io/aws-lab/)** · [Run the architecture lab](#set-up-and-run-locally) · [Study modes and offline setup](study_app/README.md)
 
-**Try an architecture change in the [local Streamlit lab](#set-up-and-run-locally).** Configure a multi-account scenario, choose a design, then change a requirement. The trainer identifies affected constraints and explains possible fixes without provisioning AWS resources. It covers the supplied Tutorials Dojo SAP-C02 chapter on organizational complexity.
+- **A short session or a full rehearsal.** Waypoint supports quick questions, saved questions, mistakes, and timed exam practice on mobile or desktop.
+- **Architecture with consequences.** The Streamlit trainer evaluates multi-account designs and explains affected constraints without provisioning AWS resources.
+- **Inspectable learning material.** Question data, diagram sources, review evidence, and a pure Python rule engine are available alongside the apps.
 
-Explanations use a shared visual vocabulary. The [question bank](question_bank/questions.jsonl), [diagram sources](question_bank/diagrams/README.md), and [visual-language audit](question_bank/visual_language_audit.md) are available for readers building on the material.
+The local trainer focuses on the supplied SAP-C02 chapter on organizational complexity. [Source scope and modeling limits](#source-scope-and-limitations) are documented explicitly.
 
 ## What is included
 
